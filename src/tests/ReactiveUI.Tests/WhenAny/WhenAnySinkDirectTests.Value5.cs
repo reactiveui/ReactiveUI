@@ -24,7 +24,7 @@ public partial class WhenAnySinkDirectTests
         var s4 = new Signal<IObservedChange<object?, string>>();
         var s5 = new Signal<IObservedChange<object?, string>>();
         var rec = new Recorder<string>();
-        using (new WhenAnyValueSink<object?, string, string, string, string, string, string>(s1, s2, s3, s4, s5, (x1, x2, x3, x4, x5) => x1 + x2 + x3 + x4 + x5).Subscribe(rec))
+        using (new WhenAnyValueSink<object?, string, string, string, string, string, string>(s1, s2, s3, s4, s5, static (x1, x2, x3, x4, x5) => x1 + x2 + x3 + x4 + x5).Subscribe(rec))
         {
             s1.OnNext(Ch("v1"));
             s2.OnNext(Ch("v2"));
@@ -44,7 +44,7 @@ public partial class WhenAnySinkDirectTests
         var e4 = new Signal<IObservedChange<object?, string>>();
         var e5 = new Signal<IObservedChange<object?, string>>();
         var errRec = new Recorder<string>();
-        _ = new WhenAnyValueSink<object?, string, string, string, string, string, string>(e1, e2, e3, e4, e5, (x1, x2, x3, x4, x5) => x1 + x2 + x3 + x4 + x5).Subscribe(errRec);
+        _ = new WhenAnyValueSink<object?, string, string, string, string, string, string>(e1, e2, e3, e4, e5, static (x1, x2, x3, x4, x5) => x1 + x2 + x3 + x4 + x5).Subscribe(errRec);
         e1.OnError(ex);
 
         var k1 = new Signal<IObservedChange<object?, string>>();
@@ -53,7 +53,7 @@ public partial class WhenAnySinkDirectTests
         var k4 = new Signal<IObservedChange<object?, string>>();
         var k5 = new Signal<IObservedChange<object?, string>>();
         var cmpRec = new Recorder<string>();
-        _ = new WhenAnyValueSink<object?, string, string, string, string, string, string>(k1, k2, k3, k4, k5, (x1, x2, x3, x4, x5) => x1 + x2 + x3 + x4 + x5).Subscribe(cmpRec);
+        _ = new WhenAnyValueSink<object?, string, string, string, string, string, string>(k1, k2, k3, k4, k5, static (x1, x2, x3, x4, x5) => x1 + x2 + x3 + x4 + x5).Subscribe(cmpRec);
         k1.OnCompleted();
         k2.OnCompleted();
         k3.OnCompleted();

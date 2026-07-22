@@ -72,40 +72,40 @@ public class ActivationForViewFetcher : IActivationForViewFetcher, IEnableLogger
         // https://docs.microsoft.com/en-us/dotnet/framework/winforms/order-of-events-in-windows-forms
         var handleDestroyed = new FromEventObservable<bool>(onNext =>
         {
-            void Handler(object? sender, EventArgs e) => onNext(false);
-            control.HandleDestroyed += Handler;
-            return new ActionDisposable(() => control.HandleDestroyed -= Handler);
+            EventHandler handler = (_, _) => onNext(false);
+            control.HandleDestroyed += handler;
+            return new ActionDisposable(() => control.HandleDestroyed -= handler);
         });
 
         var handleCreated = new FromEventObservable<bool>(onNext =>
         {
-            void Handler(object? sender, EventArgs e) => onNext(true);
-            control.HandleCreated += Handler;
-            return new ActionDisposable(() => control.HandleCreated -= Handler);
+            EventHandler handler = (_, _) => onNext(true);
+            control.HandleCreated += handler;
+            return new ActionDisposable(() => control.HandleCreated -= handler);
         });
 
         var visibleChanged = new FromEventObservable<bool>(onNext =>
         {
-            void Handler(object? sender, EventArgs e) => onNext(control.Visible);
-            control.VisibleChanged += Handler;
-            return new ActionDisposable(() => control.VisibleChanged -= Handler);
+            EventHandler handler = (_, _) => onNext(control.Visible);
+            control.VisibleChanged += handler;
+            return new ActionDisposable(() => control.VisibleChanged -= handler);
         });
 
         if (control is not Form form)
         {
             // Replaces Merge(handleDestroyed, handleCreated, visibleChanged).DistinctUntilChanged().
-            return ReactiveUI.Primitives.LinqExtensions.BlendUnique<bool>(handleDestroyed, handleCreated, visibleChanged);
+            return ReactiveUI.Primitives.LinqExtensions.BlendUnique(handleDestroyed, handleCreated, visibleChanged);
         }
 
         var formClosed = new FromEventObservable<bool>(onNext =>
         {
-            void Handler(object? sender, FormClosedEventArgs e) => onNext(control.Visible);
-            form.FormClosed += Handler;
-            return new ActionDisposable(() => form.FormClosed -= Handler);
+            FormClosedEventHandler handler = (_, _) => onNext(control.Visible);
+            form.FormClosed += handler;
+            return new ActionDisposable(() => form.FormClosed -= handler);
         });
 
         // Replaces Merge(...).Merge(formClosed).DistinctUntilChanged().
-        return ReactiveUI.Primitives.LinqExtensions.BlendUnique<bool>(handleDestroyed, handleCreated, visibleChanged, formClosed);
+        return ReactiveUI.Primitives.LinqExtensions.BlendUnique(handleDestroyed, handleCreated, visibleChanged, formClosed);
     }
 
     /// <summary>Determines whether the control is currently running at design time.</summary>

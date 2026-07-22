@@ -5,7 +5,6 @@
 
 using System.Windows;
 using System.Windows.Controls;
-using PropertyMetadata = System.Windows.PropertyMetadata;
 
 namespace ReactiveUI.Tests.Wpf.Mocks;
 

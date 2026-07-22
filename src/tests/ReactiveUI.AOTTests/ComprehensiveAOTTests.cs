@@ -21,6 +21,9 @@ public class ComprehensiveAOTTests
     /// <summary>The expected number of operations performed in the count-based assertions.</summary>
     private const int ExpectedCount = 2;
 
+    /// <summary>The value assigned to reactive properties to represent a change.</summary>
+    private const string ChangedValue = "changed";
+
     /// <summary>
     /// Tests that demonstrate AOT-compatible patterns that work well in AOT scenarios.
     /// These tests use string-based property names and explicit schedulers.
@@ -44,7 +47,7 @@ public class ComprehensiveAOTTests
         obj.TestProperty = "test2";
 
         await Assert.That(changes).Contains(nameof(TestReactiveObject.TestProperty));
-        await Assert.That(changes.Count(x => x == nameof(TestReactiveObject.TestProperty))).IsEqualTo(ExpectedCount);
+        await Assert.That(changes.Count(static x => x == nameof(TestReactiveObject.TestProperty))).IsEqualTo(ExpectedCount);
     }
 
     /// <summary>Tests that interaction patterns work well in AOT.</summary>
@@ -117,13 +120,13 @@ public class ComprehensiveAOTTests
         var values = new List<string>();
         _ = property.ObserveOn(Sequencer.Immediate).Subscribe(value => values.Add(value ?? string.Empty));
 
-        property.Value = "changed";
+        property.Value = ChangedValue;
 
         await Assert.That(values).Contains(InitialValue);
         using (Assert.Multiple())
         {
-            await Assert.That(values).Contains("changed");
-            await Assert.That(property.Value).IsEqualTo("changed");
+            await Assert.That(values).Contains(ChangedValue);
+            await Assert.That(property.Value).IsEqualTo(ChangedValue);
         }
     }
 
@@ -147,7 +150,6 @@ public class ComprehensiveAOTTests
         await Assert.That(helper.Value).IsEqualTo("updated");
 
         helper.Dispose();
-        source.Dispose();
     }
 
     /// <summary>Tests that demonstrate how to use dependency injection in AOT scenarios.</summary>

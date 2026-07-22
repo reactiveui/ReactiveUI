@@ -41,7 +41,7 @@ internal static class ReactiveComponentHelpers
     /// <exception cref="ArgumentNullException">
     /// Thrown when <paramref name="viewModel"/> or <paramref name="state"/> is <see langword="null"/>.
     /// </exception>
-    public static void WireActivationIfSupported<T>(T? viewModel, ReactiveComponentState state)
+    internal static void WireActivationIfSupported<T>(T? viewModel, ReactiveComponentState state)
         where T : class, INotifyPropertyChanged
     {
         ArgumentNullException.ThrowIfNull(state);
@@ -89,7 +89,7 @@ internal static class ReactiveComponentHelpers
     /// <see cref="ViewModelReactivitySink{T}"/> rather than an operator pipeline.
     /// </remarks>
     /// <exception cref="ArgumentNullException">Thrown when any parameter is <see langword="null"/>.</exception>
-    public static IDisposable WireViewModelChangeReactivity<T>(
+    internal static IDisposable WireViewModelChangeReactivity<T>(
         Func<T?> getCurrentViewModel,
         Action<PropertyChangedEventHandler> addPropertyChangedHandler,
         Action<PropertyChangedEventHandler> removePropertyChangedHandler,
@@ -118,7 +118,7 @@ internal static class ReactiveComponentHelpers
     /// <typeparam name="T">The view model type that implements <see cref="INotifyPropertyChanged"/>.</typeparam>
     /// <param name="viewModel">The current view model.</param>
     /// <param name="state">The reactive component state.</param>
-    public static void HandleInitialized<T>(T? viewModel, ReactiveComponentState state)
+    internal static void HandleInitialized<T>(T? viewModel, ReactiveComponentState state)
         where T : class, INotifyPropertyChanged
     {
         WireActivationIfSupported(viewModel, state);
@@ -136,7 +136,7 @@ internal static class ReactiveComponentHelpers
     /// <param name="addPropertyChangedHandler">Adds a handler to the component's <see cref="INotifyPropertyChanged.PropertyChanged"/> event.</param>
     /// <param name="removePropertyChangedHandler">Removes a handler from the component's <see cref="INotifyPropertyChanged.PropertyChanged"/> event.</param>
     /// <param name="stateHasChangedCallback">A callback that re-renders the component.</param>
-    public static void HandleFirstRender<T>(
+    internal static void HandleFirstRender<T>(
         bool firstRender,
         ReactiveComponentState state,
         Func<T?> getCurrentViewModel,
@@ -173,7 +173,7 @@ internal static class ReactiveComponentHelpers
     /// <param name="disposed">The component's disposed flag, set to <see langword="true"/> on first call.</param>
     /// <param name="disposing"><see langword="true"/> to release managed resources.</param>
     /// <param name="state">The reactive component state.</param>
-    public static void HandleDispose(ref bool disposed, bool disposing, ReactiveComponentState state)
+    internal static void HandleDispose(ref bool disposed, bool disposing, ReactiveComponentState state)
     {
         if (disposed)
         {
@@ -190,7 +190,7 @@ internal static class ReactiveComponentHelpers
     /// </summary>
     /// <param name="disposing"><see langword="true"/> to release managed resources.</param>
     /// <param name="state">The reactive component state.</param>
-    public static void DeactivateAndDisposeState(bool disposing, ReactiveComponentState state)
+    internal static void DeactivateAndDisposeState(bool disposing, ReactiveComponentState state)
     {
         ArgumentNullException.ThrowIfNull(state);
 
@@ -212,7 +212,7 @@ internal static class ReactiveComponentHelpers
     /// <param name="field">The backing field to update.</param>
     /// <param name="value">The new value.</param>
     /// <returns><see langword="true"/> when the field changed; otherwise <see langword="false"/>.</returns>
-    public static bool SetIfChanged<T>(ref T? field, T? value)
+    internal static bool SetIfChanged<T>(ref T? field, T? value)
         where T : class
     {
         if (EqualityComparer<T?>.Default.Equals(field, value))

@@ -31,7 +31,7 @@ public class ViewActivationAOTTests
         });
 
         using var viewModelChanged = new BehaviorSignal<object?>(viewModel);
-        var view = new TestActivatableView();
+        using var view = new TestActivatableView();
         var viewActivations = 0;
         var viewDeactivations = 0;
 
@@ -65,7 +65,7 @@ public class ViewActivationAOTTests
     }
 
     /// <summary>A minimal activatable view driven by explicit loaded/unloaded signals.</summary>
-    private sealed class TestActivatableView : ReactiveObject, IViewFor<TestActivatableViewModel>, ICanActivate
+    private sealed class TestActivatableView : ReactiveObject, IViewFor<TestActivatableViewModel>, ICanActivate, IDisposable
     {
         /// <summary>Gets the signal raised when the view is loaded.</summary>
         public Signal<RxVoid> Loaded { get; } = new();
@@ -87,6 +87,13 @@ public class ViewActivationAOTTests
         {
             get => ViewModel;
             set => ViewModel = (TestActivatableViewModel?)value;
+        }
+
+        /// <summary>Disposes the loaded/unloaded signals owned by this view.</summary>
+        public void Dispose()
+        {
+            Loaded.Dispose();
+            Unloaded.Dispose();
         }
     }
 

@@ -14,5 +14,5 @@ namespace ReactiveUI.Builder.BlazorServer.Services;
 internal static class AppInstance
 {
     /// <summary>A unique identifier generated once per application instance.</summary>
-    public static readonly Guid Id = Guid.NewGuid();
+    internal static readonly Guid Id = Guid.NewGuid();
 }

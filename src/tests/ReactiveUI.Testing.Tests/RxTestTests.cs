@@ -48,7 +48,7 @@ public class RxTestTests
     /// <returns>A task that represents the asynchronous test operation.</returns>
     [Test]
     public async Task AppBuilderTestAsync_ThrowsArgumentNullException_WhenTestBodyIsNull() =>
-        await Assert.That(() => RxTest.AppBuilderTestAsync(null!))
+        await Assert.That(static () => RxTest.AppBuilderTestAsync(null!))
             .Throws<ArgumentException>();
 
     /// <summary>Verifies that exceptions thrown within the AppBuilderTestAsync delegate are properly propagated to the caller.</summary>
@@ -58,7 +58,7 @@ public class RxTestTests
     public async Task AppBuilderTestAsync_PropagatesExceptions() =>
 
         // Act & Assert
-        await Assert.That(async () => await RxTest.AppBuilderTestAsync(() => throw new InvalidOperationException("Test exception"))).Throws<InvalidOperationException>();
+        await Assert.That(static async () => await RxTest.AppBuilderTestAsync(static () => throw new InvalidOperationException("Test exception"))).Throws<InvalidOperationException>();
 
     /// <summary>
     /// Verifies that asynchronous exceptions thrown within the AppBuilderTestAsync method are properly propagated to
@@ -68,9 +68,9 @@ public class RxTestTests
     /// <exception cref="InvalidOperationException">Thrown if the asynchronous delegate passed to AppBuilderTestAsync throws an InvalidOperationException.</exception>
     [Test]
     public async Task AppBuilderTestAsync_PropagatesAsyncExceptions() =>
-        await Assert.That(async () =>
+        await Assert.That(static async () =>
         {
-            await RxTest.AppBuilderTestAsync(async () =>
+            await RxTest.AppBuilderTestAsync(static async () =>
             {
                 await Task.Yield();
                 throw new InvalidOperationException("Async test exception");
@@ -120,7 +120,7 @@ public class RxTestTests
     {
         // This test verifies that multiple calls don't interfere with each other
         // Arrange & Act
-        await RxTest.AppBuilderTestAsync(() => Task.CompletedTask);
+        await RxTest.AppBuilderTestAsync(static () => Task.CompletedTask);
 
         var secondTestExecuted = false;
         await RxTest.AppBuilderTestAsync(() =>
@@ -163,10 +163,10 @@ public class RxTestTests
     public async Task AppBuilderTestAsync_ThrowsTimeoutException_WhenTestExceedsTimeout() =>
 
         // Act & Assert
-        await Assert.That(async () =>
+        await Assert.That(static async () =>
         {
             await RxTest.AppBuilderTestAsync(
-                async () =>
+                static async () =>
                 {
                     await Task.Delay(DelayLongerThanTimeoutMilliseconds); // Delay longer than timeout
                 },
@@ -179,9 +179,9 @@ public class RxTestTests
     /// </summary>
     /// <returns>A task that represents the asynchronous test operation.</returns>
     [Test]
-    public async Task AppBuilderTestAsync_HandlesTaskCompletedTask() =>
+    public Task AppBuilderTestAsync_HandlesTaskCompletedTask() =>
 
         // This test verifies that returning Task.CompletedTask works correctly
         // Act - Should not throw
-        await RxTest.AppBuilderTestAsync(() => Task.CompletedTask);
+        RxTest.AppBuilderTestAsync(static () => Task.CompletedTask);
 }

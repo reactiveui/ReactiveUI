@@ -35,7 +35,7 @@ public class ViewLocatorTests
         AppBuilder.ResetBuilderStateForTests();
 
         var builder = RxAppBuilder.CreateReactiveUIBuilder();
-        _ = builder.ConfigureViewLocator(locator => locator.Map<TestViewModel, TestView>(() => new()));
+        _ = builder.ConfigureViewLocator(static locator => locator.Map<TestViewModel, TestView>(static () => new()));
         _ = builder.WithCoreServices().BuildApp();
 
         var current = ViewLocator.Current;
@@ -54,7 +54,7 @@ public class ViewLocatorTests
         ArgumentNullException.ThrowIfNull(resolver);
 
         // Register a view in the service locator
-        resolver.Register(() => new TestView(), typeof(IViewFor<TestViewModel>));
+        resolver.Register(static () => new TestView(), typeof(IViewFor<TestViewModel>));
 
         var locator = ViewLocator.Current;
         var view = locator.ResolveView<TestViewModel>();

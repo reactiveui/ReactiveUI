@@ -3,6 +3,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 #if REACTIVE_SHIM
 using ReactiveUI.Reactive.Builder;
 #else
@@ -23,26 +25,26 @@ public class ViewForMixinsTests
     public async Task ViewModelWhenActivatedFuncOverloadActivatesAndDeactivates()
     {
         var activations = 0;
-        var deactivations = 0;
+        var deactivations = new StrongBox<int>();
         var viewModel = new ActivatableViewModelMock();
 
         viewModel.WhenActivated(() =>
         {
             activations++;
-            return [Scope.Create(() => deactivations++)];
+            return [Scope.Create(deactivations, static d => d.Value++)];
         });
 
         using (Assert.Multiple())
         {
             await Assert.That(activations).IsEqualTo(0);
-            await Assert.That(deactivations).IsEqualTo(0);
+            await Assert.That(deactivations.Value).IsEqualTo(0);
         }
 
         _ = viewModel.Activator.Activate();
         await Assert.That(activations).IsEqualTo(1);
 
         viewModel.Activator.Deactivate();
-        await Assert.That(deactivations).IsEqualTo(1);
+        await Assert.That(deactivations.Value).IsEqualTo(1);
     }
 
     /// <summary>The parameterless <c>WhenActivated()</c> overload activates the view through its registered fetcher.</summary>
@@ -54,8 +56,8 @@ public class ViewForMixinsTests
         var locator = new ModernDependencyResolver();
         _ = locator.CreateReactiveUIBuilder()
             .WithCoreServices()
-            .WithCustomRegistration(builder =>
-                builder.Register<IActivationForViewFetcher>(() => new ActivatingViewFetcher())).BuildApp();
+            .WithCustomRegistration(static builder =>
+                builder.Register<IActivationForViewFetcher>(static () => new ActivatingViewFetcher())).BuildApp();
 
         using (locator.WithResolver())
         {
@@ -82,19 +84,19 @@ public class ViewForMixinsTests
         {
             var view = new ActivatingView();
             var activations = 0;
-            var deactivations = 0;
+            var deactivations = new StrongBox<int>();
 
             using var activation = view.WhenActivated(() =>
             {
                 activations++;
-                return [Scope.Create(() => deactivations++)];
+                return [Scope.Create(deactivations, static d => d.Value++)];
             });
 
             view.Loaded.OnNext(RxVoid.Default);
             await Assert.That(activations).IsEqualTo(1);
 
             view.Unloaded.OnNext(RxVoid.Default);
-            await Assert.That(deactivations).IsEqualTo(1);
+            await Assert.That(deactivations.Value).IsEqualTo(1);
         }
     }
 
@@ -105,20 +107,20 @@ public class ViewForMixinsTests
     public async Task ViewModelWhenActivatedMultipleDisposableOverloadActivatesAndDeactivates()
     {
         var activations = 0;
-        var deactivations = 0;
+        var deactivations = new StrongBox<int>();
         var viewModel = new ActivatableViewModelMock();
 
         viewModel.WhenActivated(d =>
         {
             activations++;
-            d.Add(Scope.Create(() => deactivations++));
+            d.Add(Scope.Create(deactivations, static d => d.Value++));
         });
 
         _ = viewModel.Activator.Activate();
         await Assert.That(activations).IsEqualTo(1);
 
         viewModel.Activator.Deactivate();
-        await Assert.That(deactivations).IsEqualTo(1);
+        await Assert.That(deactivations.Value).IsEqualTo(1);
     }
 
     /// <summary>The trim-safe <c>Func</c> overload activates the view block and forwards <see cref="IActivatableViewModel"/>
@@ -133,13 +135,13 @@ public class ViewForMixinsTests
             using var viewModelChanged = new BehaviorSignal<object?>(viewModel);
             var view = new ActivatingView();
             var activations = 0;
-            var deactivations = 0;
+            var deactivations = new StrongBox<int>();
 
             using var activation = view.WhenActivated(
                 () =>
                 {
                     activations++;
-                    return [Scope.Create(() => deactivations++)];
+                    return [Scope.Create(deactivations, static d => d.Value++)];
                 },
                 viewModelChanged);
 
@@ -159,7 +161,7 @@ public class ViewForMixinsTests
             view.Unloaded.OnNext(RxVoid.Default);
             using (Assert.Multiple())
             {
-                await Assert.That(deactivations).IsEqualTo(1);
+                await Assert.That(deactivations.Value).IsEqualTo(1);
                 await Assert.That(viewModel.IsActiveCount).IsEqualTo(0);
             }
         }
@@ -177,13 +179,13 @@ public class ViewForMixinsTests
             using var viewModelChanged = new BehaviorSignal<object?>(viewModel);
             var view = new ActivatingView();
             var activations = 0;
-            var deactivations = 0;
+            var deactivations = new StrongBox<int>();
 
             using var activation = view.WhenActivated(
                 d =>
                 {
                     activations++;
-                    d(Scope.Create(() => deactivations++));
+                    d(Scope.Create(deactivations, static d => d.Value++));
                 },
                 viewModelChanged);
 
@@ -197,7 +199,7 @@ public class ViewForMixinsTests
             view.Unloaded.OnNext(RxVoid.Default);
             using (Assert.Multiple())
             {
-                await Assert.That(deactivations).IsEqualTo(1);
+                await Assert.That(deactivations.Value).IsEqualTo(1);
                 await Assert.That(viewModel.IsActiveCount).IsEqualTo(0);
             }
         }
@@ -215,13 +217,13 @@ public class ViewForMixinsTests
             using var viewModelChanged = new BehaviorSignal<object?>(viewModel);
             var view = new ActivatingView();
             var activations = 0;
-            var deactivations = 0;
+            var deactivations = new StrongBox<int>();
 
             using var activation = view.WhenActivated(
                 d =>
                 {
                     activations++;
-                    d.Add(Scope.Create(() => deactivations++));
+                    d.Add(Scope.Create(deactivations, static d => d.Value++));
                 },
                 viewModelChanged);
 
@@ -235,7 +237,7 @@ public class ViewForMixinsTests
             view.Unloaded.OnNext(RxVoid.Default);
             using (Assert.Multiple())
             {
-                await Assert.That(deactivations).IsEqualTo(1);
+                await Assert.That(deactivations.Value).IsEqualTo(1);
                 await Assert.That(viewModel.IsActiveCount).IsEqualTo(0);
             }
         }
@@ -282,10 +284,10 @@ public class ViewForMixinsTests
         var locator = new ModernDependencyResolver();
         _ = locator.CreateReactiveUIBuilder()
             .WithCoreServices()
-            .WithCustomRegistration(builder =>
+            .WithCustomRegistration(static builder =>
             {
-                builder.Register<IActivationForViewFetcher>(() => null!);
-                builder.Register<IActivationForViewFetcher>(() => new ActivatingViewFetcher());
+                builder.Register<IActivationForViewFetcher>(static () => null!);
+                builder.Register<IActivationForViewFetcher>(static () => new ActivatingViewFetcher());
             }).BuildApp();
 
         using (locator.WithResolver())
@@ -309,13 +311,17 @@ public class ViewForMixinsTests
         var locator = new ModernDependencyResolver();
         _ = locator.CreateReactiveUIBuilder()
             .WithCoreServices()
-            .WithCustomRegistration(builder =>
-                builder.Register<IActivationForViewFetcher>(() => new ActivatingViewFetcher())).BuildApp();
+            .WithCustomRegistration(static builder =>
+                builder.Register<IActivationForViewFetcher>(static () => new ActivatingViewFetcher())).BuildApp();
 
         return locator.WithResolver();
     }
 
     /// <summary>A minimal activatable view model used to drive the activation lifecycle.</summary>
+    [SuppressMessage(
+        "Usage",
+        "SST2315:Type owns a disposable but is not IDisposable",
+        Justification = "test fixture; the owned disposable lives for the test-process lifetime and is released at process exit.")]
     private sealed class ActivatableViewModelMock : ReactiveObject, IActivatableViewModel
     {
         /// <inheritdoc/>

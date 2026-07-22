@@ -3,12 +3,10 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using Bunit;
-
 namespace ReactiveUI.Blazor.Tests;
 
 /// <summary>Tests for the <see cref="ReactiveLayoutComponentBase{T}"/> class. Verifies proper functioning of reactive features in Blazor layouts.</summary>
-public class ReactiveLayoutComponentBaseTests : BunitContext
+public class ReactiveLayoutComponentBaseTests : BlazorTestContext
 {
     /// <summary>The expected number of renders after the initial render of the component.</summary>
     private const int ExpectedRenderCount = 2;
@@ -22,7 +20,7 @@ public class ReactiveLayoutComponentBaseTests : BunitContext
     public async Task ViewModel_Change_Triggers_StateHasChanged()
     {
         var viewModel = new TestViewModel();
-        var cut = Render<TestLayoutComponent>(parameters => parameters.Add(p => p.ViewModel, viewModel));
+        var cut = await RenderAsync<TestLayoutComponent>(parameters => parameters.Add(p => p.ViewModel, viewModel));
 
         await Assert.That(cut.Instance.RenderCount).IsEqualTo(ExpectedRenderCount);
 

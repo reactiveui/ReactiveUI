@@ -3,15 +3,9 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Diagnostics.CodeAnalysis;
-
 namespace ReactiveUI.Tests.WhenAny;
 
 /// <summary>Tests for the WhenAnyObservable mixin overloads.</summary>
-[SuppressMessage(
-    "Major Code Smell",
-    "S107:Methods should not have too many parameters",
-    Justification = "Arity-12 variadic selectors intentionally accept more than seven parameters.")]
 public partial class WhenAnyObservableMixinTests
 {
     /// <summary>Verifies the WhenAnyObservable overload for 12 observable properties.</summary>
@@ -117,7 +111,7 @@ public partial class WhenAnyObservableMixinTests
             x => x.ObservableProperty10,
             x => x.ObservableProperty11,
             x => x.ObservableProperty12,
-            (_, _, _, _, _, _, _, _, _, _, _, _) => "x").ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
+            static (_, _, _, _, _, _, _, _, _, _, _, _) => "x").ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
         subj1.OnNext("test");
         subj2.OnNext("test");
         subj3.OnNext("test");

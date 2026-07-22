@@ -171,7 +171,7 @@ public class ExpressionRewriterTests
     /// <summary>Verifies that rewriting a null expression throws an argument null exception.</summary>
     [Test]
     public void Rewrite_WithNullExpression_Throws() =>
-        Assert.Throws<ArgumentNullException>(() => Reflection.Rewrite(null));
+        Assert.Throws<ArgumentNullException>(static () => Reflection.Rewrite(null));
 
     /// <summary>Verifies that a parameter expression is preserved as a Parameter node.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>

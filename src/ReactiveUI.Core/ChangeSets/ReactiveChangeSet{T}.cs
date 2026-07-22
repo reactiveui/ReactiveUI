@@ -57,8 +57,8 @@ public sealed class ReactiveChangeSet<T> : IReactiveChangeSet<T>
     public List<ReactiveChange<T>>.Enumerator GetEnumerator() => _changes.GetEnumerator();
 
     /// <inheritdoc/>
-    IEnumerator<ReactiveChange<T>> IEnumerable<ReactiveChange<T>>.GetEnumerator() => _changes.GetEnumerator();
+    IEnumerator<ReactiveChange<T>> IEnumerable<ReactiveChange<T>>.GetEnumerator() => GetEnumerator();
 
     /// <inheritdoc/>
-    IEnumerator IEnumerable.GetEnumerator() => _changes.GetEnumerator();
+    IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable<ReactiveChange<T>>)this).GetEnumerator();
 }

@@ -14,11 +14,13 @@ public class NewGameViewModel : ReactiveObject
     /// <summary>Initializes a new instance of the <see cref="NewGameViewModel" /> class.</summary>
     public NewGameViewModel()
     {
+        const int MaxPlayers = 7;
+
         Players = [];
 
         var canStart = Players.ToReactiveChangeSet().WhenCountChanged().Select(_ => Players.Count >= 3);
         StartGame = ReactiveCommand.Create(
-            () => { },
+            static () => { },
             canStart);
         RandomizeOrder = ReactiveCommand.Create(
             () =>
@@ -38,7 +40,7 @@ public class NewGameViewModel : ReactiveObject
             x => x.Players.Count,
             x => x.NewPlayerName,
             (count, newPlayerName) =>
-                count < 7 && !string.IsNullOrWhiteSpace(newPlayerName) &&
+                count < MaxPlayers && !string.IsNullOrWhiteSpace(newPlayerName) &&
                 !Players.Contains(newPlayerName));
         AddPlayer = ReactiveCommand.Create(
             () =>

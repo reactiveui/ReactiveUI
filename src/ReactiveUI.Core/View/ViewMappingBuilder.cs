@@ -30,8 +30,8 @@ public sealed class ViewMappingBuilder
     /// <typeparam name="TView">The view type implementing IViewFor&lt;TViewModel&gt;.</typeparam>
     /// <returns>The builder for chaining.</returns>
     [SuppressMessage(
-        "Major Code Smell",
-        "S4018:Generic methods should provide type parameter",
+        "Design",
+        "SST2307:A generic method's type parameter appears in no parameter, so no caller can infer it",
         Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
     public ViewMappingBuilder Map<TViewModel, TView>()
         where TViewModel : class
@@ -44,14 +44,14 @@ public sealed class ViewMappingBuilder
     /// <param name="contract">Optional contract to disambiguate multiple views for the same view model.</param>
     /// <returns>The builder for chaining.</returns>
     [SuppressMessage(
-        "Major Code Smell",
-        "S4018:Generic methods should provide type parameter",
+        "Design",
+        "SST2307:A generic method's type parameter appears in no parameter, so no caller can infer it",
         Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
     public ViewMappingBuilder Map<TViewModel, TView>(string? contract)
         where TViewModel : class
         where TView : class, IViewFor<TViewModel>, new()
     {
-        _ = _locator.Map<TViewModel, TView>(() => new(), contract);
+        _ = _locator.Map<TViewModel, TView>(static () => new(), contract);
         return this;
     }
 
@@ -61,8 +61,8 @@ public sealed class ViewMappingBuilder
     /// <param name="factory">Factory function that creates the view.</param>
     /// <returns>The builder for chaining.</returns>
     [SuppressMessage(
-        "Major Code Smell",
-        "S4018:Generic methods should provide type parameter",
+        "Design",
+        "SST2307:A generic method's type parameter appears in no parameter, so no caller can infer it",
         Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
     public ViewMappingBuilder Map<TViewModel, TView>(Func<TView> factory)
         where TViewModel : class
@@ -79,8 +79,8 @@ public sealed class ViewMappingBuilder
     /// <param name="contract">Optional contract to disambiguate multiple views for the same view model.</param>
     /// <returns>The builder for chaining.</returns>
     [SuppressMessage(
-        "Major Code Smell",
-        "S4018:Generic methods should provide type parameter",
+        "Design",
+        "SST2307:A generic method's type parameter appears in no parameter, so no caller can infer it",
         Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
     public ViewMappingBuilder Map<TViewModel, TView>(Func<TView> factory, string? contract)
         where TViewModel : class
@@ -96,8 +96,8 @@ public sealed class ViewMappingBuilder
     /// <typeparam name="TView">The view type implementing IViewFor&lt;TViewModel&gt;.</typeparam>
     /// <returns>The builder for chaining.</returns>
     [SuppressMessage(
-        "Major Code Smell",
-        "S4018:Generic methods should provide type parameter",
+        "Design",
+        "SST2307:A generic method's type parameter appears in no parameter, so no caller can infer it",
         Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
     public ViewMappingBuilder MapFromServiceLocator<TViewModel, TView>()
         where TViewModel : class
@@ -113,15 +113,15 @@ public sealed class ViewMappingBuilder
     /// <param name="contract">Optional contract to disambiguate multiple views for the same view model.</param>
     /// <returns>The builder for chaining.</returns>
     [SuppressMessage(
-        "Major Code Smell",
-        "S4018:Generic methods should provide type parameter",
+        "Design",
+        "SST2307:A generic method's type parameter appears in no parameter, so no caller can infer it",
         Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
     public ViewMappingBuilder MapFromServiceLocator<TViewModel, TView>(string? contract)
         where TViewModel : class
         where TView : class, IViewFor<TViewModel>
     {
         _ = _locator.Map<TViewModel, TView>(
-            () => AppLocator.Current.GetService<TView>() ??
+            static () => AppLocator.Current.GetService<TView>() ??
                   throw new InvalidOperationException($"View {nameof(TView)} not registered in service locator"),
             contract);
         return this;

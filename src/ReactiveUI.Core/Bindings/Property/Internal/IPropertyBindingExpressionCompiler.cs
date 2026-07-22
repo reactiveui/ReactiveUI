@@ -79,8 +79,8 @@ public interface IPropertyBindingExpressionCompiler
     /// object navigation. They don't need to track host changes.
     /// </remarks>
     [SuppressMessage(
-        "Major Code Smell",
-        "S4018:Generic methods should provide type parameter",
+        "Design",
+        "SST2307:A generic method's type parameter appears in no parameter, so no caller can infer it",
         Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
     IObservable<(bool ShouldEmit, TValue Value)> CreateDirectSetObservable<TTarget, TValue, TObs>(
         TTarget? target,
@@ -108,8 +108,8 @@ public interface IPropertyBindingExpressionCompiler
     /// They track host changes and replay values when the host (e.g., ViewModel) changes.
     /// </remarks>
     [SuppressMessage(
-        "Major Code Smell",
-        "S4018:Generic methods should provide type parameter",
+        "Design",
+        "SST2307:A generic method's type parameter appears in no parameter, so no caller can infer it",
         Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
     IObservable<(bool ShouldEmit, TValue Value)> CreateChainedSetObservable<TTarget, TValue, TObs>(
         TTarget? target,

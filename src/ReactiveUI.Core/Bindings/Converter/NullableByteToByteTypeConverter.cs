@@ -7,7 +7,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace ReactiveUI;
 
-/// <summary>Converts <see cref="Nullable{Byte}"/> to <see cref="byte"/>.</summary>
+/// <summary>Converts <see cref="byte"/>? to <see cref="byte"/>.</summary>
 /// <remarks>
 /// When the nullable value is null, the conversion fails and returns false.
 /// </remarks>

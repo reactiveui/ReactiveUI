@@ -52,7 +52,7 @@ public sealed class InteractionContext<TInput, TOutput> : IOutputContext<TInput,
     public TInput Input { get; }
 
     /// <inheritdoc />
-    public bool IsHandled => _outputSet == 1;
+    public bool IsHandled => Volatile.Read(ref _outputSet) == 1;
 
     /// <inheritdoc />
     public void SetOutput(TOutput output)
@@ -68,7 +68,7 @@ public sealed class InteractionContext<TInput, TOutput> : IOutputContext<TInput,
     /// <inheritdoc />
     public TOutput GetOutput()
     {
-        if (_outputSet == 0)
+        if (Volatile.Read(ref _outputSet) == 0)
         {
             throw new InvalidOperationException("Output has not been set.");
         }

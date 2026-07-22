@@ -23,7 +23,7 @@ public class InteractionHandleObservableTests
         _ = interaction.RegisterHandler((Action<IInteractionContext<RxVoid, string>>)(_ => throw boom));
 
         Exception? received = null;
-        using var subscription = interaction.Handle(RxVoid.Default).Subscribe(_ => { }, ex => received = ex);
+        using var subscription = interaction.Handle(RxVoid.Default).Subscribe(static _ => { }, ex => received = ex);
 
         await Assert.That(received).IsSameReferenceAs(boom);
     }
@@ -35,10 +35,10 @@ public class InteractionHandleObservableTests
     {
         var interaction = new Interaction<RxVoid, string>(Sequencer.Immediate);
         var boom = new InvalidOperationException("observable boom");
-        _ = interaction.RegisterHandler<RxVoid>(_ => new ThrowingObservable(boom));
+        _ = interaction.RegisterHandler(_ => new ThrowingObservable(boom));
 
         Exception? received = null;
-        using var subscription = interaction.Handle(RxVoid.Default).Subscribe(_ => { }, ex => received = ex);
+        using var subscription = interaction.Handle(RxVoid.Default).Subscribe(static _ => { }, ex => received = ex);
 
         await Assert.That(received).IsSameReferenceAs(boom);
     }
@@ -50,7 +50,7 @@ public class InteractionHandleObservableTests
     {
         var scheduler = new VirtualTimeScheduler();
         var interaction = new Interaction<RxVoid, string>(scheduler);
-        _ = interaction.RegisterHandler((Action<IInteractionContext<RxVoid, string>>)(context => context.SetOutput(ResultOutput)));
+        _ = interaction.RegisterHandler((Action<IInteractionContext<RxVoid, string>>)(static context => context.SetOutput(ResultOutput)));
 
         string? result = null;
         using var subscription = interaction.Handle(RxVoid.Default).Subscribe(r => result = r);
@@ -70,7 +70,7 @@ public class InteractionHandleObservableTests
     {
         var scheduler = new VirtualTimeScheduler();
         var interaction = new Interaction<RxVoid, string>(scheduler);
-        _ = interaction.RegisterHandler((Action<IInteractionContext<RxVoid, string>>)(context => context.SetOutput(ResultOutput)));
+        _ = interaction.RegisterHandler((Action<IInteractionContext<RxVoid, string>>)(static context => context.SetOutput(ResultOutput)));
 
         string? result = null;
         var subscription = interaction.Handle(RxVoid.Default).Subscribe(r => result = r);
@@ -89,7 +89,7 @@ public class InteractionHandleObservableTests
         var interaction = new ThrowingOutputInteraction(Sequencer.Immediate);
 
         Exception? received = null;
-        using var subscription = interaction.Handle(RxVoid.Default).Subscribe(_ => { }, ex => received = ex);
+        using var subscription = interaction.Handle(RxVoid.Default).Subscribe(static _ => { }, ex => received = ex);
 
         await Assert.That(received).IsNotNull();
     }

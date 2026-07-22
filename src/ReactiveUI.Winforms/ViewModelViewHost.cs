@@ -34,6 +34,10 @@ public partial class ViewModelControlHost : UserControl, IReactiveObject, IViewF
     private bool _cacheViews;
 
     /// <summary>Initializes a new instance of the <see cref="ViewModelControlHost"/> class.</summary>
+    [SuppressMessage(
+        "Design",
+        "SST2403:'this' escapes before construction finishes",
+        Justification = "'this' is passed to BindingSink; the WinForms designer-mandated constructor wires this control's bindings; the single-threaded control is never published elsewhere.")]
     public ViewModelControlHost()
     {
         InitializeComponent();
@@ -240,7 +244,7 @@ public partial class ViewModelControlHost : UserControl, IReactiveObject, IViewF
             _defaultContentSubscription = host.WhenAnyValue<ViewModelControlHost, Control?>(nameof(DefaultContent))
                 .Subscribe(new DelegateObserver<Control?>(OnDefaultContentChanged));
 
-            host.ViewContractObservable = Signal.Emit<string>(string.Empty);
+            host.ViewContractObservable = Signal.Emit(string.Empty);
 
             // ViewModel + ViewContractObservable -> resolve and show the matching view.
             _viewModelContract = new(

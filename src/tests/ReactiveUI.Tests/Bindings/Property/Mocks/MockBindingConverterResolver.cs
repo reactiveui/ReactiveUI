@@ -3,6 +3,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics.CodeAnalysis;
+
 namespace ReactiveUI.Tests.Bindings.Property.Mocks;
 
 /// <summary>Test mock for <see cref="IBindingConverterResolver"/>.</summary>
@@ -10,6 +12,11 @@ namespace ReactiveUI.Tests.Bindings.Property.Mocks;
 /// This mock uses simple dictionary-based lookups for testing binding converter resolution
 /// without requiring the full Splat/RxConverters infrastructure.
 /// </remarks>
+[SuppressMessage(
+    "Design",
+    "SST2324:public member on non-public type",
+    Justification = "the public API is exercised directly by tests; the containing mock type is an " +
+        "intentionally non-public implementation detail of the test project.")]
 internal sealed class MockBindingConverterResolver : IBindingConverterResolver
 {
     /// <summary>The registered type converters keyed by source and target type.</summary>

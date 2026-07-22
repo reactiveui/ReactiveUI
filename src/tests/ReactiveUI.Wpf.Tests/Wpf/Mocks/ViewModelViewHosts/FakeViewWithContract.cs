@@ -26,7 +26,7 @@ public static class FakeViewWithContract
     {
         /// <summary>Identifies the <see cref="ViewModel"/> dependency property.</summary>
         public static readonly DependencyProperty ViewModelProperty =
-            DependencyProperty.Register("ViewModel", typeof(MyViewModel), typeof(View0), new(null));
+            DependencyProperty.Register(nameof(ViewModel), typeof(MyViewModel), typeof(View0), new(null));
 
         /// <summary>Gets or sets the ViewModel.</summary>
         public MyViewModel? ViewModel
@@ -44,7 +44,7 @@ public static class FakeViewWithContract
     {
         /// <summary>Identifies the <see cref="ViewModel"/> dependency property.</summary>
         public static readonly DependencyProperty ViewModelProperty =
-            DependencyProperty.Register("ViewModel", typeof(MyViewModel), typeof(ViewA), new(null));
+            DependencyProperty.Register(nameof(ViewModel), typeof(MyViewModel), typeof(ViewA), new(null));
 
         /// <summary>Gets or sets the ViewModel.</summary>
         public MyViewModel? ViewModel
@@ -62,7 +62,7 @@ public static class FakeViewWithContract
     {
         /// <summary>Identifies the <see cref="ViewModel"/> dependency property.</summary>
         public static readonly DependencyProperty ViewModelProperty =
-            DependencyProperty.Register("ViewModel", typeof(MyViewModel), typeof(ViewB), new(null));
+            DependencyProperty.Register(nameof(ViewModel), typeof(MyViewModel), typeof(ViewB), new(null));
 
         /// <summary>Gets or sets the ViewModel.</summary>
         public MyViewModel? ViewModel

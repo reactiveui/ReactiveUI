@@ -14,27 +14,27 @@ public class PropertyBindView : Control, IViewFor<PropertyBindViewModel>
 {
     /// <summary>The view model property.</summary>
     public static readonly DependencyProperty ViewModelProperty =
-        DependencyProperty.Register("ViewModel", typeof(PropertyBindViewModel), typeof(PropertyBindView), new(null));
+        DependencyProperty.Register(nameof(ViewModel), typeof(PropertyBindViewModel), typeof(PropertyBindView), new(null));
 
     /// <summary>The fake control property.</summary>
     public static readonly DependencyProperty FakeControlProperty =
-        DependencyProperty.Register("FakeControl", typeof(PropertyBindFakeControl), typeof(PropertyBindView), new(null));
+        DependencyProperty.Register(nameof(FakeControl), typeof(PropertyBindFakeControl), typeof(PropertyBindView), new(null));
 
     /// <summary>The some text box property.</summary>
     public static readonly DependencyProperty SomeTextBoxProperty =
-        DependencyProperty.Register("SomeTextBox", typeof(TextBox), typeof(PropertyBindView), new(null));
+        DependencyProperty.Register(nameof(SomeTextBox), typeof(TextBox), typeof(PropertyBindView), new(null));
 
     /// <summary>The property2 property.</summary>
     public static readonly DependencyProperty Property2Property =
-        DependencyProperty.Register("Property2", typeof(TextBox), typeof(PropertyBindView), new(null));
+        DependencyProperty.Register(nameof(Property2), typeof(TextBox), typeof(PropertyBindView), new(null));
 
     /// <summary>The fake items control property.</summary>
     public static readonly DependencyProperty FakeItemsControlProperty =
-        DependencyProperty.Register("FakeItemsControl", typeof(ListBox), typeof(PropertyBindView), new(null));
+        DependencyProperty.Register(nameof(FakeItemsControl), typeof(ListBox), typeof(PropertyBindView), new(null));
 
     /// <summary>The combo box selection property.</summary>
     public static readonly DependencyProperty ComboBoxSelectionProperty =
-        DependencyProperty.Register("ComboBoxSelection", typeof(ComboBox), typeof(PropertyBindView), new(null));
+        DependencyProperty.Register(nameof(ComboBoxSelection), typeof(ComboBox), typeof(PropertyBindView), new(null));
 
     /// <summary>Initializes a new instance of the <see cref="PropertyBindView"/> class.</summary>
     public PropertyBindView()

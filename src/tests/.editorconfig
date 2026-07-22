@@ -8,3 +8,13 @@ dotnet_diagnostic.CA1063.severity = none # Implement IDisposable correctly
 dotnet_diagnostic.CA1065.severity = none # Do not raise exceptions in unexpected locations
 dotnet_diagnostic.CA1812.severity = none # Avoid uninstantiated internal classes
 dotnet_diagnostic.CA2213.severity = none # Disposable fields should be disposed
+
+###################
+# PerformanceSharp / StyleSharp test relaxations imported from Primitives
+###################
+dotnet_diagnostic.SST1432.severity = none # Test fixtures need not be static
+dotnet_diagnostic.SST2410.severity = none # A test creates the disposable it is asserting about; the test process owns it and exits
+performancesharp.avoid_linq_on_hot_path = false
+dotnet_diagnostic.PSH1100.severity = none # Tests can use LINQ for clarity
+dotnet_diagnostic.PSH1101.severity = error # In tests, simplify LINQ Where plus terminal calls instead of banning LINQ
+dotnet_diagnostic.PSH1102.severity = error # In tests, simplify LINQ type filters instead of banning LINQ

@@ -3,7 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Windows;
 using System.Windows.Controls;
@@ -29,6 +28,9 @@ public class ValidationBindingWpfTest
 
     /// <summary>The grid row index applied when testing attached-property resolution.</summary>
     private const int GridRow = 1;
+
+    /// <summary>The control name shared by two elements to exercise duplicate-name resolution.</summary>
+    private const string DuplicateControlName = "DuplicateName";
 
     /// <summary>Tests that ExtractPropertyPath correctly extracts simple property path.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
@@ -118,7 +120,7 @@ public class ValidationBindingWpfTest
         var result = ValidationBindingWpf<TestView, TestViewModel, Control, string>.EnumerateDependencyProperties(textBox).ToList();
 
         await Assert.That(result).IsNotEmpty();
-        await Assert.That(result.Exists(dp => dp.Name == "Text")).IsTrue();
+        await Assert.That(result.Exists(static dp => dp.Name == "Text")).IsTrue();
     }
 
     /// <summary>Tests that EnumerateAttachedProperties returns empty when element is null.</summary>
@@ -289,12 +291,12 @@ public class ValidationBindingWpfTest
     public async Task FindControlByName_ReturnsFirstMatchWhenMultipleExist()
     {
         var panel = new StackPanel();
-        var textBox1 = new TextBox { Name = "DuplicateName" };
-        var textBox2 = new TextBox { Name = "DuplicateName" };
+        var textBox1 = new TextBox { Name = DuplicateControlName };
+        var textBox2 = new TextBox { Name = DuplicateControlName };
         _ = panel.Children.Add(textBox1);
         _ = panel.Children.Add(textBox2);
 
-        var result = ValidationBindingWpf<TestView, TestViewModel, Control, string>.FindControlByName(panel, "DuplicateName");
+        var result = ValidationBindingWpf<TestView, TestViewModel, Control, string>.FindControlByName(panel, DuplicateControlName);
 
         await Assert.That(result).IsNotNull();
         await Assert.That(result).IsSameReferenceAs(textBox1);
@@ -570,8 +572,8 @@ public class ValidationBindingWpfTest
         var viewModel = new TestViewModel { TestProperty = InitialValue };
 
         // Realize the visual tree so FindControlByName can locate the named control via the VisualTreeHelper.
-        view.Measure(new Size(VisualTreeSize, VisualTreeSize));
-        view.Arrange(new Rect(0, 0, VisualTreeSize, VisualTreeSize));
+        view.Measure(new(VisualTreeSize, VisualTreeSize));
+        view.Arrange(new(0, 0, VisualTreeSize, VisualTreeSize));
         view.UpdateLayout();
 
         using var binding = new ValidationBindingWpf<TestRealizedView, TestViewModel, object, string>(
@@ -596,8 +598,8 @@ public class ValidationBindingWpfTest
         var view = new TestRealizedView();
         var viewModel = new TestViewModel { TestProperty = InitialValue };
 
-        view.Measure(new Size(VisualTreeSize, VisualTreeSize));
-        view.Arrange(new Rect(0, 0, VisualTreeSize, VisualTreeSize));
+        view.Measure(new(VisualTreeSize, VisualTreeSize));
+        view.Arrange(new(0, 0, VisualTreeSize, VisualTreeSize));
         view.UpdateLayout();
 
         using var binding = new ValidationBindingWpf<TestRealizedView, TestViewModel, object, string>(
@@ -623,8 +625,8 @@ public class ValidationBindingWpfTest
         var view = new TestRealizedView();
         var viewModel = new TestViewModel { TestProperty = InitialValue };
 
-        view.Measure(new Size(VisualTreeSize, VisualTreeSize));
-        view.Arrange(new Rect(0, 0, VisualTreeSize, VisualTreeSize));
+        view.Measure(new(VisualTreeSize, VisualTreeSize));
+        view.Arrange(new(0, 0, VisualTreeSize, VisualTreeSize));
         view.UpdateLayout();
 
         using var binding = new ValidationBindingWpf<TestRealizedView, TestViewModel, object, string>(
@@ -655,8 +657,8 @@ public class ValidationBindingWpfTest
         var view = new TestRealizedView();
         var viewModel = new TestViewModel { TestProperty = InitialValue };
 
-        view.Measure(new Size(VisualTreeSize, VisualTreeSize));
-        view.Arrange(new Rect(0, 0, VisualTreeSize, VisualTreeSize));
+        view.Measure(new(VisualTreeSize, VisualTreeSize));
+        view.Arrange(new(0, 0, VisualTreeSize, VisualTreeSize));
         view.UpdateLayout();
 
         var binding = new ValidationBindingWpf<TestRealizedView, TestViewModel, object, string>(
@@ -687,8 +689,8 @@ public class ValidationBindingWpfTest
         var view = new TestViewWithPlainControl();
         var viewModel = new TestViewModel { TestProperty = InitialValue };
 
-        view.Measure(new Size(VisualTreeSize, VisualTreeSize));
-        view.Arrange(new Rect(0, 0, VisualTreeSize, VisualTreeSize));
+        view.Measure(new(VisualTreeSize, VisualTreeSize));
+        view.Arrange(new(0, 0, VisualTreeSize, VisualTreeSize));
         view.UpdateLayout();
 
         await Assert.That(() => new ValidationBindingWpf<TestViewWithPlainControl, TestViewModel, object, string>(
@@ -723,7 +725,7 @@ public class ValidationBindingWpfTest
 
         var result = ValidationBindingWpf<TestView, TestViewModel, Control, string>.EnumerateAttachedProperties(textBox).ToList();
 
-        await Assert.That(result.Exists(dp => dp == Grid.RowProperty)).IsTrue();
+        await Assert.That(result.Exists(static dp => dp == Grid.RowProperty)).IsTrue();
     }
 
     /// <summary>A mock view used by the WPF validation binding tests.</summary>
@@ -743,7 +745,6 @@ public class ValidationBindingWpfTest
         public TextBox TestControl { get; } = new();
 
         /// <summary>Gets a control that always throws when accessed, used to test missing-control handling.</summary>
-        [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Instance property is required for expression tree usage")]
         public TextBox NonExistentControl => throw new InvalidOperationException("This property should not be accessed");
     }
 
@@ -775,7 +776,7 @@ public class ValidationBindingWpfTest
     private sealed class TestRealizedView : UserControl, IViewFor<TestViewModel>
     {
         /// <summary>Identifies the <see cref="ViewModel"/> dependency property so it can be observed reactively.</summary>
-        public static readonly DependencyProperty ViewModelProperty =
+        private static readonly DependencyProperty ViewModelProperty =
             DependencyProperty.Register(nameof(ViewModel), typeof(TestViewModel), typeof(TestRealizedView), new(null));
 
         /// <summary>Initializes a new instance of the <see cref="TestRealizedView"/> class.</summary>

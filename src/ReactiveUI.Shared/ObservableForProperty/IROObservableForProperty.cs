@@ -23,10 +23,6 @@ namespace ReactiveUI;
 /// repeats the required annotations on its public members to satisfy the interface contract.
 /// </para>
 /// </remarks>
-[SuppressMessage(
-    "Minor Code Smell",
-    "S101:Types should be named in PascalCase",
-    Justification = "Established public API; renaming is breaking.")]
 public sealed class IROObservableForProperty : ICreatesObservableForProperty
 {
     /// <inheritdoc />

@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
 using Microsoft.Xaml.Behaviors;
@@ -63,7 +64,7 @@ public class ObservableTriggerTests
         trigger.Observable = subject.AsObservable();
 
         // Emit a value
-        subject.OnNext(new object());
+        subject.OnNext(new());
 
         await Task.Delay(InvokeSettleDelayMs);
 
@@ -151,8 +152,8 @@ public class ObservableTriggerTests
         var triggers = Interaction.GetTriggers(button);
         triggers.Add(trigger);
 
-        var disposed1 = false;
-        var observable1 = Signal.Create<object>(observer => Scope.Create(() => disposed1 = true));
+        var disposed1 = new StrongBox<bool>();
+        var observable1 = Signal.Create<object>(observer => Scope.Create(disposed1, static box => box.Value = true));
 
         var observable2 = Signal.Silent<object>();
 
@@ -164,7 +165,7 @@ public class ObservableTriggerTests
         trigger.Observable = observable2;
         await Task.Delay(DisposeSettleDelayMs);
 
-        await Assert.That(disposed1).IsTrue();
+        await Assert.That(disposed1.Value).IsTrue();
     }
 
     /// <summary>Tests that AutoResubscribeOnError resubscribes after an error.</summary>
@@ -258,9 +259,9 @@ public class ObservableTriggerTests
         trigger.Observable = subject.AsObservable();
 
         // Emit multiple values
-        subject.OnNext(new object());
-        subject.OnNext(new object());
-        subject.OnNext(new object());
+        subject.OnNext(new());
+        subject.OnNext(new());
+        subject.OnNext(new());
 
         await Task.Delay(MultiEmitSettleDelayMs);
 
@@ -274,9 +275,6 @@ public class ObservableTriggerTests
         public Action<object>? OnInvoke { get; set; }
 
         /// <inheritdoc/>
-        protected override void Invoke(object parameter)
-        {
-            OnInvoke?.Invoke(parameter);
-        }
+        protected override void Invoke(object parameter) => OnInvoke?.Invoke(parameter);
     }
 }

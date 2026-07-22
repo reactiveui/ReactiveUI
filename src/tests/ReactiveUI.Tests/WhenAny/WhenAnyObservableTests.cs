@@ -3,8 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Diagnostics.CodeAnalysis;
-
 namespace ReactiveUI.Tests.WhenAny;
 
 /// <summary>
@@ -43,7 +41,7 @@ public class WhenAnyObservableTests
         var fixture = new TestWhenAnyObsViewModel();
 
         var list = new List<string?>();
-        _ = fixture.WhenAnyObservable(static x => x.Command3, static x => x.Command1, static (s, i) => s + " : " + i).ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
+        _ = fixture.WhenAnyObservable(static x => x.Command3, static x => x.Command1, static (s, i) => $"{s} : {i}").ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
         await Assert.That(list).IsEmpty();
 
         await fixture.Command1!.Execute(1);
@@ -129,6 +127,14 @@ public class WhenAnyObservableTests
     /// <param name="fixture">The view model whose observable properties are null.</param>
     private static void SubscribeToNullHighArityMergeOverloads(TestWhenAnyObsViewModel fixture)
     {
+        SubscribeToNullMergeOverloadsArity7Through9(fixture);
+        SubscribeToNullMergeOverloadsArity10Through12(fixture);
+    }
+
+    /// <summary>Subscribes to the arity 7-9 merge overloads of WhenAnyObservable against a null observable.</summary>
+    /// <param name="fixture">The view model whose observable properties are null.</param>
+    private static void SubscribeToNullMergeOverloadsArity7Through9(TestWhenAnyObsViewModel fixture)
+    {
         // these are the higher-arity overloads of WhenAnyObservable that perform a Merge
         _ = fixture.WhenAnyObservable(
             static x => x.Command1,
@@ -157,6 +163,12 @@ public class WhenAnyObservableTests
             static x => x.Command1,
             static x => x.Command1,
             static x => x.Command1).Subscribe();
+    }
+
+    /// <summary>Subscribes to the arity 10-12 merge overloads of WhenAnyObservable against a null observable.</summary>
+    /// <param name="fixture">The view model whose observable properties are null.</param>
+    private static void SubscribeToNullMergeOverloadsArity10Through12(TestWhenAnyObsViewModel fixture)
+    {
         _ = fixture.WhenAnyObservable(
             static x => x.Command1,
             static x => x.Command1,
@@ -197,10 +209,6 @@ public class WhenAnyObservableTests
 
     /// <summary>Subscribes to the lower-arity combine-latest overloads of WhenAnyObservable against a null observable.</summary>
     /// <param name="fixture">The view model whose observable properties are null.</param>
-    [SuppressMessage(
-        "Major Code Smell",
-        "S107:Methods should not have too many parameters",
-        Justification = "Selector arity mirrors the variadic production WhenAny API.")]
     private static void SubscribeToNullLowArityCombineLatestOverloads(TestWhenAnyObsViewModel fixture)
     {
         // these are the lower-arity overloads of WhenAnyObservable that perform a CombineLatest
@@ -244,11 +252,15 @@ public class WhenAnyObservableTests
 
     /// <summary>Subscribes to the higher-arity combine-latest overloads of WhenAnyObservable against a null observable.</summary>
     /// <param name="fixture">The view model whose observable properties are null.</param>
-    [SuppressMessage(
-        "Major Code Smell",
-        "S107:Methods should not have too many parameters",
-        Justification = "Selector arity mirrors the variadic production WhenAny API.")]
     private static void SubscribeToNullHighArityCombineLatestOverloads(TestWhenAnyObsViewModel fixture)
+    {
+        SubscribeToNullCombineLatestOverloadsArity8Through10(fixture);
+        SubscribeToNullCombineLatestOverloadsArity11Through12(fixture);
+    }
+
+    /// <summary>Subscribes to the arity 8-10 combine-latest overloads of WhenAnyObservable against a null observable.</summary>
+    /// <param name="fixture">The view model whose observable properties are null.</param>
+    private static void SubscribeToNullCombineLatestOverloadsArity8Through10(TestWhenAnyObsViewModel fixture)
     {
         // these are the higher-arity overloads of WhenAnyObservable that perform a CombineLatest
         _ = fixture.WhenAnyObservable(
@@ -284,6 +296,12 @@ public class WhenAnyObservableTests
             static x => x.Command1,
             static x => x.Command1,
             static (_, _, _, _, _, _, _, _, _, _) => RxVoid.Default).Subscribe();
+    }
+
+    /// <summary>Subscribes to the arity 11-12 combine-latest overloads of WhenAnyObservable against a null observable.</summary>
+    /// <param name="fixture">The view model whose observable properties are null.</param>
+    private static void SubscribeToNullCombineLatestOverloadsArity11Through12(TestWhenAnyObsViewModel fixture)
+    {
         _ = fixture.WhenAnyObservable(
             static x => x.Command1,
             static x => x.Command1,

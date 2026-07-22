@@ -74,18 +74,18 @@ public static class RxState
             return;
         }
 
-        _defaultExceptionHandler = new DelegateObserver<Exception>(ex =>
+        _defaultExceptionHandler = new DelegateObserver<Exception>(static ex =>
         {
             if (Debugger.IsAttached)
             {
                 Debugger.Break();
             }
 
-            _ = RxSchedulers.MainThreadScheduler.Schedule(() => throw new UnhandledErrorException(
+            _ = RxSchedulers.MainThreadScheduler.Schedule(ex, static (_, capturedException) => throw new UnhandledErrorException(
                 "An object implementing IHandleObservableErrors (often a ReactiveCommand or ObservableAsPropertyHelper) has errored," +
                 " thereby breaking its observable pipeline. To prevent this, ensure the pipeline does not error, or Subscribe to the " +
                 "ThrownExceptions property of the object in question to handle the erroneous case.",
-                ex));
+                capturedException));
         });
     }
 }

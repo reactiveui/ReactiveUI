@@ -295,6 +295,6 @@ public class AutoPersistCollectionTest
     {
         /// <summary>Raises a <see cref="NotifyCollectionChangedAction.Reset" /> notification, exercising the AutoPersist reset path.</summary>
         public void RaiseReset() =>
-            OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+            OnCollectionChanged(new(NotifyCollectionChangedAction.Reset));
     }
 }

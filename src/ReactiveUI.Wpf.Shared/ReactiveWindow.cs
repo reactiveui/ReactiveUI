@@ -47,7 +47,7 @@ public class ReactiveWindow<TViewModel> :
     /// <summary>The view model dependency property.</summary>
     public static readonly DependencyProperty ViewModelProperty =
         DependencyProperty.Register(
-            "ViewModel",
+            nameof(ViewModel),
             typeof(TViewModel),
             typeof(ReactiveWindow<TViewModel>),
             new(null));

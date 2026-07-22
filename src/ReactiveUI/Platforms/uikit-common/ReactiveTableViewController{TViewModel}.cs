@@ -3,7 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Diagnostics.CodeAnalysis;
 using Foundation;
 
 using NSTableViewStyle = UIKit.UITableViewStyle;
@@ -18,8 +17,7 @@ namespace ReactiveUI;
 /// (i.e. you can call RaiseAndSetIfChanged).
 /// </summary>
 /// <typeparam name="TViewModel">The view model type.</typeparam>
-[SuppressMessage("Design", "CA1010: Implement generic IEnumerable", Justification = "UI Kit exposes IEnumerable")]
-public abstract class ReactiveTableViewController<TViewModel> : ReactiveTableViewController, IViewFor<TViewModel>
+public class ReactiveTableViewController<TViewModel> : ReactiveTableViewController, IViewFor<TViewModel>
     where TViewModel : class
 {
     /// <summary>Initializes a new instance of the <see cref="ReactiveTableViewController{TViewModel}"/> class.</summary>

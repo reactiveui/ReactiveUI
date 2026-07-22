@@ -31,6 +31,9 @@ public class DefaultPropertyBindingTests
     /// <summary>The expected affinity for a matching panel binding converter.</summary>
     private const int ExpectedAffinity = 10;
 
+    /// <summary>The message thrown when a property name cannot be resolved from an expression.</summary>
+    private const string PropertyNameNullMessage = "propertyName should not be null.";
+
     /// <summary>Tests Winforms creates observable for property works for textboxes.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
@@ -43,7 +46,7 @@ public class DefaultPropertyBindingTests
 
         Expression<Func<TextBox, string>> expression = static x => x.Text;
 
-        var propertyName = expression.Body.GetMemberInfo()?.Name ?? throw new InvalidOperationException("propertyName should not be null.");
+        var propertyName = expression.Body.GetMemberInfo()?.Name ?? throw new InvalidOperationException(PropertyNameNullMessage);
         var output = new List<IObservedChange<object, object?>>();
         var dispose = fixture.GetNotificationForProperty(input, expression.Body, propertyName)
             .Subscribe(output.Add);
@@ -74,7 +77,7 @@ public class DefaultPropertyBindingTests
         await Assert.That(fixture.GetAffinityForObject(typeof(ToolStripButton), "Checked")).IsNotEqualTo(0);
 
         Expression<Func<ToolStripButton, bool>> expression = static x => x.Checked;
-        var propertyName = expression.Body.GetMemberInfo()?.Name ?? throw new InvalidOperationException("propertyName should not be null.");
+        var propertyName = expression.Body.GetMemberInfo()?.Name ?? throw new InvalidOperationException(PropertyNameNullMessage);
         var output = new List<IObservedChange<object, object?>>();
         var dispose = fixture.GetNotificationForProperty(input, expression.Body, propertyName)
             .Subscribe(output.Add);
@@ -106,7 +109,7 @@ public class DefaultPropertyBindingTests
         await Assert.That(fixture.GetAffinityForObject(typeof(ThirdPartyControl), "Value")).IsNotEqualTo(0);
 
         Expression<Func<ThirdPartyControl, string?>> expression = static x => x.Value;
-        var propertyName = expression.Body.GetMemberInfo()?.Name ?? throw new InvalidOperationException("propertyName should not be null.");
+        var propertyName = expression.Body.GetMemberInfo()?.Name ?? throw new InvalidOperationException(PropertyNameNullMessage);
         var output = new List<IObservedChange<object, object?>>();
         var dispose = fixture.GetNotificationForProperty(input, expression.Body, propertyName)
             .Subscribe(output.Add);
@@ -143,7 +146,7 @@ public class DefaultPropertyBindingTests
 
         // Set up observable to wait for ViewModel property change before setting View property
         var viewModelPropertyUpdated = vm.WhenAnyValue(static x => x.SomeText)
-            .Where(x => x == "Bar2")
+            .Where(static x => x == "Bar2")
             .Timeout(TimeSpan.FromSeconds(TimeoutSeconds))
             .FirstAsync();
 

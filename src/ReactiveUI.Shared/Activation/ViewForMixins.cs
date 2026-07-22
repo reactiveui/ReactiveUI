@@ -4,7 +4,10 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Diagnostics.CodeAnalysis;
+#if NET8_0_OR_GREATER
 using System.Globalization;
+using System.Text;
+#endif
 using ReactiveUI.Primitives.Disposables;
 using Splat;
 
@@ -29,7 +32,13 @@ public static class ViewForMixins
 {
     /// <summary>Cache mapping view types to their resolved activation fetcher, to avoid repeated service locator lookups.</summary>
     private static readonly MemoizingMRUCache<Type, IActivationForViewFetcher?> _activationFetcherCache =
-        new((t, _) => ResolveActivationFetcher(t), RxCacheSize.SmallCacheLimit);
+        new(static (t, _) => ResolveActivationFetcher(t), RxCacheSize.SmallCacheLimit);
+
+#if NET8_0_OR_GREATER
+    /// <summary>Parsed format for the activation-detection failure message, cached to avoid re-parsing it on each throw.</summary>
+    private static readonly CompositeFormat _activationDetectionFailureFormat = CompositeFormat.Parse(
+        "Don't know how to detect when {0} is activated/deactivated, you may need to implement IActivationForViewFetcher");
+#endif
 
     /// <summary>Provides activation lifecycle extension members for <see cref="IActivatableView"/>.</summary>
     /// <param name="item">The view whose activation lifecycle will manage the disposables.</param>
@@ -70,6 +79,11 @@ public static class ViewForMixins
             ArgumentExceptionHelper.ThrowIfNull(item);
 
             var activationEvents = ResolveActivationEvents(item);
+            if (activationEvents is null)
+            {
+                // No activation fetcher in design mode: no-op rather than throwing (see #4358).
+                return EmptyDisposable.Instance;
+            }
 
             IDisposable viewModelDisposable = EmptyDisposable.Instance;
             if ((view ?? item) is IViewFor v)
@@ -183,6 +197,11 @@ public static class ViewForMixins
             ArgumentExceptionHelper.ThrowIfNull(viewModelChanged);
 
             var activationEvents = ResolveActivationEvents(item);
+            if (activationEvents is null)
+            {
+                // No activation fetcher in design mode: no-op rather than throwing (see #4358).
+                return EmptyDisposable.Instance;
+            }
 
             var viewModelDisposable = HandleViewModelActivation(viewModelChanged, activationEvents);
             var viewDisposable = HandleViewActivation(block, activationEvents);
@@ -352,16 +371,28 @@ public static class ViewForMixins
 
     /// <summary>Resolves the activation event stream for the view via its highest-affinity activation fetcher.</summary>
     /// <param name="item">The view to resolve activation events for.</param>
-    /// <returns>An observable that emits <see langword="true"/> on activation and <see langword="false"/> on deactivation.</returns>
-    /// <exception cref="ArgumentException">Thrown when no registered <see cref="IActivationForViewFetcher"/> can determine activation for the view type.</exception>
-    private static IObservable<bool> ResolveActivationEvents(IActivatableView item)
+    /// <returns>
+    /// An observable that emits <see langword="true"/> on activation and <see langword="false"/> on deactivation, or
+    /// <see langword="null"/> when the view is in design mode and has no activation fetcher, signalling a no-op (see #4358).
+    /// </returns>
+    /// <exception cref="ArgumentException">Thrown when no registered <see cref="IActivationForViewFetcher"/> can determine activation for the view type and the view is not in design mode.</exception>
+    private static IObservable<bool>? ResolveActivationEvents(IActivatableView item)
     {
         var activationFetcher = _activationFetcherCache.Get(item.GetType());
         if (activationFetcher is null)
         {
-            const string Msg =
-                "Don't know how to detect when {0} is activated/deactivated, you may need to implement IActivationForViewFetcher";
-            throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, Msg, item.GetType().FullName));
+            // In design mode there is no activation fetcher; drop the cache and signal a no-op rather than throwing (see #4358).
+            if (item.GetIsDesignMode())
+            {
+                _activationFetcherCache.InvalidateAll();
+                return null;
+            }
+
+#if NET8_0_OR_GREATER
+            throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, _activationDetectionFailureFormat, item.GetType().FullName));
+#else
+            throw new ArgumentException($"Don't know how to detect when {item.GetType().FullName} is activated/deactivated, you may need to implement IActivationForViewFetcher");
+#endif
         }
 
         return activationFetcher.GetActivationForView(item);

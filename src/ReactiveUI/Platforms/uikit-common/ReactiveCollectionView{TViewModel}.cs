@@ -3,7 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Diagnostics.CodeAnalysis;
 using CoreGraphics;
 using Foundation;
 using UIKit;
@@ -18,8 +17,7 @@ namespace ReactiveUI;
 /// (i.e. you can call RaiseAndSetIfChanged).
 /// </summary>
 /// <typeparam name="TViewModel">The view model type.</typeparam>
-[SuppressMessage("Design", "CA1010: Implement generic IEnumerable", Justification = "UI Kit exposes IEnumerable")]
-public abstract class ReactiveCollectionView<TViewModel> : ReactiveCollectionView, IViewFor<TViewModel>
+public class ReactiveCollectionView<TViewModel> : ReactiveCollectionView, IViewFor<TViewModel>
     where TViewModel : class
 {
     /// <summary>Initializes a new instance of the <see cref="ReactiveCollectionView{TViewModel}"/> class.</summary>

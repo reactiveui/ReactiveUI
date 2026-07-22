@@ -76,15 +76,7 @@ public static partial class ControlFetcherMixins
             "RS0026:Do not add multiple public overloads with optional parameters",
             Justification = "The optional parameter is [CallerMemberName], which cannot be expressed as a separate overload; it is a compile-time convenience, not a binary-versioning hazard.")]
         public View? GetControl([CallerMemberName] string? propertyName = null) =>
-            GetCachedControl(
-                propertyName,
-                activity,
-                static (root, name) =>
-                {
-                    var act = (Activity)root;
-                    var id = GetControlIdByName(act.GetType().Assembly, name);
-                    return act.FindViewById(id);
-                });
+            ResolveActivityControl(activity, propertyName);
 
         /// <summary>Wires view controls to properties on an <see cref="Activity"/> using the implicit resolve strategy.</summary>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="activity"/> is null.</exception>
@@ -120,14 +112,13 @@ public static partial class ControlFetcherMixins
                 try
                 {
                     var resourceName = member.GetResourceName();
-                    var resolved = activity.GetControl(resourceName);
+                    var resolved = ResolveActivityControl(activity, resourceName);
                     member.SetValue(activity, resolved);
                 }
                 catch (Exception ex)
                 {
                     throw new MissingFieldException(
-                        "Failed to wire up the Property " + member.Name +
-                        " to a View in your layout with a corresponding identifier.",
+                        $"Failed to wire up the Property {member.Name} to a View in your layout with a corresponding identifier.",
                         ex);
                 }
             }
@@ -182,14 +173,13 @@ public static partial class ControlFetcherMixins
                 try
                 {
                     var resourceName = member.GetResourceName();
-                    var resolved = inflatedView.GetControl(asm, resourceName);
+                    var resolved = ResolveViewControl(inflatedView, asm, resourceName);
                     member.SetValue(fragment, resolved);
                 }
                 catch (Exception ex)
                 {
                     throw new MissingFieldException(
-                        "Failed to wire up the Property " + member.Name +
-                        " to a View in your layout with a corresponding identifier.",
+                        $"Failed to wire up the Property {member.Name} to a View in your layout with a corresponding identifier.",
                         ex);
                 }
             }
@@ -237,7 +227,7 @@ public static partial class ControlFetcherMixins
                     var root = layoutHost.View;
                     var resourceName = member.GetResourceName();
 
-                    var resolved = root?.GetControl(hostType.Assembly, resourceName);
+                    var resolved = root is null ? null : ResolveViewControl(root, hostType.Assembly, resourceName);
 
                     member.SetValue(layoutHost, resolved);
                 }
@@ -282,16 +272,7 @@ public static partial class ControlFetcherMixins
             "RS0026:Do not add multiple public overloads with optional parameters",
             Justification = "The optional parameter is [CallerMemberName], which cannot be expressed as a separate overload; it is a compile-time convenience, not a binary-versioning hazard.")]
         public View? GetControl(Assembly assembly, [CallerMemberName] string? propertyName = null) =>
-            GetCachedControl(
-                propertyName,
-                view,
-                static (root, name, state) =>
-                {
-                    var v = (View)root;
-                    var id = GetControlIdByName(state, name);
-                    return v.FindViewById(id);
-                },
-                assembly);
+            ResolveViewControl(view, assembly, propertyName);
 
         /// <summary>Wires view controls to properties on an Android <see cref="View"/> using the implicit resolve strategy.</summary>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="view"/> is null.</exception>
@@ -328,14 +309,13 @@ public static partial class ControlFetcherMixins
                 try
                 {
                     var resourceName = member.GetResourceName();
-                    var currentView = view.GetControl(asm, resourceName);
+                    var currentView = ResolveViewControl(view, asm, resourceName);
                     member.SetValue(view, currentView);
                 }
                 catch (Exception ex)
                 {
                     throw new MissingFieldException(
-                        "Failed to wire up the Property " + member.Name +
-                        " to a View in your layout with a corresponding identifier.",
+                        $"Failed to wire up the Property {member.Name} to a View in your layout with a corresponding identifier.",
                         ex);
                 }
             }
@@ -358,10 +338,6 @@ public static partial class ControlFetcherMixins
         /// The collection is empty if no matching properties are found.</returns>
         [RequiresUnreferencedCode("Property discovery uses reflection and may require members removed by trimming.")]
         [RequiresDynamicCode("Property discovery uses reflection that may require dynamic code generation.")]
-        [SuppressMessage(
-            "Minor Code Smell",
-            "S4225:Extension methods should not extend object",
-            Justification = "Receiver is intentionally polymorphic across Android and AndroidX Fragment types.")]
         public PropertyInfo[] GetWireUpMembers(ResolveStrategy resolveStrategy)
         {
             var type = @this.GetType();
@@ -412,6 +388,44 @@ public static partial class ControlFetcherMixins
                 member.PropertyType.IsSubclassOf(typeof(View)) ||
                 member.GetCustomAttribute<WireUpResourceAttribute>(true) is not null,
         };
+
+    /// <summary>Resolves a control on an <see cref="Activity"/> by resource name, caching the result per activity.</summary>
+    /// <param name="activity">The activity that hosts the control.</param>
+    /// <param name="propertyName">The resource name to resolve.</param>
+    /// <returns>The resolved view, or <see langword="null"/> if none was found.</returns>
+    [RequiresUnreferencedCode(
+        "Android resource discovery uses reflection over generated resource types that may be trimmed.")]
+    [RequiresDynamicCode("Android resource discovery uses reflection that may require dynamic code generation.")]
+    private static View? ResolveActivityControl(Activity activity, string? propertyName) =>
+        GetCachedControl(
+            propertyName,
+            activity,
+            static (root, name) =>
+            {
+                var act = (Activity)root;
+                var id = GetControlIdByName(act.GetType().Assembly, name);
+                return act.FindViewById(id);
+            });
+
+    /// <summary>Resolves a child control beneath a <see cref="View"/> by resource name, caching the result per root view.</summary>
+    /// <param name="view">The root view to search beneath.</param>
+    /// <param name="assembly">The assembly containing the generated resource ids.</param>
+    /// <param name="propertyName">The resource name to resolve.</param>
+    /// <returns>The resolved child view, or <see langword="null"/> if none was found.</returns>
+    [RequiresUnreferencedCode(
+        "Android resource discovery uses reflection over generated resource types that may be trimmed.")]
+    [RequiresDynamicCode("Android resource discovery uses reflection that may require dynamic code generation.")]
+    private static View? ResolveViewControl(View view, Assembly assembly, string? propertyName) =>
+        GetCachedControl(
+            propertyName,
+            view,
+            static (root, name, state) =>
+            {
+                var v = (View)root;
+                var id = GetControlIdByName(state, name);
+                return v.FindViewById(id);
+            },
+            assembly);
 
     /// <summary>Gets a cached control for a root view and property name, fetching it if absent.</summary>
     /// <param name="propertyName">The cache key for this lookup, typically the property name.</param>
@@ -480,7 +494,7 @@ public static partial class ControlFetcherMixins
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(name);
 
-        var ids = ControlIds.GetOrAdd(assembly, static asm => BuildIdMap(asm));
+        var ids = ControlIds.GetOrAdd(assembly, BuildIdMap);
 
         if (ids.TryGetValue(name, out var id))
         {
@@ -579,14 +593,14 @@ public static partial class ControlFetcherMixins
     /// <summary>Builds a case-insensitive name-to-id map from the integer constant fields of the supplied type.</summary>
     /// <param name="idType">The nested <c>Id</c> type containing resource id constants.</param>
     /// <returns>A case-insensitive mapping of resource name to ID.</returns>
-    [SuppressMessage(
-        "Security Hotspot",
-        "S3011:Reflection should not be used to increase accessibility of classes, methods, or fields",
-        Justification = "Intentional reflection to wire up the view's own controls.")]
     [UnconditionalSuppressMessage(
         "Trimming",
         "IL2070:UnrecognizedReflectionPattern",
         Justification = "Reflects over the Android-preserved resource designer type; flow is already RequiresUnreferencedCode.")]
+    [SuppressMessage(
+        "Serialization",
+        "SES1406:Reflection must not reach non-public members to bypass their declared accessibility",
+        Justification = "The Android-generated resource designer type has no stable field accessibility, so both public and non-public resource-id fields must be read; it is linker-preserved.")]
     private static Dictionary<string, int> BuildIdMapFromFields(
         [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.NonPublicFields)] Type idType)
     {

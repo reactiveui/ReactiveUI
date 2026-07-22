@@ -3,15 +3,13 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using Bunit;
-
 namespace ReactiveUI.Blazor.Tests;
 
 /// <summary>
 /// Tests for the <see cref="ReactiveComponentBase{T}"/> class.
 /// These tests verify proper rendering, property change handling, and activation logic within a Blazor environment.
 /// </summary>
-public class ReactiveComponentBaseTests : BunitContext
+public class ReactiveComponentBaseTests : BlazorTestContext
 {
     /// <summary>The expected number of renders after the initial render of the component.</summary>
     private const int ExpectedRenderCount = 2;
@@ -28,7 +26,7 @@ public class ReactiveComponentBaseTests : BunitContext
     public async Task ViewModel_Change_Triggers_StateHasChanged()
     {
         var viewModel = new TestViewModel();
-        var cut = Render<TestComponent>(parameters => parameters.Add(p => p.ViewModel, viewModel));
+        var cut = await RenderAsync<TestComponent>(parameters => parameters.Add(p => p.ViewModel, viewModel));
 
         // Initial render should have occurred once.
         await Assert.That(cut.Instance.RenderCount).IsEqualTo(ExpectedRenderCount);
@@ -51,12 +49,12 @@ public class ReactiveComponentBaseTests : BunitContext
     public async Task ViewModel_Instance_Change_Triggers_StateHasChanged()
     {
         var viewModel1 = new TestViewModel();
-        var cut = Render<TestComponent>(parameters => parameters.Add(p => p.ViewModel, viewModel1));
+        var cut = await RenderAsync<TestComponent>(parameters => parameters.Add(p => p.ViewModel, viewModel1));
 
         await Assert.That(cut.Instance.RenderCount).IsEqualTo(ExpectedRenderCount);
 
         var viewModel2 = new TestViewModel();
-        cut.Render(parameters => parameters.Add(p => p.ViewModel, viewModel2));
+        await cut.RenderAsync(parameters => parameters.Add(p => p.ViewModel, viewModel2));
 
         // Wait for the asynchronous update triggered by the property setter.
         await Task.Delay(RenderDelayMilliseconds);
@@ -72,7 +70,7 @@ public class ReactiveComponentBaseTests : BunitContext
     public async Task Activation_Works()
     {
         var viewModel = new TestActivatableViewModel();
-        var cut = Render<TestActivatableComponent>(parameters => parameters.Add(p => p.ViewModel, viewModel));
+        var cut = await RenderAsync<TestActivatableComponent>(parameters => parameters.Add(p => p.ViewModel, viewModel));
 
         // The ViewModel should be active immediately after the component is rendered.
         await Assert.That(viewModel.IsActive).IsTrue();
@@ -94,7 +92,7 @@ public class ReactiveComponentBaseTests : BunitContext
     }
 
     /// <summary>A test ViewModel implementing IActivatableViewModel to verify activation lifecycle.</summary>
-    public class TestActivatableViewModel : ReactiveObject, IActivatableViewModel
+    public sealed class TestActivatableViewModel : ReactiveObject, IActivatableViewModel, IDisposable
     {
         /// <summary>Initializes a new instance of the <see cref="TestActivatableViewModel"/> class. Sets up the WhenActivated block to toggle the IsActive flag.</summary>
         public TestActivatableViewModel() =>
@@ -109,6 +107,9 @@ public class ReactiveComponentBaseTests : BunitContext
 
         /// <summary>Gets a value indicating whether the ViewModel is currently active.</summary>
         public bool IsActive { get; private set; }
+
+        /// <inheritdoc/>
+        public void Dispose() => Activator.Dispose();
     }
 
     /// <summary>

@@ -113,8 +113,10 @@ public class BindingHookEvaluatorTests
     public async Task EvaluateBindingHooks_WithChainedProperties_EvaluatesCorrectly()
     {
         // Arrange
+        const int AnotherPropertyValue = 42;
+
         var evaluator = new BindingHookEvaluator();
-        var viewModel = new TestViewModel { Model = new() { AnotherProperty = 42 } };
+        var viewModel = new TestViewModel { Model = new() { AnotherProperty = AnotherPropertyValue } };
         var view = new TestView { ViewModel = viewModel };
 
         Expression<Func<TestViewModel, int>> viewModelExpression = vm => vm.Model!.AnotherProperty;
@@ -226,7 +228,7 @@ public class BindingHookEvaluatorTests
             ArgumentNullException.ThrowIfNull(context);
 
             _ = builder
-                .WithRegistration(r => r.RegisterConstant<IPropertyBindingHook>(new RejectingHook()))
+                .WithRegistration(static r => r.RegisterConstant<IPropertyBindingHook>(new RejectingHook()))
                 .WithCoreServices();
         }
     }

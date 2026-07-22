@@ -53,7 +53,7 @@ public class ScheduledSubjectTest
         var subject = new ScheduledSubject<int>(scheduler);
         var completed = false;
 
-        _ = subject.Subscribe(_ => { }, () => completed = true);
+        _ = subject.Subscribe(static _ => { }, () => completed = true);
         subject.OnCompleted();
         scheduler.Start();
 
@@ -70,7 +70,7 @@ public class ScheduledSubjectTest
         var subject = new ScheduledSubject<int>(scheduler);
         Exception? receivedError = null;
 
-        _ = subject.Subscribe(_ => { }, ex => receivedError = ex);
+        _ = subject.Subscribe(static _ => { }, ex => receivedError = ex);
         var error = new InvalidOperationException("Test error");
         subject.OnError(error);
         scheduler.Start();
@@ -109,7 +109,7 @@ public class ScheduledSubjectTest
         var scheduler = TestContext.Current.GetVirtualTimeScheduler();
         var subject = new ScheduledSubject<int>(scheduler);
 
-        var subscription = subject.Subscribe(_ => { });
+        var subscription = subject.Subscribe(static _ => { });
 
         await Assert.That(subscription).IsNotNull();
         subscription.Dispose();

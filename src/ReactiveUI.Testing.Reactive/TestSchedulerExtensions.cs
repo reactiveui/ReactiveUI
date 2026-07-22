@@ -47,7 +47,10 @@ public static class TestSchedulerExtensions
         /// with.</param>
         /// <returns>A recorded notification that can be provided to
         /// TestScheduler.CreateHotObservable.</returns>
-        [SuppressMessage("Major Code Smell", "S4018:Generic methods should provide type parameters", Justification = "T is the notification element type and cannot appear in the parameter list.")]
+        [SuppressMessage(
+            "Design",
+            "SST2307:A generic method's type parameter appears in no parameter, so no caller can infer it",
+            Justification = "T is the notification element type; it appears only in the Recorded<Notification<T>> return and cannot be inferred.")]
         public static Recorded<Notification<T>> OnErrorAt<T>(
             double milliseconds,
             Exception ex) =>
@@ -64,7 +67,10 @@ public static class TestSchedulerExtensions
         /// on the recorded notification.</param>
         /// <returns>A recorded notification that can be provided to
         /// TestScheduler.CreateHotObservable.</returns>
-        [SuppressMessage("Major Code Smell", "S4018:Generic methods should provide type parameters", Justification = "T is the notification element type and cannot appear in the parameter list.")]
+        [SuppressMessage(
+            "Design",
+            "SST2307:A generic method's type parameter appears in no parameter, so no caller can infer it",
+            Justification = "T is the notification element type; it appears only in the Recorded<Notification<T>> return and cannot be inferred.")]
         public static Recorded<Notification<T>> OnCompletedAt<T>(double milliseconds) =>
             new(
                 TestScheduler.FromTimeSpan(TimeSpan.FromMilliseconds(milliseconds)),

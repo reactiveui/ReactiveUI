@@ -3,7 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using ReactiveUI.Tests.ReactiveObjects.Mocks;
 using ReactiveUI.Tests.Utilities.Schedulers;
@@ -119,7 +118,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
     {
         const TestFixture? fixture = null;
 
-        await Assert.That(() => fixture.ObservableForProperty<TestFixture, string?>(nameof(TestFixture.IsOnlyOneWord)))
+        await Assert.That(static () => fixture.ObservableForProperty<TestFixture, string?>(nameof(TestFixture.IsOnlyOneWord)))
             .Throws<ArgumentNullException>();
     }
 
@@ -163,7 +162,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
 
         var results = new List<int>();
 
-        _ = fixture.ObservableForProperty(x => x.IsOnlyOneWord, value => value?.Length ?? 0).ObserveOn(Sequencer.Immediate).Subscribe(results.Add);
+        _ = fixture.ObservableForProperty(x => x.IsOnlyOneWord, static value => value?.Length ?? 0).ObserveOn(Sequencer.Immediate).Subscribe(results.Add);
 
         fixture.IsOnlyOneWord = "Hello";
 
@@ -192,7 +191,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
 
         var results = new List<int>();
 
-        _ = fixture.ObservableForProperty(x => x.IsOnlyOneWord, value => value?.Length ?? 0, true).ObserveOn(Sequencer.Immediate).Subscribe(results.Add);
+        _ = fixture.ObservableForProperty(x => x.IsOnlyOneWord, static value => value?.Length ?? 0, true).ObserveOn(Sequencer.Immediate).Subscribe(results.Add);
 
         fixture.IsOnlyOneWord = ChangedText;
 
@@ -265,9 +264,9 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
         {
             await Assert.That(changes.All(x => x.Sender == fixture)).IsTrue();
 
-            await Assert.That(changes.All(x => x.GetPropertyName() == IsOnlyOneWordName)).IsTrue();
+            await Assert.That(changes.All(static x => x.GetPropertyName() == IsOnlyOneWordName)).IsTrue();
 
-            await Assert.That(changes.Select(x => x.Value!)).IsEquivalentTo([FooText, BarText, BazText]);
+            await Assert.That(changes.Select(static x => x.Value!)).IsEquivalentTo([FooText, BarText, BazText]);
         }
     }
 
@@ -297,9 +296,9 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
         {
             await Assert.That(changes.All(x => x.Sender == fixture)).IsTrue();
 
-            await Assert.That(changes.All(x => x.GetPropertyName() == IsOnlyOneWordName)).IsTrue();
+            await Assert.That(changes.All(static x => x.GetPropertyName() == IsOnlyOneWordName)).IsTrue();
 
-            await Assert.That(changes.Select(x => x.Value!)).IsEquivalentTo([PreText, FooText]);
+            await Assert.That(changes.Select(static x => x.Value!)).IsEquivalentTo([PreText, FooText]);
         }
     }
 
@@ -328,9 +327,9 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
         {
             await Assert.That(changes.All(x => x.Sender == fixture)).IsTrue();
 
-            await Assert.That(changes.All(x => x.GetPropertyName() == IsOnlyOneWordName)).IsTrue();
+            await Assert.That(changes.All(static x => x.GetPropertyName() == IsOnlyOneWordName)).IsTrue();
 
-            await Assert.That(changes.Select(x => x.Value!)).IsEquivalentTo([PreText, FooText]);
+            await Assert.That(changes.Select(static x => x.Value!)).IsEquivalentTo([PreText, FooText]);
         }
     }
 
@@ -368,9 +367,9 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
         {
             await Assert.That(changes.All(x => x.Sender == fixture)).IsTrue();
 
-            await Assert.That(changes.All(x => x.GetPropertyName() == IsOnlyOneWordName)).IsTrue();
+            await Assert.That(changes.All(static x => x.GetPropertyName() == IsOnlyOneWordName)).IsTrue();
 
-            await Assert.That(changes.Select(x => x.Value!)).IsEquivalentTo([FooText, BarText, FooText]);
+            await Assert.That(changes.Select(static x => x.Value!)).IsEquivalentTo([FooText, BarText, FooText]);
         }
     }
 
@@ -420,9 +419,9 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
         {
             await Assert.That(changes.All(x => x.Sender == fixture)).IsTrue();
 
-            await Assert.That(changes.All(x => x.GetPropertyName() == ChildIsOnlyOneWordName)).IsTrue();
+            await Assert.That(changes.All(static x => x.GetPropertyName() == ChildIsOnlyOneWordName)).IsTrue();
 
-            await Assert.That(changes.Select(x => x.Value!)).IsEquivalentTo([FooText, BarText, null, BazText]);
+            await Assert.That(changes.Select(static x => x.Value!)).IsEquivalentTo([FooText, BarText, null, BazText]);
         }
     }
 
@@ -464,9 +463,9 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
         {
             await Assert.That(changes.All(x => x.Sender == fixture)).IsTrue();
 
-            await Assert.That(changes.All(x => x.GetPropertyName() == ChildIsOnlyOneWordName)).IsTrue();
+            await Assert.That(changes.All(static x => x.GetPropertyName() == ChildIsOnlyOneWordName)).IsTrue();
 
-            await Assert.That(changes.Select(x => x.Value!)).IsEquivalentTo([FooText, BarText, null]);
+            await Assert.That(changes.Select(static x => x.Value!)).IsEquivalentTo([FooText, BarText, null]);
         }
     }
 
@@ -530,9 +529,9 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
         {
             await Assert.That(changes.All(x => x.Sender == fixture)).IsTrue();
 
-            await Assert.That(changes.All(x => x.GetPropertyName() == ChildIsOnlyOneWordName)).IsTrue();
+            await Assert.That(changes.All(static x => x.GetPropertyName() == ChildIsOnlyOneWordName)).IsTrue();
 
-            await Assert.That(changes.Select(x => x.Value!)).IsEquivalentTo([FooText, BarText, BazText]);
+            await Assert.That(changes.Select(static x => x.Value!)).IsEquivalentTo([FooText, BarText, BazText]);
         }
     }
 
@@ -540,10 +539,6 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     [TestExecutor<WithSchedulerExecutor>]
-    [SuppressMessage(
-        "Major Code Smell",
-        "S4144:Methods should not have identical implementations",
-        Justification = "Intentional duplicate test scenario.")]
     public async Task OfpSimplePropertyTest()
     {
         var fixture = new TestFixture();
@@ -574,9 +569,9 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
         {
             await Assert.That(changes.All(x => x.Sender == fixture)).IsTrue();
 
-            await Assert.That(changes.All(x => x.GetPropertyName() == IsOnlyOneWordName)).IsTrue();
+            await Assert.That(changes.All(static x => x.GetPropertyName() == IsOnlyOneWordName)).IsTrue();
 
-            await Assert.That(changes.Select(x => x.Value!)).IsEquivalentTo([FooText, BarText, BazText]);
+            await Assert.That(changes.Select(static x => x.Value!)).IsEquivalentTo([FooText, BarText, BazText]);
         }
     }
 

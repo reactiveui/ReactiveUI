@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Runtime.CompilerServices;
 using ReactiveUI.Builder;
 
 namespace ReactiveUI.Maui.Tests.Builder;
@@ -22,10 +23,10 @@ public class MauiDispatcherSequencerTest
         _ = builder.WithCoreServices();
         _ = builder.BuildApp();
 
-        var executed = false;
-        _ = RxSchedulers.MainThreadScheduler.Schedule(() => executed = true);
+        var executed = new StrongBox<bool>();
+        _ = RxSchedulers.MainThreadScheduler.Schedule(executed, static state => state.Value = true);
 
-        await Assert.That(executed).IsTrue();
+        await Assert.That(executed.Value).IsTrue();
     }
 
     /// <summary>Tests that dispatcher sequencer with IsDispatchRequired false executes immediately.</summary>
@@ -40,10 +41,10 @@ public class MauiDispatcherSequencerTest
         _ = builder.WithCoreServices();
         _ = builder.BuildApp();
 
-        var executed = false;
-        _ = RxSchedulers.MainThreadScheduler.Schedule(() => executed = true);
+        var executed = new StrongBox<bool>();
+        _ = RxSchedulers.MainThreadScheduler.Schedule(executed, static state => state.Value = true);
 
-        await Assert.That(executed).IsTrue();
+        await Assert.That(executed.Value).IsTrue();
     }
 
     /// <summary>Tests that dispatcher sequencer with IsDispatchRequired true executes work.</summary>
@@ -58,10 +59,10 @@ public class MauiDispatcherSequencerTest
         _ = builder.WithCoreServices();
         _ = builder.BuildApp();
 
-        var executed = false;
-        _ = RxSchedulers.MainThreadScheduler.Schedule(() => executed = true);
+        var executed = new StrongBox<bool>();
+        _ = RxSchedulers.MainThreadScheduler.Schedule(executed, static state => state.Value = true);
 
-        await Assert.That(executed).IsTrue();
+        await Assert.That(executed.Value).IsTrue();
     }
 
     /// <summary>Test dispatcher for sequencer testing.</summary>

@@ -71,7 +71,7 @@ public class ReactivePropertyTest
     public async Task ErrorsChanged_EventIsRaised()
     {
         using var rp = new ReactiveProperty<string>(null, Sequencer.Immediate, false, false)
-            .AddValidationError(x => string.IsNullOrEmpty(x) ? ErrorLowerValue : null);
+            .AddValidationError(static x => string.IsNullOrEmpty(x) ? ErrorLowerValue : null);
 
         DataErrorsChangedEventArgs? eventArgs = null;
         rp.ErrorsChanged += (_, e) => eventArgs = e;
@@ -89,7 +89,7 @@ public class ReactivePropertyTest
     public async Task IgnoreInitErrorAndUpdateValue()
     {
         using var rp = new ReactiveProperty<string>(null, Sequencer.Immediate, false, false)
-            .AddValidationError(x => string.IsNullOrEmpty(x) ? ErrorLowerValue : null, true);
+            .AddValidationError(static x => string.IsNullOrEmpty(x) ? ErrorLowerValue : null, true);
 
         await Assert.That(rp.HasErrors).IsFalse();
         rp.Value = string.Empty;
@@ -102,7 +102,7 @@ public class ReactivePropertyTest
     public async Task IgnoreInitialErrorAndCheckValidation()
     {
         using var rp = new ReactiveProperty<string>(null, Sequencer.Immediate, false, false)
-            .AddValidationError(x => string.IsNullOrEmpty(x) ? ErrorLowerValue : null, true);
+            .AddValidationError(static x => string.IsNullOrEmpty(x) ? ErrorLowerValue : null, true);
 
         await Assert.That(rp.HasErrors).IsFalse();
         rp.CheckValidation();
@@ -178,7 +178,7 @@ public class ReactivePropertyTest
     public async Task ObserveErrors()
     {
         using var rp = new ReactiveProperty<string>(null, Sequencer.Immediate, false, false)
-            .AddValidationError(x => x is null ? ErrorValue : null);
+            .AddValidationError(static x => x is null ? ErrorValue : null);
 
         const int ExpectedEmissionCount = 2;
         var results = new List<IEnumerable?>();
@@ -196,7 +196,7 @@ public class ReactivePropertyTest
     public async Task ObserveHasError()
     {
         using var rp = new ReactiveProperty<string>(null, Sequencer.Immediate, false, false)
-            .AddValidationError(x => x is null ? ErrorValue : null);
+            .AddValidationError(static x => x is null ? ErrorValue : null);
 
         const int ExpectedEmissionCount = 2;
         var results = new List<bool>();
@@ -321,7 +321,7 @@ public class ReactivePropertyTest
     {
         var errors = new List<IEnumerable?>();
         using var rprop = new ReactiveProperty<string>(null, Sequencer.Immediate, false, false)
-            .AddValidationError(x => string.IsNullOrWhiteSpace(x) ? ErrorLowerValue : null);
+            .AddValidationError(static x => string.IsNullOrWhiteSpace(x) ? ErrorLowerValue : null);
 
         // old version behavior
         _ = rprop.ObserveErrorChanged.Skip(1).Subscribe(errors.Add);
@@ -344,7 +344,7 @@ public class ReactivePropertyTest
     public async Task ValidationIgnoreInitialErrorAndRefresh()
     {
         using var rp = new ReactiveProperty<string>(null, Sequencer.Immediate, false, false)
-            .AddValidationError(x => string.IsNullOrEmpty(x) ? ErrorLowerValue : null, true);
+            .AddValidationError(static x => string.IsNullOrEmpty(x) ? ErrorLowerValue : null, true);
 
         await Assert.That(rp.HasErrors).IsFalse();
         rp.Refresh();
@@ -359,7 +359,7 @@ public class ReactivePropertyTest
         var target = new ReactivePropertyVm();
         var errors = new List<IEnumerable?>();
         _ = target.IsRequiredProperty
-                    .ObserveErrorChanged.Where(x => x is not null).Subscribe(errors.Add);
+                    .ObserveErrorChanged.Where(static x => x is not null).Subscribe(errors.Add);
 
         await Assert.That(errors.Count).IsEqualTo(1);
         await Assert.That(errors[0]!.OfType<string>()).IsEquivalentTo([ExclaimErrorValue]);
@@ -411,7 +411,7 @@ public class ReactivePropertyTest
         var target = new ReactivePropertyVm();
         var errors = new List<IEnumerable?>();
         _ = target.TaskValidationTestProperty
-                    .ObserveErrorChanged.Where(x => x is not null).Subscribe(errors.Add);
+                    .ObserveErrorChanged.Where(static x => x is not null).Subscribe(errors.Add);
         await Assert.That(errors.Count).IsEqualTo(1);
         await Assert.That(errors[0]!.OfType<string>()).IsEquivalentTo([RequiredErrorValue]);
 
@@ -432,7 +432,7 @@ public class ReactivePropertyTest
     {
         const string ErrorMessage = "error occured!!";
         using var rp = new ReactiveProperty<string>(null, Sequencer.Immediate, false, false)
-            .AddValidationError(x => string.IsNullOrEmpty(x) ? null : ErrorMessage);
+            .AddValidationError(static x => string.IsNullOrEmpty(x) ? null : ErrorMessage);
 
         IEnumerable? error = null;
         _ = rp.ObserveErrorChanged.Subscribe(x => error = x);
@@ -453,7 +453,7 @@ public class ReactivePropertyTest
     [Test]
     public async Task ValidationWithAsyncSuccessCase()
     {
-        var tcs = new TaskCompletionSource<string?>();
+        var tcs = new TaskCompletionSource<string?>(TaskCreationOptions.RunContinuationsAsynchronously);
         using var rp = new ReactiveProperty<string>(null, Sequencer.Immediate, false, false)
             .AddValidationError(_ => tcs.Task);
 
@@ -486,11 +486,11 @@ public class ReactivePropertyTest
 #if REACTIVE_SHIM
             .AddValidationError(xs => ReactiveUI.Primitives.Reactive.LinqExtensions
                 .Calm(xs, TimeSpan.FromSeconds(1), scheduler)
-                .Select(x => string.IsNullOrEmpty(x) ? RequiredErrorValue : null));
+                .Select(static x => string.IsNullOrEmpty(x) ? RequiredErrorValue : null));
 #else
             .AddValidationError(xs => ReactiveUI.Primitives.LinqExtensions
                 .Calm(xs, TimeSpan.FromSeconds(1), scheduler)
-                .Select(x => string.IsNullOrEmpty(x) ? RequiredErrorValue : null));
+                .Select(static x => string.IsNullOrEmpty(x) ? RequiredErrorValue : null));
 #endif
 
         IEnumerable? error = null;

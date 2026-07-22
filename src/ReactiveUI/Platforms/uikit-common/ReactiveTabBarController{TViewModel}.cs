@@ -3,7 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Diagnostics.CodeAnalysis;
 using Foundation;
 
 #if REACTIVE_SHIM
@@ -13,8 +12,7 @@ namespace ReactiveUI;
 #endif
 /// <summary>This is a TabBar that is both an TabBar and has ReactiveObject powers (i.e. you can call RaiseAndSetIfChanged).</summary>
 /// <typeparam name="TViewModel">The view model type.</typeparam>
-[SuppressMessage("Design", "CA1010: Implement generic IEnumerable", Justification = "UI Kit exposes IEnumerable")]
-public abstract class ReactiveTabBarController<TViewModel> : ReactiveTabBarController, IViewFor<TViewModel>
+public class ReactiveTabBarController<TViewModel> : ReactiveTabBarController, IViewFor<TViewModel>
     where TViewModel : class
 {
     /// <summary>Initializes a new instance of the <see cref="ReactiveTabBarController{TViewModel}"/> class.</summary>

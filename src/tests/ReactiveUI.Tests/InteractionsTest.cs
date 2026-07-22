@@ -30,7 +30,7 @@ public class InteractionsTest
     {
         var interaction = new Interaction<RxVoid, RxVoid>(Sequencer.Immediate);
 
-        _ = interaction.RegisterHandler(context => _ = ((InteractionContext<RxVoid, RxVoid>)context).GetOutput());
+        _ = interaction.RegisterHandler(static context => _ = ((IOutputContext<RxVoid, RxVoid>)context).GetOutput());
 
         var ex = Assert.Throws<InvalidOperationException>(() => interaction.Handle(RxVoid.Default).Subscribe());
         await Assert.That(ex.Message).IsEqualTo("Output has not been set.");
@@ -43,7 +43,7 @@ public class InteractionsTest
     {
         var interaction = new Interaction<RxVoid, RxVoid>(Sequencer.Immediate);
 
-        _ = interaction.RegisterHandler(context =>
+        _ = interaction.RegisterHandler(static context =>
         {
             context.SetOutput(RxVoid.Default);
             context.SetOutput(RxVoid.Default);
@@ -75,7 +75,7 @@ public class InteractionsTest
         var scheduler = TestContext.Current!.GetScheduler();
         var interaction = new Interaction<RxVoid, string>(scheduler);
 
-        using (interaction.RegisterHandler(x => x.SetOutput("done")))
+        using (interaction.RegisterHandler(static x => x.SetOutput("done")))
         {
             var handled = false;
             _ = interaction
@@ -112,10 +112,13 @@ public class InteractionsTest
             var result = interaction
                 .Handle(RxVoid.Default).Collect();
 
+            const double PartialAdvanceSeconds = 0.5;
+            const double RemainingAdvanceSeconds = 0.6;
+
             await Assert.That(result).IsEmpty();
-            scheduler.AdvanceBy(TimeSpan.FromSeconds(0.5));
+            scheduler.AdvanceBy(TimeSpan.FromSeconds(PartialAdvanceSeconds));
             await Assert.That(result).IsEmpty();
-            scheduler.AdvanceBy(TimeSpan.FromSeconds(0.6));
+            scheduler.AdvanceBy(TimeSpan.FromSeconds(RemainingAdvanceSeconds));
             await Assert.That(result).Count().IsEqualTo(1);
             await Assert.That(result[0]).IsEqualTo(OutputB);
         }
@@ -130,10 +133,10 @@ public class InteractionsTest
     {
         var interaction = new Interaction<RxVoid, string>(Sequencer.Immediate);
 
-        _ = interaction.RegisterHandler(context =>
+        _ = interaction.RegisterHandler(static context =>
         {
             context.SetOutput(ResultOutput);
-            return Task.FromResult(true);
+            return Task.CompletedTask;
         });
 
         // The Task-based handler yields before running (see #4351), so it completes asynchronously; await the
@@ -257,8 +260,8 @@ public class InteractionsTest
             await Assert.That(ex.Input).IsEqualTo("foo");
         }
 
-        _ = interaction.RegisterHandler(_ => { });
-        _ = interaction.RegisterHandler(_ => { });
+        _ = interaction.RegisterHandler(static _ => { });
+        _ = interaction.RegisterHandler(static _ => { });
         ex = await Assert.That(() => interaction.Handle("bar").FirstAsync())
             .Throws<UnhandledInteractionException<string, RxVoid>>();
         using (Assert.Multiple())

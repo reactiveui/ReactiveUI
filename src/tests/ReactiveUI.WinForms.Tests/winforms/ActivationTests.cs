@@ -61,7 +61,7 @@ public class ActivationTests
     public async Task SmokeTestWindowsForm()
     {
         var target = new ActivationForViewFetcher();
-        using var form = new TestForm();
+        var form = new TestForm();
         var formActivator = target.GetActivationForView(form);
 
         var formActivateCount = 0;
@@ -108,7 +108,7 @@ public class ActivationTests
     {
         var target = new ActivationForViewFetcher();
         using var userControl = new TestControl();
-        using var parent = new TestForm();
+        var parent = new TestForm();
         var userControlActivator = target.GetActivationForView(userControl);
 
         var userControlActivateCount = 0;

@@ -10,6 +10,10 @@ namespace System.Diagnostics.CodeAnalysis;
 [ExcludeFromCodeCoverage]
 [DebuggerNonUserCode]
 [AttributeUsage(AttributeTargets.Parameter)]
+[SuppressMessage(
+    "Design",
+    "SST2324:Do not declare a member more accessible than its containing type",
+    Justification = "Mirrors the shape of the corresponding BCL type (System.Diagnostics.CodeAnalysis.NotNullWhenAttribute); the polyfill compiles only where the BCL lacks it.")]
 internal sealed class NotNullWhenAttribute :
     Attribute
 {

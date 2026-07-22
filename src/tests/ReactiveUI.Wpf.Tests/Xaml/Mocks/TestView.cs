@@ -18,10 +18,8 @@ public class TestView : ReactiveUserControl<TestViewModel>, IScreen
 
     /// <summary>Initializes a new instance of the <see cref="TestView"/> class.</summary>
     /// <param name="screen">The screen whose router should be reused, or <see langword="null"/> to resolve one.</param>
-    public TestView(IScreen? screen)
-    {
+    public TestView(IScreen? screen) =>
         Router = screen?.Router ?? AppLocator.Current.GetService<RoutingState>()!;
-    }
 
     /// <inheritdoc/>
     public RoutingState Router { get; }

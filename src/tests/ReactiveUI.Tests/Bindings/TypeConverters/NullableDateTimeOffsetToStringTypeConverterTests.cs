@@ -23,8 +23,10 @@ public class NullableDateTimeOffsetToStringTypeConverterTests
     [Test]
     public async Task TryConvert_DateTimeOffset_Succeeds()
     {
+        const int UtcOffsetHours = -5;
+
         var converter = new NullableDateTimeOffsetToStringTypeConverter();
-        DateTimeOffset? value = new DateTimeOffset(2_024, 1, 15, 10, 30, 45, TimeSpan.FromHours(-5));
+        DateTimeOffset? value = new DateTimeOffset(2_024, 1, 15, 10, 30, 45, TimeSpan.FromHours(UtcOffsetHours));
 
         var result = converter.TryConvert(value, null, out var output);
 

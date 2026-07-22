@@ -20,6 +20,14 @@ using Targets = System.AttributeTargets;
     "Design",
     "CA1019:Define accessors for attribute arguments",
     Justification = "Faithful BCL polyfill.")]
+[SuppressMessage(
+    "Design",
+    "SST2312:Types should be declared in a named namespace",
+    Justification = "Mirrors the shape of the corresponding BCL type (System.Diagnostics.CodeAnalysis.MemberNotNullAttribute); the polyfill compiles only where the BCL lacks it.")]
+[SuppressMessage(
+    "Design",
+    "SST2324:Do not declare a member more accessible than its containing type",
+    Justification = "Mirrors the shape of the corresponding BCL type (System.Diagnostics.CodeAnalysis.MemberNotNullAttribute); the polyfill compiles only where the BCL lacks it.")]
 internal sealed class MemberNotNullAttribute :
     Attribute
 {

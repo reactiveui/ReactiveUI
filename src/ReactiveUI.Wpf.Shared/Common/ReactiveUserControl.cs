@@ -98,7 +98,7 @@ public
     /// <summary>The view model dependency property.</summary>
     public static readonly DependencyProperty ViewModelProperty =
         DependencyProperty.Register(
-            "ViewModel",
+            nameof(ViewModel),
             typeof(TViewModel),
             typeof(ReactiveUserControl<TViewModel>),
             new(null));

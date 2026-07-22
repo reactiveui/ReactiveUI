@@ -90,6 +90,18 @@ public static class DynamicDataAutoPersistMixins
                     ForEachItem(change.Range, onAdd);
                     break;
                 }
+
+            case ListChangeReason.Moved:
+                {
+                    // A move only reorders an existing item; nothing is added or removed.
+                    break;
+                }
+
+            default:
+                {
+                    // Any other change reason does not add or remove tracked objects.
+                    break;
+                }
         }
     }
 

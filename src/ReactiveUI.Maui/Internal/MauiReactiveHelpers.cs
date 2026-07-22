@@ -33,14 +33,14 @@ internal static class MauiReactiveHelpers
     /// This method uses Observable.Create for better performance compared to Observable.FromEvent.
     /// It filters PropertyChanged events to only emit when the specified property changes.
     /// </remarks>
-    public static IObservable<RxVoid> CreatePropertyChangedPulse(INotifyPropertyChanged source, string propertyName)
+    internal static IObservable<RxVoid> CreatePropertyChangedPulse(INotifyPropertyChanged source, string propertyName)
     {
         ArgumentNullException.ThrowIfNull(source);
         ArgumentNullException.ThrowIfNull(propertyName);
 
         return new FromEventObservable<RxVoid>(onNext =>
         {
-            void Handler(object? sender, PropertyChangedEventArgs e)
+            void Handler(object? _, PropertyChangedEventArgs e)
             {
                 if (!string.IsNullOrEmpty(e.PropertyName) &&
                     !string.Equals(e.PropertyName, propertyName, StringComparison.Ordinal))
@@ -70,7 +70,7 @@ internal static class MauiReactiveHelpers
     /// The observable immediately emits the current value upon subscription, then emits whenever the property changes.
     /// This overload works with any INotifyPropertyChanged implementation and is available for MAUI.
     /// </remarks>
-    public static IObservable<T> CreatePropertyValueObservable<T>(
+    internal static IObservable<T> CreatePropertyValueObservable<T>(
         INotifyPropertyChanged source,
         string propertyName,
         Func<T> getPropertyValue)
@@ -84,7 +84,7 @@ internal static class MauiReactiveHelpers
             // Emit initial value
             onNext(getPropertyValue());
 
-            void Handler(object? sender, PropertyChangedEventArgs e)
+            void Handler(object? _, PropertyChangedEventArgs e)
             {
                 if (!string.IsNullOrEmpty(e.PropertyName) &&
                     !string.Equals(e.PropertyName, propertyName, StringComparison.Ordinal))
@@ -115,7 +115,7 @@ internal static class MauiReactiveHelpers
     /// This provides an AOT-friendly alternative to WhenAnyValue by avoiding expression trees and reflection.
     /// The observable immediately emits the current value upon subscription, then emits whenever the property changes.
     /// </remarks>
-    public static IObservable<T> CreatePropertyValueObservable<T>(
+    internal static IObservable<T> CreatePropertyValueObservable<T>(
         DependencyObject source,
         string propertyName,
         DependencyProperty property,
@@ -144,7 +144,7 @@ internal static class MauiReactiveHelpers
     /// <param name="activatedSignal">Observable that signals when the view is activated.</param>
     /// <param name="deactivatedSignal">Observable that signals when the view is deactivated.</param>
     /// <returns>A disposable that manages the activation subscriptions.</returns>
-    public static IDisposable WireActivationIfSupported(
+    internal static IDisposable WireActivationIfSupported(
         object? viewModel,
         IObservable<RxVoid> activatedSignal,
         IObservable<RxVoid> deactivatedSignal)

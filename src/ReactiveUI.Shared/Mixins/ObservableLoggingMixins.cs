@@ -70,7 +70,7 @@ public static class ObservableLoggingMixins
             return new LoggingTeeObservable<T>(
                 @this,
                 onNext,
-                ex => logObject.Log().Warn(ex, message + " OnError"),
+                ex => logObject.Log().Warn(ex, $"{message} OnError"),
                 () => logObject.Log().Info(CultureInfo.InvariantCulture, "{0} OnCompleted", message));
         }
 

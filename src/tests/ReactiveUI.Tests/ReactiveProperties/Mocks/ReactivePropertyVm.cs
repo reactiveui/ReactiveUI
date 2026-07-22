@@ -29,10 +29,10 @@ public class ReactivePropertyVm : ReactiveObject
         IsRequiredProperty = new ReactiveProperty<string>(null, scheduler, false, false).AddValidation(() => IsRequiredProperty);
 
         LengthLessThanFiveProperty = new ReactiveProperty<string>(null, scheduler, false, false).AddValidation(() => LengthLessThanFiveProperty)
-            .AddValidationError(s => string.IsNullOrWhiteSpace(s) ? "required" : null);
+            .AddValidationError(static s => string.IsNullOrWhiteSpace(s) ? "required" : null);
 
         TaskValidationTestProperty = new ReactiveProperty<string>(null, scheduler, false, false)
-            .AddValidationError(s => Task.FromResult(string.IsNullOrWhiteSpace(s) ? "required" : null));
+            .AddValidationError(static s => Task.FromResult(string.IsNullOrWhiteSpace(s) ? "required" : null));
 
         CustomValidationErrorMessageProperty = new ReactiveProperty<string>(null, scheduler, false, false).AddValidation(() => CustomValidationErrorMessageProperty);
 

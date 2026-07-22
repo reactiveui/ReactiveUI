@@ -18,7 +18,7 @@ public static class MauiProgram
 
         _ = builder
             .UseMauiApp<App>()
-            .UseReactiveUI(rxBuilder => rxBuilder.WithMaui());
+            .UseReactiveUI(static rxBuilder => rxBuilder.WithMaui());
 
         return builder.Build();
     }

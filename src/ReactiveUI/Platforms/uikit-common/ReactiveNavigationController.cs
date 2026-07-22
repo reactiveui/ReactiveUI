@@ -4,7 +4,6 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.ComponentModel;
-using System.Diagnostics.CodeAnalysis;
 using Foundation;
 using UIKit;
 
@@ -17,8 +16,7 @@ namespace ReactiveUI;
 /// This is a UINavigationController that is both an UINavigationController and has ReactiveObject powers
 /// (i.e. you can call RaiseAndSetIfChanged).
 /// </summary>
-[SuppressMessage("Design", "CA1010: Implement generic IEnumerable", Justification = "UI Kit exposes IEnumerable")]
-public abstract class ReactiveNavigationController : UINavigationController, IReactiveNotifyPropertyChanged<ReactiveNavigationController>,
+public class ReactiveNavigationController : UINavigationController, IReactiveNotifyPropertyChanged<ReactiveNavigationController>,
     IHandleObservableErrors, IReactiveObject, ICanActivate, IActivatableView
 {
     /// <summary>The subject used to signal view activation.</summary>

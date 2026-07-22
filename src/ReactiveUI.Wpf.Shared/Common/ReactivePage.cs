@@ -102,7 +102,7 @@ public
     /// <summary>The view model dependency property.</summary>
     public static readonly DependencyProperty ViewModelProperty =
         DependencyProperty.Register(
-            "ViewModel",
+            nameof(ViewModel),
             typeof(TViewModel),
             typeof(ReactivePage<TViewModel>),
             new(null));

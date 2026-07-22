@@ -15,6 +15,12 @@ public class LobbyViewModel : ReactiveObject, IRoutableViewModel
     /// <summary>The message bus contract used for room events.</summary>
     private const string RoomsKey = "__rooms__";
 
+    /// <summary>The quiet window, in milliseconds, applied before publishing a batched rooms-changed signal.</summary>
+    private const int RoomsChangedQuietWindowMilliseconds = 50;
+
+    /// <summary>The delay, in milliseconds, before broadcasting the initial peer sync request after activation.</summary>
+    private const int SyncRequestDelayMilliseconds = 500;
+
     /// <summary>Backing helper indicating whether room creation is disabled.</summary>
     private readonly ObservableAsPropertyHelper<bool> _createRoomDisabledHelper;
 
@@ -26,16 +32,19 @@ public class LobbyViewModel : ReactiveObject, IRoutableViewModel
 
     /// <summary>Initializes a new instance of the <see cref="LobbyViewModel"/> class.</summary>
     /// <param name="hostScreen">The host screen.</param>
-    [SuppressMessage("Reliability", "S3366:Don't expose 'this' in constructors", Justification = "OAPH/WhenAny initialization requires 'this'; single-threaded sample.")]
+    [SuppressMessage(
+        "Design",
+        "SST2403:'this' escapes before construction finishes",
+        Justification = "Canonical ObservableAsPropertyHelper and WhenAnyObservable setup needs 'this' in the constructor; the single-threaded Blazor circuit never exposes the half-built instance.")]
     public LobbyViewModel(IScreen hostScreen)
     {
         HostScreen = hostScreen;
         UrlPathSegment = "lobby";
 
-        var canDelete = this.WhenAnyValue(nameof(SelectedChatRoom), (ChatRoom? room) => room is not null);
+        var canDelete = this.WhenAnyValue(nameof(SelectedChatRoom), static (ChatRoom? room) => room is not null);
 
         var canCreate =
-            this.WhenAnyValue<LobbyViewModel, bool, string>(nameof(RoomName), rn => !string.IsNullOrWhiteSpace(rn));
+            this.WhenAnyValue<LobbyViewModel, bool, string>(nameof(RoomName), static rn => !string.IsNullOrWhiteSpace(rn));
         CreateRoom = ReactiveCommand.Create(CreateRoomImpl, canCreate);
 
         _createRoomDisabledHelper = canCreate
@@ -52,50 +61,26 @@ public class LobbyViewModel : ReactiveObject, IRoutableViewModel
         });
 
         // Local changes
-        var localRoomsChanged = MessageBus.Current.Listen<ChatStateChanged>().Select(_ => RxVoid.Default);
+        var localRoomsChanged = MessageBus.Current.Listen<ChatStateChanged>().Select(static _ => RxVoid.Default);
 
         // Remote changes and sync (ignore own events)
         var remoteRoomsChanged = MessageBus.Current
             .Listen<RoomEventMessage>(RoomsKey)
-            .Where(m => m.InstanceId != Services.AppInstance.Id)
-            .Do(evt =>
-            {
-                Trace.TraceInformation($"[Lobby] Room evt {evt.Kind} name='{evt.RoomName}' from={evt.InstanceId}");
-                switch (evt.Kind)
-                {
-                    case Services.RoomEventKind.SyncRequest:
-                        {
-                            // Respond with our snapshot of room names
-                            var snapshot = GetState().Rooms.ConvertAll(r => r.Name);
-                            var response = new RoomEventMessage(Services.RoomEventKind.Add, string.Empty)
-                            {
-                                Snapshot = snapshot,
-                                InstanceId = Services.AppInstance.Id
-                            };
-                            MessageBus.Current.SendMessage(response, RoomsKey);
-                            break;
-                        }
-
-                    default:
-                        {
-                            ApplyRoomEvent(evt);
-                            break;
-                        }
-                }
-            })
-            .Select(_ => RxVoid.Default);
+            .Where(static m => m.InstanceId != Services.AppInstance.Id)
+            .Do(HandleRemoteRoomEvent)
+            .Select(static _ => RxVoid.Default);
 
         RoomsChanged = Signal.Emit(RxVoid.Default)
             .Concat(Signal.Blend(localRoomsChanged, remoteRoomsChanged)
-                .EmitIfQuiet(TimeSpan.FromMilliseconds(50), RxSchedulers.TaskpoolScheduler));
+                .EmitIfQuiet(TimeSpan.FromMilliseconds(RoomsChangedQuietWindowMilliseconds), RxSchedulers.TaskpoolScheduler));
 
         _ = this.WhenAnyObservable(x => x.RoomsChanged)
-            .Select(_ => (IReadOnlyList<ChatRoom>)[.. GetState().Rooms])
+            .Select(static _ => (IReadOnlyList<ChatRoom>)[.. GetState().Rooms])
             .ObserveOn(RxSchedulers.MainThreadScheduler)
             .ToProperty(this, nameof(Rooms), out _rooms);
 
         // Request a snapshot from peers shortly after activation
-        _ = RxSchedulers.MainThreadScheduler.Schedule(RxVoid.Default, TimeSpan.FromMilliseconds(500), (_, _) =>
+        _ = RxSchedulers.MainThreadScheduler.Schedule(RxVoid.Default, TimeSpan.FromMilliseconds(SyncRequestDelayMilliseconds), static (_, _) =>
         {
             var req = new RoomEventMessage(Services.RoomEventKind.SyncRequest, string.Empty)
             {
@@ -177,6 +162,34 @@ public class LobbyViewModel : ReactiveObject, IRoutableViewModel
     /// <returns>The current <see cref="ChatState"/>.</returns>
     private static ChatState GetState() => RxSuspension.SuspensionHost.GetAppState<ChatState>();
 
+    /// <summary>Handles an incoming remote room event by answering sync requests or applying room changes.</summary>
+    /// <param name="evt">The remote room event.</param>
+    private static void HandleRemoteRoomEvent(RoomEventMessage evt)
+    {
+        Trace.TraceInformation($"[Lobby] Room evt {evt.Kind} name='{evt.RoomName}' from={evt.InstanceId}");
+        switch (evt.Kind)
+        {
+            case Services.RoomEventKind.SyncRequest:
+                {
+                    // Respond with our snapshot of room names
+                    var snapshot = GetState().Rooms.ConvertAll(static r => r.Name);
+                    var response = new RoomEventMessage(Services.RoomEventKind.Add, string.Empty)
+                    {
+                        Snapshot = snapshot,
+                        InstanceId = Services.AppInstance.Id
+                    };
+                    MessageBus.Current.SendMessage(response, RoomsKey);
+                    break;
+                }
+
+            default:
+                {
+                    ApplyRoomEvent(evt);
+                    break;
+                }
+        }
+    }
+
     /// <summary>Applies an incoming room event to the local state.</summary>
     /// <param name="evt">The room event to apply.</param>
     private static void ApplyRoomEvent(RoomEventMessage evt)
@@ -214,7 +227,32 @@ public class LobbyViewModel : ReactiveObject, IRoutableViewModel
                     _ = state.Rooms.RemoveAll(r => string.Equals(r.Name, evt.RoomName, StringComparison.OrdinalIgnoreCase));
                     break;
                 }
+
+            default:
+                {
+                    // SyncRequest carries no room mutation; it is answered in HandleRemoteRoomEvent.
+                    break;
+                }
         }
+    }
+
+    /// <summary>Deletes the specified room and broadcasts the removal to peers.</summary>
+    /// <param name="room">The room to delete.</param>
+    private static void DeleteRoomImpl(ChatRoom room)
+    {
+        var state = GetState();
+        if (!state.Rooms.Remove(room))
+        {
+            return;
+        }
+
+        var evt = new RoomEventMessage(Services.RoomEventKind.Remove, room.Name)
+        {
+            InstanceId = Services.AppInstance.Id
+        };
+        MessageBus.Current.SendMessage(evt, RoomsKey);
+        MessageBus.Current.SendMessage(new ChatStateChanged());
+        Trace.TraceInformation($"[Lobby] Deleted room '{room.Name}'");
     }
 
     /// <summary>Creates a new room from the current room name and broadcasts it to peers.</summary>
@@ -248,24 +286,5 @@ public class LobbyViewModel : ReactiveObject, IRoutableViewModel
 
         MessageBus.Current.SendMessage(new ChatStateChanged());
         RoomName = string.Empty;
-    }
-
-    /// <summary>Deletes the specified room and broadcasts the removal to peers.</summary>
-    /// <param name="room">The room to delete.</param>
-    private void DeleteRoomImpl(ChatRoom room)
-    {
-        var state = GetState();
-        if (!state.Rooms.Remove(room))
-        {
-            return;
-        }
-
-        var evt = new RoomEventMessage(Services.RoomEventKind.Remove, room.Name)
-        {
-            InstanceId = Services.AppInstance.Id
-        };
-        MessageBus.Current.SendMessage(evt, RoomsKey);
-        MessageBus.Current.SendMessage(new ChatStateChanged());
-        Trace.TraceInformation($"[Lobby] Deleted room '{room.Name}'");
     }
 }
