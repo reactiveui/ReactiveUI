@@ -37,6 +37,15 @@
     <Compile Include="..\ReactiveUI.Wpf.Shared\**\*.cs" Link="ReactiveUI.Wpf.Shared\%(RecursiveDir)%(Filename)%(Extension)"/>
   </ItemGroup>
 
+  <!-- The same shared default control template the lean leaf links, packed here at
+       themes/transitioningcontentcontroltemplate.xaml. This assembly's own Themes/Generic.xaml (auto-included as a
+       Page, and the theme dictionary ThemeInfo points at) merges it and binds the template to the recompiled
+       ReactiveUI.Reactive.TransitioningContentControl. Without a themes/generic.xaml in this assembly the default
+       template is never found and ViewModelViewHost renders nothing. -->
+  <ItemGroup>
+    <Page Include="..\ReactiveUI.Wpf.Shared\Themes\TransitioningContentControlTemplate.xaml" Link="Themes\TransitioningContentControlTemplate.xaml"/>
+  </ItemGroup>
+
   <!-- Internal plumbing + platform sinks compiled per-assembly (internal, no cross-assembly clash). -->
   <ItemGroup>
     <Compile Include="..\Shared\ArgumentValidation.cs" Link="Shared\ArgumentValidation.cs"/>
