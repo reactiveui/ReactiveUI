@@ -22,9 +22,9 @@ public class OaphTestFixture : TestFixture
 
     /// <summary>Initializes a new instance of the <see cref="OaphTestFixture" /> class.</summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
-        "Major Code Smell",
-        "S3366:Make sure the use of this in constructors is safe here",
-        Justification = "OAPH initialization requires 'this' in the constructor; single-threaded test fixture.")]
+        "Design",
+        "SST2403:'this' escapes before construction finishes",
+        Justification = "canonical ObservableAsPropertyHelper initialization requires 'this' in the constructor; the single-threaded fixture never exposes the half-built instance.")]
     public OaphTestFixture() => this.WhenAnyValue(static x => x.IsOnlyOneWord)
         .Select(static x => x ?? string.Empty)
         .Select(static x => x.Length >= PrefixLength ? x.Substring(0, PrefixLength) : x)

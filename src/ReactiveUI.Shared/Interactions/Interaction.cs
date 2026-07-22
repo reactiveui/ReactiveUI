@@ -119,15 +119,17 @@ public class Interaction<TInput, TOutput>(ISequencer? handlerScheduler = null) :
         return RegisterHandlerCore(ContentHandler);
 
         IObservable<RxVoid> ContentHandler(IInteractionContext<TInput, TOutput> interaction) =>
-            new TaskUnitObservable(InvokeAsync(interaction));
+            new TaskUnitObservable(InvokeAsync(interaction, handler));
 
-        async Task InvokeAsync(IInteractionContext<TInput, TOutput> interaction)
+        static async Task InvokeAsync(
+            IInteractionContext<TInput, TOutput> interaction,
+            Func<IInteractionContext<TInput, TOutput>, Task> asyncHandler)
         {
             // Yield so the handler is not invoked inside the current scheduler trampoline (see #4351). Task.Yield
             // resumes on the captured SynchronizationContext, so a handler registered from a UI thread runs back on
             // that context instead of a thread-pool thread (see #4393); ConfigureAwait(false) here would discard it.
             await Task.Yield();
-            await handler(interaction).ConfigureAwait(false);
+            await asyncHandler(interaction).ConfigureAwait(false);
         }
     }
 

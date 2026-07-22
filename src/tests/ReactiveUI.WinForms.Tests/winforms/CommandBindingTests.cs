@@ -198,7 +198,7 @@ public class CommandBindingTests
         var cmd = ReactiveCommand.Create<int>(_ => executed = true);
         var input = new Button();
 
-        using (fixture.BindCommandToObject<Button>(cmd, input, Signal.Emit((object)CommandParameter), h => input.Click += h, h => input.Click -= h))
+        using (fixture.BindCommandToObject(cmd, input, Signal.Emit((object)CommandParameter), h => input.Click += h, h => input.Click -= h))
         {
             input.PerformClick();
 

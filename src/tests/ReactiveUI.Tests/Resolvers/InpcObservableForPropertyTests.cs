@@ -222,7 +222,7 @@ public class InpcObservableForPropertyTests
 
         // A plain object is neither INotifyPropertyChanged nor INotifyPropertyChanging, so the index-named
         // observation resolves to a silent (no-op) stream rather than hooking change events.
-        using var subscription = instance.GetNotificationForProperty(new object(), indexExpression, "Item").Subscribe(changes.Add);
+        using var subscription = instance.GetNotificationForProperty(new(), indexExpression, "Item").Subscribe(changes.Add);
 
         await Assert.That(changes).IsEmpty();
     }
@@ -255,14 +255,14 @@ public class InpcObservableForPropertyTests
             }
         }
 
-        /// <summary>Raises the <see cref="PropertyChanged"/> event.</summary>
-        /// <param name="propertyName">The name of the property that changed.</param>
-        public void OnPropertyChanged([CallerMemberName] string? propertyName = null) =>
-            PropertyChanged?.Invoke(this, new(propertyName));
-
         /// <summary>Raises <see cref="PropertyChanged"/> with an explicit name (null/empty means whole-object).</summary>
         /// <param name="propertyName">The property name, or null/empty for a whole-object change.</param>
         public void RaiseChanged(string? propertyName) =>
+            PropertyChanged?.Invoke(this, new(propertyName));
+
+        /// <summary>Raises the <see cref="PropertyChanged"/> event.</summary>
+        /// <param name="propertyName">The name of the property that changed.</param>
+        private void OnPropertyChanged([CallerMemberName] string? propertyName = null) =>
             PropertyChanged?.Invoke(this, new(propertyName));
     }
 
@@ -294,17 +294,17 @@ public class InpcObservableForPropertyTests
             }
         }
 
-        /// <summary>Raises the <see cref="PropertyChanging"/> event.</summary>
-        /// <param name="propertyName">The name of the property that is changing.</param>
-        public void OnPropertyChanging([CallerMemberName] string? propertyName = null)
-        {
-            var handler = PropertyChanging;
-            handler?.Invoke(this, new(propertyName));
-        }
-
         /// <summary>Raises <see cref="PropertyChanging"/> with an explicit name (null/empty means whole-object).</summary>
         /// <param name="propertyName">The property name, or null/empty for a whole-object change.</param>
         public void RaiseChanging(string? propertyName) =>
             PropertyChanging?.Invoke(this, new(propertyName));
+
+        /// <summary>Raises the <see cref="PropertyChanging"/> event.</summary>
+        /// <param name="propertyName">The name of the property that is changing.</param>
+        private void OnPropertyChanging([CallerMemberName] string? propertyName = null)
+        {
+            var handler = PropertyChanging;
+            handler?.Invoke(this, new(propertyName));
+        }
     }
 }

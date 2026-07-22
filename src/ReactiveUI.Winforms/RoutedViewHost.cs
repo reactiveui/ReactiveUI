@@ -20,6 +20,10 @@ public partial class RoutedControlHost : UserControl, IReactiveObject
     private readonly MultipleDisposable _disposables = [];
 
     /// <summary>Initializes a new instance of the <see cref="RoutedControlHost"/> class.</summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "Design",
+        "SST2403:'this' escapes before construction finishes",
+        Justification = "'this' is passed to BindingSink; the WinForms designer-mandated constructor wires this control's bindings; the single-threaded control is never published elsewhere.")]
     public RoutedControlHost()
     {
         InitializeComponent();

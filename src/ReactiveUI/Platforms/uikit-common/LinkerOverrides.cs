@@ -14,18 +14,15 @@ namespace ReactiveUI.Cocoa;
 
 /// <summary>This class exists to force the MT linker to include properties called by RxUI via reflection.</summary>
 [Preserve(AllMembers = true)]
-[SuppressMessage("Major Code Smell", "S1656:Useless self-assignment", Justification = "Self-assignments force the linker to preserve these members.")]
-[SuppressMessage("Minor Code Smell", "S1481:Unused local variables should be removed", Justification = "Self-assignments force the linker to preserve these members.")]
-internal class LinkerOverrides
+internal static class LinkerOverrides
 {
     /// <summary>Forces the linker to preserve UIKit members accessed by ReactiveUI via reflection.</summary>
-    [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Used by linker.")]
     [SuppressMessage("Major Bug", "SST1189:Remove this self-assignment", Justification = "Deliberate self-assignment preserves both the getter and setter from the linker.")]
-    public void KeepMe()
+    internal static void KeepMe()
     {
         // UIButton
-        var btn = new UIButton();
-        var title = btn.Title(UIControlState.Disabled);
+        using var btn = new UIButton();
+        _ = btn.Title(UIControlState.Disabled);
         btn.SetTitle("foo", UIControlState.Disabled);
         btn.TitleLabel.Text = btn.TitleLabel.Text;
 
@@ -35,23 +32,23 @@ internal class LinkerOverrides
         // keeps the getter. A self-assign (`x.Prop = x.Prop`) would do the same but can't be
         // expressed as an initializer, so it is split here to keep the get + set intent explicit.
         // UITextView
-        var tv = new UITextView { Text = default };
+        using var tv = new UITextView { Text = default };
         _ = tv.Text;
 
         // UITextField
-        var tf = new UITextField { Text = default };
+        using var tf = new UITextField { Text = default };
         _ = tf.Text;
 
         // UIImageView
-        var iv = new UIImageView { Image = default };
+        using var iv = new UIImageView { Image = default };
         _ = iv.Image;
 
         // UI Label
-        var lbl = new UILabel { Text = default };
+        using var lbl = new UILabel { Text = default };
         _ = lbl.Text;
 
         // UI Control
-        var ctl = new UIControl { Enabled = default, Selected = default };
+        using var ctl = new UIControl { Enabled = default, Selected = default };
         _ = ctl.Enabled;
         _ = ctl.Selected;
 
@@ -59,7 +56,7 @@ internal class LinkerOverrides
         ctl.TouchUpInside -= Eh;
 
         // UIBarButtonItem
-        var bbi = new UIBarButtonItem();
+        using var bbi = new UIBarButtonItem();
         bbi.Clicked += Eh;
         bbi.Clicked -= Eh;
 

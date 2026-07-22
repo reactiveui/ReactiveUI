@@ -31,7 +31,7 @@ public class InteractionsTest
     {
         var interaction = new Interaction<RxVoid, RxVoid>(Sequencer.Immediate);
 
-        _ = interaction.RegisterHandler(context => _ = ((InteractionContext<RxVoid, RxVoid>)context).GetOutput());
+        _ = interaction.RegisterHandler(static context => _ = ((IOutputContext<RxVoid, RxVoid>)context).GetOutput());
 
         var ex = Assert.Throws<InvalidOperationException>(() => interaction.Handle(RxVoid.Default).Subscribe());
         await Assert.That(ex.Message).IsEqualTo("Output has not been set.");
@@ -44,7 +44,7 @@ public class InteractionsTest
     {
         var interaction = new Interaction<RxVoid, RxVoid>(Sequencer.Immediate);
 
-        _ = interaction.RegisterHandler(context =>
+        _ = interaction.RegisterHandler(static context =>
         {
             context.SetOutput(RxVoid.Default);
             context.SetOutput(RxVoid.Default);
@@ -76,7 +76,7 @@ public class InteractionsTest
         var scheduler = TestContext.Current!.GetScheduler();
         var interaction = new Interaction<RxVoid, string>(scheduler);
 
-        using (interaction.RegisterHandler(x => x.SetOutput("done")))
+        using (interaction.RegisterHandler(static x => x.SetOutput("done")))
         {
             var handled = false;
             _ = interaction
@@ -113,10 +113,13 @@ public class InteractionsTest
             var result = interaction
                 .Handle(RxVoid.Default).Collect();
 
+            const double PartialAdvanceSeconds = 0.5;
+            const double RemainingAdvanceSeconds = 0.6;
+
             await Assert.That(result).IsEmpty();
-            scheduler.AdvanceBy(TimeSpan.FromSeconds(0.5));
+            scheduler.AdvanceBy(TimeSpan.FromSeconds(PartialAdvanceSeconds));
             await Assert.That(result).IsEmpty();
-            scheduler.AdvanceBy(TimeSpan.FromSeconds(0.6));
+            scheduler.AdvanceBy(TimeSpan.FromSeconds(RemainingAdvanceSeconds));
             await Assert.That(result).Count().IsEqualTo(1);
             await Assert.That(result[0]).IsEqualTo(OutputB);
         }
@@ -131,10 +134,10 @@ public class InteractionsTest
     {
         var interaction = new Interaction<RxVoid, string>(Sequencer.Immediate);
 
-        _ = interaction.RegisterHandler(context =>
+        _ = interaction.RegisterHandler(static context =>
         {
             context.SetOutput(ResultOutput);
-            return Task.FromResult(true);
+            return Task.CompletedTask;
         });
 
         // The Task-based handler yields before running (see #4351), so it completes asynchronously; await the
@@ -258,8 +261,8 @@ public class InteractionsTest
             await Assert.That(ex.Input).IsEqualTo("foo");
         }
 
-        _ = interaction.RegisterHandler(_ => { });
-        _ = interaction.RegisterHandler(_ => { });
+        _ = interaction.RegisterHandler(static _ => { });
+        _ = interaction.RegisterHandler(static _ => { });
         ex = await Assert.That(() => interaction.Handle("bar").FirstAsync())
             .Throws<UnhandledInteractionException<string, RxVoid>>();
         using (Assert.Multiple())
@@ -278,23 +281,26 @@ public class InteractionsTest
     public async Task TaskHandlerResumesOnCapturedSynchronizationContext()
     {
         using var uiContext = new SingleThreadedSynchronizationContext();
-        var observedContext = new TaskCompletionSource<SynchronizationContext?>();
-        var completed = new TaskCompletionSource<RxVoid>();
+        var observedContext = new TaskCompletionSource<SynchronizationContext?>(TaskCreationOptions.RunContinuationsAsynchronously);
+        var completed = new TaskCompletionSource<RxVoid>(TaskCreationOptions.RunContinuationsAsynchronously);
 
-        uiContext.Post(() =>
-        {
-            var interaction = new Interaction<RxVoid, RxVoid>();
-            _ = interaction.RegisterHandler(async context =>
+        uiContext.Post(
+            static state =>
             {
-                _ = observedContext.TrySetResult(SynchronizationContext.Current);
-                context.SetOutput(RxVoid.Default);
-                await Task.CompletedTask;
-            });
+                var (observed, done) = ((TaskCompletionSource<SynchronizationContext?>, TaskCompletionSource<RxVoid>))state!;
+                var interaction = new Interaction<RxVoid, RxVoid>();
+                _ = interaction.RegisterHandler(async context =>
+                {
+                    _ = observed.TrySetResult(SynchronizationContext.Current);
+                    context.SetOutput(RxVoid.Default);
+                    await Task.CompletedTask;
+                });
 
-            _ = interaction.Handle(RxVoid.Default).Subscribe(
-                _ => completed.TrySetResult(RxVoid.Default),
-                completed.SetException);
-        });
+                _ = interaction.Handle(RxVoid.Default).Subscribe(
+                    _ => done.TrySetResult(RxVoid.Default),
+                    done.SetException);
+            },
+            (observedContext, completed));
 
         var handlerContext = await observedContext.Task;
         _ = await completed.Task;
@@ -316,25 +322,28 @@ public class InteractionsTest
 
         using var uiContext = new SingleThreadedSynchronizationContext();
         var order = new List<string>();
-        var completed = new TaskCompletionSource<IReadOnlyList<string>>();
+        var completed = new TaskCompletionSource<IReadOnlyList<string>>(TaskCreationOptions.RunContinuationsAsynchronously);
 
-        uiContext.Post(() =>
-        {
-            var interaction = new Interaction<RxVoid, string>();
-            _ = interaction.RegisterHandler(async context =>
+        uiContext.Post(
+            static state =>
             {
-                order.Add(handlerMarker);
-                context.SetOutput(ResultOutput);
-                await Task.CompletedTask;
-            });
+                var (steps, done) = ((List<string>, TaskCompletionSource<IReadOnlyList<string>>))state!;
+                var interaction = new Interaction<RxVoid, string>();
+                _ = interaction.RegisterHandler(async context =>
+                {
+                    steps.Add(handlerMarker);
+                    context.SetOutput(ResultOutput);
+                    await Task.CompletedTask;
+                });
 
-            _ = interaction.Handle(RxVoid.Default).Subscribe(
-                _ => completed.TrySetResult(order),
-                completed.SetException);
+                _ = interaction.Handle(RxVoid.Default).Subscribe(
+                    _ => done.TrySetResult(steps),
+                    done.SetException);
 
-            // Recorded before the yielded handler continuation is pumped, so it must precede the handler marker.
-            order.Add(afterSubscribeMarker);
-        });
+                // Recorded before the yielded handler continuation is pumped, so it must precede the handler marker.
+                steps.Add(afterSubscribeMarker);
+            },
+            (order, completed));
 
         var sequence = await completed.Task;
 
@@ -361,10 +370,6 @@ public class InteractionsTest
 
         /// <inheritdoc/>
         public override void Post(SendOrPostCallback d, object? state) => _queue.Add(() => d(state));
-
-        /// <summary>Queues an action to run on the worker thread.</summary>
-        /// <param name="action">The action to run.</param>
-        public void Post(Action action) => _queue.Add(action);
 
         /// <inheritdoc/>
         public void Dispose() => _queue.CompleteAdding();

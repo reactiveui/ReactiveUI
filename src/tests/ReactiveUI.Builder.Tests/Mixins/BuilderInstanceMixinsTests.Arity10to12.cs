@@ -8,6 +8,10 @@ using Splat;
 namespace ReactiveUI.Builder.Tests.Mixins;
 
 /// <summary>WithInstance tests for arities ten through twelve.</summary>
+[System.Diagnostics.CodeAnalysis.SuppressMessage(
+    "Layout",
+    "SST1523:Members should not be too long",
+    Justification = "High-arity variadic WithInstance test methods are intrinsically long; each per-instance setup and assertion sits on its own line under one-statement-per-line formatting.")]
 public partial class BuilderInstanceMixinsTests
 {
     /// <summary>Verifies that the 10-types WithInstance builder instance method invokes the action with the resolved instances.</summary>
@@ -72,7 +76,7 @@ public partial class BuilderInstanceMixinsTests
     [Test]
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Major Code Smell",
-        "S107:Methods should not have too many parameters",
+        "SST1472:Signatures should not declare too many parameters",
         Justification = "Test exercises a variadic overload.")]
     public async Task Builder_WithInstance_10_Types_skips_when_null()
     {
@@ -102,10 +106,6 @@ public partial class BuilderInstanceMixinsTests
     /// <summary>Verifies that the 10-types WithInstance extension method invokes the action with the resolved instances.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
-    [System.Diagnostics.CodeAnalysis.SuppressMessage(
-        "Major Code Smell",
-        "S4144:Methods should not have identical implementations",
-        Justification = "Intentional duplicate test scenario.")]
     public async Task Extension_WithInstance_10_Types_invokes_action()
     {
         using var resolver = new ModernDependencyResolver();
@@ -165,11 +165,7 @@ public partial class BuilderInstanceMixinsTests
     [Test]
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Major Code Smell",
-        "S4144:Methods should not have identical implementations",
-        Justification = "Intentional duplicate test scenario.")]
-    [System.Diagnostics.CodeAnalysis.SuppressMessage(
-        "Major Code Smell",
-        "S107:Methods should not have too many parameters",
+        "SST1472:Signatures should not declare too many parameters",
         Justification = "Test exercises a variadic overload.")]
     public async Task Extension_WithInstance_10_Types_skips_when_null()
     {
@@ -262,7 +258,7 @@ public partial class BuilderInstanceMixinsTests
     [Test]
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Major Code Smell",
-        "S107:Methods should not have too many parameters",
+        "SST1472:Signatures should not declare too many parameters",
         Justification = "Test exercises a variadic overload.")]
     public async Task Builder_WithInstance_11_Types_skips_when_null()
     {
@@ -293,10 +289,6 @@ public partial class BuilderInstanceMixinsTests
     /// <summary>Verifies that the 11-types WithInstance extension method invokes the action with the resolved instances.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
-    [System.Diagnostics.CodeAnalysis.SuppressMessage(
-        "Major Code Smell",
-        "S4144:Methods should not have identical implementations",
-        Justification = "Intentional duplicate test scenario.")]
     public async Task Extension_WithInstance_11_Types_invokes_action()
     {
         using var resolver = new ModernDependencyResolver();
@@ -360,11 +352,7 @@ public partial class BuilderInstanceMixinsTests
     [Test]
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Major Code Smell",
-        "S4144:Methods should not have identical implementations",
-        Justification = "Intentional duplicate test scenario.")]
-    [System.Diagnostics.CodeAnalysis.SuppressMessage(
-        "Major Code Smell",
-        "S107:Methods should not have too many parameters",
+        "SST1472:Signatures should not declare too many parameters",
         Justification = "Test exercises a variadic overload.")]
     public async Task Extension_WithInstance_11_Types_skips_when_null()
     {
@@ -462,7 +450,7 @@ public partial class BuilderInstanceMixinsTests
     [Test]
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Major Code Smell",
-        "S107:Methods should not have too many parameters",
+        "SST1472:Signatures should not declare too many parameters",
         Justification = "Test exercises a variadic overload.")]
     public async Task Builder_WithInstance_12_Types_skips_when_null()
     {
@@ -494,10 +482,6 @@ public partial class BuilderInstanceMixinsTests
     /// <summary>Verifies that the 12-types WithInstance extension method invokes the action with the resolved instances.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
-    [System.Diagnostics.CodeAnalysis.SuppressMessage(
-        "Major Code Smell",
-        "S4144:Methods should not have identical implementations",
-        Justification = "Intentional duplicate test scenario.")]
     public async Task Extension_WithInstance_12_Types_invokes_action()
     {
         using var resolver = new ModernDependencyResolver();
@@ -565,11 +549,7 @@ public partial class BuilderInstanceMixinsTests
     [Test]
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Major Code Smell",
-        "S4144:Methods should not have identical implementations",
-        Justification = "Intentional duplicate test scenario.")]
-    [System.Diagnostics.CodeAnalysis.SuppressMessage(
-        "Major Code Smell",
-        "S107:Methods should not have too many parameters",
+        "SST1472:Signatures should not declare too many parameters",
         Justification = "Test exercises a variadic overload.")]
     public async Task Extension_WithInstance_12_Types_skips_when_null()
     {

@@ -112,7 +112,7 @@ public class ActivationForViewFetcherTest
     public async Task GetActivationForView_ICanActivateView_ReturnsObservable()
     {
         var fetcher = new ActivationForViewFetcher();
-        var view = new TestCanActivateView();
+        using var view = new TestCanActivateView();
 
         var activation = fetcher.GetActivationForView(view);
 
@@ -125,7 +125,7 @@ public class ActivationForViewFetcherTest
     public async Task GetActivationForView_ICanActivate_EmitsActivationChanges()
     {
         var fetcher = new ActivationForViewFetcher();
-        var view = new TestCanActivateView();
+        using var view = new TestCanActivateView();
         var results = new List<bool>();
 
         _ = fetcher.GetActivationForView(view).Subscribe(results.Add);
@@ -155,7 +155,7 @@ public class ActivationForViewFetcherTest
     }
 
     /// <summary>Test view that implements ICanActivate for testing.</summary>
-    private sealed class TestCanActivateView : IActivatableView, ICanActivate
+    private sealed class TestCanActivateView : IActivatableView, ICanActivate, IDisposable
     {
         /// <summary>Gets the subject used to trigger activation.</summary>
         public Signal<RxVoid> ActivateSubject { get; } = new();
@@ -168,6 +168,13 @@ public class ActivationForViewFetcherTest
 
         /// <inheritdoc/>
         public IObservable<RxVoid> Deactivated => DeactivateSubject;
+
+        /// <inheritdoc/>
+        public void Dispose()
+        {
+            ActivateSubject.Dispose();
+            DeactivateSubject.Dispose();
+        }
     }
 
     /// <summary>Test non-activatable view for testing.</summary>

@@ -51,7 +51,7 @@ public class WinFormsViewModelViewHostTests
     [Test]
     public async Task ShouldDisposePreviousView()
     {
-        var viewLocator = new FakeViewLocator { LocatorFunc = _ => new FakeWinformsView() };
+        var viewLocator = new FakeViewLocator { LocatorFunc = static _ => new FakeWinformsView() };
         var target = new WinFormsViewModelViewHost
         {
             CacheViews = false,

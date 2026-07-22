@@ -3,8 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Diagnostics.CodeAnalysis;
-
 using ReactiveUI.Builder.BlazorServer.Services;
 
 namespace ReactiveUI.Builder.BlazorServer.Models;
@@ -36,6 +34,5 @@ public sealed class RoomEventMessage
     public Guid InstanceId { get; set; }
 
     /// <summary>Gets or sets the current snapshot of room names. Used in response to SyncRequest.</summary>
-    [SuppressMessage("Major Code Smell", "S4004:Collection properties should be read only", Justification = "Public setter required for System.Text.Json deserialization of persisted state.")]
-    public List<string>? Snapshot { get; set; }
+    public List<string>? Snapshot { get; init; }
 }

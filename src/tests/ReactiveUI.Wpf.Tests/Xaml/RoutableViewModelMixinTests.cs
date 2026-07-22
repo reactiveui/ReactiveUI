@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Runtime.CompilerServices;
 using ReactiveUI.Tests.Wpf;
 using TUnit.Core.Executors;
 
@@ -68,21 +69,21 @@ public class RoutableViewModelMixinTests
     [Test]
     public async Task WhenNavigatedToCallsDisposeWhenViewModelLosesFocus()
     {
-        var count = 0;
+        var count = new StrongBox<int>();
 
         var screen = new TestScreen();
         var vm = new RoutableViewModel(screen);
         var vm2 = new RoutableViewModel(screen);
 
-        _ = vm.WhenNavigatedTo(() => Scope.Create(() => count++));
+        _ = vm.WhenNavigatedTo(() => Scope.Create(count, static c => c.Value++));
 
         _ = screen.Router.Navigate.Execute(vm).Subscribe();
 
-        await Assert.That(count).IsEqualTo(0);
+        await Assert.That(count.Value).IsEqualTo(0);
 
         _ = screen.Router.Navigate.Execute(vm2).Subscribe();
 
-        await Assert.That(count).IsEqualTo(1);
+        await Assert.That(count.Value).IsEqualTo(1);
     }
 
     /// <summary>Whens the navigated to calls dispose when navigation stack is reset.</summary>
@@ -90,21 +91,21 @@ public class RoutableViewModelMixinTests
     [Test]
     public async Task WhenNavigatedToCallsDisposeWhenNavigationStackIsReset()
     {
-        var count = 0;
+        var count = new StrongBox<int>();
 
         var screen = new TestScreen();
         var vm1 = new RoutableViewModel(screen);
         var vm2 = new RoutableViewModel(screen);
 
-        _ = vm1.WhenNavigatedTo(() => Scope.Create(() => count++));
+        _ = vm1.WhenNavigatedTo(() => Scope.Create(count, static c => c.Value++));
 
         _ = screen.Router.Navigate.Execute(vm1).Subscribe();
 
-        await Assert.That(count).IsEqualTo(0);
+        await Assert.That(count.Value).IsEqualTo(0);
 
         _ = screen.Router.NavigateAndReset.Execute(vm2).Subscribe();
 
-        await Assert.That(count).IsEqualTo(1);
+        await Assert.That(count.Value).IsEqualTo(1);
     }
 
     /// <summary>Whens the navigated to observable fires when view model added to navigation stack.</summary>
@@ -155,7 +156,7 @@ public class RoutableViewModelMixinTests
         var vm = new RoutableViewModel(screen);
 
         _ = vm.WhenNavigatedToObservable().Subscribe(
-            _ => { },
+            static _ => { },
             () => count++);
 
         _ = screen.Router.Navigate.Execute(vm).Subscribe();
@@ -176,7 +177,7 @@ public class RoutableViewModelMixinTests
         var vm2 = new RoutableViewModel(screen);
 
         _ = vm1.WhenNavigatedToObservable().Subscribe(
-            _ => { },
+            static _ => { },
             () => count++);
 
         _ = screen.Router.Navigate.Execute(vm1).Subscribe();
@@ -214,7 +215,7 @@ public class RoutableViewModelMixinTests
         var vm = new RoutableViewModel(screen);
 
         _ = vm.WhenNavigatingFromObservable().Subscribe(
-            _ => { },
+            static _ => { },
             () => count++);
 
         _ = screen.Router.Navigate.Execute(vm).Subscribe();
@@ -235,7 +236,7 @@ public class RoutableViewModelMixinTests
         var vm2 = new RoutableViewModel(screen);
 
         _ = vm1.WhenNavigatingFromObservable().Subscribe(
-            _ => { },
+            static _ => { },
             () => count++);
 
         _ = screen.Router.Navigate.Execute(vm1).Subscribe();

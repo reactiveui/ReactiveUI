@@ -78,7 +78,7 @@ public class ReactiveUIBuilderMauiTests
     {
         var detector = new AlwaysTrueModeDetector();
         ModeDetector.OverrideModeDetector(detector);
-        return new ActionDisposable(static () => ModeDetector.OverrideModeDetector(new DefaultModeDetector()));
+        return new(static () => ModeDetector.OverrideModeDetector(new DefaultModeDetector()));
     }
 
     /// <summary>Mode detector implementation that always reports being in a unit test runner.</summary>

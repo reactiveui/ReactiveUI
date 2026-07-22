@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics.CodeAnalysis;
 using ReactiveUI.Maui;
 using ReactiveUI.Primitives;
 
@@ -12,6 +13,10 @@ namespace ReactiveUI.Samples.Maui;
 public partial class LoginPage : ReactiveContentPage<LoginViewModel>
 {
     /// <summary>Initializes a new instance of the <see cref="LoginPage"/> class.</summary>
+    [SuppressMessage(
+        "Correctness",
+        "SST2403:Do not let 'this' escape from a constructor",
+        Justification = "Single-threaded sample view; WhenActivated captures this for activation-scoped binding after construction.")]
     public LoginPage()
     {
         InitializeComponent();

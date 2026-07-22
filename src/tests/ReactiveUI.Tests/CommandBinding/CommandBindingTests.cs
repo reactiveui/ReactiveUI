@@ -87,8 +87,8 @@ public class CommandBindingTests
             _ = builder
                 .WithMainThreadScheduler(scheduler)
                 .WithTaskPoolScheduler(scheduler)
-                .WithRegistration(r => r.RegisterConstant<ICreatesCommandBinding>(new CreatesCommandBindingViaEvent()))
-                .WithRegistration(r => r.RegisterConstant<ICreatesCommandBinding>(new FakeCustomBinder()))
+                .WithRegistration(static r => r.RegisterConstant<ICreatesCommandBinding>(new CreatesCommandBindingViaEvent()))
+                .WithRegistration(static r => r.RegisterConstant<ICreatesCommandBinding>(new FakeCustomBinder()))
                 .WithCoreServices();
         }
     }
@@ -97,6 +97,11 @@ public class CommandBindingTests
     private sealed class FakeControl
     {
         /// <summary>Occurs when the control is clicked.</summary>
+        [SuppressMessage(
+            "Design",
+            "SST2324:public member on non-public type",
+            Justification = "the public surface is required for reflection/string-based event binding; the " +
+                "containing test double is an intentionally non-public detail.")]
         public event EventHandler? Click;
 
         /// <summary>Raises the <see cref="Click" /> event.</summary>
@@ -104,7 +109,11 @@ public class CommandBindingTests
     }
 
     /// <summary>A fake <see cref="ICreatesCommandBinding" /> used to verify custom binder selection.</summary>
-    [SuppressMessage("Major Code Smell", "S4018:Generic methods should provide type parameters", Justification = "Type parameter cannot be inferred.")]
+    [SuppressMessage(
+        "Design",
+        "SST1452:unused type parameter",
+        Justification = "type parameters are mandated by the implemented interface signatures; the no-op " +
+            "test double does not reference them.")]
     private sealed class FakeCustomBinder : ICreatesCommandBinding
     {
         /// <summary>The high affinity returned for <see cref="FakeCustomControl" />.</summary>
@@ -189,9 +198,14 @@ public class CommandBindingTests
     }
 
     /// <summary>A fake view model exposing a command used in command binding tests.</summary>
+    [SuppressMessage(
+        "Usage",
+        "SST2315:type owns a disposable but is not IDisposable",
+        Justification = "test fixture; the owned disposable lives for the test-process lifetime and is " +
+            "released at process exit.")]
     private sealed class FakeViewModel : ReactiveObject
     {
         /// <summary>Gets the command under test.</summary>
-        public ReactiveCommand<RxVoid, RxVoid> Command { get; } = ReactiveCommand.Create(() => { });
+        public ReactiveCommand<RxVoid, RxVoid> Command { get; } = ReactiveCommand.Create(static () => { });
     }
 }

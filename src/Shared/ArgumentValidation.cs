@@ -20,27 +20,27 @@ internal static class ArgumentValidation
     /// <summary>Throws an <see cref="ArgumentNullException"/> if <paramref name="argument"/> is null.</summary>
     /// <param name="argument">The reference type argument to validate as non-null.</param>
     /// <param name="paramName">The name of the parameter with which <paramref name="argument"/> corresponds.</param>
-    public static void ThrowIfNull(
+    internal static void ThrowIfNull(
         [NotNull] object? argument,
         [CallerArgumentExpression(nameof(argument))] string? paramName = null)
-    {
 #if NET8_0_OR_GREATER
-        ArgumentNullException.ThrowIfNull(argument, paramName);
+        => ArgumentNullException.ThrowIfNull(argument, paramName);
 #else
+    {
         if (argument is not null)
         {
             return;
         }
 
         throw new ArgumentNullException(paramName);
-#endif
     }
+#endif
 
     /// <summary>Throws an <see cref="ArgumentNullException"/> if <paramref name="argument"/> is null.</summary>
     /// <param name="argument">The reference type argument to validate as non-null.</param>
     /// <param name="message">The exception message.</param>
     /// <param name="paramName">The name of the parameter with which <paramref name="argument"/> corresponds.</param>
-    public static void ThrowIfNullWithMessage(
+    internal static void ThrowIfNullWithMessage(
         [NotNull] object? argument,
         string message,
         [CallerArgumentExpression(nameof(argument))] string? paramName = null)
@@ -58,13 +58,13 @@ internal static class ArgumentValidation
     /// <param name="paramName">The name of the parameter with which <paramref name="argument"/> corresponds.</param>
     /// <exception cref="ArgumentNullException"><paramref name="argument"/> is null.</exception>
     /// <exception cref="ArgumentException"><paramref name="argument"/> is empty.</exception>
-    public static void ThrowIfNullOrEmpty(
+    internal static void ThrowIfNullOrEmpty(
         [NotNull] string? argument,
         [CallerArgumentExpression(nameof(argument))] string? paramName = null)
-    {
 #if NET8_0_OR_GREATER
-        ArgumentException.ThrowIfNullOrEmpty(argument, paramName);
+        => ArgumentException.ThrowIfNullOrEmpty(argument, paramName);
 #else
+    {
         if (argument is null)
         {
             throw new ArgumentNullException(paramName);
@@ -76,21 +76,21 @@ internal static class ArgumentValidation
         }
 
         throw new ArgumentException("The value cannot be an empty string.", paramName);
-#endif
     }
+#endif
 
     /// <summary>Throws an exception if <paramref name="argument"/> is null, empty, or consists only of white-space characters.</summary>
     /// <param name="argument">The string argument to validate.</param>
     /// <param name="paramName">The name of the parameter with which <paramref name="argument"/> corresponds.</param>
     /// <exception cref="ArgumentNullException"><paramref name="argument"/> is null.</exception>
     /// <exception cref="ArgumentException"><paramref name="argument"/> is empty or consists only of white-space characters.</exception>
-    public static void ThrowIfNullOrWhiteSpace(
+    internal static void ThrowIfNullOrWhiteSpace(
         [NotNull] string? argument,
         [CallerArgumentExpression(nameof(argument))] string? paramName = null)
-    {
 #if NET8_0_OR_GREATER
-        ArgumentException.ThrowIfNullOrWhiteSpace(argument, paramName);
+        => ArgumentException.ThrowIfNullOrWhiteSpace(argument, paramName);
 #else
+    {
         if (argument is null)
         {
             throw new ArgumentNullException(paramName);
@@ -104,13 +104,13 @@ internal static class ArgumentValidation
         throw new ArgumentException(
             "The value cannot be an empty string or composed entirely of whitespace.",
             paramName);
-#endif
     }
+#endif
 
     /// <summary>Throws an <see cref="ArgumentOutOfRangeException"/> if <paramref name="value"/> is negative.</summary>
     /// <param name="value">The argument to validate as non-negative.</param>
     /// <param name="paramName">The name of the parameter with which <paramref name="value"/> corresponds.</param>
-    public static void ThrowIfNegative(int value, [CallerArgumentExpression(nameof(value))] string? paramName = null)
+    internal static void ThrowIfNegative(int value, [CallerArgumentExpression(nameof(value))] string? paramName = null)
     {
         if (value >= 0)
         {
@@ -124,7 +124,7 @@ internal static class ArgumentValidation
     /// <param name="condition">The condition to evaluate.</param>
     /// <param name="message">The exception message.</param>
     /// <param name="paramName">The name of the parameter with which <paramref name="condition"/> corresponds.</param>
-    public static void ThrowIf(
+    internal static void ThrowIf(
         [DoesNotReturnIf(true)] bool condition,
         string message,
         [CallerArgumentExpression(nameof(condition))] string? paramName = null)
@@ -140,7 +140,7 @@ internal static class ArgumentValidation
     /// <summary>Throws an <see cref="ArgumentOutOfRangeException"/> if <paramref name="value"/> is zero.</summary>
     /// <param name="value">The argument to validate.</param>
     /// <param name="paramName">The name of the parameter with which <paramref name="value"/> corresponds.</param>
-    public static void ThrowIfZero(int value, [CallerArgumentExpression(nameof(value))] string? paramName = null)
+    internal static void ThrowIfZero(int value, [CallerArgumentExpression(nameof(value))] string? paramName = null)
     {
         if (value != 0)
         {
@@ -153,7 +153,7 @@ internal static class ArgumentValidation
     /// <summary>Throws an <see cref="ArgumentOutOfRangeException"/> if <paramref name="value"/> is negative or zero.</summary>
     /// <param name="value">The argument to validate.</param>
     /// <param name="paramName">The name of the parameter with which <paramref name="value"/> corresponds.</param>
-    public static void ThrowIfNegativeOrZero(
+    internal static void ThrowIfNegativeOrZero(
         int value,
         [CallerArgumentExpression(nameof(value))] string? paramName = null)
     {
@@ -170,7 +170,7 @@ internal static class ArgumentValidation
     /// <param name="value">The argument to validate.</param>
     /// <param name="other">The value to compare with.</param>
     /// <param name="paramName">The name of the parameter with which <paramref name="value"/> corresponds.</param>
-    public static void ThrowIfEqual<T>(
+    internal static void ThrowIfEqual<T>(
         T value,
         T other,
         [CallerArgumentExpression(nameof(value))] string? paramName = null)
@@ -189,7 +189,7 @@ internal static class ArgumentValidation
     /// <param name="value">The argument to validate.</param>
     /// <param name="other">The value to compare with.</param>
     /// <param name="paramName">The name of the parameter with which <paramref name="value"/> corresponds.</param>
-    public static void ThrowIfNotEqual<T>(
+    internal static void ThrowIfNotEqual<T>(
         T value,
         T other,
         [CallerArgumentExpression(nameof(value))] string? paramName = null)
@@ -208,7 +208,7 @@ internal static class ArgumentValidation
     /// <param name="value">The argument to validate.</param>
     /// <param name="other">The value to compare with.</param>
     /// <param name="paramName">The name of the parameter with which <paramref name="value"/> corresponds.</param>
-    public static void ThrowIfGreaterThan<T>(
+    internal static void ThrowIfGreaterThan<T>(
         T value,
         T other,
         [CallerArgumentExpression(nameof(value))] string? paramName = null)
@@ -227,7 +227,7 @@ internal static class ArgumentValidation
     /// <param name="value">The argument to validate.</param>
     /// <param name="other">The value to compare with.</param>
     /// <param name="paramName">The name of the parameter with which <paramref name="value"/> corresponds.</param>
-    public static void ThrowIfGreaterThanOrEqual<T>(
+    internal static void ThrowIfGreaterThanOrEqual<T>(
         T value,
         T other,
         [CallerArgumentExpression(nameof(value))] string? paramName = null)
@@ -246,7 +246,7 @@ internal static class ArgumentValidation
     /// <param name="value">The argument to validate.</param>
     /// <param name="other">The value to compare with.</param>
     /// <param name="paramName">The name of the parameter with which <paramref name="value"/> corresponds.</param>
-    public static void ThrowIfLessThan<T>(
+    internal static void ThrowIfLessThan<T>(
         T value,
         T other,
         [CallerArgumentExpression(nameof(value))] string? paramName = null)
@@ -265,7 +265,7 @@ internal static class ArgumentValidation
     /// <param name="value">The argument to validate.</param>
     /// <param name="other">The value to compare with.</param>
     /// <param name="paramName">The name of the parameter with which <paramref name="value"/> corresponds.</param>
-    public static void ThrowIfLessThanOrEqual<T>(
+    internal static void ThrowIfLessThanOrEqual<T>(
         T value,
         T other,
         [CallerArgumentExpression(nameof(value))] string? paramName = null)
@@ -283,7 +283,7 @@ internal static class ArgumentValidation
     /// <param name="value">The argument to validate.</param>
     /// <param name="other">The value to compare with.</param>
     /// <param name="paramName">The name of the parameter with which <paramref name="value"/> corresponds.</param>
-    public static void ThrowIfLessThanOrEqual(
+    internal static void ThrowIfLessThanOrEqual(
         int value,
         int other,
         [CallerArgumentExpression(nameof(value))] string? paramName = null)
@@ -300,11 +300,7 @@ internal static class ArgumentValidation
     /// <typeparam name="T">The expected type.</typeparam>
     /// <param name="argument">The argument to validate.</param>
     /// <param name="paramName">The name of the parameter with which <paramref name="argument"/> corresponds.</param>
-    [SuppressMessage(
-        "Major Code Smell",
-        "S4018:Generic methods should provide type parameter",
-        Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
-    public static void ThrowIfNotOfType<T>(
+    internal static void ThrowIfNotOfType<T>(
         [NotNull] object? argument,
         [CallerArgumentExpression(nameof(argument))] string? paramName = null)
     {
@@ -320,7 +316,7 @@ internal static class ArgumentValidation
     /// <typeparam name="T">The struct type.</typeparam>
     /// <param name="argument">The argument to validate.</param>
     /// <param name="paramName">The name of the parameter with which <paramref name="argument"/> corresponds.</param>
-    public static void ThrowIfDefault<T>(
+    internal static void ThrowIfDefault<T>(
         T argument,
         [CallerArgumentExpression(nameof(argument))] string? paramName = null)
         where T : struct

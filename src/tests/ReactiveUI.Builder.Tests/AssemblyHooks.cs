@@ -18,16 +18,6 @@ public static class AssemblyHooks
         // App builder initialization is handled per-test via AppBuilderTestExecutor.
         ModeDetector.OverrideModeDetector(new TestModeDetector());
 
-    /// <summary>Called after all tests in this assembly complete.</summary>
-    [After(Assembly)]
-    public static void AssemblyTeardown()
-    {
-        // Clean up resources
-        GC.Collect();
-        GC.WaitForPendingFinalizers();
-        GC.Collect();
-    }
-
     /// <summary>Mode detector that always indicates we're in a unit test runner.</summary>
     private sealed class TestModeDetector : IModeDetector
     {

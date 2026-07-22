@@ -46,6 +46,10 @@ internal sealed class CombineLatestSink<TFirst, TSecond> : IDisposable
     /// <param name="second">The second source.</param>
     /// <param name="onNext">Invoked with the latest pair once both sources have produced a value, and on every subsequent change.</param>
     /// <param name="onError">Optional callback invoked when either source errors.</param>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "Design",
+        "SST2403:'this' escapes before construction finishes",
+        Justification = "'this' is captured only by the two inner observers stored in this sink's subscription fields; every field they touch is assigned before Subscribe, so nothing escapes.")]
     public CombineLatestSink(
         IObservable<TFirst> first,
         IObservable<TSecond> second,

@@ -45,12 +45,10 @@
         <ul>
             @foreach (var room in ViewModel.Rooms)
             {
-                <li @onclick="() => OnRoomClicked(room)"
-                    @ondblclick="()=>OnRoomDoubleClicked(room)"
-                    style="cursor: pointer; padding: 6px; border-radius: 6px; background: @(room.Name == ViewModel.SelectedChatRoom?.Name ? "#e7f1ff" : "transparent");">
-                    <div><b>Id:</b> @room.Id</div>
-                    <div><b>Room name:</b> @room.Name</div>
-                </li>
+                <RoomListItem Room="room"
+                              Selected="@(room.Name == ViewModel.SelectedChatRoom?.Name)"
+                              OnClick="OnRoomClicked"
+                              OnDoubleClick="OnRoomDoubleClicked" />
             }
         </ul>
     }

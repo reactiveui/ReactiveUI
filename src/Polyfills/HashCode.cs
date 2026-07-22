@@ -14,6 +14,10 @@ namespace System;
 /// Only the static Combine methods are used in this assembly, so the value combination is delegated to ValueTuple's
 /// own hash combination rather than reimplementing the xxHash32 accumulator.
 /// </remarks>
+[SuppressMessage(
+    "Design",
+    "SST2324:Do not declare a member more accessible than its containing type",
+    Justification = "Mirrors the shape of the corresponding BCL type (System.HashCode); the polyfill compiles only where the BCL lacks it.")]
 internal static class HashCode
 {
     /// <summary>Combines a single value into a hash code.</summary>
@@ -124,7 +128,10 @@ internal static class HashCode
     /// <param name="value7">The seventh value.</param>
     /// <param name="value8">The eighth value.</param>
     /// <returns>The combined hash code.</returns>
-    [SuppressMessage("Major Code Smell", "S107:Methods should not have too many parameters", Justification = "Mirrors the System.HashCode.Combine 8-arity overload.")]
+    [SuppressMessage(
+        "Maintainability",
+        "SST1472:Signatures should not declare too many parameters",
+        Justification = "Mirrors the System.HashCode.Combine 8-arity overload; the polyfill compiles only where the BCL lacks it.")]
     public static int Combine<T1, T2, T3, T4, T5, T6, T7, T8>(T1 value1, T2 value2, T3 value3, T4 value4, T5 value5, T6 value6, T7 value7, T8 value8) =>
         (value1, value2, value3, value4, value5, value6, value7, value8).GetHashCode();
 }

@@ -1,0 +1,27 @@
+@namespace ReactiveUI.Builder.BlazorServer.Views
+@using ReactiveUI.Builder.BlazorServer.Models
+
+<li @onclick="() => OnClick.InvokeAsync(Room)"
+    @ondblclick="() => OnDoubleClick.InvokeAsync(Room)"
+    style="cursor: pointer; padding: 6px; border-radius: 6px; background: @(Selected ? "#e7f1ff" : "transparent");">
+    <div><b>Id:</b> @Room.Id</div>
+    <div><b>Room name:</b> @Room.Name</div>
+</li>
+
+@code {
+    /// <summary>Gets or sets the chat room this row represents.</summary>
+    [Parameter]
+    public ChatRoom Room { get; set; } = default!;
+
+    /// <summary>Gets or sets a value indicating whether this row is the selected room.</summary>
+    [Parameter]
+    public bool Selected { get; set; }
+
+    /// <summary>Gets or sets the callback invoked when the row is clicked.</summary>
+    [Parameter]
+    public EventCallback<ChatRoom> OnClick { get; set; }
+
+    /// <summary>Gets or sets the callback invoked when the row is double-clicked.</summary>
+    [Parameter]
+    public EventCallback<ChatRoom> OnDoubleClick { get; set; }
+}

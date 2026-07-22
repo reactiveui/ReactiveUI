@@ -35,8 +35,8 @@ public class PropertyBinderImplementationTests
             vm => vm.Count,
             v => v.CountText,
             signal,
-            count => count.ToString(),
-            text => int.TryParse(text, out var n) ? n : 0);
+            static count => count.ToString(),
+            static text => int.TryParse(text, out var n) ? n : 0);
 
         // Just verify binding was created
         await Assert.That(binding).IsNotNull();
@@ -87,8 +87,8 @@ public class PropertyBinderImplementationTests
             vm => vm.Count,
             v => v.CountText,
             signal,
-            count => count.ToString(),
-            text => int.TryParse(text, out var n) ? n : 0,
+            static count => count.ToString(),
+            static text => int.TryParse(text, out var n) ? n : 0,
             TriggerUpdate.ViewModelToView);
 
         // Verify binding was created successfully
@@ -288,7 +288,7 @@ public class PropertyBinderImplementationTests
                 view,
                 vm => vm.Name,
                 v => v.NameText,
-                x => x?.ToUpper() ?? string.Empty);
+                static x => x?.ToUpper() ?? string.Empty);
 
             // Binding should be created but produce no values
             viewModel.Name = ChangedText;

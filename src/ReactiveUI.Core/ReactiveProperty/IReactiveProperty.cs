@@ -17,7 +17,7 @@ namespace ReactiveUI;
 public interface IReactiveProperty<T> : IObservable<T?>, IsDisposed, INotifyDataErrorInfo, INotifyPropertyChanged
 {
     /// <summary>Gets or sets the value contained in the current instance.</summary>
-    public T? Value { get; set; }
+    T? Value { get; set; }
 
     /// <summary>Gets an observable sequence that signals when the collection of errors changes.</summary>
     /// <remarks>Subscribers receive a notification each time the set of errors is updated. The sequence emits

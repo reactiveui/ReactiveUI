@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using ReactiveUI.Tests.Utilities.AppBuilder;
 using TUnit.Core.Executors;
@@ -51,7 +52,7 @@ public class PropertyBindingExpressionCompilerTests
         var setter = Reflection.GetValueSetterOrThrow(memberInfo);
 
         // Act
-        var setThenGet = compiler.CreateSetThenGet(rewritten, getter, setter, (_, _) => null);
+        var setThenGet = compiler.CreateSetThenGet(rewritten, getter, setter, static (_, _) => null);
         var (shouldEmit, value) = setThenGet(view, TestValueText, null);
 
         // Assert
@@ -77,7 +78,7 @@ public class PropertyBindingExpressionCompilerTests
         var setter = Reflection.GetValueSetterOrThrow(memberInfo);
 
         // Act
-        var setThenGet = compiler.CreateSetThenGet(rewritten, getter, setter, (_, _) => null);
+        var setThenGet = compiler.CreateSetThenGet(rewritten, getter, setter, static (_, _) => null);
         var (shouldEmit, value) = setThenGet(view, InitialValueText, null);
 
         // Assert
@@ -103,7 +104,7 @@ public class PropertyBindingExpressionCompilerTests
 
         // Act
         // Converter that appends "Converted"
-        Func<object?, object?, object?[]?, object?> converter = (_, input, _) => input + "Converted";
+        Func<object?, object?, object?[]?, object?> converter = static (_, input, _) => $"{input}Converted";
         var setThenGet = compiler.CreateSetThenGet(rewritten, getter, setter, (_, _) => converter);
         var (shouldEmit, value) = setThenGet(view, "Test", null);
 
@@ -131,7 +132,7 @@ public class PropertyBindingExpressionCompilerTests
 
         // Act
         // Converter that appends "Converted"
-        Func<object?, object?, object?[]?, object?> converter = (_, input, _) => input + "Converted";
+        Func<object?, object?, object?[]?, object?> converter = static (_, input, _) => $"{input}Converted";
         var setThenGet = compiler.CreateSetThenGet(rewritten, getter, setter, (_, _) => converter);
         var (shouldEmit, value) = setThenGet(view, "Test", null); // "Test" -> TestConvertedText which matches current
 
@@ -282,7 +283,7 @@ public class PropertyBindingExpressionCompilerTests
             rewritten,
             getter,
             setter,
-            (_, _) => null); // No converter
+            static (_, _) => null); // No converter
 
         var emitted = new List<string?>();
         using var sub = observable.Subscribe(x => emitted.Add(x.Value));
@@ -323,7 +324,7 @@ public class PropertyBindingExpressionCompilerTests
             rewritten,
             getter,
             setter,
-            (_, _) => null);
+            static (_, _) => null);
 
         var emitted = new List<string?>();
         using var sub = observable.Subscribe(x => emitted.Add(x.Value));
@@ -359,7 +360,7 @@ public class PropertyBindingExpressionCompilerTests
         const int InputValue = 42;
 
         // Converter that converts int to string with prefix
-        Func<object?, object?, object?[]?, object?> converter = (_, input, _) => "Number:" + input;
+        Func<object?, object?, object?[]?, object?> converter = static (_, input, _) => $"Number:{input}";
         var observable = compiler.CreateDirectSetObservable<TestView, string?, int>(
             view,
             updates,
@@ -408,7 +409,7 @@ public class PropertyBindingExpressionCompilerTests
             chain,
             getter,
             setter,
-            (_, _) => null); // No converter
+            static (_, _) => null); // No converter
 
         var emitted = new List<int>();
         using var sub = observable.Subscribe(x => emitted.Add(x.Value));
@@ -458,6 +459,12 @@ public class PropertyBindingExpressionCompilerTests
         }
 
         /// <summary>Gets or sets an integer property used for binding tests.</summary>
+        [SuppressMessage(
+            "Design",
+            "SST2324:'SomeIntProperty' is declared 'public' but its containing type is only reachable as 'private'",
+            Justification = "mirrors the shape of the sibling TestView fixtures used across the property-binding " +
+                "compiler tests; this file's scenarios do not currently exercise it, but the public accessor keeps " +
+                "parity with those fixtures.")]
         public int SomeIntProperty
         {
             get;

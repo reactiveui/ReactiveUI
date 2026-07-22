@@ -8,6 +8,10 @@ using Splat;
 namespace ReactiveUI.Builder.Tests.Mixins;
 
 /// <summary>WithInstance tests for arities one through six.</summary>
+[System.Diagnostics.CodeAnalysis.SuppressMessage(
+    "Layout",
+    "SST1523:Members should not be too long",
+    Justification = "High-arity variadic WithInstance test methods are intrinsically long; each per-instance setup and assertion sits on its own line under one-statement-per-line formatting.")]
 public partial class BuilderInstanceMixinsTests
 {
     /// <summary>Verifies that the 1-type WithInstance builder instance method invokes the action with the resolved instance.</summary>
@@ -49,10 +53,6 @@ public partial class BuilderInstanceMixinsTests
     /// <summary>Verifies that the 1-type WithInstance extension method invokes the action with the resolved instance.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
-    [System.Diagnostics.CodeAnalysis.SuppressMessage(
-        "Major Code Smell",
-        "S4144:Methods should not have identical implementations",
-        Justification = "Intentional duplicate test scenario.")]
     public async Task Extension_WithInstance_1_Type_invokes_action()
     {
         using var resolver = new ModernDependencyResolver();
@@ -72,10 +72,6 @@ public partial class BuilderInstanceMixinsTests
     /// <summary>Verifies that the 1-type WithInstance extension method skips the action when the current resolver is null.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
-    [System.Diagnostics.CodeAnalysis.SuppressMessage(
-        "Major Code Smell",
-        "S4144:Methods should not have identical implementations",
-        Justification = "Intentional duplicate test scenario.")]
     public async Task Extension_WithInstance_1_Type_skips_when_null()
     {
         using var resolver = new ModernDependencyResolver();
@@ -139,10 +135,6 @@ public partial class BuilderInstanceMixinsTests
     /// <summary>Verifies that the 2-types WithInstance extension method invokes the action with the resolved instances.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
-    [System.Diagnostics.CodeAnalysis.SuppressMessage(
-        "Major Code Smell",
-        "S4144:Methods should not have identical implementations",
-        Justification = "Intentional duplicate test scenario.")]
     public async Task Extension_WithInstance_2_Types_invokes_action()
     {
         using var resolver = new ModernDependencyResolver();
@@ -172,10 +164,6 @@ public partial class BuilderInstanceMixinsTests
     /// <summary>Verifies that the 2-types WithInstance extension method skips the action when the current resolver is null.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
-    [System.Diagnostics.CodeAnalysis.SuppressMessage(
-        "Major Code Smell",
-        "S4144:Methods should not have identical implementations",
-        Justification = "Intentional duplicate test scenario.")]
     public async Task Extension_WithInstance_2_Types_skips_when_null()
     {
         using var resolver = new ModernDependencyResolver();
@@ -246,10 +234,6 @@ public partial class BuilderInstanceMixinsTests
     /// <summary>Verifies that the 3-types WithInstance extension method invokes the action with the resolved instances.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
-    [System.Diagnostics.CodeAnalysis.SuppressMessage(
-        "Major Code Smell",
-        "S4144:Methods should not have identical implementations",
-        Justification = "Intentional duplicate test scenario.")]
     public async Task Extension_WithInstance_3_Types_invokes_action()
     {
         using var resolver = new ModernDependencyResolver();
@@ -286,10 +270,6 @@ public partial class BuilderInstanceMixinsTests
     /// <summary>Verifies that the 3-types WithInstance extension method skips the action when the current resolver is null.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
-    [System.Diagnostics.CodeAnalysis.SuppressMessage(
-        "Major Code Smell",
-        "S4144:Methods should not have identical implementations",
-        Justification = "Intentional duplicate test scenario.")]
     public async Task Extension_WithInstance_3_Types_skips_when_null()
     {
         using var resolver = new ModernDependencyResolver();
@@ -368,10 +348,6 @@ public partial class BuilderInstanceMixinsTests
     /// <summary>Verifies that the 4-types WithInstance extension method invokes the action with the resolved instances.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
-    [System.Diagnostics.CodeAnalysis.SuppressMessage(
-        "Major Code Smell",
-        "S4144:Methods should not have identical implementations",
-        Justification = "Intentional duplicate test scenario.")]
     public async Task Extension_WithInstance_4_Types_invokes_action()
     {
         using var resolver = new ModernDependencyResolver();
@@ -415,10 +391,6 @@ public partial class BuilderInstanceMixinsTests
     /// <summary>Verifies that the 4-types WithInstance extension method skips the action when the current resolver is null.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
-    [System.Diagnostics.CodeAnalysis.SuppressMessage(
-        "Major Code Smell",
-        "S4144:Methods should not have identical implementations",
-        Justification = "Intentional duplicate test scenario.")]
     public async Task Extension_WithInstance_4_Types_skips_when_null()
     {
         using var resolver = new ModernDependencyResolver();
@@ -516,10 +488,6 @@ public partial class BuilderInstanceMixinsTests
     /// <summary>Verifies that the 5-types WithInstance extension method invokes the action with the resolved instances.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
-    [System.Diagnostics.CodeAnalysis.SuppressMessage(
-        "Major Code Smell",
-        "S4144:Methods should not have identical implementations",
-        Justification = "Intentional duplicate test scenario.")]
     public async Task Extension_WithInstance_5_Types_invokes_action()
     {
         using var resolver = new ModernDependencyResolver();
@@ -576,10 +544,6 @@ public partial class BuilderInstanceMixinsTests
     /// <summary>Verifies that the 5-types WithInstance extension method skips the action when the current resolver is null.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
-    [System.Diagnostics.CodeAnalysis.SuppressMessage(
-        "Major Code Smell",
-        "S4144:Methods should not have identical implementations",
-        Justification = "Intentional duplicate test scenario.")]
     public async Task Extension_WithInstance_5_Types_skips_when_null()
     {
         using var resolver = new ModernDependencyResolver();
@@ -691,10 +655,6 @@ public partial class BuilderInstanceMixinsTests
     /// <summary>Verifies that the 6-types WithInstance extension method invokes the action with the resolved instances.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
-    [System.Diagnostics.CodeAnalysis.SuppressMessage(
-        "Major Code Smell",
-        "S4144:Methods should not have identical implementations",
-        Justification = "Intentional duplicate test scenario.")]
     public async Task Extension_WithInstance_6_Types_invokes_action()
     {
         using var resolver = new ModernDependencyResolver();
@@ -759,10 +719,6 @@ public partial class BuilderInstanceMixinsTests
     /// <summary>Verifies that the 6-types WithInstance extension method skips the action when the current resolver is null.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
-    [System.Diagnostics.CodeAnalysis.SuppressMessage(
-        "Major Code Smell",
-        "S4144:Methods should not have identical implementations",
-        Justification = "Intentional duplicate test scenario.")]
     public async Task Extension_WithInstance_6_Types_skips_when_null()
     {
         using var resolver = new ModernDependencyResolver();

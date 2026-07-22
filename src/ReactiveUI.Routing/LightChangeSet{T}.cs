@@ -124,6 +124,12 @@ internal sealed class LightChangeSet<T> : IChangeSet<T>
                     Refreshes++;
                     break;
                 }
+
+            default:
+                {
+                    // This type only produces item changes; range reasons have no per-item tally.
+                    break;
+                }
         }
     }
 }

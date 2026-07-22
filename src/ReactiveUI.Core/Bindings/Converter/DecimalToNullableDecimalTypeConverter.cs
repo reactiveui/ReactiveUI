@@ -7,7 +7,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace ReactiveUI;
 
-/// <summary>Converts <see cref="decimal"/> to <see cref="Nullable{Decimal}"/>.</summary>
+/// <summary>Converts <see cref="decimal"/> to <see cref="decimal"/>?.</summary>
 public sealed class DecimalToNullableDecimalTypeConverter : IBindingTypeConverter<decimal, decimal?>
 {
     /// <inheritdoc/>

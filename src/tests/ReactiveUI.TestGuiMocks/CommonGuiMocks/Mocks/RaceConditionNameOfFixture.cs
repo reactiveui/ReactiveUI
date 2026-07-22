@@ -3,8 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Diagnostics.CodeAnalysis;
-
 namespace ReactiveUI.TestGuiMocks.CommonGuiMocks.Mocks;
 
 /// <summary>A fixture for RaceCondition and NameOf.</summary>
@@ -14,7 +12,10 @@ public class RaceConditionNameOfFixture : ReactiveObject
     private readonly ObservableAsPropertyHelper<bool> _a;
 
     /// <summary>Initializes a new instance of the <see cref="RaceConditionNameOfFixture"/> class.</summary>
-    [SuppressMessage("Major Code Smell", "S3366:\"this\" should not be exposed from constructors", Justification = "Required by ToProperty")]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "Design",
+        "SST2403:'this' escapes before construction finishes",
+        Justification = "canonical ObservableAsPropertyHelper initialization requires 'this' in the constructor; the single-threaded fixture never exposes the half-built instance.")]
     public RaceConditionNameOfFixture() =>
 
         // We need to generate a value on subscription

@@ -88,32 +88,26 @@ public sealed class VirtualTimeScheduler : ISequencer
     /// <summary>Advances virtual time by the specified duration, executing all scheduled actions.</summary>
     /// <param name="time">The time span to advance.</param>
     public void AdvanceBy(TimeSpan time)
-    {
 #if REACTIVE_SHIM
-        _scheduler.AdvanceBy(time.Ticks);
+        => _scheduler.AdvanceBy(time.Ticks);
 #else
-        _clock.AdvanceBy(time);
+        => _clock.AdvanceBy(time);
 #endif
-    }
 
     /// <summary>Advances virtual time to the specified absolute time, executing all scheduled actions.</summary>
     /// <param name="time">The absolute time to advance to.</param>
     public void AdvanceTo(DateTimeOffset time)
-    {
 #if REACTIVE_SHIM
-        _scheduler.AdvanceTo((time - DateTimeOffset.MinValue).Ticks);
+        => _scheduler.AdvanceTo((time - DateTimeOffset.MinValue).Ticks);
 #else
-        _clock.AdvanceTo(time);
+        => _clock.AdvanceTo(time);
 #endif
-    }
 
     /// <summary>Runs all scheduled actions until there are no more.</summary>
     public void Start()
-    {
 #if REACTIVE_SHIM
-        _scheduler.Start();
+        => _scheduler.Start();
 #else
-        _clock.Start();
+        => _clock.Start();
 #endif
-    }
 }

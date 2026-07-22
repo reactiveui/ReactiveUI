@@ -57,8 +57,8 @@ public class ActivatingViewTests
         var locator = new ModernDependencyResolver();
         _ = locator.CreateReactiveUIBuilder()
             .WithCoreServices()
-            .WithCustomRegistration(builder =>
-                builder.Register<IActivationForViewFetcher>(() => new ActivatingViewFetcher())).BuildApp();
+            .WithCustomRegistration(static builder =>
+                builder.Register<IActivationForViewFetcher>(static () => new ActivatingViewFetcher())).BuildApp();
 
         using (locator.WithResolver())
         {
@@ -95,8 +95,8 @@ public class ActivatingViewTests
         var locator = new ModernDependencyResolver();
         _ = locator.CreateReactiveUIBuilder()
             .WithCoreServices()
-            .WithCustomRegistration(builder =>
-                builder.Register<IActivationForViewFetcher>(() => new ActivatingViewFetcher())).BuildApp();
+            .WithCustomRegistration(static builder =>
+                builder.Register<IActivationForViewFetcher>(static () => new ActivatingViewFetcher())).BuildApp();
 
         using (locator.WithResolver())
         {
@@ -140,8 +140,8 @@ public class ActivatingViewTests
         var locator = new ModernDependencyResolver();
         _ = locator.CreateReactiveUIBuilder()
             .WithCoreServices()
-            .WithCustomRegistration(builder =>
-                builder.Register<IActivationForViewFetcher>(() => new ActivatingViewFetcher())).BuildApp();
+            .WithCustomRegistration(static builder =>
+                builder.Register<IActivationForViewFetcher>(static () => new ActivatingViewFetcher())).BuildApp();
 
         using (locator.WithResolver())
         {
@@ -174,8 +174,8 @@ public class ActivatingViewTests
         var locator = new ModernDependencyResolver();
         _ = locator.CreateReactiveUIBuilder()
             .WithCoreServices()
-            .WithCustomRegistration(builder =>
-                builder.Register<IActivationForViewFetcher>(() => new ActivatingViewFetcher())).BuildApp();
+            .WithCustomRegistration(static builder =>
+                builder.Register<IActivationForViewFetcher>(static () => new ActivatingViewFetcher())).BuildApp();
 
         using (locator.WithResolver())
         {
@@ -216,8 +216,8 @@ public class ActivatingViewTests
         var locator = new ModernDependencyResolver();
         _ = locator.CreateReactiveUIBuilder()
             .WithCoreServices()
-            .WithCustomRegistration(builder =>
-                builder.Register<IActivationForViewFetcher>(() => new ActivatingViewFetcher())).BuildApp();
+            .WithCustomRegistration(static builder =>
+                builder.Register<IActivationForViewFetcher>(static () => new ActivatingViewFetcher())).BuildApp();
 
         using (locator.WithResolver())
         {

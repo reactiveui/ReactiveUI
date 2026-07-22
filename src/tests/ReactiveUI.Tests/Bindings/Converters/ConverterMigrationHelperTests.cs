@@ -20,7 +20,7 @@ public class ConverterMigrationHelperTests
     public async Task ExtractConverters_ShouldThrowArgumentNullException_WhenResolverIsNull() =>
 
         // Act & Assert
-        await Assert.That(() => ConverterMigrationHelperMixins.ExtractConverters(null!))
+        await Assert.That(static () => ConverterMigrationHelperMixins.ExtractConverters(null!))
             .Throws<ArgumentException>();
 
     /// <summary>Verifies that ExtractConverters returns empty lists when no converters are registered.</summary>
@@ -309,7 +309,6 @@ public class ConverterMigrationHelperTests
     }
 
     /// <summary>Test dependency resolver for testing converter extraction.</summary>
-    [SuppressMessage("Major Code Smell", "S4018:Generic methods should provide type parameters", Justification = "Type parameter cannot be inferred.")]
     private sealed class TestDependencyResolver : IReadonlyDependencyResolver
     {
         /// <summary>The registered service instances.</summary>
@@ -333,11 +332,11 @@ public class ConverterMigrationHelperTests
         public T? GetService<T>(string? contract) => _services.OfType<T>().FirstOrDefault();
 
         /// <inheritdoc/>
-        public IEnumerable<object> GetServices(Type? serviceType) => _services.Where(s => s is not null);
+        public IEnumerable<object> GetServices(Type? serviceType) => _services.Where(static s => s is not null);
 
         /// <inheritdoc/>
         public IEnumerable<object> GetServices(Type? serviceType, string? contract) =>
-            _services.Where(s => s is not null);
+            _services.Where(static s => s is not null);
 
         /// <inheritdoc/>
         public IEnumerable<T> GetServices<T>() => _services.OfType<T>();

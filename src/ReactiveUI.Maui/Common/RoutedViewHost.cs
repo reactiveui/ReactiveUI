@@ -32,15 +32,15 @@ public partial class RoutedViewHost : TransitioningContentControl, IActivatableV
 {
     /// <summary>The router dependency property.</summary>
     public static readonly DependencyProperty RouterProperty =
-        DependencyProperty.Register("Router", typeof(RoutingState), typeof(RoutedViewHost), new(null));
+        DependencyProperty.Register(nameof(Router), typeof(RoutingState), typeof(RoutedViewHost), new(null));
 
     /// <summary>The default content property.</summary>
     public static readonly DependencyProperty DefaultContentProperty =
-        DependencyProperty.Register("DefaultContent", typeof(object), typeof(RoutedViewHost), new(null));
+        DependencyProperty.Register(nameof(DefaultContent), typeof(object), typeof(RoutedViewHost), new(null));
 
     /// <summary>The view contract observable property.</summary>
     public static readonly DependencyProperty ViewContractObservableProperty =
-        DependencyProperty.Register("ViewContractObservable", typeof(IObservable<string>), typeof(RoutedViewHost), new(Signal.Emit<string?>(null)));
+        DependencyProperty.Register(nameof(ViewContractObservable), typeof(IObservable<string>), typeof(RoutedViewHost), new(Signal.Emit<string?>(null)));
 
     /// <summary>The subscriptions created during construction, disposed together.</summary>
     private readonly MultipleDisposable _subscriptions = [];
@@ -49,14 +49,17 @@ public partial class RoutedViewHost : TransitioningContentControl, IActivatableV
     private string? _viewContract;
 
     /// <summary>Initializes a new instance of the <see cref="RoutedViewHost"/> class.</summary>
-    [SuppressMessage("Major Bug", "S3366:Do not call overridable methods in constructors", Justification = "Wires reactive bindings to this control's own dependency properties during construction.")]
+    [SuppressMessage(
+        "Design",
+        "SST2403:'this' escapes before construction finishes",
+        Justification = "The single-threaded UI control hands 'this' to MauiReactiveHelpers to observe its own dependency-property changes; it is never published to another thread.")]
     public RoutedViewHost()
     {
         HorizontalContentAlignment = HorizontalAlignment.Stretch;
         VerticalContentAlignment = VerticalAlignment.Stretch;
 
         var platform = AppLocator.Current.GetService<IPlatformOperations>();
-        Func<string?> platformGetter = () => default;
+        Func<string?> platformGetter = static () => default;
 
         if (platform is null)
         {
@@ -78,9 +81,9 @@ public partial class RoutedViewHost : TransitioningContentControl, IActivatableV
             : new StartWithObservable<string?>(
                     new FromEventObservable<string?>(onNext =>
                     {
-                        void Handler(object sender, SizeChangedEventArgs e) => onNext(platformGetter());
-                        SizeChanged += Handler;
-                        return new ActionDisposable(() => SizeChanged -= Handler);
+                        SizeChangedEventHandler handler = (_, _) => onNext(platformGetter());
+                        SizeChanged += handler;
+                        return new ActionDisposable(() => SizeChanged -= handler);
                     }),
                     platformGetter())
                 .DistinctUntilChanged();
@@ -154,14 +157,14 @@ public partial class RoutedViewHost : TransitioningContentControl, IActivatableV
     }
 
     /// <summary>Gets or sets the view contract.</summary>
-    [SuppressMessage(
-        "Critical Bug",
-        "S4275:Getters and setters should access the expected fields",
-        Justification = "Setter routes through ViewContractObservable; _viewContract is updated by its subscription.")]
     public string? ViewContract
     {
         get => _viewContract;
-        set => ViewContractObservable = Signal.Emit<string?>(value);
+        set
+        {
+            _viewContract = value;
+            ViewContractObservable = Signal.Emit(value);
+        }
     }
 
     /// <summary>Gets or sets the view locator.</summary>

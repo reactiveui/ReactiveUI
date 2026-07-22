@@ -8,10 +8,6 @@ using Splat;
 namespace ReactiveUI.Builder.Tests.Mixins;
 
 /// <summary>Tests the happy-path behaviour of the instance-based WithInstance overloads.</summary>
-[System.Diagnostics.CodeAnalysis.SuppressMessage(
-    "Major Code Smell",
-    "S4018:Generic methods should provide type parameters",
-    Justification = "Test exercises a generic overload with explicit type arguments.")]
 public partial class BuilderInstanceMixinsHappyPathTests
 {
     /// <summary>Verifies that the 1-type WithInstance overload invokes the action with the resolved instance.</summary>
@@ -390,7 +386,7 @@ public partial class BuilderInstanceMixinsHappyPathTests
     [Test]
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Major Code Smell",
-        "S107:Methods should not have too many parameters",
+        "SST1472:Signatures should not declare too many parameters",
         Justification = "Test exercises a variadic overload.")]
     public async Task WithInstance_8_Types_Invokes_Action_With_Resolved_Services()
     {
@@ -453,7 +449,7 @@ public partial class BuilderInstanceMixinsHappyPathTests
     [Test]
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Major Code Smell",
-        "S107:Methods should not have too many parameters",
+        "SST1472:Signatures should not declare too many parameters",
         Justification = "Test exercises a variadic overload.")]
     public async Task WithInstance_8_Types_Returns_Early_When_Current_Is_Null()
     {
@@ -785,27 +781,6 @@ public partial class BuilderInstanceMixinsHappyPathTests
 
         /// <inheritdoc/>
         public IEnumerable<T> GetServices<T>(string? contract) => GetServices(typeof(T), contract).OfType<T>();
-
-        /// <summary>Determines whether a service of the given type is registered.</summary>
-        /// <param name="serviceType">The type of service to check for.</param>
-        /// <param name="contract">The optional contract; ignored by this mock.</param>
-        /// <returns><see langword="true"/> if the service is registered; otherwise, <see langword="false"/>.</returns>
-        public bool HasRegistration(Type? serviceType, string? contract)
-        {
-            _ = contract;
-            return serviceType is not null && _services.ContainsKey(serviceType);
-        }
-
-        /// <summary>Determines whether a service of the given type is registered.</summary>
-        /// <typeparam name="T">The type of service to check for.</typeparam>
-        /// <returns><see langword="true"/> if the service is registered; otherwise, <see langword="false"/>.</returns>
-        public bool HasRegistration<T>() => HasRegistration(typeof(T), null);
-
-        /// <summary>Determines whether a service of the given type is registered.</summary>
-        /// <typeparam name="T">The type of service to check for.</typeparam>
-        /// <param name="contract">The optional contract; ignored by this mock.</param>
-        /// <returns><see langword="true"/> if the service is registered; otherwise, <see langword="false"/>.</returns>
-        public bool HasRegistration<T>(string? contract) => HasRegistration(typeof(T), contract);
 
         /// <summary>Releases the resources used by this resolver.</summary>
         public void Dispose()

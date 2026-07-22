@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Runtime.CompilerServices;
 using ReactiveUI.Builder;
 using Splat;
 using TUnit.Core.Executors;
@@ -12,6 +13,12 @@ namespace ReactiveUI.Maui.Tests;
 /// <summary>Tests for <see cref="MauiReactiveUIBuilderExtensions"/>.</summary>
 public class MauiReactiveUIBuilderExtensionsTest
 {
+    /// <summary>The runtime type name of the dispatcher-backed sequencer used by the MAUI main-thread scheduler.</summary>
+    private const string MauiDispatcherSequencerTypeName = "MauiDispatcherSequencer";
+
+    /// <summary>The scheduling delay, in milliseconds, used by the delayed-dispatch tests.</summary>
+    private const int ScheduleDelayMilliseconds = 100;
+
     /// <summary>Tests that MauiMainThreadScheduler is not null.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
@@ -28,7 +35,7 @@ public class MauiReactiveUIBuilderExtensionsTest
         // so the property takes the dispatcher.ToSequencer() branch instead of falling back to Sequencer.Default.
         var scheduler = MauiReactiveUIBuilderExtensions.MauiMainThreadScheduler;
 
-        await Assert.That(scheduler.GetType().Name).IsEqualTo("MauiDispatcherSequencer");
+        await Assert.That(scheduler.GetType().Name).IsEqualTo(MauiDispatcherSequencerTypeName);
     }
 
     /// <summary>Tests that WithMauiScheduler (no dispatcher) resolves the MAUI main-thread scheduler when not in a unit test runner.</summary>
@@ -46,7 +53,7 @@ public class MauiReactiveUIBuilderExtensionsTest
             // MauiMainThreadScheduler (the TestDispatcherProvider supplies a current-thread dispatcher).
             _ = builder.WithMauiScheduler();
 
-            await Assert.That(builder.MainThreadScheduler!.GetType().Name).IsEqualTo("MauiDispatcherSequencer");
+            await Assert.That(builder.MainThreadScheduler!.GetType().Name).IsEqualTo(MauiDispatcherSequencerTypeName);
         }
     }
 
@@ -57,7 +64,7 @@ public class MauiReactiveUIBuilderExtensionsTest
     {
         var builder = Microsoft.Maui.Hosting.MauiApp.CreateBuilder();
 
-        var result = builder.UseReactiveUI(rxBuilder => { });
+        var result = builder.UseReactiveUI(static rxBuilder => { });
 
         await Assert.That(result).IsNotNull();
         await Assert.That(result).IsEqualTo(builder);
@@ -70,7 +77,7 @@ public class MauiReactiveUIBuilderExtensionsTest
     {
         const MauiAppBuilder builder = null!;
 
-        await Assert.That(() => builder.UseReactiveUI(rxBuilder => { }))
+        await Assert.That(static () => builder.UseReactiveUI(static rxBuilder => { }))
             .Throws<ArgumentNullException>();
     }
 
@@ -81,7 +88,7 @@ public class MauiReactiveUIBuilderExtensionsTest
     {
         const IReactiveUIBuilder builder = null!;
 
-        await Assert.That(() => builder.WithMauiScheduler())
+        await Assert.That(static () => builder.WithMauiScheduler())
             .Throws<ArgumentNullException>();
     }
 
@@ -92,7 +99,7 @@ public class MauiReactiveUIBuilderExtensionsTest
     {
         const IReactiveUIBuilder builder = null!;
 
-        await Assert.That(() => builder.WithMaui())
+        await Assert.That(static () => builder.WithMaui())
             .Throws<ArgumentNullException>();
     }
 
@@ -134,7 +141,7 @@ public class MauiReactiveUIBuilderExtensionsTest
         _ = builder.WithMauiScheduler(dispatcher);
 
         await Assert.That(builder.MainThreadScheduler).IsNotNull();
-        await Assert.That(builder.MainThreadScheduler!.GetType().Name).IsEqualTo("MauiDispatcherSequencer");
+        await Assert.That(builder.MainThreadScheduler!.GetType().Name).IsEqualTo(MauiDispatcherSequencerTypeName);
     }
 
     /// <summary>Tests that MauiDispatcherSequencer schedules actions on the dispatcher.</summary>
@@ -148,11 +155,11 @@ public class MauiReactiveUIBuilderExtensionsTest
         _ = builder.WithMauiScheduler(dispatcher);
         var scheduler = builder.MainThreadScheduler!;
 
-        var executed = false;
-        _ = scheduler.Schedule(() => executed = true);
+        var executed = new StrongBox<bool>();
+        _ = scheduler.Schedule(executed, static state => state.Value = true);
 
         // MockDispatcher executes immediately if Dispatch is called
-        await Assert.That(executed).IsTrue();
+        await Assert.That(executed.Value).IsTrue();
         await Assert.That(dispatcher.DispatchCount).IsEqualTo(1);
     }
 
@@ -167,8 +174,8 @@ public class MauiReactiveUIBuilderExtensionsTest
         _ = builder.WithMauiScheduler(dispatcher);
         var scheduler = builder.MainThreadScheduler!;
 
-        var executed = false;
-        _ = scheduler.Schedule(TimeSpan.FromMilliseconds(100), () => executed = true);
+        var executed = new StrongBox<bool>();
+        _ = scheduler.Schedule(executed, TimeSpan.FromMilliseconds(ScheduleDelayMilliseconds), static state => state.Value = true);
 
         // Delays are routed through IDispatcher.DispatchDelayed (the dispatcher's native delayed dispatch),
         // not a created timer, and the forwarded delay is the remaining time until the due timestamp.
@@ -177,12 +184,12 @@ public class MauiReactiveUIBuilderExtensionsTest
         using (Assert.Multiple())
         {
             await Assert.That(delay).IsGreaterThan(TimeSpan.Zero);
-            await Assert.That(delay).IsLessThanOrEqualTo(TimeSpan.FromMilliseconds(100));
+            await Assert.That(delay).IsLessThanOrEqualTo(TimeSpan.FromMilliseconds(ScheduleDelayMilliseconds));
         }
 
         // Invoking the delayed callback runs the scheduled work.
         callback();
-        await Assert.That(executed).IsTrue();
+        await Assert.That(executed.Value).IsTrue();
     }
 
     /// <summary>Temporarily overrides the mode detector so the code believes it is not running in a unit test.</summary>
@@ -190,7 +197,7 @@ public class MauiReactiveUIBuilderExtensionsTest
     private static ActionDisposable ForceNonUnitTestMode()
     {
         ModeDetector.OverrideModeDetector(new AlwaysFalseModeDetector());
-        return new ActionDisposable(static () => ModeDetector.OverrideModeDetector(new DefaultModeDetector()));
+        return new(static () => ModeDetector.OverrideModeDetector(new DefaultModeDetector()));
     }
 
     /// <summary>Mode detector implementation that always reports it is not running in a unit test runner.</summary>

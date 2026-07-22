@@ -71,7 +71,7 @@ public abstract class ReactiveRecyclerViewAdapter<TViewModel> : RecyclerView.Ada
     /// notifications are needed here.
     /// </summary>
     /// <param name="change">The change to apply.</param>
-    private void UpdateBindings(ReactiveChange<TViewModel> change)
+    private void UpdateBindings(in ReactiveChange<TViewModel> change)
     {
         switch (change.Reason)
         {
@@ -96,6 +96,12 @@ public abstract class ReactiveRecyclerViewAdapter<TViewModel> : RecyclerView.Ada
             case ReactiveChangeReason.Replace or ReactiveChangeReason.Refresh:
                 {
                     NotifyItemChanged(change.CurrentIndex);
+                    break;
+                }
+
+            default:
+                {
+                    // Range and reset reasons are flattened to per-item changes upstream; nothing to do here.
                     break;
                 }
         }

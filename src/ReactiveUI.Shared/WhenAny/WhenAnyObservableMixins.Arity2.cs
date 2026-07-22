@@ -28,18 +28,16 @@ public static partial class WhenAnyObservableMixins
         [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
         public IObservable<TRet> WhenAnyObservable<TRet>(
             Expression<Func<TSender, IObservable<TRet>?>> obs1,
-            Expression<Func<TSender, IObservable<TRet>?>> obs2)
-        {
-            return new WhenAnyObservableMergeSink<TRet>(
+            Expression<Func<TSender, IObservable<TRet>?>> obs2) =>
+            new WhenAnyObservableMergeSink<TRet>(
                 sender.WhenAny(
                     obs1,
                     obs2,
-                    (o1, o2) => new[]
+                    static (o1, o2) => new[]
                     {
                         o1.Value!.EmptyIfNull(),
                         o2.Value!.EmptyIfNull(),
                     }));
-        }
 
         /// <summary>Observes several observable-valued properties and combines their latest values with a selector.</summary>
         /// <typeparam name="TRet">The type of the resulting value.</typeparam>

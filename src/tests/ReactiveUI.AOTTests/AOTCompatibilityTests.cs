@@ -135,7 +135,7 @@ public class AOTCompatibilityTests
         obj.TestProperty = "value2";
 
         await Assert.That(changes).Contains(nameof(TestReactiveObject.TestProperty));
-        await Assert.That(changes.Count(x => x == nameof(TestReactiveObject.TestProperty))).IsEqualTo(ExpectedPropertyChangeCount);
+        await Assert.That(changes.Count(static x => x == nameof(TestReactiveObject.TestProperty))).IsEqualTo(ExpectedPropertyChangeCount);
     }
 
     /// <summary>Tests that ReactiveCommand.CreateFromObservable works in AOT scenarios.</summary>
@@ -143,7 +143,7 @@ public class AOTCompatibilityTests
     [Test]
     public async Task ReactiveCommand_CreateFromObservable_WorksInAOT()
     {
-        var command = ReactiveCommand.CreateFromObservable(() => Signal.Emit(CommandResultValue));
+        var command = ReactiveCommand.CreateFromObservable(static () => Signal.Emit(CommandResultValue));
 
         // Ensure the execution completes before asserting by blocking for the result
         var result = await command.Execute().FirstAsync();

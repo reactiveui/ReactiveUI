@@ -148,7 +148,7 @@ public static class ComponentModelConversion
 
         return _converterCache.GetOrAdd((fromType, toType), ConverterFactory);
 
-        TypeConverter? ConverterFactory((Type From, Type To) key)
+        TypeConverter? ConverterFactory((Type From, Type To) _)
         {
             var converter = TypeDescriptor.GetConverter(lookupFrom);
             var canConvert = fromIsString

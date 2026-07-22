@@ -12,6 +12,9 @@ namespace ReactiveUI.Blazor.Tests;
 /// <summary>Tests for the <see cref="BlazorReactiveUIBuilderExtensions"/> class. These tests verify the Blazor-specific builder extensions for configuring ReactiveUI.</summary>
 public class BlazorReactiveUIBuilderExtensionsTests
 {
+    /// <summary>The expected <see cref="ArgumentException.ParamName"/> for the builder argument.</summary>
+    private const string BuilderParameterName = "builder";
+
     /// <summary>Verifies that BlazorMainThreadScheduler returns the current-thread sequencer.</summary>
     /// <returns>A Task representing the asynchronous test operation.</returns>
     [Test]
@@ -56,7 +59,7 @@ public class BlazorReactiveUIBuilderExtensionsTests
 
         var exception = await Assert.That(() => builder!.WithBlazor()).Throws<ArgumentNullException>();
         await Assert.That(exception).IsNotNull();
-        await Assert.That(exception.ParamName).IsEqualTo("builder");
+        await Assert.That(exception.ParamName).IsEqualTo(BuilderParameterName);
     }
 
     /// <summary>Verifies that WithBlazorScheduler sets the main thread sequencer.</summary>
@@ -82,7 +85,7 @@ public class BlazorReactiveUIBuilderExtensionsTests
 
         var exception = await Assert.That(() => builder!.WithBlazorScheduler()).Throws<ArgumentNullException>();
         await Assert.That(exception).IsNotNull();
-        await Assert.That(exception.ParamName).IsEqualTo("builder");
+        await Assert.That(exception.ParamName).IsEqualTo(BuilderParameterName);
     }
 
     /// <summary>Verifies that WithBlazorWasmScheduler sets the configured WASM sequencer.</summary>
@@ -108,27 +111,17 @@ public class BlazorReactiveUIBuilderExtensionsTests
 
         var exception = await Assert.That(() => builder!.WithBlazorWasmScheduler()).Throws<ArgumentNullException>();
         await Assert.That(exception).IsNotNull();
-        await Assert.That(exception.ParamName).IsEqualTo("builder");
+        await Assert.That(exception.ParamName).IsEqualTo(BuilderParameterName);
     }
 
     /// <summary>A test implementation of IReactiveUIBuilder for testing purposes.</summary>
-    [SuppressMessage(
-        "Major Code Smell",
-        "S4018:Generic methods should provide type parameters",
-        Justification = "Mock must match interface generic methods that take no argument of the type parameter.")]
     private sealed class TestReactiveUIBuilder : IReactiveUIBuilder
     {
         /// <summary>Gets the main thread scheduler that was set on the builder.</summary>
         public ISequencer? MainThreadScheduler { get; private set; }
 
-        /// <summary>Gets the task pool scheduler that was set on the builder.</summary>
-        public ISequencer? TaskpoolScheduler { get; private set; }
-
         /// <summary>Gets a value indicating whether the main thread scheduler was set.</summary>
         public bool MainThreadSchedulerSet { get; private set; }
-
-        /// <summary>Gets a value indicating whether the task pool scheduler was set.</summary>
-        public bool TaskpoolSchedulerSet { get; private set; }
 
         /// <summary>Gets a value indicating whether the platform module registration was called.</summary>
         public bool PlatformModuleCalled { get; private set; }
@@ -145,6 +138,10 @@ public class BlazorReactiveUIBuilderExtensionsTests
         }
 
         /// <inheritdoc/>
+        [SuppressMessage(
+            "Design",
+            "SST1452:Remove unused type parameters",
+            Justification = "Implicit IReactiveUIBuilder implementation; the type parameter is dictated by the interface signature and cannot be removed.")]
         public IReactiveUIBuilder WithPlatformModule<T>()
             where T : IWantsToRegisterStuff, new()
         {
@@ -198,24 +195,44 @@ public class BlazorReactiveUIBuilderExtensionsTests
             throw new NotSupportedException();
 
         /// <inheritdoc/>
+        [SuppressMessage(
+            "Design",
+            "SST1452:Remove unused type parameters",
+            Justification = "Implicit IReactiveUIBuilder implementation; the type parameter is dictated by the interface signature and cannot be removed.")]
         public IReactiveUIBuilder RegisterSingletonView<TView, TViewModel>()
             where TView : class, IViewFor<TViewModel>, new()
             where TViewModel : class, IReactiveObject => throw new NotSupportedException();
 
         /// <inheritdoc/>
+        [SuppressMessage(
+            "Design",
+            "SST1452:Remove unused type parameters",
+            Justification = "Implicit IReactiveUIBuilder implementation; the type parameter is dictated by the interface signature and cannot be removed.")]
         public IReactiveUIBuilder RegisterSingletonViewModel<TViewModel>()
             where TViewModel : class, IReactiveObject, new() => throw new NotSupportedException();
 
         /// <inheritdoc/>
+        [SuppressMessage(
+            "Design",
+            "SST1452:Remove unused type parameters",
+            Justification = "Implicit IReactiveUIBuilder implementation; the type parameter is dictated by the interface signature and cannot be removed.")]
         public IReactiveUIBuilder RegisterView<TView, TViewModel>()
             where TView : class, IViewFor<TViewModel>, new()
             where TViewModel : class, IReactiveObject => throw new NotSupportedException();
 
         /// <inheritdoc/>
+        [SuppressMessage(
+            "Design",
+            "SST1452:Remove unused type parameters",
+            Justification = "Implicit IReactiveUIBuilder implementation; the type parameter is dictated by the interface signature and cannot be removed.")]
         public IReactiveUIBuilder RegisterViewModel<TViewModel>()
             where TViewModel : class, IReactiveObject, new() => throw new NotSupportedException();
 
         /// <inheritdoc/>
+        [SuppressMessage(
+            "Design",
+            "SST1452:Remove unused type parameters",
+            Justification = "Implicit IReactiveUIBuilder implementation; the type parameter is dictated by the interface signature and cannot be removed.")]
         public IReactiveUIBuilder RegisterConstantViewModel<TViewModel>()
             where TViewModel : class, IReactiveObject, new() => throw new NotSupportedException();
 
@@ -234,12 +251,7 @@ public class BlazorReactiveUIBuilderExtensionsTests
         public IReactiveUIBuilder WithTaskPoolScheduler(ISequencer scheduler) => WithTaskPoolScheduler(scheduler, true);
 
         /// <inheritdoc/>
-        public IReactiveUIBuilder WithTaskPoolScheduler(ISequencer scheduler, bool setRxApp)
-        {
-            TaskpoolScheduler = scheduler;
-            TaskpoolSchedulerSet = true;
-            return this;
-        }
+        public IReactiveUIBuilder WithTaskPoolScheduler(ISequencer scheduler, bool setRxApp) => this;
 
         /// <inheritdoc/>
         public IReactiveUIBuilder WithViewsFromAssembly(System.Reflection.Assembly assembly) =>
@@ -328,6 +340,10 @@ public class BlazorReactiveUIBuilderExtensionsTests
         public IReactiveUIBuilder WithSuspensionHost() => throw new NotSupportedException();
 
         /// <inheritdoc/>
+        [SuppressMessage(
+            "Design",
+            "SST1452:Remove unused type parameters",
+            Justification = "Implicit IReactiveUIBuilder implementation; the type parameter is dictated by the interface signature and cannot be removed.")]
         public IReactiveUIBuilder WithSuspensionHost<TAppState>() => throw new NotSupportedException();
 
         /// <inheritdoc/>

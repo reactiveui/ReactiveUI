@@ -30,8 +30,8 @@ public class CommandBindingViewModel : ReactiveObject
 
     /// <summary>Initializes a new instance of the <see cref="CommandBindingViewModel"/> class.</summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
-        "Major Code Smell",
-        "S3366:\"this\" should not be exposed from constructors",
+        "Design",
+        "SST2403:Do not let 'this' escape from a constructor",
         Justification = "OAPH/WhenAny initialization requires 'this'; single-threaded test fixture.")]
     public CommandBindingViewModel()
     {
@@ -78,7 +78,7 @@ public class CommandBindingViewModel : ReactiveObject
     /// <summary>The asynchronous body for the third command.</summary>
     /// <param name="cancellationToken">A token used to cancel the operation.</param>
     /// <returns>The result value, or <see langword="null"/> if cancelled.</returns>
-    private async Task<int?> RunAsync(CancellationToken cancellationToken)
+    private static async Task<int?> RunAsync(CancellationToken cancellationToken)
     {
         await Task.Delay(CommandDelayMilliseconds, cancellationToken).ConfigureAwait(false);
         return cancellationToken.IsCancellationRequested ? null : CommandResultValue;

@@ -24,7 +24,7 @@ public class NullableSingleToSingleTypeConverterTests
     public async Task TryConvert_WithValue_Succeeds()
     {
         var converter = new NullableSingleToSingleTypeConverter();
-        const float Value = 123.45f;
+        const float Value = 123.45F;
         float? value = Value;
 
         var result = converter.TryConvert(value, null, out var output);
@@ -70,7 +70,7 @@ public class NullableSingleToSingleTypeConverterTests
     public async Task TryConvertTyped_WithValidValue_ReturnsTrueAndOutput()
     {
         var converter = new NullableSingleToSingleTypeConverter();
-        const float Value = 42.5f;
+        const float Value = 42.5F;
         float? value = Value;
 
         var success = converter.TryConvertTyped(value, null, out var result);

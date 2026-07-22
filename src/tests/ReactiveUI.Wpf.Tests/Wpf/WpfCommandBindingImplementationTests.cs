@@ -70,7 +70,6 @@ public class WpfCommandBindingImplementationTests
     /// <summary>Binds the command to object target is null.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "S4144:Methods should not have identical implementations", Justification = "Intentional duplicate test scenario.")]
     public async Task BindCommandToObjectTargetIsNull()
     {
         var vm = new CommandBindingViewModel();
@@ -86,7 +85,6 @@ public class WpfCommandBindingImplementationTests
     /// <summary>Binds the command to object target is null.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "S4144:Methods should not have identical implementations", Justification = "Intentional duplicate test scenario.")]
     public async Task BindCommandToObjectEventIsNull()
     {
         var vm = new CommandBindingViewModel();
@@ -102,7 +100,6 @@ public class WpfCommandBindingImplementationTests
     /// <summary>Binds the command to object command is null.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "S4144:Methods should not have identical implementations", Justification = "Intentional duplicate test scenario.")]
     public async Task BindCommandToObjectWithEventCommandIsArgumentNull()
     {
         var vm = new CommandBindingViewModel();
@@ -118,7 +115,6 @@ public class WpfCommandBindingImplementationTests
     /// <summary>Binds the command to object command is null.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "S4144:Methods should not have identical implementations", Justification = "Intentional duplicate test scenario.")]
     public async Task BindCommandToObjectCommandIsArgumentNull()
     {
         var vm = new CommandBindingViewModel();
@@ -239,6 +235,10 @@ public class WpfCommandBindingImplementationTests
     /// <summary>Verifies that an overwritten view model is garbage collected after a command binding.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "Performance",
+        "PSH1021:Do not force garbage collection",
+        Justification = "This test verifies the view model is finalized once overwritten, which requires forcing a collection.")]
     public async Task ViewModelShouldBeGarbageCollectedWhenOverwritten()
     {
         static (IDisposable, WeakReference) GetWeakReference()

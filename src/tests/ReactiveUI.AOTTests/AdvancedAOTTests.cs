@@ -43,7 +43,7 @@ public class AdvancedAOTTests
         _ = property.ObserveValidationErrors()
             .Subscribe(error => hasErrors = !string.IsNullOrEmpty(error));
 
-        _ = property.AddValidationError(x => string.IsNullOrEmpty(x) ? "Required" : null);
+        _ = property.AddValidationError(static x => string.IsNullOrEmpty(x) ? "Required" : null);
         property.Value = string.Empty;
 
         await Assert.That(hasErrors).IsTrue();

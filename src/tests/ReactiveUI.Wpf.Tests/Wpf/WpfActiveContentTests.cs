@@ -37,7 +37,7 @@ public class WpfActiveContentTests
         var vm = view.ViewModel!;
 
         // Activate the view to trigger bindings
-        view.RaiseEvent(new RoutedEventArgs(FrameworkElement.LoadedEvent));
+        view.RaiseEvent(new(FrameworkElement.LoadedEvent));
 
         // Test 1: Add first item
         var test1 = new MockBindListItemViewModel("Test1");
@@ -171,13 +171,13 @@ public class WpfActiveContentTests
         {
             base.Initialize();
 
-            _helper.Initialize(builder =>
+            _helper.Initialize(static builder =>
             {
                 _ = builder
                     .WithWpf()
-                    .WithRegistration(r => r.RegisterConstant<IViewFor<FakeViewWithContract.MyViewModel>>(new FakeViewWithContract.View0()))
-                    .WithRegistration(r => r.RegisterConstant<IViewFor<FakeViewWithContract.MyViewModel>>(new FakeViewWithContract.ViewA(), FakeViewWithContract.ContractA))
-                    .WithRegistration(r => r.RegisterConstant<IViewFor<FakeViewWithContract.MyViewModel>>(new FakeViewWithContract.ViewB(), FakeViewWithContract.ContractB))
+                    .WithRegistration(static r => r.RegisterConstant<IViewFor<FakeViewWithContract.MyViewModel>>(new FakeViewWithContract.View0()))
+                    .WithRegistration(static r => r.RegisterConstant<IViewFor<FakeViewWithContract.MyViewModel>>(new FakeViewWithContract.ViewA(), FakeViewWithContract.ContractA))
+                    .WithRegistration(static r => r.RegisterConstant<IViewFor<FakeViewWithContract.MyViewModel>>(new FakeViewWithContract.ViewB(), FakeViewWithContract.ContractB))
                     .WithMainThreadScheduler(Sequencer.Immediate)
                     .WithTaskPoolScheduler(Sequencer.Immediate)
                     .WithCoreServices();
@@ -203,12 +203,12 @@ public class WpfActiveContentTests
         {
             base.Initialize();
 
-            _helper.Initialize(builder =>
+            _helper.Initialize(static builder =>
             {
                 _ = builder
                     .WithWpf()
-                    .WithRegistration(r => r.RegisterConstant<IViewFor<FakeViewWithContract.MyViewModel>>(new FakeViewWithContract.View0()))
-                    .WithRegistration(r => r.RegisterConstant<IViewFor<FakeViewWithContract.MyViewModel>>(new FakeViewWithContract.ViewA(), FakeViewWithContract.ContractA))
+                    .WithRegistration(static r => r.RegisterConstant<IViewFor<FakeViewWithContract.MyViewModel>>(new FakeViewWithContract.View0()))
+                    .WithRegistration(static r => r.RegisterConstant<IViewFor<FakeViewWithContract.MyViewModel>>(new FakeViewWithContract.ViewA(), FakeViewWithContract.ContractA))
                     .WithMainThreadScheduler(Sequencer.Immediate)
                     .WithTaskPoolScheduler(Sequencer.Immediate)
                     .WithCoreServices();
@@ -234,12 +234,12 @@ public class WpfActiveContentTests
         {
             base.Initialize();
 
-            _helper.Initialize(builder =>
+            _helper.Initialize(static builder =>
             {
                 _ = builder
                     .WithWpf()
-                    .WithRegistration(r => r.RegisterConstant<IViewFor<FakeViewWithContract.MyViewModel>>(new FakeViewWithContract.View0()))
-                    .WithRegistration(r => r.RegisterConstant<IViewFor<FakeViewWithContract.MyViewModel>>(new FakeViewWithContract.ViewA(), FakeViewWithContract.ContractA))
+                    .WithRegistration(static r => r.RegisterConstant<IViewFor<FakeViewWithContract.MyViewModel>>(new FakeViewWithContract.View0()))
+                    .WithRegistration(static r => r.RegisterConstant<IViewFor<FakeViewWithContract.MyViewModel>>(new FakeViewWithContract.ViewA(), FakeViewWithContract.ContractA))
                     .WithMainThreadScheduler(Sequencer.Immediate)
                     .WithTaskPoolScheduler(Sequencer.Immediate)
                     .WithCoreServices();
@@ -265,13 +265,13 @@ public class WpfActiveContentTests
         {
             base.Initialize();
 
-            _helper.Initialize(builder =>
+            _helper.Initialize(static builder =>
             {
                 _ = builder
                     .WithWpf()
-                    .WithRegistration(r => r.RegisterConstant<IViewFor<FakeViewWithContract.MyViewModel>>(new FakeViewWithContract.View0()))
-                    .WithRegistration(r => r.RegisterConstant<IViewFor<FakeViewWithContract.MyViewModel>>(new FakeViewWithContract.ViewA(), FakeViewWithContract.ContractA))
-                    .WithRegistration(r => r.RegisterConstant<IViewFor<FakeViewWithContract.MyViewModel>>(new FakeViewWithContract.ViewB(), FakeViewWithContract.ContractB))
+                    .WithRegistration(static r => r.RegisterConstant<IViewFor<FakeViewWithContract.MyViewModel>>(new FakeViewWithContract.View0()))
+                    .WithRegistration(static r => r.RegisterConstant<IViewFor<FakeViewWithContract.MyViewModel>>(new FakeViewWithContract.ViewA(), FakeViewWithContract.ContractA))
+                    .WithRegistration(static r => r.RegisterConstant<IViewFor<FakeViewWithContract.MyViewModel>>(new FakeViewWithContract.ViewB(), FakeViewWithContract.ContractB))
                     .WithMainThreadScheduler(Sequencer.Immediate)
                     .WithTaskPoolScheduler(Sequencer.Immediate)
                     .WithCoreServices();

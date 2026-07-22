@@ -23,7 +23,7 @@ public partial class BuilderInstanceMixinsTests
     /// <param name="s9">The created instance for service 9.</param>
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Major Code Smell",
-        "S107:Methods should not have too many parameters",
+        "SST1472:Signatures should not declare too many parameters",
         Justification = "Test exercises a variadic overload.")]
     private static void RegisterServices09(
         ModernDependencyResolver resolver,
@@ -71,7 +71,7 @@ public partial class BuilderInstanceMixinsTests
     /// <param name="s10">The created instance for service 10.</param>
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Major Code Smell",
-        "S107:Methods should not have too many parameters",
+        "SST1472:Signatures should not declare too many parameters",
         Justification = "Test exercises a variadic overload.")]
     private static void RegisterServices10(
         ModernDependencyResolver resolver,
@@ -123,7 +123,7 @@ public partial class BuilderInstanceMixinsTests
     /// <param name="s11">The created instance for service 11.</param>
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Major Code Smell",
-        "S107:Methods should not have too many parameters",
+        "SST1472:Signatures should not declare too many parameters",
         Justification = "Test exercises a variadic overload.")]
     private static void RegisterServices11(
         ModernDependencyResolver resolver,
@@ -179,7 +179,7 @@ public partial class BuilderInstanceMixinsTests
     /// <param name="s12">The created instance for service 12.</param>
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Major Code Smell",
-        "S107:Methods should not have too many parameters",
+        "SST1472:Signatures should not declare too many parameters",
         Justification = "Test exercises a variadic overload.")]
     private static void RegisterServices12(
         ModernDependencyResolver resolver,
@@ -239,7 +239,7 @@ public partial class BuilderInstanceMixinsTests
     /// <param name="s13">The created instance for service 13.</param>
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Major Code Smell",
-        "S107:Methods should not have too many parameters",
+        "SST1472:Signatures should not declare too many parameters",
         Justification = "Test exercises a variadic overload.")]
     private static void RegisterServices13(
         ModernDependencyResolver resolver,
@@ -303,7 +303,7 @@ public partial class BuilderInstanceMixinsTests
     /// <param name="s14">The created instance for service 14.</param>
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Major Code Smell",
-        "S107:Methods should not have too many parameters",
+        "SST1472:Signatures should not declare too many parameters",
         Justification = "Test exercises a variadic overload.")]
     private static void RegisterServices14(
         ModernDependencyResolver resolver,
@@ -371,7 +371,7 @@ public partial class BuilderInstanceMixinsTests
     /// <param name="s15">The created instance for service 15.</param>
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Major Code Smell",
-        "S107:Methods should not have too many parameters",
+        "SST1472:Signatures should not declare too many parameters",
         Justification = "Test exercises a variadic overload.")]
     private static void RegisterServices15(
         ModernDependencyResolver resolver,
@@ -443,7 +443,7 @@ public partial class BuilderInstanceMixinsTests
     /// <param name="s16">The created instance for service 16.</param>
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Major Code Smell",
-        "S107:Methods should not have too many parameters",
+        "SST1472:Signatures should not declare too many parameters",
         Justification = "Test exercises a variadic overload.")]
     private static void RegisterServices16(
         ModernDependencyResolver resolver,

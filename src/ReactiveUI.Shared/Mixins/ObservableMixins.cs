@@ -53,7 +53,7 @@ public static class ObservableMixins
                     return RxVoid.Default;
                 },
                 cts);
-            return (result, cts.Cancel);
+            return (result, () => RequestCancel(cts));
         });
 
     /// <summary>
@@ -79,7 +79,7 @@ public static class ObservableMixins
                     return RxVoid.Default;
                 },
                 cts);
-            return (result, () => cts.Cancel());
+            return (result, () => RequestCancel(cts));
         });
 
     /// <summary>
@@ -97,7 +97,7 @@ public static class ObservableMixins
         {
             var cts = new CancellationTokenSource();
             var result = new FromAsyncObservable<TResult>(actionAsync, cts);
-            return (result, () => cts.Cancel());
+            return (result, () => RequestCancel(cts));
         });
 
     /// <summary>
@@ -120,8 +120,27 @@ public static class ObservableMixins
         {
             var cts = new CancellationTokenSource();
             var result = new FromAsyncObservable<TResult>(ct => actionAsync(param, ct), cts);
-            return (result, () => cts.Cancel());
+            return (result, () => RequestCancel(cts));
         });
+
+    /// <summary>
+    /// Signals cancellation on <paramref name="source"/>, tolerating a source that a completed run has already
+    /// disposed. When the asynchronous run finishes on its own it disposes the source, so a later cancel (for
+    /// example during command teardown) has nothing left to cancel; the resulting
+    /// <see cref="ObjectDisposedException"/> is that expected no-op and is ignored.
+    /// </summary>
+    /// <param name="source">The cancellation source to signal.</param>
+    private static void RequestCancel(CancellationTokenSource source)
+    {
+        try
+        {
+            source.Cancel();
+        }
+        catch (ObjectDisposedException)
+        {
+            // A completed run already disposed the source; there is nothing left to cancel.
+        }
+    }
 
     /// <summary>Forwards only the non-null values of a source, projected to the non-nullable type. Replaces <c>Where(x is not null).Select(x!)</c>.</summary>
     /// <typeparam name="T">The element type.</typeparam>
@@ -206,16 +225,19 @@ public static class ObservableMixins
         }
 
         /// <summary>Drives a single asynchronous execution, forwarding its result or error exactly once.</summary>
-        private sealed class Run : IDisposable
+        /// <param name="observer">The observer receiving the result.</param>
+        /// <param name="factory">The asynchronous factory.</param>
+        /// <param name="outerCancellation">The outer cancellation source.</param>
+        private sealed class Run(IObserver<T> observer, Func<CancellationToken, Task<T>> factory, CancellationTokenSource outerCancellation) : IDisposable
         {
             /// <summary>The observer receiving the result.</summary>
-            private readonly IObserver<T> _observer;
+            private readonly IObserver<T> _observer = observer;
 
             /// <summary>The asynchronous factory.</summary>
-            private readonly Func<CancellationToken, Task<T>> _factory;
+            private readonly Func<CancellationToken, Task<T>> _factory = factory;
 
             /// <summary>The outer cancellation source (caller-cancellable), disposed when the run ends.</summary>
-            private readonly CancellationTokenSource _outerCancellation;
+            private readonly CancellationTokenSource _outerCancellation = outerCancellation;
 
             /// <summary>The subscription cancellation source, cancelled on dispose.</summary>
             private readonly CancellationTokenSource _subscriptionCancellation = new();
@@ -228,17 +250,6 @@ public static class ObservableMixins
 
             /// <summary>The linked token source passed to the factory; disposed before its source sources to avoid ObjectDisposedException.</summary>
             private CancellationTokenSource? _linked;
-
-            /// <summary>Initializes a new instance of the <see cref="Run"/> class.</summary>
-            /// <param name="observer">The observer receiving the result.</param>
-            /// <param name="factory">The asynchronous factory.</param>
-            /// <param name="outerCancellation">The outer cancellation source.</param>
-            public Run(IObserver<T> observer, Func<CancellationToken, Task<T>> factory, CancellationTokenSource outerCancellation)
-            {
-                _observer = observer;
-                _factory = factory;
-                _outerCancellation = outerCancellation;
-            }
 
             /// <summary>Starts the asynchronous execution.</summary>
             public void Start() => _ = RunAsync();

@@ -6,6 +6,7 @@
 using System.Collections.Frozen;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
+using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 using Android.OS;
 using Android.Text;
@@ -114,12 +115,8 @@ public sealed class AndroidObservableForWidgets : ICreatesObservableForProperty
 
             dispatch[(item.Type, item.Property)] = item.Func;
 
-            if (!byProperty.TryGetValue(item.Property, out var list))
-            {
-                list = new(CandidateTypesInitialCapacity);
-                byProperty.Add(item.Property, list);
-            }
-
+            ref var list = ref CollectionsMarshal.GetValueRefOrAddDefault(byProperty, item.Property, out _);
+            list ??= new(CandidateTypesInitialCapacity);
             list.Add(item.Type);
         }
 
@@ -250,7 +247,7 @@ public sealed class AndroidObservableForWidgets : ICreatesObservableForProperty
         return new(
             typeof(AdapterView),
             propName,
-            (x, ex) => new AdapterSelectionObservable((AdapterView)x, ex));
+            static (x, ex) => new AdapterSelectionObservable((AdapterView)x, ex));
     }
 
     /// <summary>Creates a dispatch item for the <see cref="TimePicker"/> hour property that is compatible with the current OS level.</summary>
@@ -261,16 +258,14 @@ public sealed class AndroidObservableForWidgets : ICreatesObservableForProperty
     /// <returns>A dispatch item for observing the hour value on a <see cref="TimePicker"/>.</returns>
     [ObsoletedOSPlatform("android23.0")]
     [SupportedOSPlatform("android35.0")]
-    private static DispatchItem CreateTimePickerHourFromWidget()
-    {
-        return (int)Build.VERSION.SdkInt >= TimePickerHourMinuteApiLevel ? CreateFromWidget<TimePicker, TimePicker.TimeChangedEventArgs>(
+    private static DispatchItem CreateTimePickerHourFromWidget() =>
+        (int)Build.VERSION.SdkInt >= TimePickerHourMinuteApiLevel ? CreateFromWidget<TimePicker, TimePicker.TimeChangedEventArgs>(
                 static v => v.Hour,
                 static (v, h) => v.TimeChanged += h,
                 static (v, h) => v.TimeChanged -= h) : CreateFromWidget<TimePicker, TimePicker.TimeChangedEventArgs>(
             static v => v.CurrentHour,
             static (v, h) => v.TimeChanged += h,
             static (v, h) => v.TimeChanged -= h);
-    }
 
     /// <summary>Creates a dispatch item for the <see cref="TimePicker"/> minute property that is compatible with the current OS level.</summary>
     /// <remarks>
@@ -280,16 +275,14 @@ public sealed class AndroidObservableForWidgets : ICreatesObservableForProperty
     /// <returns>A dispatch item for observing the minute value on a <see cref="TimePicker"/>.</returns>
     [ObsoletedOSPlatform("android23.0")]
     [SupportedOSPlatform("android35.0")]
-    private static DispatchItem CreateTimePickerMinuteFromWidget()
-    {
-        return (int)Build.VERSION.SdkInt >= TimePickerHourMinuteApiLevel ? CreateFromWidget<TimePicker, TimePicker.TimeChangedEventArgs>(
+    private static DispatchItem CreateTimePickerMinuteFromWidget() =>
+        (int)Build.VERSION.SdkInt >= TimePickerHourMinuteApiLevel ? CreateFromWidget<TimePicker, TimePicker.TimeChangedEventArgs>(
                 static v => v.Minute,
                 static (v, h) => v.TimeChanged += h,
                 static (v, h) => v.TimeChanged -= h) : CreateFromWidget<TimePicker, TimePicker.TimeChangedEventArgs>(
             static v => v.CurrentMinute,
             static (v, h) => v.TimeChanged += h,
             static (v, h) => v.TimeChanged -= h);
-    }
 
     /// <summary>Creates a dispatch item for a widget type and property by subscribing to a widget event.</summary>
     /// <remarks>
@@ -342,19 +335,19 @@ public sealed class AndroidObservableForWidgets : ICreatesObservableForProperty
         {
             ArgumentExceptionHelper.ThrowIfNull(observer);
 
-            void OnItemSelected(object? sender, AdapterView.ItemSelectedEventArgs args) =>
+            EventHandler<AdapterView.ItemSelectedEventArgs> onItemSelected = (_, _) =>
                 observer.OnNext(new ObservedChange<object, object?>(adapterView, expression, null));
 
-            void OnNothingSelected(object? sender, AdapterView.NothingSelectedEventArgs args) =>
+            EventHandler<AdapterView.NothingSelectedEventArgs> onNothingSelected = (_, _) =>
                 observer.OnNext(new ObservedChange<object, object?>(adapterView, expression, null));
 
-            adapterView.ItemSelected += OnItemSelected;
-            adapterView.NothingSelected += OnNothingSelected;
+            adapterView.ItemSelected += onItemSelected;
+            adapterView.NothingSelected += onNothingSelected;
 
             return new ActionDisposable(() =>
             {
-                adapterView.ItemSelected -= OnItemSelected;
-                adapterView.NothingSelected -= OnNothingSelected;
+                adapterView.ItemSelected -= onItemSelected;
+                adapterView.NothingSelected -= onNothingSelected;
             });
         }
     }
@@ -384,11 +377,11 @@ public sealed class AndroidObservableForWidgets : ICreatesObservableForProperty
         {
             ArgumentExceptionHelper.ThrowIfNull(observer);
 
-            void Handler(object? sender, TEventArgs args) =>
+            EventHandler<TEventArgs> handler = (_, _) =>
                 observer.OnNext(new ObservedChange<object, object?>(view!, expression, null));
 
-            addHandler(view, Handler);
-            return new ActionDisposable(() => removeHandler(view, Handler));
+            addHandler(view, handler);
+            return new ActionDisposable(() => removeHandler(view, handler));
         }
     }
 

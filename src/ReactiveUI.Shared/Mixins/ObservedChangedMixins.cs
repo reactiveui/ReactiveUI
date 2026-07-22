@@ -103,7 +103,7 @@ public static class ObservedChangedMixins
         internal bool TryGetValue(
             out TValue changeValue)
         {
-            if (!Equals(item.Value, default(TValue)))
+            if (!EqualityComparer<TValue>.Default.Equals(item.Value, default(TValue)!))
             {
                 changeValue = item.Value;
                 return true;

@@ -20,7 +20,7 @@ public class ChangeSetExtensionsTests
         var sets = new List<IReactiveChangeSet<string>>();
         using var subscription = ChangeSetExtensions.ToReactiveChangeSet<RaisingCollection, string>(collection).Subscribe(sets.Add);
 
-        collection.Raise(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, "c", -1));
+        collection.Raise(new(NotifyCollectionChangedAction.Add, "c", -1));
 
         var last = sets[^1];
         using (Assert.Multiple())
@@ -39,7 +39,7 @@ public class ChangeSetExtensionsTests
         var sets = new List<IReactiveChangeSet<string>>();
         using var subscription = ChangeSetExtensions.ToReactiveChangeSet<RaisingCollection, string>(collection).Subscribe(sets.Add);
 
-        collection.Raise(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, "a", -1));
+        collection.Raise(new(NotifyCollectionChangedAction.Remove, "a", -1));
 
         var last = sets[^1];
         using (Assert.Multiple())
@@ -58,7 +58,7 @@ public class ChangeSetExtensionsTests
         var sets = new List<IReactiveChangeSet<string>>();
         using var subscription = ChangeSetExtensions.ToReactiveChangeSet<RaisingCollection, string>(collection).Subscribe(sets.Add);
 
-        collection.Raise(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Move, "b", 0, 1));
+        collection.Raise(new(NotifyCollectionChangedAction.Move, "b", 0, 1));
 
         var last = sets[^1];
         await Assert.That(last[0].Reason).IsEqualTo(ReactiveChangeReason.Move);
@@ -73,7 +73,7 @@ public class ChangeSetExtensionsTests
         var sets = new List<IReactiveChangeSet<string>>();
         using var subscription = ChangeSetExtensions.ToReactiveChangeSet<RaisingCollection, string>(collection).Subscribe(sets.Add);
 
-        collection.Raise(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+        collection.Raise(new(NotifyCollectionChangedAction.Reset));
 
         var last = sets[^1];
         using (Assert.Multiple())
@@ -96,7 +96,7 @@ public class ChangeSetExtensionsTests
         var initialCount = sets.Count;
 
         // A reset with an empty shadow and empty collection yields zero changes, so nothing is emitted.
-        collection.Raise(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+        collection.Raise(new(NotifyCollectionChangedAction.Reset));
 
         await Assert.That(sets).Count().IsEqualTo(initialCount);
     }

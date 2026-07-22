@@ -12,6 +12,9 @@ namespace ReactiveUI.Builder.BlazorServer.ViewModels;
 /// <summary>View model for a single chat room.</summary>
 public class ChatRoomViewModel : ReactiveObject, IRoutableViewModel
 {
+    /// <summary>The quiet window, in milliseconds, applied before notifying the UI of newly received messages.</summary>
+    private const int IncomingMessageQuietWindowMilliseconds = 33;
+
     /// <summary>Backing helper indicating whether a message can be sent.</summary>
     private readonly ObservableAsPropertyHelper<bool> _canSendPropertyHelper;
 
@@ -28,7 +31,10 @@ public class ChatRoomViewModel : ReactiveObject, IRoutableViewModel
     /// <param name="hostScreen">The host screen.</param>
     /// <param name="room">The room.</param>
     /// <param name="user">The user.</param>
-    [SuppressMessage("Reliability", "S3366:Don't expose 'this' in constructors", Justification = "OAPH/WhenAny initialization requires 'this'; single-threaded sample.")]
+    [SuppressMessage(
+        "Design",
+        "SST2403:'this' escapes before construction finishes",
+        Justification = "Canonical ObservableAsPropertyHelper and MessageBus setup needs 'this' in the constructor; the single-threaded Blazor circuit never exposes the half-built instance.")]
     public ChatRoomViewModel(IScreen hostScreen, ChatRoom room, string user)
     {
         ArgumentNullException.ThrowIfNull(room);
@@ -43,7 +49,7 @@ public class ChatRoomViewModel : ReactiveObject, IRoutableViewModel
         var canSend =
             this.WhenAnyValue<ChatRoomViewModel, bool, string>(
                 nameof(MessageText),
-                txt => !string.IsNullOrWhiteSpace(txt));
+                static txt => !string.IsNullOrWhiteSpace(txt));
         SendMessage = ReactiveCommand.Create(SendMessageImpl, canSend);
 
         NavigateBack = ReactiveCommand.CreateFromObservable(
@@ -53,12 +59,14 @@ public class ChatRoomViewModel : ReactiveObject, IRoutableViewModel
 
         // Observe new incoming messages via MessageBus using the room name as the contract across instances
         _ = MessageBus.Current.Listen<ChatNetworkMessage>(room.Name)
-            .EmitIfQuiet(TimeSpan.FromMilliseconds(33))
+            .EmitIfQuiet(TimeSpan.FromMilliseconds(IncomingMessageQuietWindowMilliseconds))
             .Where(x => x.InstanceId != _senderInstanceId)
             .Subscribe(Witness.Create<ChatNetworkMessage>(msg =>
             {
-                // Since we share the room, message is already added there, so we just need to notify the UI
-                this.RaisePropertyChanged(nameof(Messages));
+                // Since we share the room, message is already added there, so we just need to notify the UI.
+                // Raise with an explicit PropertyChangedEventArgs so the reported property is 'Messages'.
+                // A bare RaisePropertyChanged() here would inject the enclosing constructor as the caller.
+                ((IReactiveObject)this).RaisePropertyChanged(new(nameof(Messages)));
                 Trace.TraceInformation($"[Room:{room.Name}] RX '{msg.Text}' from {msg.Sender}/{msg.InstanceId}");
             }));
     }

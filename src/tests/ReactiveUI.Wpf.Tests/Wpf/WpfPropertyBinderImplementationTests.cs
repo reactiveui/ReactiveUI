@@ -23,9 +23,6 @@ public class WpfPropertyBinderImplementationTests
     /// <summary>The value pushed from the view model while off the view's dispatcher thread.</summary>
     private const string OffThreadValue = "off-thread update";
 
-    /// <summary>The time, in milliseconds, to wait for the foreign dispatcher to start.</summary>
-    private const int DispatcherStartTimeoutMs = 5000;
-
     /// <summary>A two-way bind whose updates originate on the view's own dispatcher thread is applied inline.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
@@ -87,6 +84,9 @@ public class WpfPropertyBinderImplementationTests
     /// <summary>A dedicated STA thread that owns its own <see cref="Dispatcher"/>, used to host a view with foreign thread affinity.</summary>
     private sealed class ForeignDispatcher : IDisposable
     {
+        /// <summary>The time, in milliseconds, to wait for the foreign dispatcher to start.</summary>
+        private const int DispatcherStartTimeoutMs = 5000;
+
         /// <summary>Initializes a new instance of the <see cref="ForeignDispatcher"/> class and starts its dispatcher loop.</summary>
         public ForeignDispatcher()
         {

@@ -16,18 +16,14 @@ public class WpfReactiveUiBuilderExtensionsTest
     /// <summary>Tests that WpfMainThreadScheduler is not null.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public async Task WpfMainThreadScheduler_IsNotNull()
-    {
+    public async Task WpfMainThreadScheduler_IsNotNull() =>
         await Assert.That(WpfReactiveUIBuilderExtensions.WpfMainThreadScheduler).IsNotNull();
-    }
 
     /// <summary>Tests that WithWpf throws when builder is null.</summary>
     [Test]
-    public void WithWpf_ThrowsArgumentNullException_WhenBuilderIsNull()
-    {
-        _ = Assert.Throws<ArgumentNullException>(() =>
+    public void WithWpf_ThrowsArgumentNullException_WhenBuilderIsNull() =>
+        _ = Assert.Throws<ArgumentNullException>(static () =>
             WpfReactiveUIBuilderExtensions.WithWpf(null!));
-    }
 
     /// <summary>Tests that WithWpf configures builder correctly.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
@@ -51,11 +47,9 @@ public class WpfReactiveUiBuilderExtensionsTest
 
     /// <summary>Tests that WithWpfScheduler throws when builder is null.</summary>
     [Test]
-    public void WithWpfScheduler_ThrowsArgumentNullException_WhenBuilderIsNull()
-    {
-        _ = Assert.Throws<ArgumentNullException>(() =>
+    public void WithWpfScheduler_ThrowsArgumentNullException_WhenBuilderIsNull() =>
+        _ = Assert.Throws<ArgumentNullException>(static () =>
             WpfReactiveUIBuilderExtensions.WithWpfScheduler(null!));
-    }
 
     /// <summary>Tests that WithWpfScheduler configures scheduler correctly.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
@@ -99,11 +93,9 @@ public class WpfReactiveUiBuilderExtensionsTest
 
     /// <summary>Tests that WithWpfConverters throws when builder is null.</summary>
     [Test]
-    public void WithWpfConverters_ThrowsArgumentNullException_WhenBuilderIsNull()
-    {
-        _ = Assert.Throws<ArgumentNullException>(() =>
+    public void WithWpfConverters_ThrowsArgumentNullException_WhenBuilderIsNull() =>
+        _ = Assert.Throws<ArgumentNullException>(static () =>
             WpfReactiveUIBuilderExtensions.WithWpfConverters(null!));
-    }
 
     /// <summary>Tests that WithWpfConverters registers WPF-specific converters in the ConverterService.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>

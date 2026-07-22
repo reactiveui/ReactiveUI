@@ -15,6 +15,10 @@ namespace ReactiveUI;
 /// Public AOT-friendly generic registration helpers for IMutableDependencyResolver.
 /// These avoid reflection by relying on generic constraints and parameterless constructors.
 /// </summary>
+[SuppressMessage(
+    "Design",
+    "SST2307:Generic method type parameters should be inferable from the parameters",
+    Justification = "These helpers take the view and view model types as explicit generic arguments by design; they cannot be inferred from the parameters.")]
 public static class MutableDependencyResolverExtensions
 {
     /// <summary>Initializes static members of the <see cref="MutableDependencyResolverExtensions"/> class.</summary>
@@ -28,10 +32,6 @@ public static class MutableDependencyResolverExtensions
         /// <typeparam name="TView">The view type to register. Must implement IViewFor{TViewModel} and have a parameterless constructor.</typeparam>
         /// <typeparam name="TViewModel">The view model type for which the view is registered.</typeparam>
         /// <returns>The dependency resolver instance, enabling method chaining.</returns>
-        [SuppressMessage(
-            "Major Code Smell",
-            "S4018:Generic methods should provide type parameter",
-            Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
         public IMutableDependencyResolver RegisterViewForViewModel<TView, TViewModel>()
             where TView : class, IViewFor<TViewModel>, new()
             where TViewModel : class =>
@@ -45,10 +45,6 @@ public static class MutableDependencyResolverExtensions
         /// <typeparam name="TViewModel">The view model type for which the view is registered.</typeparam>
         /// <param name="contract">An optional contract to associate with the registration. If null, the registration is made without a contract.</param>
         /// <returns>The dependency resolver instance, enabling method chaining.</returns>
-        [SuppressMessage(
-            "Major Code Smell",
-            "S4018:Generic methods should provide type parameter",
-            Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
         public IMutableDependencyResolver RegisterViewForViewModel<TView, TViewModel>(
             string? contract)
             where TView : class, IViewFor<TViewModel>, new()
@@ -71,10 +67,6 @@ public static class MutableDependencyResolverExtensions
         /// <typeparam name="TView">The type of the view to register. Must implement IViewFor{TViewModel} and have a parameterless constructor.</typeparam>
         /// <typeparam name="TViewModel">The type of the view model associated with the view.</typeparam>
         /// <returns>The dependency resolver instance, enabling method chaining.</returns>
-        [SuppressMessage(
-            "Major Code Smell",
-            "S4018:Generic methods should provide type parameter",
-            Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
         public IMutableDependencyResolver RegisterSingletonViewForViewModel<TView, TViewModel>()
             where TView : class, IViewFor<TViewModel>, new()
             where TViewModel : class =>
@@ -89,10 +81,6 @@ public static class MutableDependencyResolverExtensions
         /// <param name="contract">An optional contract string to associate with the registration. If null, the registration is made without a
         /// contract.</param>
         /// <returns>The dependency resolver instance, enabling method chaining.</returns>
-        [SuppressMessage(
-            "Major Code Smell",
-            "S4018:Generic methods should provide type parameter",
-            Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
         public IMutableDependencyResolver RegisterSingletonViewForViewModel<TView, TViewModel>(
             string? contract)
             where TView : class, IViewFor<TViewModel>, new()

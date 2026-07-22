@@ -26,7 +26,7 @@ public class WinformsCreatesObservableForProperty : ICreatesObservableForPropert
     /// <summary>Caches the reflected change event for each property to avoid repeated reflection.</summary>
     private static readonly MemoizingMRUCache<(Type type, string name), EventInfo?> EventInfoCache = new(
         static (pair, _) => pair.type.GetEvent(
-            pair.name + "Changed",
+            $"{pair.name}Changed",
             BindingFlags.FlattenHierarchy | BindingFlags.Instance | BindingFlags.Public),
         RxCacheSize.SmallCacheLimit);
 

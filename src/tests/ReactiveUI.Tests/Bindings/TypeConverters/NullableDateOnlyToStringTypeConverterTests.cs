@@ -24,8 +24,10 @@ public class NullableDateOnlyToStringTypeConverterTests
     [Test]
     public async Task TryConvert_DateOnly_Succeeds()
     {
+        const int Year = 2_024;
+        const int Day = 15;
         var converter = new NullableDateOnlyToStringTypeConverter();
-        DateOnly? value = new DateOnly(2_024, 1, 15);
+        DateOnly? value = new DateOnly(Year, 1, Day);
 
         var result = converter.TryConvert(value, null, out var output);
 

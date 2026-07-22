@@ -3,6 +3,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics.CodeAnalysis;
+
 namespace ReactiveUI.Tests.WhenAny;
 
 /// <summary>
@@ -16,6 +18,10 @@ public partial class WhenAnySinkDirectTests
     /// <summary>Exercises every emit, error, completion, and selector-exception path of the arity-6 change sink.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
+    [SuppressMessage(
+        "Maintainability",
+        "SST1523:method is over the maximum line count",
+        Justification = "single cohesive test scenario; splitting would obscure the arrange-act-assert flow.")]
     public async Task ChangeSink6_AllPaths()
     {
         var s1 = new Signal<string>();
@@ -25,7 +31,7 @@ public partial class WhenAnySinkDirectTests
         var s5 = new Signal<string>();
         var s6 = new Signal<string>();
         var rec = new Recorder<string>();
-        using (new WhenAnyChangeSink<string, string, string, string, string, string, string>(s1, s2, s3, s4, s5, s6, (x1, x2, x3, x4, x5, x6) => x1 + x2 + x3 + x4 + x5 + x6).Subscribe(rec))
+        using (new WhenAnyChangeSink<string, string, string, string, string, string, string>(s1, s2, s3, s4, s5, s6, static (x1, x2, x3, x4, x5, x6) => x1 + x2 + x3 + x4 + x5 + x6).Subscribe(rec))
         {
             s1.OnNext("v1");
             s2.OnNext("v2");
@@ -48,7 +54,7 @@ public partial class WhenAnySinkDirectTests
         var e5 = new Signal<string>();
         var e6 = new Signal<string>();
         var errRec = new Recorder<string>();
-        _ = new WhenAnyChangeSink<string, string, string, string, string, string, string>(e1, e2, e3, e4, e5, e6, (x1, x2, x3, x4, x5, x6) => x1 + x2 + x3 + x4 + x5 + x6).Subscribe(errRec);
+        _ = new WhenAnyChangeSink<string, string, string, string, string, string, string>(e1, e2, e3, e4, e5, e6, static (x1, x2, x3, x4, x5, x6) => x1 + x2 + x3 + x4 + x5 + x6).Subscribe(errRec);
         e1.OnError(ex);
 
         var k1 = new Signal<string>();
@@ -58,7 +64,7 @@ public partial class WhenAnySinkDirectTests
         var k5 = new Signal<string>();
         var k6 = new Signal<string>();
         var cmpRec = new Recorder<string>();
-        _ = new WhenAnyChangeSink<string, string, string, string, string, string, string>(k1, k2, k3, k4, k5, k6, (x1, x2, x3, x4, x5, x6) => x1 + x2 + x3 + x4 + x5 + x6).Subscribe(cmpRec);
+        _ = new WhenAnyChangeSink<string, string, string, string, string, string, string>(k1, k2, k3, k4, k5, k6, static (x1, x2, x3, x4, x5, x6) => x1 + x2 + x3 + x4 + x5 + x6).Subscribe(cmpRec);
         k1.OnCompleted();
         k2.OnCompleted();
         k3.OnCompleted();

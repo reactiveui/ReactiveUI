@@ -134,7 +134,7 @@ public class StringBasedObservationTests
             {
                 // Using RaisePropertyChanged to ensure property change notification
                 field = value;
-                this.RaisePropertyChanged(nameof(Name));
+                this.RaisePropertyChanged();
             }
         }
     }

@@ -3,12 +3,9 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Diagnostics.CodeAnalysis;
-
 namespace ReactiveUI.Testing;
 
 /// <summary>Default methods for the <see cref="IBuilder"/> abstraction.</summary>
-[SuppressMessage("Design", "CA1045:Do not pass types by reference", Justification = "The fluent builder mutates caller fields/collections in place by design.")]
 public static partial class IBuilderExtensions
 {
     /// <summary>Provides fluent configuration extension members for builders.</summary>
@@ -96,7 +93,6 @@ public static partial class IBuilderExtensions
 }
 
 /// <summary>Provides fluent dictionary-replacement extension members for builders whose receiver type is unconstrained.</summary>
-[SuppressMessage("Design", "CA1045:Do not pass types by reference", Justification = "The fluent builder mutates caller fields/collections in place by design.")]
 public static partial class IBuilderExtensions
 {
     /// <summary>Provides fluent dictionary-replacement extension members for builders.</summary>
@@ -117,7 +113,7 @@ public static partial class IBuilderExtensions
         {
             ArgumentExceptionHelper.ThrowIfNull(dictionary);
 
-            dictionary = (Dictionary<TKey, TField>)keyValuePair;
+            dictionary = new(keyValuePair);
             return builder;
         }
     }

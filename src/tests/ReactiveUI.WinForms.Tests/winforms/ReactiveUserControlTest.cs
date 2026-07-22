@@ -78,16 +78,17 @@ public class ReactiveUserControlTest
     [Test]
     public async Task IViewForViewModel_CanCastFromObject()
     {
-        IViewFor control = new ReactiveUserControl<TestViewModel>();
+        var control = new ReactiveUserControl<TestViewModel>();
+        IViewFor viewForControl = control;
         object viewModel = new TestViewModel();
 
-        control.ViewModel = viewModel;
+        viewForControl.ViewModel = viewModel;
 
-        var typedViewModel = ((ReactiveUserControl<TestViewModel>)control).ViewModel!;
+        var typedViewModel = control.ViewModel!;
 
         await Assert.That(typedViewModel).IsNotNull();
-        await Assert.That(control.ViewModel).IsEqualTo(viewModel);
-        await Assert.That(typedViewModel == control.ViewModel).IsTrue();
+        await Assert.That(viewForControl.ViewModel).IsEqualTo(viewModel);
+        await Assert.That(typedViewModel == viewForControl.ViewModel).IsTrue();
     }
 
     /// <summary>Tests that control initializes components on construction.</summary>

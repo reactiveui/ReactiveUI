@@ -23,8 +23,10 @@ public class TimeSpanToStringTypeConverterTests
     [Test]
     public async Task TryConvert_TimeSpan_Succeeds()
     {
+        const double Hours = 2.5;
+
         var converter = new TimeSpanToStringTypeConverter();
-        var value = TimeSpan.FromHours(2.5);
+        var value = TimeSpan.FromHours(Hours);
 
         var result = converter.TryConvert(value, null, out var output);
 
@@ -51,8 +53,10 @@ public class TimeSpanToStringTypeConverterTests
     [Test]
     public async Task TryConvert_NegativeTimeSpan_Succeeds()
     {
+        const double Minutes = -30;
+
         var converter = new TimeSpanToStringTypeConverter();
-        var value = TimeSpan.FromMinutes(-30);
+        var value = TimeSpan.FromMinutes(Minutes);
 
         var result = converter.TryConvert(value, null, out var output);
 

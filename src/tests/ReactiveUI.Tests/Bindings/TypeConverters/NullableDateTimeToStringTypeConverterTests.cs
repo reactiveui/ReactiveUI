@@ -23,10 +23,6 @@ public class NullableDateTimeToStringTypeConverterTests
     /// <summary>Verifies that converting a date-time value to a string succeeds.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
-    [System.Diagnostics.CodeAnalysis.SuppressMessage(
-        "Major Code Smell",
-        "S6566:Prefer using DateTimeOffset instead of DateTime",
-        Justification = "Converter under test operates on DateTime.")]
     public async Task TryConvert_DateTime_Succeeds()
     {
         var converter = new NullableDateTimeToStringTypeConverter();

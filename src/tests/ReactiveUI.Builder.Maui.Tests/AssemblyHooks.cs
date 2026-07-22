@@ -15,15 +15,6 @@ public static class AssemblyHooks
     public static void AssemblySetup() =>
         ModeDetector.OverrideModeDetector(new TestModeDetector());
 
-    /// <summary>Called after all tests in this assembly complete.</summary>
-    [After(Assembly)]
-    public static void AssemblyTeardown()
-    {
-        GC.Collect();
-        GC.WaitForPendingFinalizers();
-        GC.Collect();
-    }
-
     /// <summary>Mode detector implementation that always reports being in a unit test runner.</summary>
     private sealed class TestModeDetector : IModeDetector
     {

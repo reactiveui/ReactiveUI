@@ -3,8 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Diagnostics.CodeAnalysis;
-
 namespace ReactiveUI.Tests.WhenAny;
 
 /// <summary>
@@ -13,7 +11,6 @@ namespace ReactiveUI.Tests.WhenAny;
 /// <c>WhenAnyValue</c> API cannot reach (property-change observables never error or complete). Each arity lives in
 /// its own partial-class file.
 /// </summary>
-[SuppressMessage("Major Code Smell", "S107", Justification = "Variadic selectors intentionally accept more than seven parameters.")]
 public partial class WhenAnySinkDirectTests
 {
     /// <summary>Verifies the arity-12 value sink emits when every source is ready and re-emits per later source update.</summary>
@@ -47,7 +44,7 @@ public partial class WhenAnySinkDirectTests
             s10,
             s11,
             s12,
-            (x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12) => x1 + x2 + x3 + x4 + x5 + x6 + x7 + x8 + x9 + x10 + x11 + x12).Subscribe(rec);
+            static (x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12) => x1 + x2 + x3 + x4 + x5 + x6 + x7 + x8 + x9 + x10 + x11 + x12).Subscribe(rec);
         s1.OnNext(Ch("v1"));
         s2.OnNext(Ch("v2"));
         s3.OnNext(Ch("v3"));
@@ -106,7 +103,7 @@ public partial class WhenAnySinkDirectTests
             e10,
             e11,
             e12,
-            (x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12) => x1 + x2 + x3 + x4 + x5 + x6 + x7 + x8 + x9 + x10 + x11 + x12).Subscribe(rec);
+            static (x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12) => x1 + x2 + x3 + x4 + x5 + x6 + x7 + x8 + x9 + x10 + x11 + x12).Subscribe(rec);
         e1.OnError(ex);
         Exception[] expectedErrors = [ex];
         await Assert.That(rec.Errors).IsEquivalentTo(expectedErrors);
@@ -143,7 +140,7 @@ public partial class WhenAnySinkDirectTests
             k10,
             k11,
             k12,
-            (x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12) => x1 + x2 + x3 + x4 + x5 + x6 + x7 + x8 + x9 + x10 + x11 + x12).Subscribe(rec);
+            static (x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12) => x1 + x2 + x3 + x4 + x5 + x6 + x7 + x8 + x9 + x10 + x11 + x12).Subscribe(rec);
         k1.OnCompleted();
         k2.OnCompleted();
         k3.OnCompleted();
