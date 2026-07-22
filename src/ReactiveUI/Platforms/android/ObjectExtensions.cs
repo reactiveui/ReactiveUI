@@ -36,11 +36,7 @@ internal static class ObjectExtensions
         /// <returns>The .NET object of type TObject represented by the specified Java.Lang.Object, or the default value of TObject
         /// if value is null.</returns>
         /// <exception cref="InvalidOperationException">Thrown if value is not a Java.Lang.Object created with .ToJavaObject().</exception>
-        [SuppressMessage(
-            "Major Code Smell",
-            "S4018:Generic methods should provide type parameter",
-            Justification = "Type parameter is supplied explicitly by the caller and cannot be inferred from the parameters.")]
-        public TObject ToNetObject<TObject>()
+        internal TObject ToNetObject<TObject>()
         {
             if (value is null)
             {
@@ -64,9 +60,7 @@ internal static class ObjectExtensions
     {
         /// <summary>Converts the specified value to a Java-compatible object representation.</summary>
         /// <returns>A Java-compatible object that represents the specified value, or null if the value is null.</returns>
-        public Object? ToJavaObject()
-        {
-            return value is null ? null : new JavaHolder(value);
-        }
+        internal Object? ToJavaObject() =>
+            value is null ? null : new JavaHolder(value);
     }
 }

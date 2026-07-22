@@ -65,7 +65,7 @@ public class ReactiveUIBuilderConverterTests
     {
         var builder = RxAppBuilder.CreateReactiveUIBuilder();
 
-        var result = builder.WithConverter(() => new TestTypedConverter());
+        var result = builder.WithConverter(static () => new TestTypedConverter());
 
         await Assert.That(result).IsSameReferenceAs(builder);
     }
@@ -87,7 +87,7 @@ public class ReactiveUIBuilderConverterTests
     {
         var builder = RxAppBuilder.CreateReactiveUIBuilder();
 
-        var result = builder.WithConverter(() => (IBindingTypeConverter)new TestBindingConverter());
+        var result = builder.WithConverter(static () => (IBindingTypeConverter)new TestBindingConverter());
 
         await Assert.That(result).IsSameReferenceAs(builder);
     }
@@ -155,7 +155,7 @@ public class ReactiveUIBuilderConverterTests
     {
         var builder = RxAppBuilder.CreateReactiveUIBuilder();
 
-        var result = builder.WithFallbackConverter(() => new TestFallbackConverter());
+        var result = builder.WithFallbackConverter(static () => new TestFallbackConverter());
 
         await Assert.That(result).IsSameReferenceAs(builder);
     }

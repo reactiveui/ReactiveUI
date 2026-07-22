@@ -60,9 +60,16 @@ internal sealed class WhenAnyObservableSwitchSink<TResult>(IObservable<IObservab
         public void Run(IObservable<IObservable<TResult>> source) =>
             _outer = source.Subscribe(new DelegateObserver<IObservable<TResult>>(OnNextOuter, OnError, OnOuterCompleted));
 
+        /// <inheritdoc/>
+        public void Dispose()
+        {
+            _outer?.Dispose();
+            _inner.Dispose();
+        }
+
         /// <summary>Forwards an error from the outer or current inner and tears down.</summary>
         /// <param name="error">The error to forward.</param>
-        public void OnError(Exception error)
+        private void OnError(Exception error)
         {
             lock (_gate)
             {
@@ -70,13 +77,6 @@ internal sealed class WhenAnyObservableSwitchSink<TResult>(IObservable<IObservab
             }
 
             Dispose();
-        }
-
-        /// <inheritdoc/>
-        public void Dispose()
-        {
-            _outer?.Dispose();
-            _inner.Dispose();
         }
 
         /// <summary>Switches to a newly produced inner observable, dropping the previous one.</summary>

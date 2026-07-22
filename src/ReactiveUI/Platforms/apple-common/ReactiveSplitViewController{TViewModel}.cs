@@ -5,10 +5,6 @@
 
 using Foundation;
 
-#if UIKIT
-using NSSplitViewController = UIKit.UISplitViewController;
-#endif
-
 #if REACTIVE_SHIM
 namespace ReactiveUI.Reactive;
 #else
@@ -19,7 +15,7 @@ namespace ReactiveUI;
 /// (i.e. you can call RaiseAndSetIfChanged).
 /// </summary>
 /// <typeparam name="TViewModel">The view model type.</typeparam>
-public abstract class ReactiveSplitViewController<TViewModel> : ReactiveSplitViewController, IViewFor<TViewModel>
+public class ReactiveSplitViewController<TViewModel> : ReactiveSplitViewController, IViewFor<TViewModel>
     where TViewModel : class
 {
 #if UIKIT

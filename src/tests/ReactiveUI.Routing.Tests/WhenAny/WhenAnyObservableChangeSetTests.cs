@@ -25,7 +25,7 @@ public class WhenAnyObservableChangeSetTests
         fixture.MyListOfInts = [];
         await Assert.That(output).IsEmpty();
 
-        fixture.MyListOfInts.Add(1);
+        fixture.MyListOfInts!.Add(1);
         await Assert.That(output).Count().IsEqualTo(1);
 
         fixture.MyListOfInts = null;
@@ -42,11 +42,15 @@ public class WhenAnyObservableChangeSetTests
             private set => this.RaiseAndSetIfChanged(ref field, value);
         }
 
-        /// <summary>Gets or sets the list of integers observed by the tests.</summary>
+        /// <summary>Gets the list of integers observed by the tests.</summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage(
+            "Design",
+            "SST2305:Collection properties should not be settable",
+            Justification = "The test reassigns this collection (null, empty, null) to drive the observed change-set through null/non-null transitions; the setter is the mechanism under test.")]
         public ObservableCollection<int>? MyListOfInts
         {
             get;
-            set
+            internal set
             {
                 _ = this.RaiseAndSetIfChanged(ref field, value);
                 Changes = MyListOfInts?.ToObservableChangeSet();

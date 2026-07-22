@@ -34,7 +34,7 @@ public partial class WhenAnySinkDirectTests
             s5,
             s6,
             s7,
-            (x1, x2, x3, x4, x5, x6, x7) => x1 + x2 + x3 + x4 + x5 + x6 + x7).Subscribe(rec);
+            static (x1, x2, x3, x4, x5, x6, x7) => x1 + x2 + x3 + x4 + x5 + x6 + x7).Subscribe(rec);
         s1.OnNext("v1");
         s2.OnNext("v2");
         s3.OnNext("v3");
@@ -73,7 +73,7 @@ public partial class WhenAnySinkDirectTests
             e5,
             e6,
             e7,
-            (x1, x2, x3, x4, x5, x6, x7) => x1 + x2 + x3 + x4 + x5 + x6 + x7).Subscribe(rec);
+            static (x1, x2, x3, x4, x5, x6, x7) => x1 + x2 + x3 + x4 + x5 + x6 + x7).Subscribe(rec);
         e1.OnError(ex);
         Exception[] expectedErrors = [ex];
         await Assert.That(rec.Errors).IsEquivalentTo(expectedErrors);
@@ -100,7 +100,7 @@ public partial class WhenAnySinkDirectTests
             k5,
             k6,
             k7,
-            (x1, x2, x3, x4, x5, x6, x7) => x1 + x2 + x3 + x4 + x5 + x6 + x7).Subscribe(rec);
+            static (x1, x2, x3, x4, x5, x6, x7) => x1 + x2 + x3 + x4 + x5 + x6 + x7).Subscribe(rec);
         k1.OnCompleted();
         k2.OnCompleted();
         k3.OnCompleted();

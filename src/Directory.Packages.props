@@ -6,8 +6,11 @@
 
   <PropertyGroup Label="Shared Version Variables">
     <SplatVersion>20.0.0</SplatVersion>
-    <PrimitivesVersion>6.0.0</PrimitivesVersion>
-    <TUnitVersion>1.58.0</TUnitVersion>
+    <PrimitivesVersion>7.0.0</PrimitivesVersion>
+    <TUnitVersion>1.61.15</TUnitVersion>
+    <!-- StyleSharp.Analyzers, PerformanceSharp.Analyzers and SecuritySharp.Analyzers ship from the
+         same release pipeline and always share a version. -->
+    <RoslynCommonAnalyzersVersion>3.38.1</RoslynCommonAnalyzersVersion>
     <XamarinAndroidXLifecycleLiveDataVersion>2.11.0.1</XamarinAndroidXLifecycleLiveDataVersion>
   </PropertyGroup>
 
@@ -16,13 +19,18 @@
     <MauiVersion Condition="$(TargetFramework.StartsWith('net11'))">11.0.0-preview.5.26304.4</MauiVersion>
 
     <AspNetVersion Condition="$(TargetFramework.StartsWith('netstandard'))">3.1.32</AspNetVersion>
-    <AspNetVersion Condition="$(TargetFramework.StartsWith('net8'))">8.0.28</AspNetVersion>
-    <AspNetVersion Condition="$(TargetFramework.StartsWith('net9'))">9.0.17</AspNetVersion>
-    <AspNetVersion Condition="$(TargetFramework.StartsWith('net10'))">10.0.9</AspNetVersion>
+    <AspNetVersion Condition="$(TargetFramework.StartsWith('net8'))">8.0.29</AspNetVersion>
+    <AspNetVersion Condition="$(TargetFramework.StartsWith('net9'))">9.0.18</AspNetVersion>
+    <AspNetVersion Condition="$(TargetFramework.StartsWith('net10'))">10.0.10</AspNetVersion>
     <AspNetVersion Condition="$(TargetFramework.StartsWith('net11'))">11.0.0-preview.5.26302.115</AspNetVersion>
 
     <SystemTextJsonVersion>10.0.10</SystemTextJsonVersion>
     <SystemTextJsonVersion Condition="$(TargetFramework.StartsWith('net11'))">11.0.0-preview.5.26302.115</SystemTextJsonVersion>
+
+    <!-- Microsoft.Extensions.* and the runtime data packages track the framework: stable 10.0.x for
+         net8/9/10, the net11 preview on net11 so the net11 ReactiveUI.Primitives assemblies resolve. -->
+    <MicrosoftExtensionsVersion>10.0.10</MicrosoftExtensionsVersion>
+    <MicrosoftExtensionsVersion Condition="$(TargetFramework.StartsWith('net11'))">11.0.0-preview.6.26359.118</MicrosoftExtensionsVersion>
 
     <XamlBehaviorsWpfVersion Condition="$(TargetFramework.StartsWith('net4'))">1.1.142</XamlBehaviorsWpfVersion>
     <XamlBehaviorsWpfVersion Condition="$(TargetFramework.StartsWith('net8'))">1.1.142</XamlBehaviorsWpfVersion>
@@ -67,7 +75,6 @@
   <ItemGroup Label="Testing">
     <PackageVersion Include="TUnit" Version="$(TUnitVersion)"/>
     <PackageVersion Include="TUnit.Core" Version="$(TUnitVersion)"/>
-    <PackageVersion Include="bunit" Version="2.7.2"/>
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.8.1"/>
     <PackageVersion Include="Microsoft.Testing.Extensions.CodeCoverage" Version="18.9.0"/>
     <PackageVersion Include="Microsoft.Testing.Platform.MSBuild" Version="2.3.2"/>
@@ -77,7 +84,9 @@
   </ItemGroup>
 
   <ItemGroup Label="Analyzers">
-    <PackageVersion Include="StyleSharp.Analyzers" Version="3.13.4"/>
+    <PackageVersion Include="StyleSharp.Analyzers" Version="$(RoslynCommonAnalyzersVersion)"/>
+    <PackageVersion Include="PerformanceSharp.Analyzers" Version="$(RoslynCommonAnalyzersVersion)"/>
+    <PackageVersion Include="SecuritySharp.Analyzers" Version="$(RoslynCommonAnalyzersVersion)"/>
     <PackageVersion Include="Roslynator.Analyzers" Version="4.15.0"/>
     <PackageVersion Include="SonarAnalyzer.CSharp" Version="10.29.0.143774"/>
     <PackageVersion Include="Microsoft.CodeAnalysis.Analyzers" Version="5.6.0"/>
@@ -91,8 +100,9 @@
   </ItemGroup>
 
   <ItemGroup Label="Microsoft Extensions / Runtime / Data">
-    <PackageVersion Include="Microsoft.Extensions.DependencyModel" Version="10.0.10"/>
-    <PackageVersion Include="System.Collections.Immutable" Version="10.0.10"/>
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="$(MicrosoftExtensionsVersion)"/>
+    <PackageVersion Include="Microsoft.Extensions.DependencyModel" Version="$(MicrosoftExtensionsVersion)"/>
+    <PackageVersion Include="System.Collections.Immutable" Version="$(MicrosoftExtensionsVersion)"/>
     <PackageVersion Include="System.Text.Json" Version="$(SystemTextJsonVersion)"/>
     <PackageVersion Include="Microsoft.Data.Sqlite.Core" Version="10.0.10"/>
     <PackageVersion Include="SQLitePCLRaw.bundle_green" Version="2.1.11"/>

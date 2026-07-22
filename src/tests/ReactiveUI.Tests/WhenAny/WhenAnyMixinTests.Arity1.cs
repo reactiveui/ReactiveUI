@@ -17,7 +17,7 @@ public partial class WhenAnyMixinTests
         var list = new List<string>();
         _ = vm.WhenAny(
             x => x.Property1,
-            _ => "x").ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
+            static _ => "x").ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -30,7 +30,7 @@ public partial class WhenAnyMixinTests
         var list = new List<string>();
         _ = vm.WhenAny(
             x => x.Property1,
-            _ => "x",
+            static _ => "x",
             true).ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
@@ -44,7 +44,7 @@ public partial class WhenAnyMixinTests
         var list = new List<string>();
         _ = vm.WhenAny<WhenAnyArityTestViewModel, string, string?>(
             nameof(WhenAnyArityTestViewModel.Property1),
-            _ => "x").ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
+            static _ => "x").ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -57,7 +57,7 @@ public partial class WhenAnyMixinTests
         var list = new List<string>();
         _ = vm.WhenAny<WhenAnyArityTestViewModel, string, string?>(
             nameof(WhenAnyArityTestViewModel.Property1),
-            _ => "x",
+            static _ => "x",
             false).ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
@@ -115,7 +115,7 @@ public partial class WhenAnyMixinTests
     {
         var vm = new WhenAnyArityTestViewModel();
         var list = new List<string>();
-        Func<string?, string> selector = _ => "x";
+        Func<string?, string> selector = static _ => "x";
         _ = vm.WhenAnyValue(x => x.Property1, selector).ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
@@ -127,7 +127,7 @@ public partial class WhenAnyMixinTests
     {
         var vm = new WhenAnyArityTestViewModel();
         var list = new List<string>();
-        Func<string?, string> selector = _ => "x";
+        Func<string?, string> selector = static _ => "x";
         _ = vm.WhenAnyValue(x => x.Property1, selector, true).ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
@@ -141,7 +141,7 @@ public partial class WhenAnyMixinTests
         var list = new List<string>();
         _ = vm.WhenAnyValue<WhenAnyArityTestViewModel, string, string?>(
             nameof(WhenAnyArityTestViewModel.Property1),
-            _ => "x").ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
+            static _ => "x").ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -154,7 +154,7 @@ public partial class WhenAnyMixinTests
         var list = new List<string>();
         _ = vm.WhenAnyValue<WhenAnyArityTestViewModel, string, string?>(
             nameof(WhenAnyArityTestViewModel.Property1),
-            _ => "x",
+            static _ => "x",
             false).ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }

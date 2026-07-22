@@ -51,7 +51,7 @@ public class AutoDataTemplateBindingHookTest
     {
         var hook = new AutoDataTemplateBindingHook();
 
-        await Assert.That(() => hook.ExecuteHook(null, new object(), () => [], null!, BindingDirection.OneWay))
+        await Assert.That(() => hook.ExecuteHook(null, new(), static () => [], null!, BindingDirection.OneWay))
             .Throws<ArgumentNullException>();
     }
 
@@ -65,7 +65,7 @@ public class AutoDataTemplateBindingHookTest
         Expression<Func<TextBox, object?>> expr = tb => tb.Text;
         IObservedChange<object, object>[] props = [new ObservedChange<object, object>(target, Reflection.Rewrite(expr.Body), null!)];
 
-        var result = hook.ExecuteHook(null, target, () => [], () => props, BindingDirection.OneWay);
+        var result = hook.ExecuteHook(null, target, static () => [], () => props, BindingDirection.OneWay);
 
         await Assert.That(result).IsTrue();
     }
@@ -80,7 +80,7 @@ public class AutoDataTemplateBindingHookTest
         Expression<Func<ItemsControl, object?>> expr = ic => ic.ItemsSource;
         IObservedChange<object, object>[] props = [new ObservedChange<object, object>(itemsControl, Reflection.Rewrite(expr.Body), null!)];
 
-        var result = hook.ExecuteHook(null, itemsControl, () => [], () => props, BindingDirection.OneWay);
+        var result = hook.ExecuteHook(null, itemsControl, static () => [], () => props, BindingDirection.OneWay);
 
         using (Assert.Multiple())
         {
@@ -96,7 +96,7 @@ public class AutoDataTemplateBindingHookTest
     {
         var hook = new AutoDataTemplateBindingHook();
 
-        var result = hook.ExecuteHook(null, new object(), () => [], () => [], BindingDirection.OneWay);
+        var result = hook.ExecuteHook(null, new(), static () => [], static () => [], BindingDirection.OneWay);
 
         await Assert.That(result).IsTrue();
     }
@@ -111,7 +111,7 @@ public class AutoDataTemplateBindingHookTest
         Expression<Func<ItemsControl, object?>> expr = ic => ic.ItemsSource;
         IObservedChange<object, object>[] props = [new ObservedChange<object, object>(itemsControl, Reflection.Rewrite(expr.Body), null!)];
 
-        var result = hook.ExecuteHook(null, itemsControl, () => [], () => props, BindingDirection.OneWay);
+        var result = hook.ExecuteHook(null, itemsControl, static () => [], () => props, BindingDirection.OneWay);
 
         using (Assert.Multiple())
         {
@@ -130,7 +130,7 @@ public class AutoDataTemplateBindingHookTest
         Expression<Func<ItemsControl, object?>> expr = ic => ic.Tag;
         IObservedChange<object, object>[] props = [new ObservedChange<object, object>(itemsControl, Reflection.Rewrite(expr.Body), null!)];
 
-        var result = hook.ExecuteHook(null, itemsControl, () => [], () => props, BindingDirection.OneWay);
+        var result = hook.ExecuteHook(null, itemsControl, static () => [], () => props, BindingDirection.OneWay);
 
         using (Assert.Multiple())
         {
@@ -150,7 +150,7 @@ public class AutoDataTemplateBindingHookTest
         Expression<Func<ItemsControl, object?>> expr = ic => ic.ItemsSource;
         IObservedChange<object, object>[] props = [new ObservedChange<object, object>(itemsControl, Reflection.Rewrite(expr.Body), null!)];
 
-        var result = hook.ExecuteHook(null, itemsControl, () => [], () => props, BindingDirection.OneWay);
+        var result = hook.ExecuteHook(null, itemsControl, static () => [], () => props, BindingDirection.OneWay);
 
         using (Assert.Multiple())
         {
@@ -169,7 +169,7 @@ public class AutoDataTemplateBindingHookTest
         Expression<Func<ItemsControl, object?>> expr = ic => ic.ItemsSource;
         IObservedChange<object, object>[] props = [new ObservedChange<object, object>(itemsControl, Reflection.Rewrite(expr.Body), null!)];
 
-        var result = hook.ExecuteHook(null, itemsControl, () => [], () => props, BindingDirection.OneWay);
+        var result = hook.ExecuteHook(null, itemsControl, static () => [], () => props, BindingDirection.OneWay);
 
         using (Assert.Multiple())
         {

@@ -3,7 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using Bunit;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace ReactiveUI.Blazor.Tests;
@@ -12,7 +11,7 @@ namespace ReactiveUI.Blazor.Tests;
 /// Tests for the <see cref="ReactiveInjectableComponentBase{T}"/> class.
 /// Verifies that ViewModels can be correctly injected via DI and that the component responds to changes.
 /// </summary>
-public class ReactiveInjectableComponentBaseTests : BunitContext
+public class ReactiveInjectableComponentBaseTests : BlazorTestContext
 {
     /// <summary>The expected number of renders after the initial render of the component.</summary>
     private const int ExpectedRenderCount = 2;
@@ -34,7 +33,7 @@ public class ReactiveInjectableComponentBaseTests : BunitContext
         var viewModel = new TestViewModel();
         _ = Services.AddSingleton(viewModel);
 
-        var cut = Render<TestInjectableComponent>();
+        var cut = await RenderAsync<TestInjectableComponent>(static _ => { });
 
         // Verify injection was successful.
         await Assert.That(cut.Instance.ViewModel).IsEqualTo(viewModel);
@@ -55,7 +54,7 @@ public class ReactiveInjectableComponentBaseTests : BunitContext
         var viewModel = new TestViewModel();
         _ = Services.AddSingleton(viewModel);
 
-        var cut = Render<TestInjectableComponent>();
+        var cut = await RenderAsync<TestInjectableComponent>(static _ => { });
 
         var renderCount = cut.Instance.RenderCount;
 
@@ -76,7 +75,7 @@ public class ReactiveInjectableComponentBaseTests : BunitContext
         var viewModel = new TestViewModel();
         _ = Services.AddSingleton(viewModel);
 
-        var cut = Render<TestInjectableComponent>();
+        var cut = await RenderAsync<TestInjectableComponent>(static _ => { });
         IViewFor viewFor = cut.Instance;
 
         // Get through explicit interface
@@ -98,7 +97,7 @@ public class ReactiveInjectableComponentBaseTests : BunitContext
         var viewModel = new TestViewModel();
         _ = Services.AddSingleton(viewModel);
 
-        var cut = Render<TestInjectableComponent>();
+        var cut = await RenderAsync<TestInjectableComponent>(static _ => { });
         var activatable = cut.Instance;
 
         await Assert.That(activatable.Activated).IsNotNull();
@@ -113,7 +112,7 @@ public class ReactiveInjectableComponentBaseTests : BunitContext
         var viewModel = new TestActivatableViewModel();
         _ = Services.AddSingleton(viewModel);
 
-        var cut = Render<TestActivatableInjectableComponent>();
+        var cut = await RenderAsync<TestActivatableInjectableComponent>(static _ => { });
 
         await Task.Delay(RenderDelayMilliseconds);
 
@@ -141,7 +140,7 @@ public class ReactiveInjectableComponentBaseTests : BunitContext
     }
 
     /// <summary>An activatable ViewModel for testing IActivatableViewModel support.</summary>
-    public class TestActivatableViewModel : ReactiveObject, IActivatableViewModel
+    public sealed class TestActivatableViewModel : ReactiveObject, IActivatableViewModel, IDisposable
     {
         /// <summary>Initializes a new instance of the <see cref="TestActivatableViewModel"/> class.</summary>
         public TestActivatableViewModel() =>
@@ -156,6 +155,9 @@ public class ReactiveInjectableComponentBaseTests : BunitContext
 
         /// <summary>Gets a value indicating whether the ViewModel is currently activated.</summary>
         public bool IsActivated { get; private set; }
+
+        /// <inheritdoc/>
+        public void Dispose() => Activator.Dispose();
     }
 
     /// <summary>A concrete implementation of ReactiveInjectableComponentBase for testing.</summary>

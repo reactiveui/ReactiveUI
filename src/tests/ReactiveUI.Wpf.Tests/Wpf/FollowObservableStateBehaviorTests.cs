@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
 using Microsoft.Xaml.Behaviors;
@@ -127,7 +128,7 @@ public class FollowObservableStateBehaviorTests
 
         // First subject should no longer be subscribed
         var completed1 = false;
-        _ = subject1.Subscribe(_ => { }, () => completed1 = true);
+        _ = subject1.Subscribe(static _ => { }, () => completed1 = true);
         subject1.OnCompleted();
 
         await Assert.That(completed1).IsTrue();
@@ -212,15 +213,15 @@ public class FollowObservableStateBehaviorTests
         var behaviors = Interaction.GetBehaviors(button);
         behaviors.Add(behavior);
 
-        var disposed = false;
-        behavior.StateObservable = Signal.Create<string>(observer => Scope.Create(() => disposed = true));
+        var disposed = new StrongBox<bool>();
+        behavior.StateObservable = Signal.Create<string>(observer => Scope.Create(disposed, static box => box.Value = true));
         await Task.Delay(StateSettleDelayMs);
 
         // Detach the behavior
         _ = behaviors.Remove(behavior);
         await Task.Delay(StateSettleDelayMs);
 
-        await Assert.That(disposed).IsTrue();
+        await Assert.That(disposed.Value).IsTrue();
     }
 
     /// <summary>Tests that TargetObject can be set and is used instead of AssociatedObject.</summary>

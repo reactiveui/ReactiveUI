@@ -26,7 +26,7 @@ public class DecimalToStringTypeConverterTests
     public async Task TryConvert_DecimalToString_Succeeds()
     {
         var converter = new DecimalToStringTypeConverter();
-        const decimal Value = 123.456m;
+        const decimal Value = 123.456M;
 
         var result = converter.TryConvert(Value, null, out var output);
 
@@ -68,7 +68,7 @@ public class DecimalToStringTypeConverterTests
     public async Task TryConvert_NegativeValue_Succeeds()
     {
         var converter = new DecimalToStringTypeConverter();
-        const decimal Value = -123.456m;
+        const decimal Value = -123.456M;
 
         var result = converter.TryConvert(Value, null, out var output);
 
@@ -82,7 +82,7 @@ public class DecimalToStringTypeConverterTests
     public async Task TryConvert_WithConversionHint_FormatsCorrectly()
     {
         var converter = new DecimalToStringTypeConverter();
-        const decimal Value = 42.5m;
+        const decimal Value = 42.5M;
         const int DecimalPlaces = 2;
 
         var result = converter.TryConvert(Value, DecimalPlaces, out var output);
@@ -97,7 +97,7 @@ public class DecimalToStringTypeConverterTests
     public async Task TryConvert_WithStringFormatHint_CurrencyFormat()
     {
         var converter = new DecimalToStringTypeConverter();
-        const decimal Value = 1234.56m;
+        const decimal Value = 1234.56M;
 
         var result = converter.TryConvert(Value, "C", out var output);
 
@@ -111,7 +111,7 @@ public class DecimalToStringTypeConverterTests
     public async Task TryConvert_WithStringFormatHint_ExponentialFormat()
     {
         var converter = new DecimalToStringTypeConverter();
-        const decimal Value = 1234.5678m;
+        const decimal Value = 1234.5678M;
 
         var result = converter.TryConvert(Value, "E2", out var output);
 
@@ -125,7 +125,7 @@ public class DecimalToStringTypeConverterTests
     public async Task TryConvert_WithStringFormatHint_FormatsCorrectly()
     {
         var converter = new DecimalToStringTypeConverter();
-        const decimal Value = 1234.5678m;
+        const decimal Value = 1234.5678M;
 
         var result = converter.TryConvert(Value, "N2", out var output);
 
@@ -139,7 +139,7 @@ public class DecimalToStringTypeConverterTests
     public async Task TryConvert_WithStringFormatHint_PercentFormat()
     {
         var converter = new DecimalToStringTypeConverter();
-        const decimal Value = 0.1234m;
+        const decimal Value = 0.1234M;
 
         var result = converter.TryConvert(Value, "P2", out var output);
 
@@ -153,7 +153,7 @@ public class DecimalToStringTypeConverterTests
     public async Task TryConvert_Zero_Succeeds()
     {
         var converter = new DecimalToStringTypeConverter();
-        const decimal Value = 0m;
+        const decimal Value = 0M;
 
         var result = converter.TryConvert(Value, null, out var output);
 

@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics.CodeAnalysis;
 #if REACTIVE_SHIM
 using ReactiveUI.Reactive.Builder;
 #else
@@ -20,6 +21,10 @@ public class ViewForMixinsTests
     /// disposes its returned resources on deactivation.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
+    [SuppressMessage(
+        "Performance",
+        "PSH1011:Use the state-argument Create overload",
+        Justification = "the captured value is test-local setup; the allocation is irrelevant in a unit test.")]
     public async Task ViewModelWhenActivatedFuncOverloadActivatesAndDeactivates()
     {
         var activations = 0;
@@ -54,8 +59,8 @@ public class ViewForMixinsTests
         var locator = new ModernDependencyResolver();
         _ = locator.CreateReactiveUIBuilder()
             .WithCoreServices()
-            .WithCustomRegistration(builder =>
-                builder.Register<IActivationForViewFetcher>(() => new ActivatingViewFetcher())).BuildApp();
+            .WithCustomRegistration(static builder =>
+                builder.Register<IActivationForViewFetcher>(static () => new ActivatingViewFetcher())).BuildApp();
 
         using (locator.WithResolver())
         {
@@ -73,6 +78,10 @@ public class ViewForMixinsTests
     }
 
     /// <summary>A minimal activatable view model used to drive the activation lifecycle.</summary>
+    [SuppressMessage(
+        "Usage",
+        "SST2315:Type owns a disposable but is not IDisposable",
+        Justification = "test fixture; the owned disposable lives for the test-process lifetime and is released at process exit.")]
     private sealed class ActivatableViewModelMock : ReactiveObject, IActivatableViewModel
     {
         /// <inheritdoc/>

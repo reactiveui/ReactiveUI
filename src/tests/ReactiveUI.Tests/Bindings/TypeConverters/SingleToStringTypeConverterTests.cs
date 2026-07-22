@@ -54,7 +54,7 @@ public class SingleToStringTypeConverterTests
     public async Task TryConvert_NegativeValue_Succeeds()
     {
         var converter = new SingleToStringTypeConverter();
-        const float Value = -123.456f;
+        const float Value = -123.456F;
 
         var result = converter.TryConvert(Value, null, out var output);
 
@@ -68,7 +68,7 @@ public class SingleToStringTypeConverterTests
     public async Task TryConvert_SingleToString_Succeeds()
     {
         var converter = new SingleToStringTypeConverter();
-        const float Value = 123.456f;
+        const float Value = 123.456F;
 
         var result = converter.TryConvert(Value, null, out var output);
 
@@ -82,7 +82,7 @@ public class SingleToStringTypeConverterTests
     public async Task TryConvert_WithConversionHint_FormatsCorrectly()
     {
         var converter = new SingleToStringTypeConverter();
-        const float Value = 42.5f;
+        const float Value = 42.5F;
         const int DecimalPlaces = 2;
 
         var result = converter.TryConvert(Value, DecimalPlaces, out var output);

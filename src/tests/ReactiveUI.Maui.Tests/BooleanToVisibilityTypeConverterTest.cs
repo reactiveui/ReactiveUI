@@ -28,7 +28,6 @@ public sealed class BooleanToVisibilityTypeConverterTest
     /// <summary>Tests that GetAffinityForObjects returns correct affinity for Visibility to bool.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S4144:Methods should not have identical implementations", Justification = "Intentional duplicate test scenario.")]
     public async Task GetAffinityForObjects_ReturnsCorrectAffinityForVisibilityToBool()
     {
         var converter = new BooleanToVisibilityTypeConverter();
@@ -115,7 +114,6 @@ public sealed class BooleanToVisibilityTypeConverterTest
     /// <summary>Tests that TryConvert with non-bool input for boolean converter.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S4144:Methods should not have identical implementations", Justification = "Intentional duplicate test scenario.")]
     public async Task TryConvert_BooleanConverter_HandlesInput()
     {
         var converter = new BooleanToVisibilityTypeConverter();

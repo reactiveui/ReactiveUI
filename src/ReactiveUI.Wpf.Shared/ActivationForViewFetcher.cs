@@ -35,39 +35,37 @@ public class ActivationForViewFetcher : IActivationForViewFetcher
 
         var viewLoaded = new FromEventObservable<bool>(onNext =>
         {
-            void Handler(object sender, RoutedEventArgs e) => onNext(true);
-            fe.Loaded += Handler;
-            return new ActionDisposable(() => fe.Loaded -= Handler);
+            RoutedEventHandler handler = (_, _) => onNext(true);
+            fe.Loaded += handler;
+            return new ActionDisposable(() => fe.Loaded -= handler);
         });
 
         var viewUnloaded = new FromEventObservable<bool>(onNext =>
         {
-            void Handler(object sender, RoutedEventArgs e) => onNext(false);
-            fe.Unloaded += Handler;
-            return new ActionDisposable(() => fe.Unloaded -= Handler);
+            RoutedEventHandler handler = (_, _) => onNext(false);
+            fe.Unloaded += handler;
+            return new ActionDisposable(() => fe.Unloaded -= handler);
         });
 
         var hitTestVisible = new FromEventObservable<bool>(onNext =>
         {
-            void Handler(object sender, DependencyPropertyChangedEventArgs e) => onNext((bool)e.NewValue);
-            fe.IsHitTestVisibleChanged += Handler;
-            return new ActionDisposable(() => fe.IsHitTestVisibleChanged -= Handler);
+            DependencyPropertyChangedEventHandler handler = (_, e) => onNext((bool)e.NewValue);
+            fe.IsHitTestVisibleChanged += handler;
+            return new ActionDisposable(() => fe.IsHitTestVisibleChanged -= handler);
         });
 
         // Replaces viewLoaded.Merge(viewUnloaded).Merge(hitTestVisible).Merge(windowActivation).DistinctUntilChanged().
-        return ReactiveUI.Primitives.LinqExtensions.BlendUnique<bool>(viewLoaded, viewUnloaded, hitTestVisible, GetActivationForWindow(view));
+        return ReactiveUI.Primitives.LinqExtensions.BlendUnique(viewLoaded, viewUnloaded, hitTestVisible, GetActivationForWindow(view));
     }
 
     /// <summary>Gets the activation observable for a Window, signalling false when it closes.</summary>
     /// <param name="view">The view to observe.</param>
     /// <returns>An observable that emits activation state for the window.</returns>
-    private static IObservable<bool> GetActivationForWindow(IActivatableView view)
-    {
-        return view is not Window window ? Signal.None<bool>() : new FromEventObservable<bool>(onNext =>
+    private static IObservable<bool> GetActivationForWindow(IActivatableView view) =>
+        view is not Window window ? Signal.None<bool>() : new FromEventObservable<bool>(onNext =>
         {
-            void Handler(object? sender, EventArgs e) => onNext(false);
-            window.Closed += Handler;
-            return new ActionDisposable(() => window.Closed -= Handler);
+            EventHandler handler = (_, _) => onNext(false);
+            window.Closed += handler;
+            return new ActionDisposable(() => window.Closed -= handler);
         });
-    }
 }

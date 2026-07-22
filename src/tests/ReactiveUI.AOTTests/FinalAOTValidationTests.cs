@@ -22,6 +22,9 @@ public class FinalAOTValidationTests
     /// <summary>The expected minimum number of tested features.</summary>
     private const int ExpectedFeatureCount = 13;
 
+    /// <summary>The value assigned to reactive properties during the workflow tests.</summary>
+    private const string TestValue = "test value";
+
     /// <summary>Comprehensive test that validates all the AOT-compatible patterns work together.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
@@ -39,7 +42,7 @@ public class FinalAOTValidationTests
 
         // 3. Use interactions (fully AOT-compatible)
         var interaction = new Interaction<string, bool>();
-        _ = interaction.RegisterHandler(context => context.SetOutput(context.Input.Length > MinimumInputLength));
+        _ = interaction.RegisterHandler(static context => context.SetOutput(context.Input.Length > MinimumInputLength));
 
         // 4. Use message bus (fully AOT-compatible)
         var messageBus = new MessageBus();
@@ -47,15 +50,15 @@ public class FinalAOTValidationTests
         _ = messageBus.Listen<string>().Subscribe(messages.Add);
 
         // 5. Test the complete workflow
-        property.Value = "test value";
+        property.Value = TestValue;
         var validationResult = await interaction.Handle("long string").FirstAsync();
         messageBus.SendMessage("workflow complete");
 
         using (Assert.Multiple())
         {
             // Verify everything works
-            await Assert.That(property.Value).IsEqualTo("test value");
-            await Assert.That(helper.Value).IsEqualTo("test value");
+            await Assert.That(property.Value).IsEqualTo(TestValue);
+            await Assert.That(helper.Value).IsEqualTo(TestValue);
             await Assert.That(validationResult).IsTrue();
             await Assert.That(messages).Contains("workflow complete");
         }
@@ -77,13 +80,13 @@ public class FinalAOTValidationTests
         var scheduler = Sequencer.CurrentThread;
 
         // Test all types of ReactiveCommand creation
-        var simpleCommand = ReactiveCommand.Create(() => "executed", outputScheduler: scheduler);
-        var paramCommand = ReactiveCommand.Create<int, string>(x => $"value: {x}", outputScheduler: scheduler);
+        var simpleCommand = ReactiveCommand.Create(static () => "executed", outputScheduler: scheduler);
+        var paramCommand = ReactiveCommand.Create<int, string>(static x => $"value: {x}", outputScheduler: scheduler);
         var taskCommand = ReactiveCommand.CreateFromTask(
-            () => Task.FromResult("async result"),
+            static () => Task.FromResult("async result"),
             outputScheduler: scheduler);
         var observableCommand = ReactiveCommand.CreateFromObservable(
-            () => Signal.Emit("observable result"),
+            static () => Signal.Emit("observable result"),
             outputScheduler: scheduler);
 
         // Test command execution
@@ -146,7 +149,7 @@ public class FinalAOTValidationTests
 
             // AOT-compatible: Interactions
             var interaction = new Interaction<RxVoid, bool>();
-            _ = interaction.RegisterHandler(ctx => ctx.SetOutput(true));
+            _ = interaction.RegisterHandler(static ctx => ctx.SetOutput(true));
 
             // Execute mixed workflow
             _ = command.Execute().Subscribe();
@@ -212,7 +215,7 @@ public class FinalAOTValidationTests
 
             // Connect with error handling
             _ = source
-                .Recover<string, Exception>(ex => Signal.Emit($"Error: {ex.Message}"))
+                .Recover<string, Exception>(static ex => Signal.Emit($"Error: {ex.Message}"))
                 .Subscribe(value => property.Value = value)
                 .DisposeWith(disposables);
 

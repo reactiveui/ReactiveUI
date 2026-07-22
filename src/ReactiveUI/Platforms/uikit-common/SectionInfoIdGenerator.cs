@@ -16,5 +16,5 @@ internal static class SectionInfoIdGenerator
 
     /// <summary>Returns the next unique section info identifier and increments the internal counter.</summary>
     /// <returns>A unique integer identifier.</returns>
-    public static int Generate() => _nextSectionInfoId++;
+    internal static int Generate() => _nextSectionInfoId++;
 }

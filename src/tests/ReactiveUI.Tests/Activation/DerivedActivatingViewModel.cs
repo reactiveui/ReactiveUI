@@ -3,12 +3,18 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics.CodeAnalysis;
+
 namespace ReactiveUI.Tests.Activation;
 
 /// <summary>A activating view model which is derived from another ActivatingViewModel.</summary>
 public class DerivedActivatingViewModel : ActivatingViewModel
 {
     /// <summary>Initializes a new instance of the <see cref="DerivedActivatingViewModel" /> class.</summary>
+    [SuppressMessage(
+        "Performance",
+        "PSH1011:Anonymous function captures state",
+        Justification = "The deactivation callback decrements this fixture's own counter; capturing the instance is the intended activation pattern.")]
     public DerivedActivatingViewModel() =>
         this.WhenActivated(d =>
         {

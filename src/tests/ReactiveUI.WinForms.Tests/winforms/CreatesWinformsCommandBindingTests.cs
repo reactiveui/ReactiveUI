@@ -34,6 +34,9 @@ public class CreatesWinformsCommandBindingTests
     /// <summary>A command parameter value used by the tests.</summary>
     private const int ParameterValue123 = 123;
 
+    /// <summary>The name of the MouseUp event bound by the event-name tests.</summary>
+    private const string MouseUpEventName = "MouseUp";
+
     /// <summary>Tests that GetAffinityForObject returns high affinity for WinForms controls.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
@@ -100,7 +103,7 @@ public class CreatesWinformsCommandBindingTests
     public async Task BindCommandToObject_NullTarget_ThrowsArgumentNullException()
     {
         var fixture = new CreatesWinformsCommandBinding();
-        var cmd = ReactiveCommand.Create(() => { });
+        var cmd = ReactiveCommand.Create(static () => { });
 
         var act = () => fixture.BindCommandToObject<Button>(cmd, null!, Signal.Emit<object?>(null));
 
@@ -115,7 +118,7 @@ public class CreatesWinformsCommandBindingTests
         var fixture = new CreatesWinformsCommandBinding();
         var button = new Button();
 
-        var result = fixture.BindCommandToObject<Button>(null, button, Signal.Emit<object?>(null));
+        var result = fixture.BindCommandToObject(null, button, Signal.Emit<object?>(null));
 
         await Assert.That(result).IsNotNull();
     }
@@ -195,7 +198,7 @@ public class CreatesWinformsCommandBindingTests
     public async Task BindCommandToObject_NoDefaultEvent_ReturnsNull()
     {
         var fixture = new CreatesWinformsCommandBinding();
-        var cmd = ReactiveCommand.Create(() => { });
+        var cmd = ReactiveCommand.Create(static () => { });
         var component = new NoClickEventComponent();
 
         var result = fixture.BindCommandToObject(cmd, component, Signal.Emit<object?>(null));
@@ -263,7 +266,7 @@ public class CreatesWinformsCommandBindingTests
     public async Task BindCommandToObject_GenericEventHandler_NullTarget_ThrowsArgumentNullException()
     {
         var fixture = new CreatesWinformsCommandBinding();
-        var cmd = ReactiveCommand.Create(() => { });
+        var cmd = ReactiveCommand.Create(static () => { });
         var control = new GenericEventControl();
 
         var act = () => fixture.BindCommandToObject<GenericEventControl, CustomEventArgs>(
@@ -282,7 +285,7 @@ public class CreatesWinformsCommandBindingTests
     public async Task BindCommandToObject_GenericEventHandler_NullAddHandler_ThrowsArgumentNullException()
     {
         var fixture = new CreatesWinformsCommandBinding();
-        var cmd = ReactiveCommand.Create(() => { });
+        var cmd = ReactiveCommand.Create(static () => { });
         var control = new GenericEventControl();
 
         var act = () => fixture.BindCommandToObject<GenericEventControl, CustomEventArgs>(
@@ -301,7 +304,7 @@ public class CreatesWinformsCommandBindingTests
     public async Task BindCommandToObject_GenericEventHandler_NullRemoveHandler_ThrowsArgumentNullException()
     {
         var fixture = new CreatesWinformsCommandBinding();
-        var cmd = ReactiveCommand.Create(() => { });
+        var cmd = ReactiveCommand.Create(static () => { });
         var control = new GenericEventControl();
 
         var act = () => fixture.BindCommandToObject<GenericEventControl, CustomEventArgs>(
@@ -347,7 +350,7 @@ public class CreatesWinformsCommandBindingTests
     {
         var fixture = new CreatesWinformsCommandBinding();
         var canExecute = new BehaviorSignal<bool>(true);
-        var cmd = ReactiveCommand.Create(() => { }, canExecute, outputScheduler: Sequencer.Immediate);
+        var cmd = ReactiveCommand.Create(static () => { }, canExecute, outputScheduler: Sequencer.Immediate);
         var component = new EnabledComponent();
 
         using var binding = fixture.BindCommandToObject<EnabledComponent, CustomEventArgs>(
@@ -409,7 +412,7 @@ public class CreatesWinformsCommandBindingTests
     public async Task BindCommandToObject_NonGenericEventHandler_NullTarget_ThrowsArgumentNullException()
     {
         var fixture = new CreatesWinformsCommandBinding();
-        var cmd = ReactiveCommand.Create(() => { });
+        var cmd = ReactiveCommand.Create(static () => { });
         var button = new Button();
 
         var act = () => fixture.BindCommandToObject<Button>(
@@ -455,7 +458,7 @@ public class CreatesWinformsCommandBindingTests
     {
         var fixture = new CreatesWinformsCommandBinding();
         var canExecute = new BehaviorSignal<bool>(true);
-        var cmd = ReactiveCommand.Create(() => { }, canExecute, outputScheduler: Sequencer.Immediate);
+        var cmd = ReactiveCommand.Create(static () => { }, canExecute, outputScheduler: Sequencer.Immediate);
         var component = new CustomClickableComponentWithEnabled();
 
         using var binding = fixture.BindCommandToObject(
@@ -503,7 +506,7 @@ public class CreatesWinformsCommandBindingTests
         var cmd = ReactiveCommand.Create(() => executed = true, outputScheduler: Sequencer.Immediate);
         var control = new CustomClickableControl();
 
-        using var binding = fixture.BindCommandToObject<CustomClickableControl, MouseEventArgs>(cmd, control, Signal.Emit<object?>(null), "MouseUp");
+        using var binding = fixture.BindCommandToObject<CustomClickableControl, MouseEventArgs>(cmd, control, Signal.Emit<object?>(null), MouseUpEventName);
         control.RaiseMouseUpEvent(new(MouseButtons.Left, 1, 0, 0, 0));
         await Assert.That(executed).IsTrue();
     }
@@ -516,7 +519,7 @@ public class CreatesWinformsCommandBindingTests
         var fixture = new CreatesWinformsCommandBinding();
         var control = new CustomClickableControl();
 
-        var act = () => fixture.BindCommandToObject<CustomClickableControl, MouseEventArgs>(null!, control, Signal.Emit<object?>(null), "MouseUp");
+        var act = () => fixture.BindCommandToObject<CustomClickableControl, MouseEventArgs>(null!, control, Signal.Emit<object?>(null), MouseUpEventName);
 
         await Assert.That(act).Throws<ArgumentNullException>();
     }
@@ -527,9 +530,9 @@ public class CreatesWinformsCommandBindingTests
     public async Task BindCommandToObject_WithEventName_NullTarget_ThrowsArgumentNullException()
     {
         var fixture = new CreatesWinformsCommandBinding();
-        var cmd = ReactiveCommand.Create(() => { });
+        var cmd = ReactiveCommand.Create(static () => { });
 
-        var act = () => fixture.BindCommandToObject<CustomClickableControl, MouseEventArgs>(cmd, null!, Signal.Emit<object?>(null), "MouseUp");
+        var act = () => fixture.BindCommandToObject<CustomClickableControl, MouseEventArgs>(cmd, null!, Signal.Emit<object?>(null), MouseUpEventName);
 
         await Assert.That(act).Throws<ArgumentNullException>();
     }
@@ -541,7 +544,7 @@ public class CreatesWinformsCommandBindingTests
     {
         var fixture = new CreatesWinformsCommandBinding();
         var canExecute = new BehaviorSignal<bool>(true);
-        var cmd = ReactiveCommand.Create(() => { }, canExecute, outputScheduler: Sequencer.Immediate);
+        var cmd = ReactiveCommand.Create(static () => { }, canExecute, outputScheduler: Sequencer.Immediate);
         var toolStripButton = new ToolStripButton();
 
         using var binding = fixture.BindCommandToObject<ToolStripButton, EventArgs>(cmd, toolStripButton, Signal.Emit<object?>(null), "Click");
@@ -558,7 +561,7 @@ public class CreatesWinformsCommandBindingTests
     {
         var fixture = new CreatesWinformsCommandBinding();
         var canExecute = new BehaviorSignal<bool>(false);
-        var cmd = ReactiveCommand.Create(() => { }, canExecute, outputScheduler: Sequencer.Immediate);
+        var cmd = ReactiveCommand.Create(static () => { }, canExecute, outputScheduler: Sequencer.Immediate);
         var button = new Button();
 
         using var binding = fixture.BindCommandToObject(cmd, button, Signal.Emit<object?>(null));
@@ -572,7 +575,7 @@ public class CreatesWinformsCommandBindingTests
     {
         var fixture = new CreatesWinformsCommandBinding();
         var canExecute = new BehaviorSignal<bool>(true);
-        var cmd = ReactiveCommand.Create(() => { }, canExecute, outputScheduler: Sequencer.Immediate);
+        var cmd = ReactiveCommand.Create(static () => { }, canExecute, outputScheduler: Sequencer.Immediate);
         var toolStripButton = new ToolStripButton();
 
         using var binding = fixture.BindCommandToObject(cmd, toolStripButton, Signal.Emit<object?>(null));

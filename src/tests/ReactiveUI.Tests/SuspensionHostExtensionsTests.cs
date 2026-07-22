@@ -8,13 +8,13 @@ using System.Text.Json.Serialization.Metadata;
 using ReactiveUI.Tests.Utilities.SuspensionHost;
 using TUnit.Core.Executors;
 
-namespace ReactiveUI.Tests;
-
 #if REACTIVE_SHIM
 using ISuspensionDriverContract = ReactiveUI.Reactive.ISuspensionDriver;
 #else
 using ISuspensionDriverContract = ReactiveUI.ISuspensionDriver;
 #endif
+
+namespace ReactiveUI.Tests;
 
 /// <summary>
 ///     Tests for SuspensionHostExtensions that use static state.
@@ -70,7 +70,7 @@ public class SuspensionHostExtensionsTests
     {
         using var host = new SuspensionHost
         {
-            CreateNewAppState = () => new DummyAppState(),
+            CreateNewAppState = static () => new DummyAppState(),
             IsLaunchingNew = Signal.Silent<RxVoid>(),
             IsResuming = Signal.Silent<RxVoid>(),
             ShouldPersistState = Signal.Silent<IDisposable>(),
@@ -112,7 +112,7 @@ public class SuspensionHostExtensionsTests
     {
         using var host = new SuspensionHost
         {
-            CreateNewAppState = () => new DummyAppState(),
+            CreateNewAppState = static () => new DummyAppState(),
             IsLaunchingNew = Signal.Silent<RxVoid>(),
             IsResuming = Signal.Silent<RxVoid>(),
             ShouldPersistState = Signal.Silent<IDisposable>(),
@@ -184,7 +184,7 @@ public class SuspensionHostExtensionsTests
     {
         using var host = new SuspensionHost
         {
-            CreateNewAppState = () => new DummyAppState(),
+            CreateNewAppState = static () => new DummyAppState(),
             IsLaunchingNew = Signal.Silent<RxVoid>(),
             IsResuming = Signal.Silent<RxVoid>(),
             ShouldPersistState = Signal.Silent<IDisposable>(),
@@ -209,7 +209,7 @@ public class SuspensionHostExtensionsTests
     {
         using var host = new SuspensionHost
         {
-            CreateNewAppState = () => new DummyAppState(),
+            CreateNewAppState = static () => new DummyAppState(),
             IsLaunchingNew = Signal.Silent<RxVoid>(),
             IsResuming = Signal.Silent<RxVoid>(),
             ShouldPersistState = Signal.Silent<IDisposable>(),
@@ -242,7 +242,7 @@ public class SuspensionHostExtensionsTests
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task GetAppStateThrowsForNullHost() => await Assert
-        .That(() => ((ISuspensionHost)null!).GetAppState<DummyAppState>()).Throws<ArgumentNullException>();
+        .That(static () => ((ISuspensionHost)null!).GetAppState<DummyAppState>()).Throws<ArgumentNullException>();
 
     /// <summary>Verifies that a null AppState does not throw when calling SetupDefaultSuspendResume.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
@@ -273,10 +273,6 @@ public class SuspensionHostExtensionsTests
     /// <summary>Verifies that observing AppState does not throw <see cref="InvalidCastException" />.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
-    [SuppressMessage(
-        "Major Code Smell",
-        "S4144:Methods should not have identical implementations",
-        Justification = "Intentional duplicate test scenario.")]
     public async Task ObserveAppStateDoesNotThrowInvalidCastException()
     {
         var fixture = new SuspensionHost();
@@ -329,7 +325,7 @@ public class SuspensionHostExtensionsTests
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task ObserveAppStateThrowsForNullHost() => await Assert
-        .That(() => ((ISuspensionHost)null!).ObserveAppState<DummyAppState>()).Throws<ArgumentNullException>();
+        .That(static () => ((ISuspensionHost)null!).ObserveAppState<DummyAppState>()).Throws<ArgumentNullException>();
 
     /// <summary>Verifies that SetupDefaultSuspendResume triggers a state load when launching new or resuming.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
@@ -338,7 +334,7 @@ public class SuspensionHostExtensionsTests
     {
         using var host = new SuspensionHost
         {
-            CreateNewAppState = () => new DummyAppState(),
+            CreateNewAppState = static () => new DummyAppState(),
             ShouldPersistState = Signal.Silent<IDisposable>(),
             ShouldInvalidateState = Signal.Silent<RxVoid>()
         };
@@ -450,7 +446,7 @@ public class SuspensionHostExtensionsTests
             IsResuming = Signal.Silent<RxVoid>(),
             ShouldPersistState = Signal.Silent<IDisposable>(),
             ShouldInvalidateState = Signal.Silent<RxVoid>(),
-            CreateNewAppState = () => new DummyAppState()
+            CreateNewAppState = static () => new DummyAppState()
         };
 
         var driver = new TestSuspensionDriver { StateToLoad = new DummyAppState() };

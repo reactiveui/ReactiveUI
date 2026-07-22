@@ -18,6 +18,9 @@ namespace ReactiveUI.Tests.Xaml;
 [TestExecutor<WpfTestExecutor>]
 public class XamlViewCommandTests
 {
+    /// <summary>The command parameter value emitted through the bound event signal.</summary>
+    private const int CommandParameterValue = 5;
+
     /// <summary>Test that event binder binds to explicit inherited event.</summary>
     [Test]
     public void EventBinderBindsToExplicitInheritedEvent()
@@ -33,14 +36,14 @@ public class XamlViewCommandTests
     {
         var input = new Button();
         var fixture = new CreatesCommandBindingViaEvent();
-        var cmd = ReactiveCommand.Create<int>(_ => { }, outputScheduler: Sequencer.Immediate);
+        var cmd = ReactiveCommand.Create<int>(static _ => { }, outputScheduler: Sequencer.Immediate);
 
         await Assert.That(fixture.GetAffinityForObject<Button>(false)).IsGreaterThan(0);
 
         var invokeCount = 0;
         _ = cmd.Subscribe(_ => ++invokeCount);
 
-        var disp = fixture.BindCommandToObject(cmd, input, Signal.Emit((object)5));
+        var disp = fixture.BindCommandToObject(cmd, input, Signal.Emit((object)CommandParameterValue));
         using (Assert.Multiple())
         {
             await Assert.That(disp).IsNotNull();

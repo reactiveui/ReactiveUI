@@ -13,6 +13,9 @@ namespace ReactiveUI.WinForms.Tests.Winforms;
 /// <summary>Tests for resolving WinForms views registered for view models.</summary>
 public sealed class WinFormsViewDependencyResolverTests : IDisposable
 {
+    /// <summary>The contract name used by contract-based view registrations.</summary>
+    private const string Contract = "contract";
+
     /// <summary>The dependency resolver used for the tests.</summary>
     private readonly ModernDependencyResolver _resolver;
 
@@ -70,7 +73,7 @@ public sealed class WinFormsViewDependencyResolverTests : IDisposable
     {
         using (_resolver.WithResolver())
         {
-            await Assert.That(_resolver.GetService<IViewFor<ExampleViewModel>>("contract")).IsTypeOf<ContractExampleView>();
+            await Assert.That(_resolver.GetService<IViewFor<ExampleViewModel>>(Contract)).IsTypeOf<ContractExampleView>();
         }
     }
 
@@ -105,10 +108,10 @@ public sealed class WinFormsViewDependencyResolverTests : IDisposable
         {
             await Assert.That(SingleInstanceWithContractExampleView.Instances).IsEqualTo(0);
 
-            var instance = _resolver.GetService<IViewFor<SingleInstanceExampleViewModel>>("contract");
+            var instance = _resolver.GetService<IViewFor<SingleInstanceExampleViewModel>>(Contract);
             await Assert.That(SingleInstanceWithContractExampleView.Instances).IsEqualTo(1);
 
-            var instance2 = _resolver.GetService<IViewFor<SingleInstanceExampleViewModel>>("contract");
+            var instance2 = _resolver.GetService<IViewFor<SingleInstanceExampleViewModel>>(Contract);
             using (Assert.Multiple())
             {
                 await Assert.That(SingleInstanceWithContractExampleView.Instances).IsEqualTo(1);

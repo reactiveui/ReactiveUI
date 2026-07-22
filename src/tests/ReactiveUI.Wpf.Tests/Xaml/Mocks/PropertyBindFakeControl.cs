@@ -5,7 +5,6 @@
 
 using System.Windows;
 using System.Windows.Controls;
-using PropertyMetadata = System.Windows.PropertyMetadata;
 
 namespace ReactiveUI.Tests.Xaml.Mocks;
 
@@ -14,15 +13,15 @@ public class PropertyBindFakeControl : Control
 {
     /// <summary>The null hating string property.</summary>
     public static readonly DependencyProperty NullHatingStringProperty =
-        DependencyProperty.Register("NullHatingString", typeof(string), typeof(PropertyBindFakeControl), new(string.Empty));
+        DependencyProperty.Register(nameof(NullHatingString), typeof(string), typeof(PropertyBindFakeControl), new(string.Empty));
 
     /// <summary>The nullable double property.</summary>
     public static readonly DependencyProperty NullableDoubleProperty =
-        DependencyProperty.Register("NullableDouble", typeof(double?), typeof(PropertyBindFakeControl), new(null));
+        DependencyProperty.Register(nameof(NullableDouble), typeof(double?), typeof(PropertyBindFakeControl), new(null));
 
     /// <summary>The just a double property.</summary>
     public static readonly DependencyProperty JustADoubleProperty =
-        DependencyProperty.Register("JustADouble", typeof(double), typeof(PropertyBindFakeControl), new(0.0));
+        DependencyProperty.Register(nameof(JustADouble), typeof(double), typeof(PropertyBindFakeControl), new(0.0));
 
     /// <summary>Gets or sets the nullable double.</summary>
     public double? NullableDouble
@@ -44,10 +43,7 @@ public class PropertyBindFakeControl : Control
         get => (string)GetValue(NullHatingStringProperty);
         set
         {
-            if (value is null)
-            {
-                throw new ArgumentNullException(nameof(value), "No nulls! I get confused!");
-            }
+            ArgumentExceptionHelper.ThrowIfNull(value);
 
             SetValue(NullHatingStringProperty, value);
         }

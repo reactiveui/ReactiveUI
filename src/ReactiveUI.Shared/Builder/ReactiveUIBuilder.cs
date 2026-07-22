@@ -5,6 +5,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
+using ReactiveUI.Helpers;
 using Splat;
 using Splat.Builder;
 
@@ -17,7 +18,7 @@ namespace ReactiveUI.Builder;
 /// A builder class for configuring ReactiveUI services with AOT compatibility.
 /// Extends the Splat AppBuilder to provide ReactiveUI-specific configuration.
 /// </summary>
-public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiveUIInstance
+public sealed partial class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiveUIInstance
 {
 #if ANDROID || IOS
     /// <summary>The default small cache limit for mobile platforms.</summary>
@@ -226,10 +227,6 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
     /// <summary>Registers a platform-specific registration module by type.</summary>
     /// <typeparam name="T">The type of the registration module that implements IWantsToRegisterStuff.</typeparam>
     /// <returns>The builder instance for method chaining.</returns>
-    [SuppressMessage(
-        "Major Code Smell",
-        "S4018:Generic methods should provide type parameter",
-        Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
     public IReactiveUIBuilder WithPlatformModule<T>()
         where T : IWantsToRegisterStuff, new()
     {
@@ -294,7 +291,7 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
         WithRegistrationOnBuild(resolver =>
         {
             _messageBus = new MessageBus();
-            resolver.RegisterConstant<IMessageBus>(_messageBus);
+            resolver.RegisterConstant(_messageBus);
         });
 
     /// <summary>Configures the ReactiveUI message bus.</summary>
@@ -305,7 +302,7 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
         {
             _messageBus = new MessageBus();
             configure(_messageBus);
-            resolver.RegisterConstant<IMessageBus>(_messageBus);
+            resolver.RegisterConstant(_messageBus);
         });
 
     /// <summary>Registers a custom message bus instance.</summary>
@@ -316,7 +313,7 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
         ArgumentExceptionHelper.ThrowIfNull(messageBus);
 
         _messageBus = messageBus;
-        return WithRegistrationOnBuild(resolver => resolver.RegisterConstant<IMessageBus>(messageBus));
+        return WithRegistrationOnBuild(resolver => resolver.RegisterConstant(messageBus));
     }
 
     /// <summary>Configures the ReactiveUI view locator.</summary>
@@ -581,10 +578,6 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
     /// <summary>Configures a typed suspension host for application lifecycle management.</summary>
     /// <typeparam name="TAppState">The type of the application state to manage.</typeparam>
     /// <returns>The builder instance for chaining.</returns>
-    [SuppressMessage(
-        "Major Code Smell",
-        "S4018:Generic methods should provide type parameter",
-        Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
     public IReactiveUIBuilder WithSuspensionHost<TAppState>()
     {
         _suspensionHost = new SuspensionHost<TAppState>();
@@ -598,15 +591,8 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
     /// <exception cref="ArgumentOutOfRangeException">Thrown if either cache limit is less than or equal to 0.</exception>
     public IReactiveUIBuilder WithCacheSizes(int smallCacheLimit, int bigCacheLimit)
     {
-        if (smallCacheLimit <= 0)
-        {
-            throw new ArgumentOutOfRangeException(nameof(smallCacheLimit), "Small cache limit must be greater than 0.");
-        }
-
-        if (bigCacheLimit <= 0)
-        {
-            throw new ArgumentOutOfRangeException(nameof(bigCacheLimit), "Big cache limit must be greater than 0.");
-        }
+        ArgumentValidation.ThrowIfNegativeOrZero(smallCacheLimit);
+        ArgumentValidation.ThrowIfNegativeOrZero(bigCacheLimit);
 
         _smallCacheLimit = smallCacheLimit;
         _bigCacheLimit = bigCacheLimit;
@@ -616,10 +602,6 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
     /// <summary>Registers a custom view model with the dependency resolver.</summary>
     /// <typeparam name="TViewModel">The view model type.</typeparam>
     /// <returns>The builder instance for chaining.</returns>
-    [SuppressMessage(
-        "Major Code Smell",
-        "S4018:Generic methods should provide type parameter",
-        Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
     public IReactiveUIBuilder RegisterViewModel<TViewModel>()
         where TViewModel : class, IReactiveObject, new() =>
         WithRegistration(static resolver => resolver.Register<TViewModel>(static () => new()));
@@ -630,10 +612,6 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
     /// <typeparam name="TViewModel">The type of the view model to register. Must be a class that implements IReactiveObject and has a parameterless
     /// constructor.</typeparam>
     /// <returns>The current builder instance, enabling further configuration of the dependency resolver.</returns>
-    [SuppressMessage(
-        "Major Code Smell",
-        "S4018:Generic methods should provide type parameter",
-        Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
     public IReactiveUIBuilder RegisterConstantViewModel<TViewModel>()
         where TViewModel : class, IReactiveObject, new() =>
         WithRegistration(static resolver => resolver.RegisterConstant(new TViewModel()));
@@ -641,10 +619,6 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
     /// <summary>Registers a custom view model with the dependency resolver.</summary>
     /// <typeparam name="TViewModel">The view model type.</typeparam>
     /// <returns>The builder instance for chaining.</returns>
-    [SuppressMessage(
-        "Major Code Smell",
-        "S4018:Generic methods should provide type parameter",
-        Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
 #if NET6_0_OR_GREATER
     public IReactiveUIBuilder RegisterSingletonViewModel<
         [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] TViewModel>()
@@ -658,10 +632,6 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
     /// <typeparam name="TView">The view type.</typeparam>
     /// <typeparam name="TViewModel">The view model type.</typeparam>
     /// <returns>The builder instance for chaining.</returns>
-    [SuppressMessage(
-        "Major Code Smell",
-        "S4018:Generic methods should provide type parameter",
-        Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
     public IReactiveUIBuilder RegisterView<TView, TViewModel>()
         where TView : class, IViewFor<TViewModel>, new()
         where TViewModel : class, IReactiveObject =>
@@ -671,663 +641,25 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
     /// <typeparam name="TView">The view type.</typeparam>
     /// <typeparam name="TViewModel">The view model type.</typeparam>
     /// <returns>The builder instance for chaining.</returns>
-    [SuppressMessage(
-        "Major Code Smell",
-        "S4018:Generic methods should provide type parameter",
-        Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
     public IReactiveUIBuilder RegisterSingletonView<TView, TViewModel>()
         where TView : class, IViewFor<TViewModel>, new()
         where TViewModel : class, IReactiveObject =>
         WithRegistration(static resolver =>
             resolver.RegisterLazySingleton<IViewFor<TViewModel>>(static () => new TView()));
 
-    /// <summary>Builds the application and returns the ReactiveUI instance wrapper.</summary>
-    /// <returns>IReactiveUIInstance instance for chaining.</returns>
-    /// <exception cref="InvalidOperationException">Thrown if building the app instance fails.</exception>
-    public new IReactiveUIInstance Build()
-    {
-        if (base.Build() is not IReactiveUIInstance appInstance || appInstance.Current is null)
-        {
-            throw new InvalidOperationException("Failed to create ReactiveUIInstance instance");
-        }
-
-        InitializeStaticState();
-
-        RxConverters.SetService(ConverterService);
-
-        if (_messageBus is not null)
-        {
-            MessageBus.Current = _messageBus;
-        }
-
-        RxAppBuilder.MarkAsInitialized();
-
-        return appInstance;
-    }
-
-    /// <summary>Builds the application and returns the ReactiveUI instance wrapper.</summary>
-    /// <returns>IReactiveUIInstance instance for chaining.</returns>
-    /// <exception cref="InvalidOperationException">Thrown if building the app instance fails.</exception>
-    public IReactiveUIInstance BuildApp() => Build();
-
-    /// <summary>Resolves a single instance and passes it to the action.</summary>
-    /// <typeparam name="T">The type to resolve.</typeparam>
-    /// <param name="action">The action.</param>
-    /// <returns>IReactiveUIInstance instance for chaining.</returns>
-    public IReactiveUIInstance WithInstance<T>(Action<T?> action)
-    {
-        if (Current is null)
-        {
-            return this;
-        }
-
-        action?.Invoke(Current.GetService<T>());
-        return this;
-    }
-
-    /// <summary>Resolves two instances and passes them to the action.</summary>
-    /// <typeparam name="T1">The first type to resolve.</typeparam>
-    /// <typeparam name="T2">The second type to resolve.</typeparam>
-    /// <param name="action">The action.</param>
-    /// <returns>IReactiveUIInstance instance for chaining.</returns>
-    public IReactiveUIInstance WithInstance<T1, T2>(Action<T1?, T2?> action)
-    {
-        if (Current is null)
-        {
-            return this;
-        }
-
-        if (action is not null)
-        {
-            var current = Current;
-            action(current.GetService<T1>(), current.GetService<T2>());
-        }
-
-        return this;
-    }
-
-    /// <summary>Resolves three instances and passes them to the action.</summary>
-    /// <typeparam name="T1">The first type to resolve.</typeparam>
-    /// <typeparam name="T2">The second type to resolve.</typeparam>
-    /// <typeparam name="T3">The third type to resolve.</typeparam>
-    /// <param name="action">The action.</param>
-    /// <returns>IReactiveUIInstance instance for chaining.</returns>
-    public IReactiveUIInstance WithInstance<T1, T2, T3>(Action<T1?, T2?, T3?> action)
-    {
-        if (Current is null)
-        {
-            return this;
-        }
-
-        if (action is not null)
-        {
-            var current = Current;
-            action(current.GetService<T1>(), current.GetService<T2>(), current.GetService<T3>());
-        }
-
-        return this;
-    }
-
-    /// <summary>Resolves four instances and passes them to the action.</summary>
-    /// <typeparam name="T1">The first type to resolve.</typeparam>
-    /// <typeparam name="T2">The second type to resolve.</typeparam>
-    /// <typeparam name="T3">The third type to resolve.</typeparam>
-    /// <typeparam name="T4">The fourth type to resolve.</typeparam>
-    /// <param name="action">The action.</param>
-    /// <returns>IReactiveUIInstance instance for chaining.</returns>
-    public IReactiveUIInstance WithInstance<T1, T2, T3, T4>(Action<T1?, T2?, T3?, T4?> action)
-    {
-        if (Current is null)
-        {
-            return this;
-        }
-
-        if (action is not null)
-        {
-            var current = Current;
-            action(
-                current.GetService<T1>(),
-                current.GetService<T2>(),
-                current.GetService<T3>(),
-                current.GetService<T4>());
-        }
-
-        return this;
-    }
-
-    /// <summary>Resolves five instances and passes them to the action.</summary>
-    /// <typeparam name="T1">The first type to resolve.</typeparam>
-    /// <typeparam name="T2">The second type to resolve.</typeparam>
-    /// <typeparam name="T3">The third type to resolve.</typeparam>
-    /// <typeparam name="T4">The fourth type to resolve.</typeparam>
-    /// <typeparam name="T5">The fifth type to resolve.</typeparam>
-    /// <param name="action">The action.</param>
-    /// <returns>IReactiveUIInstance instance for chaining.</returns>
-    public IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5>(Action<T1?, T2?, T3?, T4?, T5?> action)
-    {
-        if (Current is null)
-        {
-            return this;
-        }
-
-        if (action is not null)
-        {
-            var current = Current;
-            action(
-                current.GetService<T1>(),
-                current.GetService<T2>(),
-                current.GetService<T3>(),
-                current.GetService<T4>(),
-                current.GetService<T5>());
-        }
-
-        return this;
-    }
-
-    /// <summary>Resolves six instances and passes them to the action.</summary>
-    /// <typeparam name="T1">The first type to resolve.</typeparam>
-    /// <typeparam name="T2">The second type to resolve.</typeparam>
-    /// <typeparam name="T3">The third type to resolve.</typeparam>
-    /// <typeparam name="T4">The fourth type to resolve.</typeparam>
-    /// <typeparam name="T5">The fifth type to resolve.</typeparam>
-    /// <typeparam name="T6">The sixth type to resolve.</typeparam>
-    /// <param name="action">The action.</param>
-    /// <returns>IReactiveUIInstance instance for chaining.</returns>
-    public IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6>(Action<T1?, T2?, T3?, T4?, T5?, T6?> action)
-    {
-        if (Current is null)
-        {
-            return this;
-        }
-
-        if (action is not null)
-        {
-            var current = Current;
-            action(
-                current.GetService<T1>(),
-                current.GetService<T2>(),
-                current.GetService<T3>(),
-                current.GetService<T4>(),
-                current.GetService<T5>(),
-                current.GetService<T6>());
-        }
-
-        return this;
-    }
-
-    /// <summary>Resolves seven instances and passes them to the action.</summary>
-    /// <typeparam name="T1">The first type to resolve.</typeparam>
-    /// <typeparam name="T2">The second type to resolve.</typeparam>
-    /// <typeparam name="T3">The third type to resolve.</typeparam>
-    /// <typeparam name="T4">The fourth type to resolve.</typeparam>
-    /// <typeparam name="T5">The fifth type to resolve.</typeparam>
-    /// <typeparam name="T6">The sixth type to resolve.</typeparam>
-    /// <typeparam name="T7">The seventh type to resolve.</typeparam>
-    /// <param name="action">The action.</param>
-    /// <returns>IReactiveUIInstance instance for chaining.</returns>
-    public IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7>(
-        Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?> action)
-    {
-        if (Current is null)
-        {
-            return this;
-        }
-
-        if (action is not null)
-        {
-            var current = Current;
-            action(
-                current.GetService<T1>(),
-                current.GetService<T2>(),
-                current.GetService<T3>(),
-                current.GetService<T4>(),
-                current.GetService<T5>(),
-                current.GetService<T6>(),
-                current.GetService<T7>());
-        }
-
-        return this;
-    }
-
-    /// <summary>Resolves eight instances and passes them to the action.</summary>
-    /// <typeparam name="T1">The first type to resolve.</typeparam>
-    /// <typeparam name="T2">The second type to resolve.</typeparam>
-    /// <typeparam name="T3">The third type to resolve.</typeparam>
-    /// <typeparam name="T4">The fourth type to resolve.</typeparam>
-    /// <typeparam name="T5">The fifth type to resolve.</typeparam>
-    /// <typeparam name="T6">The sixth type to resolve.</typeparam>
-    /// <typeparam name="T7">The seventh type to resolve.</typeparam>
-    /// <typeparam name="T8">The eighth type to resolve.</typeparam>
-    /// <param name="action">The action.</param>
-    /// <returns>IReactiveUIInstance instance for chaining.</returns>
-    public IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8>(
-        Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?> action)
-    {
-        if (Current is null)
-        {
-            return this;
-        }
-
-        if (action is not null)
-        {
-            var current = Current;
-            action(
-                current.GetService<T1>(),
-                current.GetService<T2>(),
-                current.GetService<T3>(),
-                current.GetService<T4>(),
-                current.GetService<T5>(),
-                current.GetService<T6>(),
-                current.GetService<T7>(),
-                current.GetService<T8>());
-        }
-
-        return this;
-    }
-
-    /// <summary>Resolves nine instances and passes them to the action.</summary>
-    /// <typeparam name="T1">The first type to resolve.</typeparam>
-    /// <typeparam name="T2">The second type to resolve.</typeparam>
-    /// <typeparam name="T3">The third type to resolve.</typeparam>
-    /// <typeparam name="T4">The fourth type to resolve.</typeparam>
-    /// <typeparam name="T5">The fifth type to resolve.</typeparam>
-    /// <typeparam name="T6">The sixth type to resolve.</typeparam>
-    /// <typeparam name="T7">The seventh type to resolve.</typeparam>
-    /// <typeparam name="T8">The eighth type to resolve.</typeparam>
-    /// <typeparam name="T9">The ninth type to resolve.</typeparam>
-    /// <param name="action">The action.</param>
-    /// <returns>IReactiveUIInstance instance for chaining.</returns>
-    public IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8, T9>(
-        Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?> action)
-    {
-        if (Current is null)
-        {
-            return this;
-        }
-
-        if (action is not null)
-        {
-            var current = Current;
-            action(
-                current.GetService<T1>(),
-                current.GetService<T2>(),
-                current.GetService<T3>(),
-                current.GetService<T4>(),
-                current.GetService<T5>(),
-                current.GetService<T6>(),
-                current.GetService<T7>(),
-                current.GetService<T8>(),
-                current.GetService<T9>());
-        }
-
-        return this;
-    }
-
-    /// <summary>Resolves ten instances and passes them to the action.</summary>
-    /// <typeparam name="T1">The first type to resolve.</typeparam>
-    /// <typeparam name="T2">The second type to resolve.</typeparam>
-    /// <typeparam name="T3">The third type to resolve.</typeparam>
-    /// <typeparam name="T4">The fourth type to resolve.</typeparam>
-    /// <typeparam name="T5">The fifth type to resolve.</typeparam>
-    /// <typeparam name="T6">The sixth type to resolve.</typeparam>
-    /// <typeparam name="T7">The seventh type to resolve.</typeparam>
-    /// <typeparam name="T8">The eighth type to resolve.</typeparam>
-    /// <typeparam name="T9">The ninth type to resolve.</typeparam>
-    /// <typeparam name="T10">The tenth type to resolve.</typeparam>
-    /// <param name="action">The action.</param>
-    /// <returns>IReactiveUIInstance instance for chaining.</returns>
-    public IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(
-        Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?, T10?> action)
-    {
-        if (Current is null)
-        {
-            return this;
-        }
-
-        if (action is not null)
-        {
-            var current = Current;
-            action(
-                current.GetService<T1>(),
-                current.GetService<T2>(),
-                current.GetService<T3>(),
-                current.GetService<T4>(),
-                current.GetService<T5>(),
-                current.GetService<T6>(),
-                current.GetService<T7>(),
-                current.GetService<T8>(),
-                current.GetService<T9>(),
-                current.GetService<T10>());
-        }
-
-        return this;
-    }
-
-    /// <summary>Resolves eleven instances and passes them to the action.</summary>
-    /// <typeparam name="T1">The first type to resolve.</typeparam>
-    /// <typeparam name="T2">The second type to resolve.</typeparam>
-    /// <typeparam name="T3">The third type to resolve.</typeparam>
-    /// <typeparam name="T4">The fourth type to resolve.</typeparam>
-    /// <typeparam name="T5">The fifth type to resolve.</typeparam>
-    /// <typeparam name="T6">The sixth type to resolve.</typeparam>
-    /// <typeparam name="T7">The seventh type to resolve.</typeparam>
-    /// <typeparam name="T8">The eighth type to resolve.</typeparam>
-    /// <typeparam name="T9">The ninth type to resolve.</typeparam>
-    /// <typeparam name="T10">The tenth type to resolve.</typeparam>
-    /// <typeparam name="T11">The eleventh type to resolve.</typeparam>
-    /// <param name="action">The action.</param>
-    /// <returns>IReactiveUIInstance instance for chaining.</returns>
-    public IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>(
-        Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?, T10?, T11?> action)
-    {
-        if (Current is null)
-        {
-            return this;
-        }
-
-        if (action is not null)
-        {
-            var current = Current;
-            action(
-                current.GetService<T1>(),
-                current.GetService<T2>(),
-                current.GetService<T3>(),
-                current.GetService<T4>(),
-                current.GetService<T5>(),
-                current.GetService<T6>(),
-                current.GetService<T7>(),
-                current.GetService<T8>(),
-                current.GetService<T9>(),
-                current.GetService<T10>(),
-                current.GetService<T11>());
-        }
-
-        return this;
-    }
-
-    /// <summary>Resolves twelve instances and passes them to the action.</summary>
-    /// <typeparam name="T1">The first type to resolve.</typeparam>
-    /// <typeparam name="T2">The second type to resolve.</typeparam>
-    /// <typeparam name="T3">The third type to resolve.</typeparam>
-    /// <typeparam name="T4">The fourth type to resolve.</typeparam>
-    /// <typeparam name="T5">The fifth type to resolve.</typeparam>
-    /// <typeparam name="T6">The sixth type to resolve.</typeparam>
-    /// <typeparam name="T7">The seventh type to resolve.</typeparam>
-    /// <typeparam name="T8">The eighth type to resolve.</typeparam>
-    /// <typeparam name="T9">The ninth type to resolve.</typeparam>
-    /// <typeparam name="T10">The tenth type to resolve.</typeparam>
-    /// <typeparam name="T11">The eleventh type to resolve.</typeparam>
-    /// <typeparam name="T12">The twelfth type to resolve.</typeparam>
-    /// <param name="action">The action.</param>
-    /// <returns>IReactiveUIInstance instance for chaining.</returns>
-    public IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>(
-        Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?, T10?, T11?, T12?> action)
-    {
-        if (Current is null)
-        {
-            return this;
-        }
-
-        if (action is not null)
-        {
-            var current = Current;
-            action(
-                current.GetService<T1>(),
-                current.GetService<T2>(),
-                current.GetService<T3>(),
-                current.GetService<T4>(),
-                current.GetService<T5>(),
-                current.GetService<T6>(),
-                current.GetService<T7>(),
-                current.GetService<T8>(),
-                current.GetService<T9>(),
-                current.GetService<T10>(),
-                current.GetService<T11>(),
-                current.GetService<T12>());
-        }
-
-        return this;
-    }
-
-    /// <summary>Resolves thirteen instances and passes them to the action.</summary>
-    /// <typeparam name="T1">The first type to resolve.</typeparam>
-    /// <typeparam name="T2">The second type to resolve.</typeparam>
-    /// <typeparam name="T3">The third type to resolve.</typeparam>
-    /// <typeparam name="T4">The fourth type to resolve.</typeparam>
-    /// <typeparam name="T5">The fifth type to resolve.</typeparam>
-    /// <typeparam name="T6">The sixth type to resolve.</typeparam>
-    /// <typeparam name="T7">The seventh type to resolve.</typeparam>
-    /// <typeparam name="T8">The eighth type to resolve.</typeparam>
-    /// <typeparam name="T9">The ninth type to resolve.</typeparam>
-    /// <typeparam name="T10">The tenth type to resolve.</typeparam>
-    /// <typeparam name="T11">The eleventh type to resolve.</typeparam>
-    /// <typeparam name="T12">The twelfth type to resolve.</typeparam>
-    /// <typeparam name="T13">The thirteenth type to resolve.</typeparam>
-    /// <param name="action">The action.</param>
-    /// <returns>IReactiveUIInstance instance for chaining.</returns>
-    public IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>(
-        Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?, T10?, T11?, T12?, T13?> action)
-    {
-        if (Current is null)
-        {
-            return this;
-        }
-
-        if (action is not null)
-        {
-            var current = Current;
-            action(
-                current.GetService<T1>(),
-                current.GetService<T2>(),
-                current.GetService<T3>(),
-                current.GetService<T4>(),
-                current.GetService<T5>(),
-                current.GetService<T6>(),
-                current.GetService<T7>(),
-                current.GetService<T8>(),
-                current.GetService<T9>(),
-                current.GetService<T10>(),
-                current.GetService<T11>(),
-                current.GetService<T12>(),
-                current.GetService<T13>());
-        }
-
-        return this;
-    }
-
-    /// <summary>Resolves fourteen instances and passes them to the action.</summary>
-    /// <typeparam name="T1">The first type to resolve.</typeparam>
-    /// <typeparam name="T2">The second type to resolve.</typeparam>
-    /// <typeparam name="T3">The third type to resolve.</typeparam>
-    /// <typeparam name="T4">The fourth type to resolve.</typeparam>
-    /// <typeparam name="T5">The fifth type to resolve.</typeparam>
-    /// <typeparam name="T6">The sixth type to resolve.</typeparam>
-    /// <typeparam name="T7">The seventh type to resolve.</typeparam>
-    /// <typeparam name="T8">The eighth type to resolve.</typeparam>
-    /// <typeparam name="T9">The ninth type to resolve.</typeparam>
-    /// <typeparam name="T10">The tenth type to resolve.</typeparam>
-    /// <typeparam name="T11">The eleventh type to resolve.</typeparam>
-    /// <typeparam name="T12">The twelfth type to resolve.</typeparam>
-    /// <typeparam name="T13">The thirteenth type to resolve.</typeparam>
-    /// <typeparam name="T14">The fourteenth type to resolve.</typeparam>
-    /// <param name="action">The action.</param>
-    /// <returns>IReactiveUIInstance instance for chaining.</returns>
-    public IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>(
-        Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?, T10?, T11?, T12?, T13?, T14?> action)
-    {
-        if (Current is null)
-        {
-            return this;
-        }
-
-        if (action is not null)
-        {
-            var current = Current;
-            action(
-                current.GetService<T1>(),
-                current.GetService<T2>(),
-                current.GetService<T3>(),
-                current.GetService<T4>(),
-                current.GetService<T5>(),
-                current.GetService<T6>(),
-                current.GetService<T7>(),
-                current.GetService<T8>(),
-                current.GetService<T9>(),
-                current.GetService<T10>(),
-                current.GetService<T11>(),
-                current.GetService<T12>(),
-                current.GetService<T13>(),
-                current.GetService<T14>());
-        }
-
-        return this;
-    }
-
-    /// <summary>Resolves fifteen instances and passes them to the action.</summary>
-    /// <typeparam name="T1">The first type to resolve.</typeparam>
-    /// <typeparam name="T2">The second type to resolve.</typeparam>
-    /// <typeparam name="T3">The third type to resolve.</typeparam>
-    /// <typeparam name="T4">The fourth type to resolve.</typeparam>
-    /// <typeparam name="T5">The fifth type to resolve.</typeparam>
-    /// <typeparam name="T6">The sixth type to resolve.</typeparam>
-    /// <typeparam name="T7">The seventh type to resolve.</typeparam>
-    /// <typeparam name="T8">The eighth type to resolve.</typeparam>
-    /// <typeparam name="T9">The ninth type to resolve.</typeparam>
-    /// <typeparam name="T10">The tenth type to resolve.</typeparam>
-    /// <typeparam name="T11">The eleventh type to resolve.</typeparam>
-    /// <typeparam name="T12">The twelfth type to resolve.</typeparam>
-    /// <typeparam name="T13">The thirteenth type to resolve.</typeparam>
-    /// <typeparam name="T14">The fourteenth type to resolve.</typeparam>
-    /// <typeparam name="T15">The fifteenth type to resolve.</typeparam>
-    /// <param name="action">The action.</param>
-    /// <returns>IReactiveUIInstance instance for chaining.</returns>
-    public IReactiveUIInstance WithInstance<
-        T1,
-        T2,
-        T3,
-        T4,
-        T5,
-        T6,
-        T7,
-        T8,
-        T9,
-        T10,
-        T11,
-        T12,
-        T13,
-        T14,
-        T15>(
-        Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?, T10?, T11?, T12?, T13?, T14?, T15?> action)
-    {
-        if (Current is null)
-        {
-            return this;
-        }
-
-        if (action is not null)
-        {
-            var current = Current;
-            action(
-                current.GetService<T1>(),
-                current.GetService<T2>(),
-                current.GetService<T3>(),
-                current.GetService<T4>(),
-                current.GetService<T5>(),
-                current.GetService<T6>(),
-                current.GetService<T7>(),
-                current.GetService<T8>(),
-                current.GetService<T9>(),
-                current.GetService<T10>(),
-                current.GetService<T11>(),
-                current.GetService<T12>(),
-                current.GetService<T13>(),
-                current.GetService<T14>(),
-                current.GetService<T15>());
-        }
-
-        return this;
-    }
-
-    /// <summary>Resolves sixteen instances and passes them to the action.</summary>
-    /// <typeparam name="T1">The first type to resolve.</typeparam>
-    /// <typeparam name="T2">The second type to resolve.</typeparam>
-    /// <typeparam name="T3">The third type to resolve.</typeparam>
-    /// <typeparam name="T4">The fourth type to resolve.</typeparam>
-    /// <typeparam name="T5">The fifth type to resolve.</typeparam>
-    /// <typeparam name="T6">The sixth type to resolve.</typeparam>
-    /// <typeparam name="T7">The seventh type to resolve.</typeparam>
-    /// <typeparam name="T8">The eighth type to resolve.</typeparam>
-    /// <typeparam name="T9">The ninth type to resolve.</typeparam>
-    /// <typeparam name="T10">The tenth type to resolve.</typeparam>
-    /// <typeparam name="T11">The eleventh type to resolve.</typeparam>
-    /// <typeparam name="T12">The twelfth type to resolve.</typeparam>
-    /// <typeparam name="T13">The thirteenth type to resolve.</typeparam>
-    /// <typeparam name="T14">The fourteenth type to resolve.</typeparam>
-    /// <typeparam name="T15">The fifteenth type to resolve.</typeparam>
-    /// <typeparam name="T16">The sixteenth type to resolve.</typeparam>
-    /// <param name="action">The action.</param>
-    /// <returns>IReactiveUIInstance instance for chaining.</returns>
-    public IReactiveUIInstance WithInstance<
-        T1,
-        T2,
-        T3,
-        T4,
-        T5,
-        T6,
-        T7,
-        T8,
-        T9,
-        T10,
-        T11,
-        T12,
-        T13,
-        T14,
-        T15,
-        T16>(Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?, T10?, T11?, T12?, T13?, T14?, T15?, T16?> action)
-    {
-        if (Current is null)
-        {
-            return this;
-        }
-
-        if (action is not null)
-        {
-            var current = Current;
-            action(
-                current.GetService<T1>(),
-                current.GetService<T2>(),
-                current.GetService<T3>(),
-                current.GetService<T4>(),
-                current.GetService<T5>(),
-                current.GetService<T6>(),
-                current.GetService<T7>(),
-                current.GetService<T8>(),
-                current.GetService<T9>(),
-                current.GetService<T10>(),
-                current.GetService<T11>(),
-                current.GetService<T12>(),
-                current.GetService<T13>(),
-                current.GetService<T14>(),
-                current.GetService<T15>(),
-                current.GetService<T16>());
-        }
-
-        return this;
-    }
-
-    /// <summary>Gets the platform-specific default small cache limit.</summary>
-    /// <returns>The default small cache limit for the current platform.</returns>
-    private static int GetPlatformDefaultSmallCacheLimit() => DefaultSmallCacheLimit;
-
-    /// <summary>Gets the platform-specific default big cache limit.</summary>
-    /// <returns>The default big cache limit for the current platform.</returns>
-    private static int GetPlatformDefaultBigCacheLimit() => DefaultBigCacheLimit;
-
     /// <summary>
     /// Registers all standard ReactiveUI converters to the ConverterService.
     /// This mirrors the converters registered in Registrations.cs but targets the new ConverterService.
     /// </summary>
     private void RegisterStandardConverters()
+    {
+        RegisterNumericStringConverters();
+        RegisterFormattingConverters();
+        RegisterNullableNumericConverters();
+    }
+
+    /// <summary>Registers the equality, string, numeric-to-string, and string-to-numeric converters.</summary>
+    private void RegisterNumericStringConverters()
     {
         ConverterService.TypedConverters.Register(new EqualityTypeConverter());
         ConverterService.TypedConverters.Register(new StringConverter());
@@ -1361,7 +693,11 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
         ConverterService.TypedConverters.Register(new StringToNullableDoubleTypeConverter());
         ConverterService.TypedConverters.Register(new StringToDecimalTypeConverter());
         ConverterService.TypedConverters.Register(new StringToNullableDecimalTypeConverter());
+    }
 
+    /// <summary>Registers the boolean, guid, date/time, and uri string converters.</summary>
+    private void RegisterFormattingConverters()
+    {
         ConverterService.TypedConverters.Register(new BooleanToStringTypeConverter());
         ConverterService.TypedConverters.Register(new NullableBooleanToStringTypeConverter());
         ConverterService.TypedConverters.Register(new StringToBooleanTypeConverter());
@@ -1401,7 +737,11 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
 
         ConverterService.TypedConverters.Register(new UriToStringTypeConverter());
         ConverterService.TypedConverters.Register(new StringToUriTypeConverter());
+    }
 
+    /// <summary>Registers the numeric to and from nullable numeric converters.</summary>
+    private void RegisterNullableNumericConverters()
+    {
         ConverterService.TypedConverters.Register(new ByteToNullableByteTypeConverter());
         ConverterService.TypedConverters.Register(new NullableByteToByteTypeConverter());
         ConverterService.TypedConverters.Register(new ShortToNullableShortTypeConverter());
@@ -1424,8 +764,8 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
     /// </summary>
     private void InitializeStaticState()
     {
-        var smallCache = _smallCacheLimit ?? GetPlatformDefaultSmallCacheLimit();
-        var bigCache = _bigCacheLimit ?? GetPlatformDefaultBigCacheLimit();
+        var smallCache = _smallCacheLimit ?? DefaultSmallCacheLimit;
+        var bigCache = _bigCacheLimit ?? DefaultBigCacheLimit;
         RxCacheSize.Initialize(smallCache, bigCache);
 
         if (_exceptionHandler is not null)

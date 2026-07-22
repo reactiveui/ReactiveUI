@@ -99,7 +99,7 @@ public class ObservableLoggingMixinTests
         var logged = subject.Log(logger, TestMessage);
 
         var errorCaught = false;
-        _ = logged.ObserveOn(Sequencer.Immediate).Subscribe(_ => { }, _ => errorCaught = true);
+        _ = logged.ObserveOn(Sequencer.Immediate).Subscribe(static _ => { }, _ => errorCaught = true);
 
         subject.OnError(new InvalidOperationException("Test error"));
 
@@ -170,7 +170,7 @@ public class ObservableLoggingMixinTests
 
         const int ExpectedValue = 42;
         const int MinimumInfoCount = 2;
-        var logged = subject.Log(logger, TestMessage, x => $"Value: {x}");
+        var logged = subject.Log(logger, TestMessage, static x => $"Value: {x}");
 
         var values = new List<int>();
         _ = logged.ObserveOn(Sequencer.Immediate).Subscribe(values.Add);
@@ -279,7 +279,7 @@ public class ObservableLoggingMixinTests
 
         var caught = subject.LoggedCatch<int, TestEnableLogger, InvalidOperationException>(
             logger,
-            ex => Signal.Emit(FallbackValue),
+            static ex => Signal.Emit(FallbackValue),
             "Specific error");
 
         var values = new List<int>();
@@ -326,7 +326,7 @@ public class ObservableLoggingMixinTests
 
         var caught = subject.LoggedCatch(logger, null, "Error");
 
-        _ = caught.ObserveOn(Sequencer.Immediate).Subscribe(_ => { }, _ => { }, () => { });
+        _ = caught.ObserveOn(Sequencer.Immediate).Subscribe(static _ => { }, static _ => { }, static () => { });
 
         subject.OnError(new InvalidOperationException());
 
@@ -503,9 +503,9 @@ public class ObservableLoggingMixinTests
     private sealed class TestEnableLogger(TestLogger logger) : IEnableLogger
     {
         /// <summary>Gets the number of captured Info-level messages.</summary>
-        public int InfoCount => logger.Messages.Count(m => m.logLevel == LogLevel.Info);
+        public int InfoCount => logger.Messages.Count(static m => m.logLevel == LogLevel.Info);
 
         /// <summary>Gets the number of captured Warn-level messages.</summary>
-        public int WarnCount => logger.Messages.Count(m => m.logLevel == LogLevel.Warn);
+        public int WarnCount => logger.Messages.Count(static m => m.logLevel == LogLevel.Warn);
     }
 }

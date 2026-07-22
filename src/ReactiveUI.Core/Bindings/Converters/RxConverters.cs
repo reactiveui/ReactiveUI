@@ -46,9 +46,7 @@ namespace ReactiveUI;
 /// <para>
 /// Or register after initialization (not recommended, but supported):
 /// </para>
-/// <code>
-/// RxConverters.Current.TypedConverters.Register(new MyCustomConverter());
-/// </code>
+/// <c>RxConverters.Current.TypedConverters.Register(new MyCustomConverter());</c>
 /// </remarks>
 /// <example>
 /// <para>

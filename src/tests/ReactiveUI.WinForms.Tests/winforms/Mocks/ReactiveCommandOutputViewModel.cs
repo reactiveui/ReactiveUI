@@ -14,7 +14,7 @@ public class ReactiveCommandOutputViewModel : ReactiveObject
     /// <summary>Initializes a new instance of the <see cref="ReactiveCommandOutputViewModel"/> class.</summary>
     public ReactiveCommandOutputViewModel() =>
         NavigateCommand = ReactiveCommand.CreateFromObservable(
-            (string page) => Signal.Emit(page),
+            static (string page) => Signal.Emit(page),
             outputScheduler: Sequencer.Immediate);
 
     /// <summary>

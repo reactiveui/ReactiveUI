@@ -3,7 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Diagnostics.CodeAnalysis;
 using CoreGraphics;
 using Foundation;
 using UIKit;
@@ -15,8 +14,7 @@ namespace ReactiveUI;
 #endif
 /// <summary>This is a TableView that is both an TableView and has ReactiveObject powers (i.e. you can call RaiseAndSetIfChanged).</summary>
 /// <typeparam name="TViewModel">The view model type.</typeparam>
-[SuppressMessage("Design", "CA1010: Implement generic IEnumerable", Justification = "UI Kit exposes IEnumerable")]
-public abstract class ReactiveTableView<TViewModel> : ReactiveTableView, IViewFor<TViewModel>
+public class ReactiveTableView<TViewModel> : ReactiveTableView, IViewFor<TViewModel>
     where TViewModel : class
 {
     /// <summary>Initializes a new instance of the <see cref="ReactiveTableView{TViewModel}"/> class.</summary>

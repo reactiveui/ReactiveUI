@@ -7,7 +7,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace ReactiveUI;
 
-/// <summary>Converts <see cref="float"/> to <see cref="Nullable{Single}"/>.</summary>
+/// <summary>Converts <see cref="float"/> to <see cref="float"/>?.</summary>
 public sealed class SingleToNullableSingleTypeConverter : IBindingTypeConverter<float, float?>
 {
     /// <inheritdoc/>

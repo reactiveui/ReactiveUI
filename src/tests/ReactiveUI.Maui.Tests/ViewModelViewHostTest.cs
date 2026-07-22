@@ -213,7 +213,7 @@ public class ViewModelViewHostTest
     private static ActionDisposable ForceNonUnitTestMode()
     {
         ModeDetector.OverrideModeDetector(new AlwaysFalseModeDetector());
-        return new ActionDisposable(static () => ModeDetector.OverrideModeDetector(new DefaultModeDetector()));
+        return new(static () => ModeDetector.OverrideModeDetector(new DefaultModeDetector()));
     }
 
     /// <summary>Test executor that sets up the MAUI environment and registers a view in <see cref="ViewLocator.Current"/> for the null-locator fallback test.</summary>
@@ -228,7 +228,7 @@ public class ViewModelViewHostTest
         {
             base.Initialize();
 
-            _helper.Initialize(builder =>
+            _helper.Initialize(static builder =>
             {
                 _ = builder.WithMaui().WithCoreServices();
                 AppLocator.CurrentMutable.Register<IViewFor<RegisteredViewModel>>(static () => new RegisteredView());
@@ -288,10 +288,6 @@ public class ViewModelViewHostTest
     }
 
     /// <summary>Mock view locator that always resolves to a fixed view for testing.</summary>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage(
-        "Major Code Smell",
-        "S4018:Generic methods should provide type parameters",
-        Justification = "IViewLocator declares parameterless generic ResolveView overloads that this mock must implement.")]
     private sealed class MockViewLocator : IViewLocator
     {
         /// <summary>The view to always resolve to.</summary>
@@ -334,10 +330,6 @@ public class ViewModelViewHostTest
     }
 
     /// <summary>Test view locator for testing.</summary>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage(
-        "Major Code Smell",
-        "S4018:Generic methods should provide type parameters",
-        Justification = "IViewLocator declares parameterless generic ResolveView overloads that this mock must implement.")]
     private sealed class TestViewLocator : IViewLocator
     {
         /// <inheritdoc/>
@@ -380,10 +372,6 @@ public class ViewModelViewHostTest
     }
 
     /// <summary>A view locator that resolves to a non-View instance.</summary>
-    [SuppressMessage(
-        "Major Code Smell",
-        "S4018:Generic methods should provide type parameters",
-        Justification = "IViewLocator declares parameterless generic ResolveView overloads that this mock must implement.")]
     private sealed class NonViewLocator : IViewLocator
     {
         /// <summary>The non-View instance to resolve to.</summary>

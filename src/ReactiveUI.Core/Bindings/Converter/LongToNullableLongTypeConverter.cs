@@ -7,7 +7,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace ReactiveUI;
 
-/// <summary>Converts <see cref="long"/> to <see cref="Nullable{Int64}"/>.</summary>
+/// <summary>Converts <see cref="long"/> to <see cref="long"/>?.</summary>
 public sealed class LongToNullableLongTypeConverter : IBindingTypeConverter<long, long?>
 {
     /// <inheritdoc/>

@@ -3,7 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Diagnostics.CodeAnalysis;
 using System.Windows.Input;
 
 namespace ReactiveUI.Tests.Bindings.CommandBindings;
@@ -18,13 +17,13 @@ public class CreatesCommandBindingViaCommandParameterTests
     {
         var binder = new CreatesCommandBindingViaCommandParameter();
         var target = new CommandControl();
-        var originalCommand = ReactiveCommand.Create(() => { });
+        var originalCommand = ReactiveCommand.Create(static () => { });
         const string OriginalParameter = "original";
 
         target.Command = originalCommand;
         target.CommandParameter = OriginalParameter;
 
-        var newCommand = ReactiveCommand.Create(() => { });
+        var newCommand = ReactiveCommand.Create(static () => { });
         using (var binding = binder.BindCommandToObject(newCommand, target, Signal.Emit<object?>("new")))
         {
             await Assert.That(target.Command).IsEqualTo(newCommand);
@@ -44,7 +43,7 @@ public class CreatesCommandBindingViaCommandParameterTests
         var target = new CommandControl();
         const int InitialParameter = 42;
         const int UpdatedParameter = 100;
-        var command = ReactiveCommand.Create<int>(_ => { });
+        var command = ReactiveCommand.Create<int>(static _ => { });
         var parameter = new BehaviorSignal<object?>(InitialParameter);
 
         using var binding = binder.BindCommandToObject(command, target, parameter);
@@ -62,7 +61,7 @@ public class CreatesCommandBindingViaCommandParameterTests
     {
         var binder = new CreatesCommandBindingViaCommandParameter();
         var target = new CommandControl();
-        var command = ReactiveCommand.Create(() => { });
+        var command = ReactiveCommand.Create(static () => { });
 
         using var binding = binder.BindCommandToObject(command, target, Signal.Emit<object?>(null));
 
@@ -76,7 +75,7 @@ public class CreatesCommandBindingViaCommandParameterTests
     {
         var binder = new CreatesCommandBindingViaCommandParameter();
         var target = new CommandControl();
-        var command = ReactiveCommand.Create<string>(_ => { });
+        var command = ReactiveCommand.Create<string>(static _ => { });
         var parameter = new BehaviorSignal<object?>("first");
 
         using var binding = binder.BindCommandToObject(command, target, parameter);
@@ -97,7 +96,7 @@ public class CreatesCommandBindingViaCommandParameterTests
     {
         var binder = new CreatesCommandBindingViaCommandParameter();
         var target = new CommandControl();
-        var command = ReactiveCommand.Create(() => { });
+        var command = ReactiveCommand.Create(static () => { });
 
         var binding = binder.BindCommandToObject<CommandControl, EventArgs>(
             command,
@@ -128,7 +127,7 @@ public class CreatesCommandBindingViaCommandParameterTests
     public void BindCommandToObject_WithNullTarget_Throws()
     {
         var binder = new CreatesCommandBindingViaCommandParameter();
-        var command = ReactiveCommand.Create(() => { });
+        var command = ReactiveCommand.Create(static () => { });
 
         _ = Assert.Throws<ArgumentNullException>(() =>
             binder.BindCommandToObject<CommandControl>(command, null, Signal.Emit<object?>(null)));
@@ -157,10 +156,6 @@ public class CreatesCommandBindingViaCommandParameterTests
     /// <summary>Verifies that the affinity check returns 5 for targets with command and command parameter properties.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
-    [SuppressMessage(
-        "Major Code Smell",
-        "S4144:Methods should not have identical implementations",
-        Justification = "Intentional duplicate test scenario.")]
     public async Task GetAffinityForObject_WithCommandAndCommandParameter_Returns5()
     {
         var binder = new CreatesCommandBindingViaCommandParameter();
@@ -171,10 +166,6 @@ public class CreatesCommandBindingViaCommandParameterTests
     /// <summary>Verifies that the affinity check returns 0 when an event target is requested.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
-    [SuppressMessage(
-        "Major Code Smell",
-        "S4144:Methods should not have identical implementations",
-        Justification = "Intentional duplicate test scenario.")]
     public async Task GetAffinityForObject_WithEventTarget_Returns0()
     {
         var binder = new CreatesCommandBindingViaCommandParameter();

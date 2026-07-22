@@ -22,6 +22,10 @@ namespace System.Diagnostics.CodeAnalysis;
              Targets.ReturnValue |
              Targets.Struct,
     Inherited = false)]
+[SuppressMessage(
+    "Design",
+    "SST2324:Do not declare a member more accessible than its containing type",
+    Justification = "Mirrors the shape of the corresponding BCL type (System.Diagnostics.CodeAnalysis.DynamicallyAccessedMembersAttribute); the polyfill compiles only where the BCL lacks it.")]
 internal sealed class DynamicallyAccessedMembersAttribute : Attribute
 {
     /// <summary>Initializes a new instance of the <see cref="DynamicallyAccessedMembersAttribute"/> class with the specified member types.</summary>

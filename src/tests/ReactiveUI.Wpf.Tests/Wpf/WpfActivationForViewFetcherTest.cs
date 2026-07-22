@@ -4,7 +4,6 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.ComponentModel;
-using System.Diagnostics.CodeAnalysis;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -81,7 +80,6 @@ public class WpfActivationForViewFetcherTest
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     [TestExecutor<WpfTestExecutor>]
-    [SuppressMessage("Minor Code Smell", "S3257:Declarations and initializations should be as concise as possible", Justification = "Required")]
     public async Task WpfWhenActivatedOverloadsShortCircuitInDesignerModeWithoutRegisteredFetcher()
     {
         using var locator = new ModernDependencyResolver();
@@ -108,7 +106,6 @@ public class WpfActivationForViewFetcherTest
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     [TestExecutor<WpfTestExecutor>]
-    [SuppressMessage("Minor Code Smell", "S3257:Declarations and initializations should be as concise as possible", Justification = "Required")]
     public async Task WpfWhenActivatedOverloadsDelegateToRuntimeActivationFetcher()
     {
         using var locator = new ModernDependencyResolver();
@@ -290,7 +287,6 @@ public class WpfActivationForViewFetcherTest
     }
 
     /// <summary>A user control that reports itself as being in design mode.</summary>
-    [SuppressMessage("Minor Code Smell", "S3257:Declarations and initializations should be as concise as possible", Justification = "Required")]
     private sealed class DesignModeActivatableUserControl : UserControl, IActivatableView
     {
         /// <summary>Initializes static members of the <see cref="DesignModeActivatableUserControl"/> class.</summary>

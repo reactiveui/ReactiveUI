@@ -125,7 +125,7 @@ public class ScheduledSubject<T> : ISignal<T>
             return;
         }
 
-        _defaultObserverSub = _subject.Subscribe(new SchedulingObserver<T>(_defaultObserver, _scheduler));
+        Volatile.Write(ref _defaultObserverSub, _subject.Subscribe(new SchedulingObserver<T>(_defaultObserver, _scheduler)));
     }
 
     /// <summary>Tears down a real subscription and restores the default observer when none remain.</summary>

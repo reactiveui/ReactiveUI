@@ -3,6 +3,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics.CodeAnalysis;
+
 namespace ReactiveUI.Tests.Core;
 
 /// <summary>Tests for ReactiveUI internal utility classes.</summary>
@@ -11,6 +13,10 @@ public class InternalUtilitiesTests
     /// <summary>Tests that NotAWeakReference always holds strong reference even after GC.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
+    [SuppressMessage(
+        "Performance",
+        "PSH1021:Remove this 'GC.Collect'/'GC.WaitForPendingFinalizers' call",
+        Justification = "the weak-reference test deliberately forces a collection to observe reclamation.")]
     public async Task NotAWeakReference_AfterGC_StillAlive()
     {
         // Arrange

@@ -68,6 +68,6 @@ public class ObservableFuncMixinsTests
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task ToObservable_NullExpression_Throws() =>
-        await Assert.That(() => ((Expression<Func<WhenAnyArityTestViewModel, string?>>)null!).ToObservable(new WhenAnyArityTestViewModel()))
+        await Assert.That(static () => ((Expression<Func<WhenAnyArityTestViewModel, string?>>)null!).ToObservable(new()))
             .Throws<ArgumentNullException>();
 }

@@ -24,7 +24,7 @@ internal static class RxAppTestExtensions
     ///     4. Sets it as the current locator.
     ///     5. Initializes ReactiveUI with core services.
     /// </remarks>
-    public static void ResetAndReinitialize()
+    internal static void ResetAndReinitialize()
     {
         // Reset the initialization flag
         RxAppBuilder.ResetForTesting();
@@ -46,5 +46,5 @@ internal static class RxAppTestExtensions
     ///     Use this when you want to manually control the initialization afterward,
     ///     such as when creating a custom resolver for a specific test.
     /// </remarks>
-    public static void ResetState() => RxAppBuilder.ResetForTesting();
+    internal static void ResetState() => RxAppBuilder.ResetForTesting();
 }

@@ -40,6 +40,14 @@ namespace ReactiveUI.Builder;
 /// </code>
 /// </example>
 /// <seealso cref="IAppBuilder" />
+[SuppressMessage(
+    "Design",
+    "SST2307:Generic method type parameters should be inferable from the parameters",
+    Justification = "Registration methods take the target type as an explicit generic argument by design; it cannot be inferred from the parameters.")]
+[SuppressMessage(
+    "Maintainability",
+    "SST1452:Remove unused type parameters",
+    Justification = "The target type is part of the public registration contract and is consumed via typeof by implementations, so it cannot be removed.")]
 public interface IReactiveUIBuilder : IAppBuilder
 {
     /// <summary>Configures the message bus.</summary>
@@ -83,10 +91,6 @@ public interface IReactiveUIBuilder : IAppBuilder
     /// <typeparam name="TView">The type of the view.</typeparam>
     /// <typeparam name="TViewModel">The type of the view model.</typeparam>
     /// <returns>The builder instance for chaining.</returns>
-    [SuppressMessage(
-        "Major Code Smell",
-        "S4018:Generic methods should provide type parameter",
-        Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
     IReactiveUIBuilder RegisterSingletonView<TView, TViewModel>()
         where TView : class, IViewFor<TViewModel>, new()
         where TViewModel : class, IReactiveObject;
@@ -94,10 +98,6 @@ public interface IReactiveUIBuilder : IAppBuilder
     /// <summary>Registers the singleton view model.</summary>
     /// <typeparam name="TViewModel">The type of the view model.</typeparam>
     /// <returns>The builder instance for chaining.</returns>
-    [SuppressMessage(
-        "Major Code Smell",
-        "S4018:Generic methods should provide type parameter",
-        Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
 #if NET6_0_OR_GREATER
     IReactiveUIBuilder RegisterSingletonViewModel<
         [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] TViewModel>()
@@ -110,10 +110,6 @@ public interface IReactiveUIBuilder : IAppBuilder
     /// <typeparam name="TView">The type of the view.</typeparam>
     /// <typeparam name="TViewModel">The type of the view model.</typeparam>
     /// <returns>The builder instance for chaining.</returns>
-    [SuppressMessage(
-        "Major Code Smell",
-        "S4018:Generic methods should provide type parameter",
-        Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
     IReactiveUIBuilder RegisterView<TView, TViewModel>()
         where TView : class, IViewFor<TViewModel>, new()
         where TViewModel : class, IReactiveObject;
@@ -121,10 +117,6 @@ public interface IReactiveUIBuilder : IAppBuilder
     /// <summary>Registers the view model.</summary>
     /// <typeparam name="TViewModel">The type of the view model.</typeparam>
     /// <returns>The builder instance for chaining.</returns>
-    [SuppressMessage(
-        "Major Code Smell",
-        "S4018:Generic methods should provide type parameter",
-        Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
     IReactiveUIBuilder RegisterViewModel<TViewModel>()
         where TViewModel : class, IReactiveObject, new();
 
@@ -135,10 +127,6 @@ public interface IReactiveUIBuilder : IAppBuilder
     /// <typeparam name="TViewModel">The type of the view model to register. Must be a reference type that implements IReactiveObject and has a
     /// parameterless constructor.</typeparam>
     /// <returns>The current instance of the reactive UI builder, enabling method chaining.</returns>
-    [SuppressMessage(
-        "Major Code Smell",
-        "S4018:Generic methods should provide type parameter",
-        Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
     IReactiveUIBuilder RegisterConstantViewModel<TViewModel>()
         where TViewModel : class, IReactiveObject, new();
 
@@ -160,10 +148,6 @@ public interface IReactiveUIBuilder : IAppBuilder
     /// <summary>Withes the platform module.</summary>
     /// <typeparam name="T">The type of the registration module that implements IWantsToRegisterStuff.</typeparam>
     /// <returns>The builder instance for chaining.</returns>
-    [SuppressMessage(
-        "Major Code Smell",
-        "S4018:Generic methods should provide type parameter",
-        Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
     IReactiveUIBuilder WithPlatformModule<T>()
         where T : IWantsToRegisterStuff, new();
 
@@ -217,10 +201,6 @@ public interface IReactiveUIBuilder : IAppBuilder
     /// </summary>
     /// <typeparam name="TAppState">The type of the application state to manage.</typeparam>
     /// <returns>The builder instance for chaining.</returns>
-    [SuppressMessage(
-        "Major Code Smell",
-        "S4018:Generic methods should provide type parameter",
-        Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
     IReactiveUIBuilder WithSuspensionHost<TAppState>();
 
     /// <summary>

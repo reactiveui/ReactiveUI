@@ -44,11 +44,13 @@ public static class UIControlCommandExtensions
 
             control.Enabled = item.CanExecute(null);
 
-            return Scope.Create(() =>
-            {
-                control.RemoveTarget(ev, events);
-                item.CanExecuteChanged -= cech;
-            });
+            return Scope.Create(
+                (control, ev, events, cech, item),
+                static state =>
+                {
+                    state.control.RemoveTarget(state.ev, state.events);
+                    state.item.CanExecuteChanged -= state.cech;
+                });
         }
     }
 }

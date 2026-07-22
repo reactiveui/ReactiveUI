@@ -15,10 +15,6 @@ namespace ReactiveUI.Maui.Tests;
 /// <summary>Tests for the generic <see cref="RoutedViewHost{TViewModel}"/>.</summary>
 [NotInParallel]
 [TestExecutor<MauiTestExecutor>]
-[System.Diagnostics.CodeAnalysis.SuppressMessage(
-    "Major Code Smell",
-    "S4018:Generic methods should provide type parameters",
-    Justification = "Test exercises a generic overload with explicit type arguments.")]
 public class RoutedViewHostGenericTests
 {
     /// <summary>The delay in milliseconds used to allow the scheduler to process title updates.</summary>
@@ -218,7 +214,7 @@ public class RoutedViewHostGenericTests
         {
             base.Initialize();
 
-            _helper.Initialize(builder =>
+            _helper.Initialize(static builder =>
             {
                 _ = builder
                     .WithMaui()
@@ -226,7 +222,7 @@ public class RoutedViewHostGenericTests
                     .WithCoreServices();
 
                 // Register IScreen for constructor
-                AppLocator.CurrentMutable.Register<IScreen>(() => new TestScreen());
+                AppLocator.CurrentMutable.Register<IScreen>(static () => new TestScreen());
             });
         }
 
@@ -250,14 +246,14 @@ public class RoutedViewHostGenericTests
         {
             base.Initialize();
 
-            _helper.Initialize(builder =>
+            _helper.Initialize(static builder =>
             {
                 _ = builder
                     .WithMaui()
                     .WithCoreServices();
 
                 // Register IScreen for constructor, but don't register the view
-                AppLocator.CurrentMutable.Register<IScreen>(() => new TestScreen());
+                AppLocator.CurrentMutable.Register<IScreen>(static () => new TestScreen());
             });
         }
 
@@ -283,15 +279,6 @@ public class RoutedViewHostGenericTests
         /// <returns>The page for the view model.</returns>
         public Page PublicPageForViewModel(IRoutableViewModel vm) =>
             PageForViewModel(vm);
-
-        /// <summary>Exposes the protected InvalidateCurrentViewModel method.</summary>
-        public void PublicInvalidateCurrentViewModel() =>
-            InvalidateCurrentViewModel();
-
-        /// <summary>Exposes the protected SyncNavigationStacksAsync method.</summary>
-        /// <returns>A task representing the asynchronous operation.</returns>
-        public Task PublicSyncNavigationStacksAsync() =>
-            SyncNavigationStacksAsync();
     }
 
     /// <summary>Testable RoutedViewHost with unregistered view model for error testing.</summary>

@@ -42,25 +42,37 @@ internal sealed class InteractionHandleObservable<TInput, TOutput>(
 
     /// <summary>Drives the sequential, scheduler-bound handler run for a single subscription.</summary>
     /// <remarks>Internal so the disposed-during-step guard can be exercised directly in tests.</remarks>
-    internal sealed class Sink : IDisposable
+    /// <param name="observer">The observer receiving the interaction output.</param>
+    /// <param name="handlers">The registered handlers in registration order.</param>
+    /// <param name="context">The interaction context.</param>
+    /// <param name="scheduler">The scheduler each handler is invoked on.</param>
+    /// <param name="interaction">The interaction, surfaced on the unhandled exception.</param>
+    /// <param name="input">The interaction input, surfaced on the unhandled exception.</param>
+    internal sealed class Sink(
+        IObserver<TOutput> observer,
+        Func<IInteractionContext<TInput, TOutput>, IObservable<RxVoid>>[] handlers,
+        IOutputContext<TInput, TOutput> context,
+        ISequencer scheduler,
+        Interaction<TInput, TOutput> interaction,
+        TInput input) : IDisposable
     {
         /// <summary>The observer receiving the interaction output.</summary>
-        private readonly IObserver<TOutput> _observer;
+        private readonly IObserver<TOutput> _observer = observer;
 
         /// <summary>The registered handlers in registration order.</summary>
-        private readonly Func<IInteractionContext<TInput, TOutput>, IObservable<RxVoid>>[] _handlers;
+        private readonly Func<IInteractionContext<TInput, TOutput>, IObservable<RxVoid>>[] _handlers = handlers;
 
         /// <summary>The interaction context (handled flag and output).</summary>
-        private readonly IOutputContext<TInput, TOutput> _context;
+        private readonly IOutputContext<TInput, TOutput> _context = context;
 
         /// <summary>The scheduler each handler is invoked on.</summary>
-        private readonly ISequencer _scheduler;
+        private readonly ISequencer _scheduler = scheduler;
 
         /// <summary>The interaction, surfaced on the unhandled exception.</summary>
-        private readonly Interaction<TInput, TOutput> _interaction;
+        private readonly Interaction<TInput, TOutput> _interaction = interaction;
 
         /// <summary>The interaction input, surfaced on the unhandled exception.</summary>
-        private readonly TInput _input;
+        private readonly TInput _input = input;
 
         /// <summary>Holds the current scheduled step or handler subscription; swapped as the run progresses.</summary>
         private readonly SwapDisposable _current = new();
@@ -72,38 +84,15 @@ internal sealed class InteractionHandleObservable<TInput, TOutput>(
         /// <see cref="RunFrom"/> can tell an already-run inline step from a genuinely queued one.</summary>
         private bool _stepRanInline;
 
-        /// <summary>Initializes a new instance of the <see cref="Sink"/> class.</summary>
-        /// <param name="observer">The observer receiving the interaction output.</param>
-        /// <param name="handlers">The registered handlers in registration order.</param>
-        /// <param name="context">The interaction context.</param>
-        /// <param name="scheduler">The scheduler each handler is invoked on.</param>
-        /// <param name="interaction">The interaction, surfaced on the unhandled exception.</param>
-        /// <param name="input">The interaction input, surfaced on the unhandled exception.</param>
-        public Sink(
-            IObserver<TOutput> observer,
-            Func<IInteractionContext<TInput, TOutput>, IObservable<RxVoid>>[] handlers,
-            IOutputContext<TInput, TOutput> context,
-            ISequencer scheduler,
-            Interaction<TInput, TOutput> interaction,
-            TInput input)
-        {
-            _observer = observer;
-            _handlers = handlers;
-            _context = context;
-            _scheduler = scheduler;
-            _interaction = interaction;
-            _input = input;
-        }
-
-        /// <summary>Begins the run at the most-recently registered handler.</summary>
-        public void Start() => RunFrom(_handlers.Length - 1);
-
         /// <inheritdoc/>
         public void Dispose()
         {
             _disposed = true;
             _current.Dispose();
         }
+
+        /// <summary>Begins the run at the most-recently registered handler.</summary>
+        internal void Start() => RunFrom(_handlers.Length - 1);
 
         /// <summary>Runs the handler at <paramref name="index"/>, or finishes when handled or exhausted.</summary>
         /// <param name="index">The handler index to run.</param>

@@ -23,10 +23,6 @@ public class DateTimeToStringTypeConverterTests
     /// <summary>Verifies that a DateTime value converts to its string representation.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
-    [System.Diagnostics.CodeAnalysis.SuppressMessage(
-        "Major Code Smell",
-        "S6566:Prefer using DateTimeOffset instead of DateTime",
-        Justification = "Converter under test operates on DateTime.")]
     public async Task TryConvert_DateTime_Succeeds()
     {
         var converter = new DateTimeToStringTypeConverter();
@@ -41,10 +37,6 @@ public class DateTimeToStringTypeConverterTests
     /// <summary>Verifies that the minimum DateTime value converts successfully.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
-    [System.Diagnostics.CodeAnalysis.SuppressMessage(
-        "Major Code Smell",
-        "S6566:Prefer using DateTimeOffset instead of DateTime",
-        Justification = "Converter under test operates on DateTime.")]
     public async Task TryConvert_MinValue_Succeeds()
     {
         var converter = new DateTimeToStringTypeConverter();
@@ -59,10 +51,6 @@ public class DateTimeToStringTypeConverterTests
     /// <summary>Verifies that the maximum DateTime value converts successfully.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
-    [System.Diagnostics.CodeAnalysis.SuppressMessage(
-        "Major Code Smell",
-        "S6566:Prefer using DateTimeOffset instead of DateTime",
-        Justification = "Converter under test operates on DateTime.")]
     public async Task TryConvert_MaxValue_Succeeds()
     {
         var converter = new DateTimeToStringTypeConverter();

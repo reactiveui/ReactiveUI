@@ -110,7 +110,7 @@ public class SchedulerConsumptionTest
 
         /// <summary>Gets an observable stream of processed data.</summary>
         /// <returns>An observable sequence of processed data strings.</returns>
-        public IObservable<string> GetData() => _dataSubject.ObserveOn((ISequencer)RxSchedulers.TaskpoolScheduler).Select(data => $"Processed: {data}");
+        public IObservable<string> GetData() => _dataSubject.ObserveOn((ISequencer)RxSchedulers.TaskpoolScheduler).Select(static data => $"Processed: {data}");
 
         /// <summary>Publishes a data value to the repository.</summary>
         /// <param name="data">The data to publish.</param>
@@ -128,15 +128,19 @@ public class SchedulerConsumptionTest
 
         /// <summary>Initializes a new instance of the <see cref="ExampleViewModel" /> class.</summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage(
-            "Major Code Smell",
-            "S3366:Make sure the use of this in constructors is safe here",
-            Justification = "OAPH initialization requires 'this' in the constructor; single-threaded test fixture.")]
+            "Design",
+            "SST2403:'this' escapes before construction finishes",
+            Justification = "canonical ObservableAsPropertyHelper initialization requires 'this' in the constructor; the single-threaded fixture never exposes the half-built instance.")]
         public ExampleViewModel() => _greeting = this.WhenAnyValue(x => x.Name)
-            .Select(name => $"Hello, {name ?? "World"}!")
+            .Select(static name => $"Hello, {name ?? "World"}!")
             .ObserveOn((ISequencer)RxSchedulers.MainThreadScheduler)
             .ToProperty(this, nameof(Greeting), scheduler: RxSchedulers.MainThreadScheduler);
 
         /// <summary>Gets the greeting derived from the name.</summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage(
+            "Design",
+            "SST2324:Member is public but its containing type is not publicly reachable",
+            Justification = "the public surface is required for interface/reflection binding; the containing test double is an intentionally non-public detail.")]
         public string Greeting => _greeting.Value;
 
         /// <summary>Gets or sets the name.</summary>

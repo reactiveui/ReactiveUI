@@ -45,6 +45,10 @@ public static class ControlFetcherMixins
         [RequiresUnreferencedCode(
             "Android resource discovery uses reflection over generated resource types that may be trimmed.")]
         [RequiresDynamicCode("Android resource discovery uses reflection that may require dynamic code generation.")]
+        [SuppressMessage(
+            "Design",
+            "SST1448:Let the compiler supply caller-info arguments",
+            Justification = "GetResourceName() supplies the control name, which differs from the caller member name; the [CallerMemberName] default would resolve the wrong control.")]
         public void WireUpControls(
             View inflatedView,
             ResolveStrategy resolveMembers)
@@ -64,7 +68,7 @@ public static class ControlFetcherMixins
                 catch (Exception ex)
                 {
                     throw new MissingFieldException(
-                        "Failed to wire up the Property " + member.Name + " to a View in your layout with a corresponding identifier",
+                        $"Failed to wire up the Property {member.Name} to a View in your layout with a corresponding identifier",
                         ex);
                 }
             }

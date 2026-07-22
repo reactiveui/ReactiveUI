@@ -5,7 +5,6 @@
 
 using System.Windows;
 using System.Windows.Controls;
-using PropertyMetadata = System.Windows.PropertyMetadata;
 
 namespace ReactiveUI.Tests.Xaml.Mocks;
 
@@ -18,6 +17,10 @@ public class MockBindListView : UserControl, IViewFor<MockBindListViewModel>
         DependencyProperty.Register(nameof(ViewModel), typeof(MockBindListViewModel), typeof(MockBindListView), new(null));
 
     /// <summary>Initializes a new instance of the <see cref="MockBindListView"/> class.</summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "Design",
+        "SST2403:Do not let 'this' escape from a constructor",
+        Justification = "WhenActivated requires 'this' during view construction; single-threaded test fixture.")]
     public MockBindListView()
     {
         ItemList = new();

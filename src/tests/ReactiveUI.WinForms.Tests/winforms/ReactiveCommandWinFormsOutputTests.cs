@@ -51,7 +51,7 @@ public class ReactiveCommandWinFormsOutputTests
     public async Task ReactiveCommand_Subscribe_ReceivesOutput_WhenCommandExecutes()
     {
         var command = ReactiveCommand.CreateFromObservable(
-            () => Signal.Emit("result"),
+            static () => Signal.Emit("result"),
             outputScheduler: Sequencer.Immediate);
 
         var results = new List<string>();
@@ -72,7 +72,7 @@ public class ReactiveCommandWinFormsOutputTests
     public async Task ReactiveCommand_Subscribe_ReceivesOutput_WithParameter()
     {
         var command = ReactiveCommand.CreateFromObservable(
-            (string input) => Signal.Emit(input.ToUpperInvariant()),
+            static (string input) => Signal.Emit(input.ToUpperInvariant()),
             outputScheduler: Sequencer.Immediate);
 
         var results = new List<string>();
@@ -169,7 +169,7 @@ public class ReactiveCommandWinFormsOutputTests
     public async Task InvokeCommand_ExecutesCommand_AndOutputPropagates()
     {
         var command = ReactiveCommand.CreateFromObservable(
-            (string input) => Signal.Emit(input.ToUpperInvariant()),
+            static (string input) => Signal.Emit(input.ToUpperInvariant()),
             outputScheduler: Sequencer.Immediate);
 
         var results = new List<string>();
@@ -214,7 +214,7 @@ public class ReactiveCommandWinFormsOutputTests
     public async Task Execute_Subscribe_ReceivesOutput()
     {
         var command = ReactiveCommand.CreateFromObservable(
-            (string input) => Signal.Emit(input.ToUpperInvariant()),
+            static (string input) => Signal.Emit(input.ToUpperInvariant()),
             outputScheduler: Sequencer.Immediate);
 
         var executedResults = new List<string>();
@@ -244,7 +244,7 @@ public class ReactiveCommandWinFormsOutputTests
         var command = ReactiveCommand.CreateFromObservable(
             (string page) => Signal.Create<string>(observer =>
             {
-                var result = "navigated-to-" + page;
+                var result = $"navigated-to-{page}";
                 observer.OnNext(result);
                 observer.OnCompleted();
                 return Scope.Empty;
@@ -269,12 +269,12 @@ public class ReactiveCommandWinFormsOutputTests
     public async Task CreateFromObservable_WithSelectManyChain_PropagatesOutput()
     {
         var innerCommand = ReactiveCommand.CreateFromObservable(
-            (string page) => Signal.Emit("inner-" + page),
+            static (string page) => Signal.Emit($"inner-{page}"),
             outputScheduler: Sequencer.Immediate);
 
         var outerCommand = ReactiveCommand.CreateFromObservable(
             (string page) => Signal.Emit(page)
-                .SelectMany(p => innerCommand.Execute(p)),
+                .SelectMany(innerCommand.Execute),
             outputScheduler: Sequencer.Immediate);
 
         var results = new List<string>();

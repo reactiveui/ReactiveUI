@@ -52,8 +52,8 @@ TViewModel> : TabbedPage, IViewFor<TViewModel>
 
     /// <summary>Updates the binding context when the view model changes.</summary>
     /// <param name="bindableObject">The bindable object whose property changed.</param>
-    /// <param name="oldValue">The previous value.</param>
+    /// <param name="_">The previous value.</param>
     /// <param name="newValue">The new value.</param>
-    private static void OnViewModelChanged(BindableObject bindableObject, object oldValue, object newValue) =>
+    private static void OnViewModelChanged(BindableObject bindableObject, object _, object newValue) =>
         bindableObject.BindingContext = newValue;
 }

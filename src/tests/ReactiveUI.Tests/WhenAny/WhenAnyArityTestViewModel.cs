@@ -6,7 +6,7 @@
 namespace ReactiveUI.Tests.WhenAny;
 
 /// <summary>A reactive view model fixture exposing string and observable properties for the arity-based WhenAny mixin tests.</summary>
-internal sealed class WhenAnyArityTestViewModel : ReactiveObject
+public sealed class WhenAnyArityTestViewModel : ReactiveObject
 {
     /// <summary>Gets or sets the first property.</summary>
     public string? Property1

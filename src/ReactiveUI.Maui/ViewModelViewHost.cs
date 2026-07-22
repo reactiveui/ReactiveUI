@@ -109,14 +109,10 @@ public class ViewModelViewHost : ContentView, IViewFor
     /// <remarks>
     /// This property is a mere convenience so that a fixed contract can be assigned directly in XAML.
     /// </remarks>
-    [SuppressMessage(
-        "Critical Bug",
-        "S4275:Getters and setters should access the expected fields",
-        Justification = "Setter routes through ViewContractObservable; _viewContract is updated by its subscription.")]
     public string? ViewContract
     {
         get => _viewContract;
-        set => ViewContractObservable = Signal.Emit<string?>(value);
+        set => ViewContractObservable = Signal.Emit(value);
     }
 
     /// <summary>Gets or sets a value indicating whether should bypass the default contract fallback behavior.</summary>
@@ -171,9 +167,9 @@ public class ViewModelViewHost : ContentView, IViewFor
 
     /// <summary>Handles changes to the <see cref="ViewModel"/> property by re-resolving the view for the new value.</summary>
     /// <param name="bindable">The object whose property changed.</param>
-    /// <param name="oldValue">The previous value.</param>
+    /// <param name="_">The previous value.</param>
     /// <param name="newValue">The new value.</param>
-    private static void OnViewModelPropertyChanged(BindableObject bindable, object? oldValue, object? newValue)
+    private static void OnViewModelPropertyChanged(BindableObject bindable, object? _, object? newValue)
     {
         if (bindable is not ViewModelViewHost host || ModeDetector.InUnitTestRunner())
         {

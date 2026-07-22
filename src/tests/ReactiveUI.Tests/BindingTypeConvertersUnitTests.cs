@@ -30,7 +30,7 @@ public class BindingTypeConvertersUnitTests
     public async Task DecimalToStringTypeConverter_Converts_Correctly()
     {
         var converter = new DecimalToStringTypeConverter();
-        const decimal Val = 123.456m;
+        const decimal Val = 123.456M;
 
         var result = converter.TryConvert(Val, null, out var output);
         await Assert.That(result).IsTrue();
@@ -96,7 +96,7 @@ public class BindingTypeConvertersUnitTests
     public async Task NullableDecimalToStringTypeConverter_Converts_Correctly()
     {
         var converter = new NullableDecimalToStringTypeConverter();
-        decimal? val = 123.456m;
+        decimal? val = 123.456M;
 
         var result = converter.TryConvert(val, null, out var output);
         await Assert.That(result).IsTrue();
@@ -161,7 +161,7 @@ public class BindingTypeConvertersUnitTests
     public async Task NullableSingleToStringTypeConverter_Converts_Correctly()
     {
         var converter = new NullableSingleToStringTypeConverter();
-        float? val = 123.45f;
+        float? val = 123.45F;
 
         var result = converter.TryConvert(val, null, out var output);
         await Assert.That(result).IsTrue();
@@ -187,7 +187,7 @@ public class BindingTypeConvertersUnitTests
     public async Task SingleToStringTypeConverter_Converts_Correctly()
     {
         var converter = new SingleToStringTypeConverter();
-        const float Val = 123.45f;
+        const float Val = 123.45F;
 
         var result = converter.TryConvert(Val, null, out var output);
         await Assert.That(result).IsTrue();

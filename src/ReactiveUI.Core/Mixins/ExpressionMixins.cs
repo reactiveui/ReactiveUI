@@ -3,7 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
@@ -97,8 +96,6 @@ public static class ExpressionMixins
 
         /// <summary>Gets the parent Expression of the current Expression object.</summary>
         /// <returns>The parent expression.</returns>
-        [SuppressMessage("Critical Code Smell", "S1541:Methods and properties should not be too complex", Justification = "Look up table for performance.")]
-        [SuppressMessage("Major Code Smell", "S138:Functions should not have too many lines of code", Justification = "Look up table for performance.")]
         public Expression? GetParent()
         {
             ArgumentExceptionHelper.ThrowIfNull(expression);

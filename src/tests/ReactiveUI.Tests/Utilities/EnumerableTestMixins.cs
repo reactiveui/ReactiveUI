@@ -32,10 +32,7 @@ public static class EnumerableTestMixins
         /// <returns>The sequence with consecutive duplicates removed.</returns>
         public IEnumerable<T> DistinctUntilChanged()
         {
-            if (source is null)
-            {
-                throw new ArgumentNullException(nameof(source));
-            }
+            ArgumentExceptionHelper.ThrowIfNull(source);
 
             return DistinctUntilChangedIterator(source);
         }
