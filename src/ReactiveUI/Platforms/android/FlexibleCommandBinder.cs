@@ -23,16 +23,17 @@ namespace ReactiveUI;
 /// specific types and control how commands are attached to UI elements or other objects. This class is intended for use
 /// in frameworks or libraries that require extensible command binding logic, such as MVVM platforms. Thread safety and
 /// binding lifetime management are the responsibility of the caller.</remarks>
-public abstract class FlexibleCommandBinder : ICreatesCommandBinding
+public class FlexibleCommandBinder : ICreatesCommandBinding
 {
     /// <summary>Configuration map.</summary>
     private readonly Dictionary<Type, CommandBindingInfo> _config = [];
 
+    /// <summary>Initializes a new instance of the <see cref="FlexibleCommandBinder"/> class.</summary>
+    protected FlexibleCommandBinder()
+    {
+    }
+
     /// <inheritdoc/>
-    [SuppressMessage(
-        "Major Code Smell",
-        "S4018:Generic methods should provide type parameter",
-        Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
     public int GetAffinityForObject<
         [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents |
                                     DynamicallyAccessedMemberTypes.PublicProperties)]
@@ -100,9 +101,9 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
     /// <inheritdoc/>
     [RequiresUnreferencedCode("String/reflection-based event binding may require members removed by trimming.")]
     [SuppressMessage(
-        "Major Code Smell",
-        "S4018:Generic methods should provide type parameter",
-        Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
+        "Design",
+        "SST1452:A generic type parameter is never used",
+        Justification = "'TEventArgs' is dictated by the ICreatesCommandBinding interface member this implicitly implements; its arity is fixed by the contract and cannot be changed here.")]
     public IDisposable? BindCommandToObject<T, TEventArgs>(
         ICommand? command,
         T? target,
@@ -150,9 +151,9 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
 
         return BindEvent(command, target, commandParameter, enabledSetter, execute =>
         {
-            void Handler(object? sender, TEventArgs e) => execute();
-            addHandler(Handler);
-            return new ActionDisposable(() => removeHandler(Handler));
+            EventHandler<TEventArgs> handler = (_, _) => execute();
+            addHandler(handler);
+            return new ActionDisposable(() => removeHandler(handler));
         });
     }
 
@@ -237,9 +238,9 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
 
         return BindEvent(command, target, commandParameter, enabledSetter, execute =>
         {
-            void Handler(object? sender, TEventArgs e) => execute();
-            addHandler(Handler);
-            return new ActionDisposable(() => removeHandler(Handler));
+            EventHandler<TEventArgs> handler = (_, _) => execute();
+            addHandler(handler);
+            return new ActionDisposable(() => removeHandler(handler));
         });
     }
 
@@ -275,9 +276,9 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
 
         return BindEvent(command, target, commandParameter, enabledSetter, execute =>
         {
-            void Handler(object? sender, EventArgs e) => execute();
-            addHandler(Handler);
-            return new ActionDisposable(() => removeHandler(Handler));
+            EventHandler handler = (_, _) => execute();
+            addHandler(handler);
+            return new ActionDisposable(() => removeHandler(handler));
         });
     }
 
@@ -329,7 +330,7 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
 
         if (enabledSetter is null)
         {
-            return new MultipleDisposable(parameterSub, handlerSub);
+            return new(parameterSub, handlerSub);
         }
 
         enabledSetter(target, command.CanExecute(Volatile.Read(ref latestParam)), null);
@@ -337,7 +338,7 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
         var canExecuteSub = new CanExecuteChangedObservable(command, () => command.CanExecute(Volatile.Read(ref latestParam)))
             .Subscribe(new DelegateObserver<bool>(x => enabledSetter(target, x, null)));
 
-        return new MultipleDisposable(parameterSub, canExecuteSub, handlerSub);
+        return new(parameterSub, canExecuteSub, handlerSub);
     }
 
     /// <summary>
@@ -353,10 +354,10 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
         {
             ArgumentExceptionHelper.ThrowIfNull(observer);
 
-            void Handler(object? sender, EventArgs e) => observer.OnNext(readCanExecute());
+            EventHandler handler = (_, _) => observer.OnNext(readCanExecute());
 
-            command.CanExecuteChanged += Handler;
-            return new ActionDisposable(() => command.CanExecuteChanged -= Handler);
+            command.CanExecuteChanged += handler;
+            return new ActionDisposable(() => command.CanExecuteChanged -= handler);
         }
     }
 

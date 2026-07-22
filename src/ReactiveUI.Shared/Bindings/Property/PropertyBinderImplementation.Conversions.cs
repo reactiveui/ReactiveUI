@@ -230,18 +230,18 @@ public partial class PropertyBinderImplementation
                         ? new MapSignal<TDontCare, bool>(signalViewUpdate, static _ => false)
                         : viewChanges;
 
-                    return Signal.Blend<bool>(viewModelSignal, initialUpdateSignal, signalObservable);
+                    return Signal.Blend(viewModelSignal, initialUpdateSignal, signalObservable);
                 }
 
             default:
                 {
                     var primary = signalViewUpdate is null
                         ? (IObservable<bool>)viewModelSignal
-                        : Signal.Blend<bool>(
+                        : Signal.Blend(
                             new MapSignal<TDontCare, bool>(signalViewUpdate, static _ => true),
                             new Take1Observable<bool>(viewModelSignal));
 
-                    return Signal.Blend<bool>(primary, initialUpdateSignal, viewChanges);
+                    return Signal.Blend(primary, initialUpdateSignal, viewChanges);
                 }
         }
     }

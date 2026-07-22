@@ -46,7 +46,7 @@ public sealed class AppLifetimeCoordinator : IDisposable
         catch
         {
             // Fallback: create a per-user mapping name if needed
-            _mmf = MemoryMappedFile.CreateOrOpen(MapName + "." + Environment.UserName, CounterSizeBytes);
+            _mmf = MemoryMappedFile.CreateOrOpen($"{MapName}.{Environment.UserName}", CounterSizeBytes);
         }
     }
 
@@ -88,7 +88,7 @@ public sealed class AppLifetimeCoordinator : IDisposable
                 locked = true;
             }
 
-            using var view = _mmf.CreateViewAccessor(0, 4, MemoryMappedFileAccess.ReadWrite);
+            using var view = _mmf.CreateViewAccessor(0, CounterSizeBytes, MemoryMappedFileAccess.ReadWrite);
             view.Read(0, out int current);
             var updated = updater(current);
             view.Write(0, updated);

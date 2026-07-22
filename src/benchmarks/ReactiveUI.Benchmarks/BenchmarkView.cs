@@ -23,7 +23,7 @@ internal sealed class BenchmarkView : ReactiveObject, IViewFor<BenchmarkViewMode
     }
 
     /// <summary>Gets or sets the view-side text bound to the view model's <see cref="BenchmarkViewModel.First"/>.</summary>
-    public string? FirstText
+    internal string? FirstText
     {
         get => field;
         set => this.RaiseAndSetIfChanged(ref field, value);

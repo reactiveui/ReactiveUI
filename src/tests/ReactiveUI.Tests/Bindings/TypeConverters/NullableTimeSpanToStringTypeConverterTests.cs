@@ -23,8 +23,10 @@ public class NullableTimeSpanToStringTypeConverterTests
     [Test]
     public async Task TryConvert_TimeSpan_Succeeds()
     {
+        const double Hours = 2.5;
+
         var converter = new NullableTimeSpanToStringTypeConverter();
-        TimeSpan? value = TimeSpan.FromHours(2.5);
+        TimeSpan? value = TimeSpan.FromHours(Hours);
 
         var result = converter.TryConvert(value, null, out var output);
 

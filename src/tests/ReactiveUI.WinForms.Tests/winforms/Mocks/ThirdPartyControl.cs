@@ -10,9 +10,6 @@ namespace ReactiveUI.WinForms.Tests.Winforms.Mocks;
 /// <summary>A third-party style control with a Value property and a corresponding Changed event.</summary>
 public class ThirdPartyControl : Control
 {
-    /// <summary>Backing field for the value.</summary>
-    private string? _value;
-
     /// <summary>Occurs when the value changes.</summary>
     public event EventHandler? ValueChanged;
 
@@ -20,15 +17,15 @@ public class ThirdPartyControl : Control
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public string? Value
     {
-        get => _value;
+        get => field;
         set
         {
-            if (_value == value)
+            if (field == value)
             {
                 return;
             }
 
-            _value = value;
+            field = value;
             OnValueChanged();
         }
     }

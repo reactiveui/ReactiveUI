@@ -40,6 +40,9 @@ public class TargetActionCommandBinder : ICreatesCommandBinding
     /// <summary>The affinity score returned when the object type is a valid Target/Action host.</summary>
     private const int TargetActionAffinity = 4;
 
+    /// <summary>The Cocoa property name whose setter routes control invocations to the bound command.</summary>
+    private const string ActionPropertyName = "Action";
+
 #if UIKIT
     /// <summary>The set of Cocoa types that are valid Target/Action hosts in UIKit builds.</summary>
     private static readonly Type[] ValidTypes = [typeof(UIControl)];
@@ -72,10 +75,6 @@ public class TargetActionCommandBinder : ICreatesCommandBinding
     /// <typeparam name="T">The candidate target type.</typeparam>
     /// <param name="hasEventTarget">A value indicating whether an explicit event target was supplied.</param>
     /// <returns>The affinity score for binding a command to the candidate type.</returns>
-    [SuppressMessage(
-        "Major Code Smell",
-        "S4018:Generic methods should provide type parameters",
-        Justification = "Type parameter is part of the ICreatesCommandBinding public API contract and cannot be removed.")]
     public int GetAffinityForObject<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents | DynamicallyAccessedMemberTypes.PublicProperties)] T>(bool hasEventTarget)
     {
         if (hasEventTarget)
@@ -133,42 +132,27 @@ public class TargetActionCommandBinder : ICreatesCommandBinding
 
         object? latestParam = null;
 
-        // Cocoa routes UI actions to a selector on the target; we provide a stable NSObject instance.
-        var ctlDelegate = new ControlDelegate(static _ => { })
-        {
-            // IsEnabled is used on AppKit to validate menu items; keep it aligned with CanExecute.
-            IsEnabled = command.CanExecute(null),
-        };
-
-        // Avoid capturing in the Export method; store the block on the delegate.
-        ctlDelegate.SetBlock(_ =>
-        {
-            var param = Volatile.Read(ref latestParam);
-            if (!command.CanExecute(param))
-            {
-                return;
-            }
-
-            command.Execute(param);
-        });
+        var ctlDelegate = CreateControlDelegate(command, () => Volatile.Read(ref latestParam));
 
         // Selector name must match [Export] on ControlDelegate.
         var selector = new Selector("theAction:");
 
         var runtimeType = target.GetType();
-        var setters = PropertySetterCache.GetOrAdd(runtimeType, static t => BuildSetters(t));
+        var setters = PropertySetterCache.GetOrAdd(runtimeType, BuildSetters);
 
         // Apply Action (if present) and Target (required).
         setters.ActionSetter?.Invoke(target, selector, null);
         setters.TargetSetter.Invoke(target, ctlDelegate, null);
 
         // Ensure we always detach target (and action if applicable) on dispose.
-        var detach = Scope.Create(() =>
-        {
-            // Clear Target first to stop invocation, then clear Action (if available).
-            setters.TargetSetter.Invoke(target, null, null);
-            setters.ActionSetter?.Invoke(target, null, null);
-        });
+        var detach = Scope.Create(
+            (Setters: setters, Target: target),
+            static state =>
+            {
+                // Clear Target first to stop invocation, then clear Action (if available).
+                state.Setters.TargetSetter.Invoke(state.Target, null, null);
+                state.Setters.ActionSetter?.Invoke(state.Target, null, null);
+            });
 
         // If Enabled isn't supported, binding is complete.
         if (setters.EnabledSetter is null)
@@ -186,10 +170,10 @@ public class TargetActionCommandBinder : ICreatesCommandBinding
         // Keep Enabled (and AppKit validate) in sync with CanExecuteChanged.
         var canExecuteChangedSub = new FromEventObservable<bool>(onNext =>
             {
-                void Handler(object? s, EventArgs e) =>
+                EventHandler handler = (_, _) =>
                     onNext(command.CanExecute(Volatile.Read(ref latestParam)));
-                command.CanExecuteChanged += Handler;
-                return new ActionDisposable(() => command.CanExecuteChanged -= Handler);
+                command.CanExecuteChanged += handler;
+                return new ActionDisposable(() => command.CanExecuteChanged -= handler);
             })
             .Subscribe(new DelegateObserver<bool>(x =>
             {
@@ -216,10 +200,6 @@ public class TargetActionCommandBinder : ICreatesCommandBinding
     /// <param name="eventName">The name of the event to subscribe to.</param>
     /// <returns>A disposable that tears down the binding, or <see langword="null"/> when binding is not possible.</returns>
     [RequiresUnreferencedCode("String/reflection-based event binding may require members removed by trimming.")]
-    [SuppressMessage(
-        "Major Code Smell",
-        "S4018:Generic methods should provide type parameters",
-        Justification = "TEventArgs is part of the ICreatesCommandBinding public API contract and cannot be inferred from the parameter list.")]
     public IDisposable? BindCommandToObject<T, TEventArgs>(
         ICommand? command,
         T? target,
@@ -296,7 +276,7 @@ public class TargetActionCommandBinder : ICreatesCommandBinding
 
         object? latestParam = null;
 
-        void Handler(object? sender, TEventArgs e)
+        EventHandler<TEventArgs> handler = (_, _) =>
         {
             var param = Volatile.Read(ref latestParam);
             if (!command.CanExecute(param))
@@ -305,14 +285,14 @@ public class TargetActionCommandBinder : ICreatesCommandBinding
             }
 
             command.Execute(param);
-        }
+        };
 
         var paramSub = commandParameter.Subscribe(new DelegateObserver<object?>(x => Volatile.Write(ref latestParam, x)));
-        addHandler(Handler);
+        addHandler(handler);
 
         return new MultipleDisposable(
             paramSub,
-            Scope.Create(() => removeHandler(Handler)));
+            Scope.Create((RemoveHandler: removeHandler, Handler: handler), static state => state.RemoveHandler(state.Handler)));
     }
 
     /// <summary>Creates and caches property setters required for Target/Action binding on the specified runtime type.</summary>
@@ -322,7 +302,7 @@ public class TargetActionCommandBinder : ICreatesCommandBinding
     [RequiresUnreferencedCode("Cocoa Target/Action binding reflects over runtime types to locate properties that may be removed by trimming.")]
     private static Setters BuildSetters(Type type)
     {
-        var actionProp = type.GetRuntimeProperty("Action");
+        var actionProp = type.GetRuntimeProperty(ActionPropertyName);
         var targetProp = type.GetRuntimeProperty("Target");
         var enabledProp = type.GetRuntimeProperty("Enabled");
 
@@ -332,10 +312,38 @@ public class TargetActionCommandBinder : ICreatesCommandBinding
                 $"Target property is required for {nameof(TargetActionCommandBinder)} on type {type.FullName}.");
         }
 
-        return new Setters(
+        return new(
             ActionSetter: actionProp is not null ? Reflection.GetValueSetterOrThrow(actionProp) : null,
             TargetSetter: Reflection.GetValueSetterOrThrow(targetProp),
             EnabledSetter: enabledProp is not null ? Reflection.GetValueSetterForProperty(enabledProp) : null);
+    }
+
+    /// <summary>Creates the Cocoa <see cref="ControlDelegate"/> that routes UI actions to <paramref name="command"/> using the latest parameter.</summary>
+    /// <param name="command">The command invoked when the control fires the bound selector.</param>
+    /// <param name="readLatestParam">Reads the most recent command parameter to pass to the command.</param>
+    /// <returns>The configured delegate to install as the control's Target.</returns>
+    private static ControlDelegate CreateControlDelegate(ICommand command, Func<object?> readLatestParam)
+    {
+        // Cocoa routes UI actions to a selector on the target; we provide a stable NSObject instance.
+        var ctlDelegate = new ControlDelegate(static _ => { })
+        {
+            // IsEnabled is used on AppKit to validate menu items; keep it aligned with CanExecute.
+            IsEnabled = command.CanExecute(null),
+        };
+
+        // Avoid capturing in the Export method; store the block on the delegate.
+        ctlDelegate.SetBlock(_ =>
+        {
+            var param = readLatestParam();
+            if (!command.CanExecute(param))
+            {
+                return;
+            }
+
+            command.Execute(param);
+        });
+
+        return ctlDelegate;
     }
 
     /// <summary>Represents the set of cached setters required to wire Target/Action and optionally Enabled.</summary>
@@ -373,14 +381,14 @@ public class TargetActionCommandBinder : ICreatesCommandBinding
         /// <summary>Selector invoked by Cocoa controls for Target/Action.</summary>
         /// <param name="sender">The sender object.</param>
         [Export("theAction:")]
-        public void TheAction(NSObject sender) => _block(sender);
+        private void TheAction(NSObject sender) => _block(sender);
 
 #if !UIKIT
         /// <summary>AppKit menu item validation hook used to enable/disable menu items.</summary>
         /// <param name="menuItem">The menu item being validated.</param>
         /// <returns><see langword="true"/> if the item should be enabled; otherwise <see langword="false"/>.</returns>
         [Export("validateMenuItem:")]
-        public bool ValidateMenuItem(NSMenuItem menuItem) => IsEnabled;
+        private bool ValidateMenuItem(NSMenuItem menuItem) => IsEnabled;
 #endif
     }
 }

@@ -5,7 +5,6 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.Windows;
-using System.Windows.Controls;
 using ReactiveUI.Primitives;
 
 namespace ReactiveUI.Samples.Wpf;
@@ -17,7 +16,10 @@ namespace ReactiveUI.Samples.Wpf;
 public partial class LoginView : ReactiveUserControl<LoginViewModel>
 {
     /// <summary>Initializes a new instance of the <see cref="LoginView"/> class.</summary>
-    [SuppressMessage("Reliability", "S3366:Don't expose 'this' in constructors", Justification = "WhenActivated/binding setup requires 'this'; single-threaded sample.")]
+    [SuppressMessage(
+        "Correctness",
+        "SST2403:Do not let 'this' escape from a constructor",
+        Justification = "Single-threaded sample view; WhenActivated captures this for activation-scoped binding after construction.")]
     public LoginView()
     {
         InitializeComponent();
@@ -43,7 +45,7 @@ public partial class LoginView : ReactiveUserControl<LoginViewModel>
                 .DisposeWith(d);
 
             _ = ViewModel.Login
-                .Subscribe(success => MessageBox.Show(
+                .Subscribe(static success => MessageBox.Show(
                     success ? "Welcome!" : "Invalid credentials.",
                     success ? "Login Successful" : "Login Failed"))
                 .DisposeWith(d);

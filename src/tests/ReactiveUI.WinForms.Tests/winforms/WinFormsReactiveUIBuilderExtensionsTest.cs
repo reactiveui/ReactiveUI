@@ -17,18 +17,14 @@ public class WinFormsReactiveUIBuilderExtensionsTest
     /// <summary>Tests that WinFormsMainThreadScheduler is not null.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public async Task WinFormsMainThreadScheduler_IsNotNull()
-    {
+    public async Task WinFormsMainThreadScheduler_IsNotNull() =>
         await Assert.That(WinFormsReactiveUIBuilderExtensions.WinFormsMainThreadScheduler).IsNotNull();
-    }
 
     /// <summary>Tests that WithWinForms throws when builder is null.</summary>
     [Test]
-    public void WithWinForms_ThrowsArgumentNullException_WhenBuilderIsNull()
-    {
-        _ = Assert.Throws<ArgumentNullException>(() =>
+    public void WithWinForms_ThrowsArgumentNullException_WhenBuilderIsNull() =>
+        _ = Assert.Throws<ArgumentNullException>(static () =>
             WinFormsReactiveUIBuilderExtensions.WithWinForms(null!));
-    }
 
     /// <summary>Tests that WithWinForms configures builder correctly.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
@@ -51,11 +47,9 @@ public class WinFormsReactiveUIBuilderExtensionsTest
 
     /// <summary>Tests that WithWinFormsScheduler throws when builder is null.</summary>
     [Test]
-    public void WithWinFormsScheduler_ThrowsArgumentNullException_WhenBuilderIsNull()
-    {
-        _ = Assert.Throws<ArgumentNullException>(() =>
+    public void WithWinFormsScheduler_ThrowsArgumentNullException_WhenBuilderIsNull() =>
+        _ = Assert.Throws<ArgumentNullException>(static () =>
             WinFormsReactiveUIBuilderExtensions.WithWinFormsScheduler(null!));
-    }
 
     /// <summary>Tests that WithWinFormsScheduler configures scheduler correctly.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>

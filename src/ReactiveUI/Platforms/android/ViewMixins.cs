@@ -3,7 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Diagnostics.CodeAnalysis;
 using Android.Views;
 
 #if REACTIVE_SHIM
@@ -28,10 +27,10 @@ public static class ViewMixins
         /// <typeparam name="T">The type of view host to retrieve. Must implement <see cref="ILayoutViewHost"/>.</typeparam>
         /// <returns>An instance of <typeparamref name="T"/> if a view host of the specified type is associated with the view;
         /// otherwise, the default value for <typeparamref name="T"/>.</returns>
-        [SuppressMessage(
-            "Major Code Smell",
-            "S4018:Generic methods should provide type parameter",
-            Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage(
+            "Design",
+            "SST2307:A generic method's type parameter appears in no parameter, so no caller can infer it",
+            Justification = "'T' is the view-host type the caller names explicitly to select which host to read from the view's tag; there is no argument it could be inferred from.")]
         public T GetViewHost<T>()
             where T : ILayoutViewHost
         {

@@ -79,8 +79,8 @@ public class ChangeSetsTests
     [Test]
     public async Task HasCountChanged_ReflectsAddsAndRemoves()
     {
-        IChangeSet<string> add = new LightChangeSet<string>(new Change<string>(ListChangeReason.Add, "a", 0));
-        IChangeSet<string> refresh = new LightChangeSet<string>(new Change<string>(ListChangeReason.Refresh, "a", 0));
+        var add = new LightChangeSet<string>(new Change<string>(ListChangeReason.Add, "a", 0));
+        var refresh = new LightChangeSet<string>(new Change<string>(ListChangeReason.Refresh, "a", 0));
 
         await Assert.That(add.HasCountChanged()).IsTrue();
         await Assert.That(refresh.HasCountChanged()).IsFalse();

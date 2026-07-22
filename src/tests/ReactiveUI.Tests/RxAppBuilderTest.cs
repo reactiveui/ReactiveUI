@@ -23,7 +23,7 @@ public class RxAppBuilderTest
     {
         const IMutableDependencyResolver resolver = null!;
 
-        await Assert.That(() => resolver.CreateReactiveUIBuilder())
+        await Assert.That(static () => resolver.CreateReactiveUIBuilder())
             .Throws<ArgumentNullException>();
     }
 
@@ -52,7 +52,10 @@ public class RxAppBuilderTest
     }
 
     /// <summary>Test resolver for testing.</summary>
-    [SuppressMessage("Major Code Smell", "S4018:Generic methods should provide type parameters", Justification = "Type parameter cannot be inferred.")]
+    [SuppressMessage(
+        "Design",
+        "SST1452:The type parameter is never used; remove it",
+        Justification = "type parameters are mandated by the implemented interface signatures; the no-op test double does not reference them.")]
     private sealed class TestResolver : IMutableDependencyResolver, IReadonlyDependencyResolver
     {
         /// <inheritdoc/>
@@ -149,7 +152,10 @@ public class RxAppBuilderTest
         /// <param name="value">The constant value to register.</param>
         /// <param name="serviceType">The service type to register against.</param>
         /// <param name="contract">The optional contract.</param>
-        [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Interface implementation")]
+        [SuppressMessage(
+            "Design",
+            "SST2324:Member is public but its containing type is not publicly reachable",
+            Justification = "the public surface is required for interface/reflection binding; the containing test double is an intentionally non-public detail.")]
         public void RegisterConstant(object? value, Type? serviceType, string? contract)
         {
             // No-op: this test resolver does not store registrations.
@@ -179,7 +185,10 @@ public class RxAppBuilderTest
         /// <param name="factory">The factory that produces the value.</param>
         /// <param name="serviceType">The service type to register against.</param>
         /// <param name="contract">The optional contract.</param>
-        [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Interface implementation")]
+        [SuppressMessage(
+            "Design",
+            "SST2324:Member is public but its containing type is not publicly reachable",
+            Justification = "the public surface is required for interface/reflection binding; the containing test double is an intentionally non-public detail.")]
         public void RegisterLazySingleton(Func<object?> factory, Type? serviceType, string? contract)
         {
             // No-op: this test resolver does not store registrations.

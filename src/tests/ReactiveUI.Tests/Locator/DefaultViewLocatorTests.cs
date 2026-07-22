@@ -33,8 +33,8 @@ public class DefaultViewLocatorTests
         var locator = new DefaultViewLocator();
 
         var result = locator
-            .Map<TestViewModel, TestView>(() => new())
-            .Map<TestViewModel2, TestView2>(() => new());
+            .Map<TestViewModel, TestView>(static () => new())
+            .Map<TestViewModel2, TestView2>(static () => new());
 
         await Assert.That(result).IsNotNull();
         await Assert.That(result).IsTypeOf<DefaultViewLocator>();
@@ -87,7 +87,7 @@ public class DefaultViewLocatorTests
     {
         var locator = new DefaultViewLocator();
 
-        _ = locator.Map<TestViewModel, TestView>(() => new());
+        _ = locator.Map<TestViewModel, TestView>(static () => new());
 
         var view = locator.ResolveView<TestViewModel>();
 
@@ -106,7 +106,7 @@ public class DefaultViewLocatorTests
         for (var i = 0; i < ConcurrentIterations; i++)
         {
             var contract = $"contract{i}";
-            tasks.Add(Task.Run(() => locator.Map<TestViewModel, TestView>(() => new(), contract)));
+            tasks.Add(Task.Run(() => locator.Map<TestViewModel, TestView>(static () => new(), contract)));
         }
 
         await Task.WhenAll(tasks);
@@ -125,8 +125,8 @@ public class DefaultViewLocatorTests
     {
         var locator = new DefaultViewLocator();
 
-        _ = locator.Map<TestViewModel, TestView>(() => new(), MobileContract)
-            .Map<TestViewModel, TestViewAlt>(() => new(), "desktop");
+        _ = locator.Map<TestViewModel, TestView>(static () => new(), MobileContract)
+            .Map<TestViewModel, TestViewAlt>(static () => new(), "desktop");
 
         var mobileView = locator.ResolveView<TestViewModel>(MobileContract);
         var desktopView = locator.ResolveView<TestViewModel>("desktop");
@@ -142,7 +142,7 @@ public class DefaultViewLocatorTests
     {
         var locator = new DefaultViewLocator();
 
-        _ = locator.Map<TestViewModel, TestView>(() => new());
+        _ = locator.Map<TestViewModel, TestView>(static () => new());
 
         var view1 = locator.ResolveView<TestViewModel>();
         var view2 = locator.ResolveView<TestViewModel>();
@@ -160,12 +160,12 @@ public class DefaultViewLocatorTests
         var resolver = AppLocator.Current as IDependencyResolver;
         ArgumentNullException.ThrowIfNull(resolver);
 
-        resolver.Register(() => new TestViewAlt(), typeof(IViewFor<TestViewModel>));
+        resolver.Register(static () => new TestViewAlt(), typeof(IViewFor<TestViewModel>));
 
         try
         {
             var locator = new DefaultViewLocator();
-            _ = locator.Map<TestViewModel, TestView>(() => new());
+            _ = locator.Map<TestViewModel, TestView>(static () => new());
 
             var view = locator.ResolveView<TestViewModel>();
 
@@ -186,7 +186,7 @@ public class DefaultViewLocatorTests
         var resolver = AppLocator.Current as IDependencyResolver;
         ArgumentNullException.ThrowIfNull(resolver);
 
-        resolver.Register(() => new TestView(), typeof(IViewFor<TestViewModel>));
+        resolver.Register(static () => new TestView(), typeof(IViewFor<TestViewModel>));
 
         try
         {
@@ -222,7 +222,7 @@ public class DefaultViewLocatorTests
     {
         var locator = new DefaultViewLocator();
 
-        _ = locator.Map<TestViewModel, TestView>(() => new(), MobileContract);
+        _ = locator.Map<TestViewModel, TestView>(static () => new(), MobileContract);
 
         var view = locator.ResolveView<TestViewModel>(MobileContract);
 
@@ -238,7 +238,7 @@ public class DefaultViewLocatorTests
         var resolver = AppLocator.Current as IDependencyResolver;
         ArgumentNullException.ThrowIfNull(resolver);
 
-        resolver.Register(() => new TestView(), typeof(IViewFor<TestViewModel>));
+        resolver.Register(static () => new TestView(), typeof(IViewFor<TestViewModel>));
 
         try
         {
@@ -290,7 +290,7 @@ public class DefaultViewLocatorTests
         var locator = new DefaultViewLocator();
         var vm = new TestViewModel();
 
-        _ = locator.Map<TestViewModel, TestView>(() => new());
+        _ = locator.Map<TestViewModel, TestView>(static () => new());
 
         var view = locator.ResolveView(vm);
 
@@ -306,7 +306,7 @@ public class DefaultViewLocatorTests
         var locator = new DefaultViewLocator();
         var vm = new TestViewModel();
 
-        _ = locator.Map<TestViewModel, TestView>(() => new());
+        _ = locator.Map<TestViewModel, TestView>(static () => new());
 
         var view = locator.ResolveView(vm);
 
@@ -322,7 +322,7 @@ public class DefaultViewLocatorTests
         var locator = new DefaultViewLocator();
         var vm = new TestViewModel();
 
-        _ = locator.Map<TestViewModel, TestView>(() => new(), MobileContract);
+        _ = locator.Map<TestViewModel, TestView>(static () => new(), MobileContract);
 
         var view = locator.ResolveView(vm, MobileContract);
 
@@ -337,7 +337,7 @@ public class DefaultViewLocatorTests
     public async Task ResolveView_ThreadSafe_ConcurrentResolvesDontThrow()
     {
         var locator = new DefaultViewLocator();
-        _ = locator.Map<TestViewModel, TestView>(() => new());
+        _ = locator.Map<TestViewModel, TestView>(static () => new());
 
         var tasks = new List<Task>();
         for (var i = 0; i < ConcurrentIterations; i++)
@@ -360,8 +360,8 @@ public class DefaultViewLocatorTests
     {
         var locator = new DefaultViewLocator();
 
-        _ = locator.Map<TestViewModel, TestView>(() => new(), "c1")
-            .Map<TestViewModel, TestView>(() => new(), "c2");
+        _ = locator.Map<TestViewModel, TestView>(static () => new(), "c1")
+            .Map<TestViewModel, TestView>(static () => new(), "c2");
 
         var result = locator.Unmap<TestViewModel>("c1")
             .Unmap<TestViewModel>("c2");
@@ -389,7 +389,7 @@ public class DefaultViewLocatorTests
     {
         var locator = new DefaultViewLocator();
 
-        _ = locator.Map<TestViewModel, TestView>(() => new());
+        _ = locator.Map<TestViewModel, TestView>(static () => new());
 
         await Assert.That(locator.ResolveView<TestViewModel>()).IsNotNull();
 
@@ -405,7 +405,7 @@ public class DefaultViewLocatorTests
     {
         var locator = new DefaultViewLocator();
 
-        _ = locator.Map<TestViewModel, TestView>(() => new(), MobileContract);
+        _ = locator.Map<TestViewModel, TestView>(static () => new(), MobileContract);
 
         await Assert.That(locator.ResolveView<TestViewModel>(MobileContract)).IsNotNull();
 
@@ -423,7 +423,7 @@ public class DefaultViewLocatorTests
 
         for (var i = 0; i < ConcurrentIterations; i++)
         {
-            _ = locator.Map<TestViewModel, TestView>(() => new(), $"contract{i}");
+            _ = locator.Map<TestViewModel, TestView>(static () => new(), $"contract{i}");
         }
 
         var tasks = new List<Task>();

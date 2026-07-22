@@ -19,10 +19,10 @@ namespace ReactiveUI.Tests.Xaml;
 public partial class PropertyBindingTest
 {
     /// <summary>The initial decimal value used to seed bindings.</summary>
-    private const decimal InitialDecimal = 123.45m;
+    private const decimal InitialDecimal = 123.45M;
 
     /// <summary>The second decimal value used to seed bindings.</summary>
-    private const decimal SecondDecimal = 567.89m;
+    private const decimal SecondDecimal = 567.89M;
 
     /// <summary>The decimal value one.</summary>
     private const decimal DecimalOne = 1.0M;
@@ -52,19 +52,19 @@ public partial class PropertyBindingTest
     private const double DoubleFour = 4.0;
 
     /// <summary>The initial single value used to seed bindings.</summary>
-    private const float InitialSingle = 123.45f;
+    private const float InitialSingle = 123.45F;
 
     /// <summary>The single value one.</summary>
-    private const float SingleOne = 1.0f;
+    private const float SingleOne = 1.0F;
 
     /// <summary>The single value two.</summary>
-    private const float SingleTwo = 2.0f;
+    private const float SingleTwo = 2.0F;
 
     /// <summary>The single value three.</summary>
-    private const float SingleThree = 3.0f;
+    private const float SingleThree = 3.0F;
 
     /// <summary>The single value four.</summary>
-    private const float SingleFour = 4.0f;
+    private const float SingleFour = 4.0F;
 
     /// <summary>The initial integral value used to seed bindings.</summary>
     private const int InitialIntegral = 123;
@@ -179,8 +179,8 @@ public partial class PropertyBindingTest
     {
         const int InitialProperty2 = 17;
         const int ParsedProperty2 = 42;
-        const decimal InitialJustADecimal = 17.2m;
-        const decimal ParsedJustADecimal = 42.3m;
+        const decimal InitialJustADecimal = 17.2M;
+        const decimal ParsedJustADecimal = 42.3M;
         const int InitialJustAInt32 = 12;
         const int ParsedJustAInt32 = 13;
 
@@ -614,6 +614,10 @@ public partial class PropertyBindingTest
     /// <summary>Tests OneWayBind initial view model should be garbage collected when overwritten.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "Performance",
+        "PSH1021:Do not force garbage collection",
+        Justification = "This test verifies the initial view model is finalized once overwritten, which requires forcing a collection.")]
     public async Task OneWayBindInitialViewModelShouldBeGarbageCollectedWhenOverwritten()
     {
         static (IDisposable?, WeakReference) GetWeakReference()
@@ -679,8 +683,8 @@ public partial class PropertyBindingTest
 
         const Func<string?, string?> NullFunc = null!;
 
-        _ = Assert.Throws<ArgumentNullException>(() => fixture.Bind(vm, view, x => x.Property1, x => x.SomeTextBox.Text, (IObservable<RxVoid>?)null, NullFunc, s => s));
-        _ = Assert.Throws<ArgumentNullException>(() => fixture.Bind(vm, view, x => x.Property1, x => x.SomeTextBox.Text, (IObservable<RxVoid>?)null, s => s, NullFunc));
+        _ = Assert.Throws<ArgumentNullException>(() => fixture.Bind(vm, view, x => x.Property1, x => x.SomeTextBox.Text, (IObservable<RxVoid>?)null, NullFunc, static s => s));
+        _ = Assert.Throws<ArgumentNullException>(() => fixture.Bind(vm, view, x => x.Property1, x => x.SomeTextBox.Text, (IObservable<RxVoid>?)null, static s => s, NullFunc));
     }
 
     /// <summary>Tests the BindWith func's should work as extension methods.</summary>
@@ -694,7 +698,7 @@ public partial class PropertyBindingTest
         vm.JustADecimal = InitialDecimal;
         await Assert.That(view.SomeTextBox.Text).IsNotEqualTo(vm.JustADecimal.ToString(CultureInfo.InvariantCulture));
 
-        _ = view.Bind(vm, static x => x.JustADecimal, static x => x.SomeTextBox.Text, static d => d.ToString(CultureInfo.InvariantCulture), static t => decimal.TryParse(t, out var res) ? res : 0m);
+        _ = view.Bind(vm, static x => x.JustADecimal, static x => x.SomeTextBox.Text, static d => d.ToString(CultureInfo.InvariantCulture), static t => decimal.TryParse(t, out var res) ? res : 0M);
 
         await Assert.That(view.SomeTextBox.Text).IsEqualTo(InitialNumericText);
 
@@ -711,6 +715,10 @@ public partial class PropertyBindingTest
     /// <summary>Tests that bind initial view model should be garbage collected when overwritten.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "Performance",
+        "PSH1021:Do not force garbage collection",
+        Justification = "This test verifies the initial view model is finalized once overwritten, which requires forcing a collection.")]
     public async Task BindInitialViewModelShouldBeGarbageCollectedWhenOverwritten()
     {
         static (IDisposable?, WeakReference) GetWeakReference()

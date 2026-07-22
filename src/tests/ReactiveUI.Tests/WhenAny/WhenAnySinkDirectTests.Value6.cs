@@ -18,6 +18,23 @@ public partial class WhenAnySinkDirectTests
     [Test]
     public async Task ValueSink6_AllPaths()
     {
+        var ex = new InvalidOperationException("boom");
+        var rec = EmitArity6ValuePaths();
+        var errRec = ForwardArity6Error(ex);
+        var cmpRec = CompleteArity6Sources();
+        var throwRec = ThrowFromArity6Selector(ex);
+
+        Exception[] expectedErrors = [ex];
+        await Assert.That(rec.Values).IsNotEmpty();
+        await Assert.That(errRec.Errors).IsEquivalentTo(expectedErrors);
+        await Assert.That(cmpRec.Completed).IsEqualTo(1);
+        await Assert.That(throwRec.Errors).IsEquivalentTo(expectedErrors);
+    }
+
+    /// <summary>Drives the per-source value-emit paths of the arity-6 value sink.</summary>
+    /// <returns>The recorder capturing the emitted combined values.</returns>
+    private static Recorder<string> EmitArity6ValuePaths()
+    {
         var s1 = new Signal<IObservedChange<object?, string>>();
         var s2 = new Signal<IObservedChange<object?, string>>();
         var s3 = new Signal<IObservedChange<object?, string>>();
@@ -25,7 +42,14 @@ public partial class WhenAnySinkDirectTests
         var s5 = new Signal<IObservedChange<object?, string>>();
         var s6 = new Signal<IObservedChange<object?, string>>();
         var rec = new Recorder<string>();
-        using (new WhenAnyValueSink<object?, string, string, string, string, string, string, string>(s1, s2, s3, s4, s5, s6, (x1, x2, x3, x4, x5, x6) => x1 + x2 + x3 + x4 + x5 + x6).Subscribe(rec))
+        using (new WhenAnyValueSink<object?, string, string, string, string, string, string, string>(
+            s1,
+            s2,
+            s3,
+            s4,
+            s5,
+            s6,
+            static (x1, x2, x3, x4, x5, x6) => x1 + x2 + x3 + x4 + x5 + x6).Subscribe(rec))
         {
             s1.OnNext(Ch("v1"));
             s2.OnNext(Ch("v2"));
@@ -40,7 +64,14 @@ public partial class WhenAnySinkDirectTests
             s5.OnNext(Ch("w5"));
         }
 
-        var ex = new InvalidOperationException("boom");
+        return rec;
+    }
+
+    /// <summary>Drives the error-forwarding path of the arity-6 value sink.</summary>
+    /// <param name="ex">The exception pushed through the first source.</param>
+    /// <returns>The recorder capturing the forwarded error.</returns>
+    private static Recorder<string> ForwardArity6Error(Exception ex)
+    {
         var e1 = new Signal<IObservedChange<object?, string>>();
         var e2 = new Signal<IObservedChange<object?, string>>();
         var e3 = new Signal<IObservedChange<object?, string>>();
@@ -48,9 +79,22 @@ public partial class WhenAnySinkDirectTests
         var e5 = new Signal<IObservedChange<object?, string>>();
         var e6 = new Signal<IObservedChange<object?, string>>();
         var errRec = new Recorder<string>();
-        _ = new WhenAnyValueSink<object?, string, string, string, string, string, string, string>(e1, e2, e3, e4, e5, e6, (x1, x2, x3, x4, x5, x6) => x1 + x2 + x3 + x4 + x5 + x6).Subscribe(errRec);
+        _ = new WhenAnyValueSink<object?, string, string, string, string, string, string, string>(
+            e1,
+            e2,
+            e3,
+            e4,
+            e5,
+            e6,
+            static (x1, x2, x3, x4, x5, x6) => x1 + x2 + x3 + x4 + x5 + x6).Subscribe(errRec);
         e1.OnError(ex);
+        return errRec;
+    }
 
+    /// <summary>Drives the source-completion path of the arity-6 value sink.</summary>
+    /// <returns>The recorder capturing the completion signal.</returns>
+    private static Recorder<string> CompleteArity6Sources()
+    {
         var k1 = new Signal<IObservedChange<object?, string>>();
         var k2 = new Signal<IObservedChange<object?, string>>();
         var k3 = new Signal<IObservedChange<object?, string>>();
@@ -58,14 +102,28 @@ public partial class WhenAnySinkDirectTests
         var k5 = new Signal<IObservedChange<object?, string>>();
         var k6 = new Signal<IObservedChange<object?, string>>();
         var cmpRec = new Recorder<string>();
-        _ = new WhenAnyValueSink<object?, string, string, string, string, string, string, string>(k1, k2, k3, k4, k5, k6, (x1, x2, x3, x4, x5, x6) => x1 + x2 + x3 + x4 + x5 + x6).Subscribe(cmpRec);
+        _ = new WhenAnyValueSink<object?, string, string, string, string, string, string, string>(
+            k1,
+            k2,
+            k3,
+            k4,
+            k5,
+            k6,
+            static (x1, x2, x3, x4, x5, x6) => x1 + x2 + x3 + x4 + x5 + x6).Subscribe(cmpRec);
         k1.OnCompleted();
         k2.OnCompleted();
         k3.OnCompleted();
         k4.OnCompleted();
         k5.OnCompleted();
         k6.OnCompleted();
+        return cmpRec;
+    }
 
+    /// <summary>Drives the selector-exception path of the arity-6 value sink.</summary>
+    /// <param name="ex">The exception thrown from the selector.</param>
+    /// <returns>The recorder capturing the selector error.</returns>
+    private static Recorder<string> ThrowFromArity6Selector(Exception ex)
+    {
         var t1 = new Signal<IObservedChange<object?, string>>();
         var t2 = new Signal<IObservedChange<object?, string>>();
         var t3 = new Signal<IObservedChange<object?, string>>();
@@ -80,11 +138,6 @@ public partial class WhenAnySinkDirectTests
         t4.OnNext(Ch("a"));
         t5.OnNext(Ch("a"));
         t6.OnNext(Ch("a"));
-
-        Exception[] expectedErrors = [ex];
-        await Assert.That(rec.Values).IsNotEmpty();
-        await Assert.That(errRec.Errors).IsEquivalentTo(expectedErrors);
-        await Assert.That(cmpRec.Completed).IsEqualTo(1);
-        await Assert.That(throwRec.Errors).IsEquivalentTo(expectedErrors);
+        return throwRec;
     }
 }

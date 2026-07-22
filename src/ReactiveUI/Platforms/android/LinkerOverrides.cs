@@ -15,7 +15,7 @@ namespace ReactiveUI;
 /// <remarks>This class is intended for internal use to ensure that certain Android UI types and their members are
 /// not removed by the linker. It is not intended to be used directly in application code.</remarks>
 [Preserve(AllMembers = true)]
-internal class LinkerOverrides
+internal static class LinkerOverrides
 {
     /// <summary>Preserves the following Android UI types and their members.</summary>
     [SupportedOSPlatform("android35.0")]
@@ -24,38 +24,32 @@ internal class LinkerOverrides
         "CA1422:Validate platform compatibility",
         Justification = "Linker preservation method references deprecated Android widgets solely to keep their members; it is never invoked.")]
     [SuppressMessage("ReSharper", "UnusedMember.Local", Justification = "Used by linker.")]
-    [SuppressMessage("Major Bug", "S1656:Variables should not be self-assigned", Justification = "Used by linker.")]
     [SuppressMessage("Major Bug", "SST1189:Remove this self-assignment", Justification = "Deliberate self-assignment preserves both the getter and setter from the linker.")]
-    [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Used by linker.")]
-    [SuppressMessage(
-        "Style",
-        "IDE0051:Private member is unused",
-        Justification = "Linker preservation member.")]
-    private void KeepMe()
+    private static void KeepMe()
     {
-        TextView txt = new(null);
+        using TextView txt = new(null);
         txt.Text = txt.Text;
 
-        ImageView iv = new(null);
+        using ImageView iv = new(null);
         _ = iv.Drawable;
 
-        ProgressBar prog = new(null);
+        using ProgressBar prog = new(null);
         prog.Progress = prog.Progress;
 
-        RadioButton cb = new(null);
+        using RadioButton cb = new(null);
         cb.Checked = cb.Checked;
 
-        NumberPicker np = new(null);
+        using NumberPicker np = new(null);
         np.Value = np.Value;
 
-        RatingBar rb = new(null);
+        using RatingBar rb = new(null);
         rb.Rating = rb.Rating;
 
-        CalendarView cv = new(null!);
+        using CalendarView cv = new(null!);
         cv.Date = cv.Date;
-        TabHost th = new(null);
+        using TabHost th = new(null);
         th.CurrentTab = th.CurrentTab;
-        TimePicker tp = new(null);
+        using TimePicker tp = new(null);
         tp.Hour = tp.Hour;
         tp.Minute = tp.Minute;
     }

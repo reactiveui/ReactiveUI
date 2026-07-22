@@ -13,9 +13,9 @@ namespace System.Diagnostics.CodeAnalysis;
 /// </summary>
 [Flags]
 [SuppressMessage(
-    "Major Code Smell",
-    "S4070:Non-flags enums should not be marked with FlagsAttribute",
-    Justification = "Faithful BCL polyfill.")]
+    "Design",
+    "SST2303:Flags enums should declare bit values",
+    Justification = "Mirrors the shape of the corresponding BCL type (System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes); the polyfill compiles only where the BCL lacks it.")]
 internal enum DynamicallyAccessedMemberTypes
 {
     /// <summary>Specifies no members.</summary>

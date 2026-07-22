@@ -24,6 +24,14 @@ namespace ReactiveUI;
 /// is arbitrarily set by the client.
 /// </para>
 /// </summary>
+[SuppressMessage(
+    "Design",
+    "SST2307:Generic method type parameters should be inferable from the parameters",
+    Justification = "The message type is an explicit generic argument by design; it selects the channel and cannot be inferred from the parameters.")]
+[SuppressMessage(
+    "Maintainability",
+    "SST1452:Remove unused type parameters",
+    Justification = "The message type is part of the public contract and selects the channel, so it cannot be removed.")]
 public interface IMessageBus : IEnableLogger
 {
     /// <summary>Registers a scheduler for the type, which may be specified at runtime, and the contract.</summary>
@@ -34,10 +42,6 @@ public interface IMessageBus : IEnableLogger
     /// <param name="scheduler">The scheduler on which to post the
     /// notifications for the specified type and contract.
     /// CurrentThreadScheduler by default.</param>
-    [SuppressMessage(
-        "Major Code Smell",
-        "S4018:Generic methods should provide type parameter",
-        Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
     void RegisterScheduler<T>(ISequencer scheduler);
 
     /// <summary>Registers a scheduler for the type, which may be specified at runtime, and the contract.</summary>
@@ -51,10 +55,6 @@ public interface IMessageBus : IEnableLogger
     /// <param name="contract">A unique string to distinguish messages with
     /// identical types (i.e. "MyCoolViewModel") - if the message type is
     /// only used for one purpose, leave this as null.</param>
-    [SuppressMessage(
-        "Major Code Smell",
-        "S4018:Generic methods should provide type parameter",
-        Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
     void RegisterScheduler<T>(ISequencer scheduler, string? contract);
 
     /// <summary>
@@ -63,10 +63,6 @@ public interface IMessageBus : IEnableLogger
     /// </summary>
     /// <typeparam name="T">The type of the message to listen to.</typeparam>
     /// <returns>An observable sequence.</returns>
-    [SuppressMessage(
-        "Major Code Smell",
-        "S4018:Generic methods should provide type parameter",
-        Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
     IObservable<T> Listen<T>();
 
     /// <summary>
@@ -78,10 +74,6 @@ public interface IMessageBus : IEnableLogger
     /// identical types (i.e. "MyCoolViewModel") - if the message type is
     /// only used for one purpose, leave this as null.</param>
     /// <returns>An observable sequence.</returns>
-    [SuppressMessage(
-        "Major Code Smell",
-        "S4018:Generic methods should provide type parameter",
-        Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
     IObservable<T> Listen<T>(string? contract);
 
     /// <summary>
@@ -92,10 +84,6 @@ public interface IMessageBus : IEnableLogger
     /// <typeparam name="T">The type of the message to listen to.</typeparam>
     /// <returns>An Observable representing the notifications posted to the
     /// message bus.</returns>
-    [SuppressMessage(
-        "Major Code Smell",
-        "S4018:Generic methods should provide type parameter",
-        Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
     IObservable<T> ListenIncludeLatest<T>();
 
     /// <summary>
@@ -109,10 +97,6 @@ public interface IMessageBus : IEnableLogger
     /// only used for one purpose, leave this as null.</param>
     /// <returns>An Observable representing the notifications posted to the
     /// message bus.</returns>
-    [SuppressMessage(
-        "Major Code Smell",
-        "S4018:Generic methods should provide type parameter",
-        Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
     IObservable<T> ListenIncludeLatest<T>(string? contract);
 
     /// <summary>Determines if a particular message Type is registered.</summary>

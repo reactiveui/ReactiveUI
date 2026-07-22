@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 
 namespace ReactiveUI.Tests.Expressions;
@@ -260,6 +261,10 @@ public class CompiledPropertyChainTests
         }
 
         /// <summary>Gets a read-only property value.</summary>
+        [SuppressMessage(
+            "Design",
+            "SST2324:Member is public but its containing type is not publicly reachable",
+            Justification = "the public surface is required for interface/reflection binding; the containing test double is an intentionally non-public detail.")]
         public string ReadOnlyProperty { get; } = "readonly";
     }
 }

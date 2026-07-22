@@ -29,7 +29,7 @@ public class InteractionBinderImplementation : IInteractionBinderImplementation
     {
         ArgumentExceptionHelper.ThrowIfNull(handler);
 
-        return BindInteractionCore<TViewModel, TView, TInput, TOutput>(
+        return BindInteractionCore(
             viewModel,
             view,
             propertyName,
@@ -48,7 +48,7 @@ public class InteractionBinderImplementation : IInteractionBinderImplementation
     {
         ArgumentExceptionHelper.ThrowIfNull(handler);
 
-        return BindInteractionCore<TViewModel, TView, TInput, TOutput>(
+        return BindInteractionCore(
             viewModel,
             view,
             propertyName,
@@ -84,7 +84,7 @@ public class InteractionBinderImplementation : IInteractionBinderImplementation
 
         var viewModelNulls = view.WhenAnyValue(x => x.ViewModel)
             .Choose(static x => x is null ? (true, (IInteraction<TInput, TOutput>?)null) : (false, null));
-        var source = Signal.Blend<IInteraction<TInput, TOutput>?>(
+        var source = Signal.Blend(
             new MapSignal<object, IInteraction<TInput, TOutput>?>(
                 Reflection.ViewModelWhenAnyValue(viewModel, view, viewModelExpression),
                 static x => (IInteraction<TInput, TOutput>?)x),

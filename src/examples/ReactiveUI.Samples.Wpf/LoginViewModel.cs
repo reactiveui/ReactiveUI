@@ -18,7 +18,7 @@ public class LoginViewModel : ReactiveObject, IDisposable
         var canLogin = this.WhenAnyValue(
             vm => vm.UserName,
             vm => vm.Password,
-            (user, pass) => !string.IsNullOrWhiteSpace(user) && !string.IsNullOrWhiteSpace(pass));
+            static (user, pass) => !string.IsNullOrWhiteSpace(user) && !string.IsNullOrWhiteSpace(pass));
 
         Login = ReactiveCommand.CreateFromTask(
             async () =>

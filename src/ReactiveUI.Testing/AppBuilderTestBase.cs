@@ -3,9 +3,15 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics.CodeAnalysis;
+
 namespace ReactiveUI.Testing;
 
 /// <summary>Provides a base class for tests that exercise the application builder lifecycle, offering helpers to run a test body within a serialized AppBuilder test context.</summary>
+[SuppressMessage(
+    "Design",
+    "SST1496:An abstract type declares nothing abstract",
+    Justification = "Abstract only so derived test fixtures inherit the protected static helpers; it declares nothing abstract by design and cannot be static because it is a base class.")]
 public abstract class AppBuilderTestBase
 {
     /// <summary>Runs the application builder test asynchronous.</summary>

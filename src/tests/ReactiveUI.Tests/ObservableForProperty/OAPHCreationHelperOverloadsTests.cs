@@ -81,10 +81,10 @@ public class OAPHCreationHelperOverloadsTests
         Expression<Func<OverloadFixture, string?>> property = x => x.Text;
         const string name = nameof(OverloadFixture.Text);
 
-        helpers.Add(Source().ToProperty(NewFixture(), property, out var e1, () => InitialValue, deferSubscription: true, scheduler: scheduler));
-        helpers.Add(Source().ToProperty(NewFixture(), name, out var s1, () => InitialValue));
-        helpers.Add(Source().ToProperty(NewFixture(), name, out var s2, () => InitialValue, true));
-        helpers.Add(Source().ToProperty(NewFixture(), name, out var s3, () => InitialValue, deferSubscription: true, scheduler: scheduler));
+        helpers.Add(Source().ToProperty(NewFixture(), property, out var e1, static () => InitialValue, deferSubscription: true, scheduler: scheduler));
+        helpers.Add(Source().ToProperty(NewFixture(), name, out var s1, static () => InitialValue));
+        helpers.Add(Source().ToProperty(NewFixture(), name, out var s2, static () => InitialValue, true));
+        helpers.Add(Source().ToProperty(NewFixture(), name, out var s3, static () => InitialValue, deferSubscription: true, scheduler: scheduler));
         helpers.Add(Source().ToProperty(NewFixture(), name, out var s4, true));
 
         await Assert.That(e1).IsNotNull();
@@ -108,14 +108,14 @@ public class OAPHCreationHelperOverloadsTests
         ISequencer scheduler = Sequencer.Immediate;
         Expression<Func<OverloadFixture, string?>> property = x => x.Text;
 
-        helpers.Add(Source().ToProperty(NewFixture(), property, () => InitialValue));
-        helpers.Add(Source().ToProperty(NewFixture(), property, () => InitialValue, true));
+        helpers.Add(Source().ToProperty(NewFixture(), property, static () => InitialValue));
+        helpers.Add(Source().ToProperty(NewFixture(), property, static () => InitialValue, true));
         helpers.Add(Source().ToProperty(NewFixture(), property, out _, true));
         helpers.Add(Source().ToProperty(NewFixture(), property, out _, InitialValue));
         helpers.Add(Source().ToProperty(NewFixture(), property, out _, InitialValue, true));
         helpers.Add(Source().ToProperty(NewFixture(), property, out _, InitialValue, deferSubscription: true, scheduler: scheduler));
-        helpers.Add(Source().ToProperty(NewFixture(), property, out _, () => InitialValue));
-        helpers.Add(Source().ToProperty(NewFixture(), property, out _, () => InitialValue, true));
+        helpers.Add(Source().ToProperty(NewFixture(), property, out _, static () => InitialValue));
+        helpers.Add(Source().ToProperty(NewFixture(), property, out _, static () => InitialValue, true));
 
         await Assert.That(helpers).IsNotEmpty();
 
@@ -131,8 +131,8 @@ public class OAPHCreationHelperOverloadsTests
     public async Task ToProperty_StringGetInitialValueOverloads()
     {
         const string name = nameof(OverloadFixture.Text);
-        var first = Source().ToProperty(NewFixture(), name, () => InitialValue);
-        var second = Source().ToProperty(NewFixture(), name, () => InitialValue, true);
+        var first = Source().ToProperty(NewFixture(), name, static () => InitialValue);
+        var second = Source().ToProperty(NewFixture(), name, static () => InitialValue, true);
 
         await Assert.That(first).IsNotNull();
         await Assert.That(second).IsNotNull();

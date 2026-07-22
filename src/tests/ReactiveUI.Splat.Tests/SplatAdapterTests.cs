@@ -36,8 +36,8 @@ public class SplatAdapterTests
         await Assert.That(converters).IsNotNull();
         using (Assert.Multiple())
         {
-            await Assert.That(converters.Exists(static x => x is StringConverter)).IsTrue();
-            await Assert.That(converters.Exists(static x => x is EqualityTypeConverter)).IsTrue();
+            await Assert.That(converters.Exists(static x => x.GetType() == typeof(StringConverter))).IsTrue();
+            await Assert.That(converters.Exists(static x => x.GetType() == typeof(EqualityTypeConverter))).IsTrue();
         }
     }
 
@@ -58,10 +58,10 @@ public class SplatAdapterTests
         await Assert.That(converters).IsNotNull();
         using (Assert.Multiple())
         {
-            await Assert.That(converters.Exists(static x => x is CreatesCommandBindingViaEvent))
+            await Assert.That(converters.Exists(static x => x.GetType() == typeof(CreatesCommandBindingViaEvent)))
                 .IsTrue();
             await Assert
-                .That(converters.Exists(static x => x is CreatesCommandBindingViaCommandParameter))
+                .That(converters.Exists(static x => x.GetType() == typeof(CreatesCommandBindingViaCommandParameter)))
                 .IsTrue();
         }
     }
@@ -84,8 +84,8 @@ public class SplatAdapterTests
         await Assert.That(converters).IsNotNull();
         using (Assert.Multiple())
         {
-            await Assert.That(converters.Exists(static x => x is StringConverter)).IsTrue();
-            await Assert.That(converters.Exists(static x => x is EqualityTypeConverter)).IsTrue();
+            await Assert.That(converters.Exists(static x => x.GetType() == typeof(StringConverter))).IsTrue();
+            await Assert.That(converters.Exists(static x => x.GetType() == typeof(EqualityTypeConverter))).IsTrue();
         }
     }
 
@@ -108,10 +108,10 @@ public class SplatAdapterTests
         await Assert.That(converters).IsNotNull();
         using (Assert.Multiple())
         {
-            await Assert.That(converters.Exists(static x => x is CreatesCommandBindingViaEvent))
+            await Assert.That(converters.Exists(static x => x.GetType() == typeof(CreatesCommandBindingViaEvent)))
                 .IsTrue();
             await Assert
-                .That(converters.Exists(static x => x is CreatesCommandBindingViaCommandParameter))
+                .That(converters.Exists(static x => x.GetType() == typeof(CreatesCommandBindingViaCommandParameter)))
                 .IsTrue();
         }
     }
@@ -133,8 +133,8 @@ public class SplatAdapterTests
         await Assert.That(converters).IsNotNull();
         using (Assert.Multiple())
         {
-            await Assert.That(converters.Exists(static x => x is StringConverter)).IsTrue();
-            await Assert.That(converters.Exists(static x => x is EqualityTypeConverter)).IsTrue();
+            await Assert.That(converters.Exists(static x => x.GetType() == typeof(StringConverter))).IsTrue();
+            await Assert.That(converters.Exists(static x => x.GetType() == typeof(EqualityTypeConverter))).IsTrue();
         }
     }
 
@@ -155,10 +155,10 @@ public class SplatAdapterTests
         await Assert.That(converters).IsNotNull();
         using (Assert.Multiple())
         {
-            await Assert.That(converters.Exists(static x => x is CreatesCommandBindingViaEvent))
+            await Assert.That(converters.Exists(static x => x.GetType() == typeof(CreatesCommandBindingViaEvent)))
                 .IsTrue();
             await Assert
-                .That(converters.Exists(static x => x is CreatesCommandBindingViaCommandParameter))
+                .That(converters.Exists(static x => x.GetType() == typeof(CreatesCommandBindingViaCommandParameter)))
                 .IsTrue();
         }
     }

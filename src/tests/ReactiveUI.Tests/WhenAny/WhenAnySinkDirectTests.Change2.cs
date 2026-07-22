@@ -21,7 +21,7 @@ public partial class WhenAnySinkDirectTests
         var s1 = new Signal<string>();
         var s2 = new Signal<string>();
         var rec = new Recorder<string>();
-        using (new WhenAnyChangeSink<string, string, string>(s1, s2, (x1, x2) => x1 + x2).Subscribe(rec))
+        using (new WhenAnyChangeSink<string, string, string>(s1, s2, static (x1, x2) => x1 + x2).Subscribe(rec))
         {
             s1.OnNext("v1");
             s2.OnNext("v2");
@@ -32,13 +32,13 @@ public partial class WhenAnySinkDirectTests
         var e1 = new Signal<string>();
         var e2 = new Signal<string>();
         var errRec = new Recorder<string>();
-        _ = new WhenAnyChangeSink<string, string, string>(e1, e2, (x1, x2) => x1 + x2).Subscribe(errRec);
+        _ = new WhenAnyChangeSink<string, string, string>(e1, e2, static (x1, x2) => x1 + x2).Subscribe(errRec);
         e1.OnError(ex);
 
         var k1 = new Signal<string>();
         var k2 = new Signal<string>();
         var cmpRec = new Recorder<string>();
-        _ = new WhenAnyChangeSink<string, string, string>(k1, k2, (x1, x2) => x1 + x2).Subscribe(cmpRec);
+        _ = new WhenAnyChangeSink<string, string, string>(k1, k2, static (x1, x2) => x1 + x2).Subscribe(cmpRec);
         k1.OnCompleted();
         k2.OnCompleted();
 

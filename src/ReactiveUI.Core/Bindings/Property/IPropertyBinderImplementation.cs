@@ -78,8 +78,8 @@ public interface IPropertyBinderImplementation : IEnableLogger
     /// <param name="viewToViewModelConverterOverride">An optional converter to use when converting from view to view model property.</param>
     /// <returns>An instance of IDisposable that, when disposed, disconnects the binding.</returns>
     [SuppressMessage(
-        "Major Code Smell",
-        "S107:Methods should not have too many parameters",
+        "Design",
+        "SST1472:Signatures should not declare too many parameters",
         Justification = "This overload is part of the public binding API surface; the parameter count is intentional.")]
     IReactiveBinding<TView, (object? view, bool isViewModel)> Bind<TViewModel, TView, TViewModelPropertyType, TViewPropertyType, TDontCare>(
         TViewModel? viewModel,
@@ -112,8 +112,8 @@ public interface IPropertyBinderImplementation : IEnableLogger
     /// <param name="triggerUpdate">The trigger update direction.</param>
     /// <returns>An instance of IDisposable that, when disposed, disconnects the binding.</returns>
     [SuppressMessage(
-        "Major Code Smell",
-        "S107:Methods should not have too many parameters",
+        "Design",
+        "SST1472:Signatures should not declare too many parameters",
         Justification = "This overload is part of the public binding API surface; the parameter count is intentional.")]
     IReactiveBinding<TView, (object? view, bool isViewModel)> Bind<TViewModel, TView, TViewModelPropertyType, TViewPropertyType, TDontCare>(
         TViewModel? viewModel,
@@ -173,8 +173,8 @@ public interface IPropertyBinderImplementation : IEnableLogger
     /// <param name="triggerUpdate">The trigger update direction.</param>
     /// <returns>An instance of IDisposable that, when disposed, disconnects the binding.</returns>
     [SuppressMessage(
-        "Major Code Smell",
-        "S107:Methods should not have too many parameters",
+        "Design",
+        "SST1472:Signatures should not declare too many parameters",
         Justification = "This overload is part of the public binding API surface; the parameter count is intentional.")]
     IReactiveBinding<TView, (object? view, bool isViewModel)> Bind<TViewModel, TView, TViewModelPropertyType, TViewPropertyType, TDontCare>(
         TViewModel? viewModel,

@@ -149,7 +149,13 @@ public class CanActivateViewFetcher : IActivationForViewFetcher
             {
                 lock (_gate)
                 {
-                    if (_done || ++_completed < SourceCount)
+                    if (_done)
+                    {
+                        return;
+                    }
+
+                    _completed++;
+                    if (_completed < SourceCount)
                     {
                         return;
                     }

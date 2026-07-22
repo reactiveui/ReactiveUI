@@ -14,9 +14,9 @@ namespace ReactiveUI;
 /// <summary>Provides the arity-1 WhenAny / WhenAnyValue / WhenAnyDynamic extension overloads.</summary>
 [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
 [SuppressMessage(
-    "Major Code Smell",
-    "S4018:Generic methods should provide type parameter",
-    Justification = "Type parameters are supplied explicitly by the caller by design; they identify the observed types and cannot be inferred from the arguments.")]
+    "Design",
+    "SST2307:Generic type parameter cannot be inferred from any parameter",
+    Justification = "The result type parameter is supplied explicitly by callers by design; WhenAny cannot infer it from the property-expression parameters.")]
 public static partial class WhenAnyMixins
 {
     /// <summary>Provides arity-1 WhenAny extension members for the source object.</summary>
@@ -31,7 +31,7 @@ public static partial class WhenAnyMixins
         [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
         public IObservable<TRet> WhenAnyValue<TRet>(
             Expression<Func<TSender, TRet>> property1) =>
-            sender!.WhenAny(property1, c1 => c1.Value);
+            sender!.WhenAny(property1, static c1 => c1.Value);
 
         /// <summary>AOT-friendly overload that observes a property by name instead of an expression.</summary>
         /// <typeparam name="TRet">The type of the property value.</typeparam>
@@ -53,7 +53,7 @@ public static partial class WhenAnyMixins
         public IObservable<TRet> WhenAnyValue<TRet>(
             Expression<Func<TSender, TRet>> property1,
             bool isDistinct) =>
-            sender!.WhenAny(property1, c1 => c1.Value, isDistinct);
+            sender!.WhenAny(property1, static c1 => c1.Value, isDistinct);
 
         /// <summary>AOT-friendly overload that observes a property by name, optionally distinct.</summary>
         /// <typeparam name="TRet">The type of the property value.</typeparam>

@@ -6,8 +6,11 @@
 namespace ReactiveUI.AOT.Tests;
 
 /// <summary>Test activatable view model for AOT testing.</summary>
-internal sealed class TestActivatableViewModel : ReactiveObject, IActivatableViewModel
+internal sealed class TestActivatableViewModel : ReactiveObject, IActivatableViewModel, IDisposable
 {
     /// <inheritdoc/>
     public ViewModelActivator Activator { get; } = new();
+
+    /// <inheritdoc/>
+    public void Dispose() => Activator.Dispose();
 }

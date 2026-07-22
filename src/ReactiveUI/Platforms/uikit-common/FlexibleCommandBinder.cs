@@ -32,7 +32,7 @@ namespace ReactiveUI;
 /// Prefer the add/remove handler overload for AOT-safe event binding.
 /// </para>
 /// </remarks>
-public abstract class FlexibleCommandBinder : ICreatesCommandBinding
+public class FlexibleCommandBinder : ICreatesCommandBinding
 {
     /// <summary>A single synchronization gate for all mutable state in this instance.</summary>
 #if NET9_0_OR_GREATER
@@ -53,14 +53,15 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
     /// <summary>A snapshot version that corresponds to <see cref="_snapshot"/>.</summary>
     private int _snapshotVersion;
 
+    /// <summary>Initializes a new instance of the <see cref="FlexibleCommandBinder"/> class.</summary>
+    protected FlexibleCommandBinder()
+    {
+    }
+
     /// <inheritdoc/>
     /// <typeparam name="T">The candidate target type.</typeparam>
     /// <param name="hasEventTarget">A value indicating whether an explicit event target was supplied.</param>
     /// <returns>The affinity score for binding a command to the candidate type.</returns>
-    [SuppressMessage(
-        "Major Code Smell",
-        "S4018:Generic methods should provide type parameters",
-        Justification = "T is part of the ICreatesCommandBinding public API contract and is used by the framework for type resolution.")]
     public int GetAffinityForObject<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents | DynamicallyAccessedMemberTypes.PublicProperties)] T>(bool hasEventTarget)
     {
         if (hasEventTarget)
@@ -150,10 +151,6 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
     /// <param name="eventName">The name of the event to subscribe to.</param>
     /// <returns>A disposable that tears down the binding, or <see langword="null"/> when binding is not possible.</returns>
     [RequiresUnreferencedCode("String/reflection-based event binding may require members removed by trimming.")]
-    [SuppressMessage(
-        "Major Code Smell",
-        "S4018:Generic methods should provide type parameters",
-        Justification = "T and TEventArgs are part of the ICreatesCommandBinding public API contract and are used by the framework for type resolution.")]
     public virtual IDisposable? BindCommandToObject<T, TEventArgs>(
         ICommand? command,
         T? target,
@@ -171,10 +168,6 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
     /// <param name="addHandler">Adds the event handler to the target.</param>
     /// <param name="removeHandler">Removes the event handler from the target.</param>
     /// <returns>A disposable that tears down the binding, or <see langword="null"/> when binding is not possible.</returns>
-    [SuppressMessage(
-        "Major Code Smell",
-        "S4018:Generic methods should provide type parameters",
-        Justification = "T and TEventArgs are part of the ICreatesCommandBinding public API contract and are used by the framework for type resolution.")]
     public virtual IDisposable? BindCommandToObject<
         [DynamicallyAccessedMembers(
             DynamicallyAccessedMemberTypes.PublicProperties |
@@ -203,7 +196,7 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
 
         object? latestParam = null;
 
-        void Handler(object? sender, TEventArgs e)
+        EventHandler<TEventArgs> handler = (_, _) =>
         {
             var param = Volatile.Read(ref latestParam);
             if (!command.CanExecute(param))
@@ -212,14 +205,14 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
             }
 
             command.Execute(param);
-        }
+        };
 
         var paramSub = commandParameter.Subscribe(new DelegateObserver<object?>(x => Volatile.Write(ref latestParam, x)));
-        addHandler(Handler);
+        addHandler(handler);
 
         return new MultipleDisposable(
             paramSub,
-            Scope.Create(() => removeHandler(Handler)));
+            Scope.Create((removeHandler, handler), static state => state.removeHandler(state.handler)));
     }
 
     /// <summary>Creates a command binding from an explicit event subscription API and an enabled property.</summary>
@@ -260,7 +253,7 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
 
         object? latestParam = null;
 
-        void Handler(object? sender, TEventArgs e)
+        EventHandler<TEventArgs> handler = (_, _) =>
         {
             var param = Volatile.Read(ref latestParam);
             if (!command.CanExecute(param))
@@ -269,13 +262,13 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
             }
 
             command.Execute(param);
-        }
+        };
 
         // Subscribe parameter first so we have best effort latest value before the first event.
         var paramSub = commandParameter.Subscribe(new DelegateObserver<object?>(x => Volatile.Write(ref latestParam, x)));
 
-        addHandler(Handler);
-        var eventDisp = Scope.Create(() => removeHandler(Handler));
+        addHandler(handler);
+        var eventDisp = Scope.Create((removeHandler, handler), static state => state.removeHandler(state.handler));
 
         var enabledSetter = Reflection.GetValueSetterForProperty(enabledProperty);
         if (enabledSetter is null)
@@ -288,10 +281,10 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
 
         var canExecuteSub = new FromEventObservable<bool>(onNext =>
             {
-                void CanExecuteHandler(object? s, EventArgs e) =>
+                EventHandler canExecuteHandler = (_, _) =>
                     onNext(command.CanExecute(Volatile.Read(ref latestParam)));
-                command.CanExecuteChanged += CanExecuteHandler;
-                return new ActionDisposable(() => command.CanExecuteChanged -= CanExecuteHandler);
+                command.CanExecuteChanged += canExecuteHandler;
+                return new ActionDisposable(() => command.CanExecuteChanged -= canExecuteHandler);
             })
             .Subscribe(new DelegateObserver<bool>(x => enabledSetter(target, x, null)));
 
@@ -334,7 +327,7 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
 
         object? latestParam = null;
 
-        void Handler(object? sender, EventArgs e)
+        EventHandler handler = (_, _) =>
         {
             var param = Volatile.Read(ref latestParam);
             if (!command.CanExecute(param))
@@ -343,13 +336,13 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
             }
 
             command.Execute(param);
-        }
+        };
 
         // Subscribe parameter first so we have best effort latest value before the first event.
         var paramSub = commandParameter.Subscribe(new DelegateObserver<object?>(x => Volatile.Write(ref latestParam, x)));
 
-        addHandler(Handler);
-        var eventDisp = Scope.Create(() => removeHandler(Handler));
+        addHandler(handler);
+        var eventDisp = Scope.Create((removeHandler, handler), static state => state.removeHandler(state.handler));
 
         var enabledSetter = Reflection.GetValueSetterForProperty(enabledProperty);
         if (enabledSetter is null)
@@ -362,10 +355,10 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
 
         var canExecuteSub = new FromEventObservable<bool>(onNext =>
             {
-                void CanExecuteHandler(object? s, EventArgs e) =>
+                EventHandler canExecuteHandler = (_, _) =>
                     onNext(command.CanExecute(Volatile.Read(ref latestParam)));
-                command.CanExecuteChanged += CanExecuteHandler;
-                return new ActionDisposable(() => command.CanExecuteChanged -= CanExecuteHandler);
+                command.CanExecuteChanged += canExecuteHandler;
+                return new ActionDisposable(() => command.CanExecuteChanged -= canExecuteHandler);
             })
             .Subscribe(new DelegateObserver<bool>(x => enabledSetter(target, x, null)));
 
@@ -424,10 +417,10 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
 
         var canExecuteSub = new FromEventObservable<bool>(onNext =>
             {
-                void Handler(object? sender, EventArgs e) =>
+                EventHandler handler = (_, _) =>
                     onNext(command.CanExecute(Volatile.Read(ref latestParam)));
-                command.CanExecuteChanged += Handler;
-                return new ActionDisposable(() => command.CanExecuteChanged -= Handler);
+                command.CanExecuteChanged += handler;
+                return new ActionDisposable(() => command.CanExecuteChanged -= handler);
             })
             .Subscribe(new DelegateObserver<bool>(x => enabledSetter(target, x, null)));
 
@@ -461,7 +454,7 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
         object? latestParam = null;
 
         // Stable handler instance for deterministic unsubscribe.
-        void Handler(object? sender, EventArgs e)
+        EventHandler handler = (_, _) =>
         {
             var param = Volatile.Read(ref latestParam);
             if (!command.CanExecute(param))
@@ -470,13 +463,13 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
             }
 
             command.Execute(param);
-        }
+        };
 
         var paramSub = commandParameter.Subscribe(new DelegateObserver<object?>(x => Volatile.Write(ref latestParam, x)));
 
         // UIKit target-action via EventHandler is supported through UIControl's AddTarget overload.
-        ctl.AddTarget(Handler, UIControlEvent.TouchUpInside);
-        var actionDisp = Scope.Create(() => ctl.RemoveTarget(Handler, UIControlEvent.TouchUpInside));
+        ctl.AddTarget(handler, UIControlEvent.TouchUpInside);
+        var actionDisp = Scope.Create((ctl, handler), static state => state.ctl.RemoveTarget(state.handler, UIControlEvent.TouchUpInside));
 
         var enabledSetter = Reflection.GetValueSetterForProperty(enabledProperty);
         if (enabledSetter is null)
@@ -488,10 +481,10 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
 
         var canExecuteSub = new FromEventObservable<bool>(onNext =>
             {
-                void CanExecuteHandler(object? s, EventArgs e) =>
+                EventHandler canExecuteHandler = (_, _) =>
                     onNext(command.CanExecute(Volatile.Read(ref latestParam)));
-                command.CanExecuteChanged += CanExecuteHandler;
-                return new ActionDisposable(() => command.CanExecuteChanged -= CanExecuteHandler);
+                command.CanExecuteChanged += canExecuteHandler;
+                return new ActionDisposable(() => command.CanExecuteChanged -= canExecuteHandler);
             })
             .Subscribe(new DelegateObserver<bool>(x => enabledSetter(target, x, null)));
 
@@ -544,7 +537,8 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
             foreach (var kvp in _config)
             {
                 var info = kvp.Value;
-                entries[i++] = new(kvp.Key, info.Affinity, info.CreateBinding);
+                entries[i] = new(kvp.Key, info.Affinity, info.CreateBinding);
+                i++;
             }
 
             Volatile.Write(ref _snapshotVersion, v);

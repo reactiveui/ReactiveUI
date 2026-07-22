@@ -28,13 +28,17 @@ namespace ReactiveUI;
 [Preserve(AllMembers = true)]
 [RequiresUnreferencedCode(
     "Creating Expressions requires unreferenced code because the members being referenced by the Expression may be trimmed.")]
+[SuppressMessage(
+    "Design",
+    "SST2307:Generic method type parameters should be inferable from the parameters",
+    Justification = "The observed value type is an explicit generic argument by design; it types the returned stream and cannot be inferred from the parameters.")]
 public static class ReactiveNotifyPropertyChangedMixins
 {
     /// <summary>Caches the best available property-notification factory for each sender type, property name, and change timing.</summary>
     private static readonly
         MemoizingMRUCache<(Type? senderType, string propertyName, bool beforeChange), ICreatesObservableForProperty?>
         _notifyFactoryCache =
-            new((t, _) => ResolveNotifyFactory(t), RxCacheSize.BigCacheLimit);
+            new(static (t, _) => ResolveNotifyFactory(t), RxCacheSize.BigCacheLimit);
 
     /// <summary>Initializes static members of the <see cref="ReactiveNotifyPropertyChangedMixins"/> class.</summary>
     static ReactiveNotifyPropertyChangedMixins() => RxAppBuilder.EnsureInitialized();
@@ -59,6 +63,19 @@ public static class ReactiveNotifyPropertyChangedMixins
         return best;
     }
 
+    /// <summary>Builds the error message thrown when no <c>ICreatesObservableForProperty</c> can be resolved for a property.</summary>
+    /// <param name="senderType">The runtime type of the sender being observed.</param>
+    /// <param name="propertyName">The name of the property being observed.</param>
+    /// <returns>The formatted diagnostic message.</returns>
+    private static string MissingObservableForPropertyMessage(Type senderType, string propertyName)
+    {
+        var prefix = $"Could not find a ICreatesObservableForProperty for {senderType} property {propertyName}.";
+        const string advice =
+            " This should never happen, your service locator is probably broken. Please make sure you have installed " +
+            "the latest version of the ReactiveUI packages for your platform. See https://reactiveui.net/docs/getting-started/installation for guidance.";
+        return prefix + advice;
+    }
+
     /// <summary>Provides ObservableForProperty extension members for observing property changes on a sender object.</summary>
     /// <typeparam name="TSender">The sender type.</typeparam>
     /// <param name="item">The source object to observe properties of.</param>
@@ -79,10 +96,6 @@ public static class ReactiveNotifyPropertyChangedMixins
         /// <returns>An Observable representing the property change notifications for the given property name.</returns>
         [RequiresUnreferencedCode(
             "Creating Expressions requires unreferenced code because the members being referenced by the Expression may be trimmed.")]
-        [SuppressMessage(
-            "Major Code Smell",
-            "S4018:Generic methods should provide type parameter",
-            Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
         public IObservable<IObservedChange<TSender, TValue>> ObservableForProperty<TValue>(
             string propertyName,
             bool beforeChange,
@@ -106,10 +119,7 @@ public static class ReactiveNotifyPropertyChangedMixins
             }
 
             var factory = _notifyFactoryCache.Get((item.GetType(), propertyName, beforeChange))
-                          ?? throw new InvalidOperationException(
-                              $"Could not find a ICreatesObservableForProperty for {item.GetType()} property {propertyName}. " +
-                              "This should never happen, your service locator is probably broken. Please make sure you have installed " +
-                              "the latest version of the ReactiveUI packages for your platform. See https://reactiveui.net/docs/getting-started/installation for guidance.");
+                          ?? throw new InvalidOperationException(MissingObservableForPropertyMessage(item.GetType(), propertyName));
 
             // Helper to get current property value without expression analysis.
             static TValue GetCurrentValue(TSender sender, string name)
@@ -145,10 +155,6 @@ public static class ReactiveNotifyPropertyChangedMixins
         /// <returns>An observable sequence of observed changes for the given property name.</returns>
         [RequiresUnreferencedCode(
             "Creating Expressions requires unreferenced code because the members being referenced by the Expression may be trimmed.")]
-        [SuppressMessage(
-            "Major Code Smell",
-            "S4018:Generic methods should provide type parameter",
-            Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
         public IObservable<IObservedChange<TSender, TValue>> ObservableForProperty<TValue>(
             string propertyName)
             => ObservableForProperty<TSender, TValue>(
@@ -165,10 +171,6 @@ public static class ReactiveNotifyPropertyChangedMixins
         /// <returns>An observable sequence of observed changes for the given property name.</returns>
         [RequiresUnreferencedCode(
             "Creating Expressions requires unreferenced code because the members being referenced by the Expression may be trimmed.")]
-        [SuppressMessage(
-            "Major Code Smell",
-            "S4018:Generic methods should provide type parameter",
-            Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
         public IObservable<IObservedChange<TSender, TValue>> ObservableForProperty<TValue>(
             string propertyName,
             bool beforeChange)
@@ -189,10 +191,6 @@ public static class ReactiveNotifyPropertyChangedMixins
         /// <returns>An observable sequence of observed changes for the given property name.</returns>
         [RequiresUnreferencedCode(
             "Creating Expressions requires unreferenced code because the members being referenced by the Expression may be trimmed.")]
-        [SuppressMessage(
-            "Major Code Smell",
-            "S4018:Generic methods should provide type parameter",
-            Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
         public IObservable<IObservedChange<TSender, TValue>> ObservableForProperty<TValue>(
             string propertyName,
             bool beforeChange,
@@ -287,7 +285,6 @@ public static class ReactiveNotifyPropertyChangedMixins
         /// notifications for the given property.
         /// </returns>
         [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
-        [SuppressMessage("Major Code Smell", "S125:Sections of code should not be commented out", Justification = "False positive, pseudo code.")]
         public IObservable<IObservedChange<TSender, TValue>> ObservableForProperty<TValue>(
             Expression<Func<TSender, TValue>> property,
             bool beforeChange,
@@ -331,10 +328,6 @@ public static class ReactiveNotifyPropertyChangedMixins
         /// </returns>
         /// <exception cref="InvalidCastException">If we cannot cast from the target value from the specified last property.</exception>
         [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
-        [SuppressMessage(
-            "Major Code Smell",
-            "S4018:Generic methods should provide type parameter",
-            Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
         public IObservable<IObservedChange<TSender, TValue>> SubscribeToExpressionChain<TValue>(
             Expression? expression)
             => SubscribeToExpressionChain<TSender, TValue>(item, expression, false, true, false, true);
@@ -352,10 +345,6 @@ public static class ReactiveNotifyPropertyChangedMixins
         /// </returns>
         /// <exception cref="InvalidCastException">If we cannot cast from the target value from the specified last property.</exception>
         [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
-        [SuppressMessage(
-            "Major Code Smell",
-            "S4018:Generic methods should provide type parameter",
-            Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
         public IObservable<IObservedChange<TSender, TValue>> SubscribeToExpressionChain<TValue>(
             Expression? expression,
             bool beforeChange)
@@ -375,10 +364,6 @@ public static class ReactiveNotifyPropertyChangedMixins
         /// </returns>
         /// <exception cref="InvalidCastException">If we cannot cast from the target value from the specified last property.</exception>
         [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
-        [SuppressMessage(
-            "Major Code Smell",
-            "S4018:Generic methods should provide type parameter",
-            Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
         public IObservable<IObservedChange<TSender, TValue>> SubscribeToExpressionChain<TValue>(
             Expression? expression,
             bool beforeChange,
@@ -400,10 +385,6 @@ public static class ReactiveNotifyPropertyChangedMixins
         /// </returns>
         /// <exception cref="InvalidCastException">If we cannot cast from the target value from the specified last property.</exception>
         [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
-        [SuppressMessage(
-            "Major Code Smell",
-            "S4018:Generic methods should provide type parameter",
-            Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
         public IObservable<IObservedChange<TSender, TValue>> SubscribeToExpressionChain<TValue>(
             Expression? expression,
             bool beforeChange,
@@ -433,10 +414,6 @@ public static class ReactiveNotifyPropertyChangedMixins
         /// </returns>
         /// <exception cref="InvalidCastException">If we cannot cast from the target value from the specified last property.</exception>
         [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
-        [SuppressMessage(
-            "Major Code Smell",
-            "S4018:Generic methods should provide type parameter",
-            Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
         public IObservable<IObservedChange<TSender, TValue>> SubscribeToExpressionChain<TValue>(
             Expression? expression,
             bool beforeChange,
@@ -550,10 +527,7 @@ public static class ReactiveNotifyPropertyChangedMixins
 
         return result switch
         {
-            null => throw new InvalidOperationException(
-                $"Could not find a ICreatesObservableForProperty for {sender.GetType()} property {propertyName}." +
-                " This should never happen, your service locator is probably broken. Please make sure you have installed " +
-                "the latest version of the ReactiveUI packages for your platform. See https://reactiveui.net/docs/getting-started/installation for guidance."),
+            null => throw new InvalidOperationException(MissingObservableForPropertyMessage(sender.GetType(), propertyName)),
             _ => result.GetNotificationForProperty(sender, expression, propertyName, beforeChange, suppressWarnings)
         };
     }

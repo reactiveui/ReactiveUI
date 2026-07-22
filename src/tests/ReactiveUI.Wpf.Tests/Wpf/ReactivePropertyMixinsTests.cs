@@ -21,14 +21,11 @@ public class ReactivePropertyMixinsTests
     /// <summary>A value that falls inside the configured valid range.</summary>
     private const int InRangeValue = 50;
 
-    /// <summary>The maximum permitted string length used in validation tests.</summary>
-    private const int MaxStringLength = 10;
-
-    /// <summary>The maximum value permitted by the range validation tests.</summary>
-    private const int MaxRange = 100;
-
     /// <summary>The text reported when a validation error occurs.</summary>
     private const string ValidationErrorText = "Error";
+
+    /// <summary>A representative valid string value used across the validation tests.</summary>
+    private const string ValidValue = "Valid";
 
     /// <summary>Verifies that a required property reports a validation error when empty.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
@@ -64,7 +61,7 @@ public class ReactivePropertyMixinsTests
     {
         // Arrange
         var viewModel = new TestViewModel();
-        viewModel.RequiredProperty.Value = "Valid";
+        viewModel.RequiredProperty.Value = ValidValue;
 
         // Act - Set to null (invalid)
         viewModel.RequiredProperty.Value = null;
@@ -234,7 +231,7 @@ public class ReactivePropertyMixinsTests
     {
         // Arrange
         var property = new ReactiveProperty<string>(default, Sequencer.Immediate, false, false);
-        _ = property.AddValidationError(x => string.IsNullOrEmpty(x) ? ValidationErrorText : null);
+        _ = property.AddValidationError(static x => string.IsNullOrEmpty(x) ? ValidationErrorText : null);
 
         var errors = new List<string?>();
         var observable = property.ObserveValidationErrors();
@@ -253,8 +250,8 @@ public class ReactivePropertyMixinsTests
     public async Task ObserveValidationErrors_WhenNoErrors_ShouldReturnNull()
     {
         // Arrange
-        var property = new ReactiveProperty<string>("Valid", Sequencer.Immediate, false, false);
-        _ = property.AddValidationError(x => string.IsNullOrEmpty(x) ? ValidationErrorText : null);
+        var property = new ReactiveProperty<string>(ValidValue, Sequencer.Immediate, false, false);
+        _ = property.AddValidationError(static x => string.IsNullOrEmpty(x) ? ValidationErrorText : null);
 
         string? lastError = "initial";
         var observable = property.ObserveValidationErrors();
@@ -287,8 +284,8 @@ public class ReactivePropertyMixinsTests
     {
         // Arrange
         var property = new ReactiveProperty<string>(default, Sequencer.Immediate, false, false);
-        _ = property.AddValidationError(x => string.IsNullOrEmpty(x) ? "Error1" : null)
-                .AddValidationError(x => string.IsNullOrEmpty(x) ? "Error2" : null);
+        _ = property.AddValidationError(static x => string.IsNullOrEmpty(x) ? "Error1" : null)
+                .AddValidationError(static x => string.IsNullOrEmpty(x) ? "Error2" : null);
 
         var errors = new List<string?>();
         var observable = property.ObserveValidationErrors();
@@ -308,7 +305,7 @@ public class ReactivePropertyMixinsTests
     {
         // Arrange
         var property = new ReactiveProperty<string>(default, Sequencer.Immediate, false, false);
-        _ = property.AddValidationError(x => string.IsNullOrEmpty(x) ? ValidationErrorText : null);
+        _ = property.AddValidationError(static x => string.IsNullOrEmpty(x) ? ValidationErrorText : null);
 
         var errorHistory = new List<string?>();
         var observable = property.ObserveValidationErrors();
@@ -316,7 +313,7 @@ public class ReactivePropertyMixinsTests
 
         // Act
         property.Value = null; // Should trigger error
-        property.Value = "Valid"; // Should clear error
+        property.Value = ValidValue; // Should clear error
 
         // Assert
         await Assert.That(errorHistory).Contains((string?)ValidationErrorText);
@@ -326,12 +323,14 @@ public class ReactivePropertyMixinsTests
     /// <summary>A view model exposing reactive properties with various validation attributes.</summary>
     private sealed class TestViewModel : ReactiveObject
     {
+        /// <summary>The maximum permitted string length used in validation tests.</summary>
+        private const int MaxStringLength = 10;
+
+        /// <summary>The maximum value permitted by the range validation tests.</summary>
+        private const int MaxRange = 100;
+
         /// <summary>Initializes a new instance of the <see cref="TestViewModel"/> class.</summary>
         /// <param name="scheduler">The scheduler used by the reactive properties.</param>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage(
-            "Major Bug",
-            "S3366:Don't expose \"this\" in constructors",
-            Justification = "OAPH/WhenAny initialization requires 'this'; single-threaded test fixture.")]
         public TestViewModel(ISequencer? scheduler = null)
         {
             scheduler ??= Sequencer.Immediate;

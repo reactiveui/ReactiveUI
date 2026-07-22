@@ -4,6 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using ReactiveUI.Tests.Utilities.Schedulers;
 using TUnit.Core.Executors;
@@ -64,7 +65,8 @@ public class PocoObservableForPropertyTests
             results.Add,
             () => completed = true);
 
-        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(150));
+        const int AdvanceMilliseconds = 150;
+        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(AdvanceMilliseconds));
 
         // Exactly 1 item (the initial value) and the observable never completes.
         using (Assert.Multiple())
@@ -200,6 +202,10 @@ public class PocoObservableForPropertyTests
         public event PropertyChangedEventHandler? PropertyChanged;
 
         /// <summary>Raises the <see cref="PropertyChanged"/> event.</summary>
+        [SuppressMessage(
+            "Design",
+            "SST2324:member is declared 'public' but its containing type is only reachable as 'private'",
+            Justification = "the public surface is required for interface/reflection binding; the containing test double is an intentionally non-public detail.")]
         public void NotifyPropertyChanged() => PropertyChanged?.Invoke(
             this,
             new(string.Empty));

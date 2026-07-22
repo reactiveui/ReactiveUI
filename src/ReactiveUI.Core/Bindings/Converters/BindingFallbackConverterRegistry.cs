@@ -35,6 +35,9 @@ namespace ReactiveUI;
 /// </remarks>
 public sealed class BindingFallbackConverterRegistry
 {
+    /// <summary>The initial capacity used for the fallback converter list.</summary>
+    private const int DefaultConverterListCapacity = 8;
+
     /// <summary>Synchronization primitive guarding mutations to the registry's internal state.</summary>
     /// <remarks>
     /// Protects updates to <see cref="_snapshot"/>. Reads resolve from the snapshot without locking.
@@ -73,7 +76,7 @@ public sealed class BindingFallbackConverterRegistry
 
         lock (_gate)
         {
-            var snap = _snapshot ?? new Snapshot(new(8));
+            var snap = _snapshot ?? new Snapshot(new(DefaultConverterListCapacity));
 
             List<IBindingFallbackConverter> newList = [.. snap.Converters, converter];
 

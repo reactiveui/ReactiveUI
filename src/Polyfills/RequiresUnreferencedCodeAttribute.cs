@@ -20,6 +20,10 @@ namespace System.Diagnostics.CodeAnalysis;
     AttributeTargets.Constructor |
     AttributeTargets.Class,
     Inherited = false)]
+[SuppressMessage(
+    "Design",
+    "SST2324:Do not declare a member more accessible than its containing type",
+    Justification = "Mirrors the shape of the corresponding BCL type (System.Diagnostics.CodeAnalysis.RequiresUnreferencedCodeAttribute); the polyfill compiles only where the BCL lacks it.")]
 internal sealed class RequiresUnreferencedCodeAttribute : Attribute
 {
     /// <summary>Initializes a new instance of the <see cref="RequiresUnreferencedCodeAttribute"/> class with the specified message.</summary>

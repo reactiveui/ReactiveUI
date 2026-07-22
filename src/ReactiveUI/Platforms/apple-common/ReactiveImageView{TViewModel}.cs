@@ -21,7 +21,7 @@ namespace ReactiveUI;
 /// (i.e. you can call RaiseAndSetIfChanged).
 /// </summary>
 /// <typeparam name="TViewModel">The view model type.</typeparam>
-public abstract class ReactiveImageView<TViewModel> : ReactiveImageView, IViewFor<TViewModel>
+public class ReactiveImageView<TViewModel> : ReactiveImageView, IViewFor<TViewModel>
     where TViewModel : class
 {
     /// <summary>Initializes a new instance of the <see cref="ReactiveImageView{TViewModel}"/> class.</summary>

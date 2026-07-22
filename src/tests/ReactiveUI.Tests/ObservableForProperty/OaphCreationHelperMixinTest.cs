@@ -73,7 +73,7 @@ public class OaphCreationHelperMixinTest
         var result = source.ObservableToProperty(
             observable,
             x => x.TestProperty,
-            () => InitialText,
+            static () => InitialText,
             scheduler: Sequencer.Immediate);
 
         await Assert.That(result).IsNotNull();
@@ -136,7 +136,7 @@ public class OaphCreationHelperMixinTest
         var result = source.ObservableToProperty(
             observable,
             nameof(source.TestProperty),
-            () => InitialText,
+            static () => InitialText,
             scheduler: Sequencer.Immediate);
 
         await Assert.That(result).IsNotNull();

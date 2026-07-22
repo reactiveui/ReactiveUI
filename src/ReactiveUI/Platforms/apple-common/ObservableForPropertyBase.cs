@@ -6,6 +6,7 @@
 using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
+using System.Runtime.InteropServices;
 using Foundation;
 using ReactiveUI.Internal;
 
@@ -28,7 +29,7 @@ namespace ReactiveUI;
 /// during construction to populate supported properties.
 /// </remarks>
 [Preserve]
-public abstract class ObservableForPropertyBase : ICreatesObservableForProperty
+public class ObservableForPropertyBase : ICreatesObservableForProperty
 {
     /// <summary>Message used for <see cref="RequiresUnreferencedCodeAttribute"/> annotations on reflection-based event hookup.</summary>
     private const string RequiresUnreferencedCodeMessage =
@@ -215,11 +216,8 @@ public abstract class ObservableForPropertyBase : ICreatesObservableForProperty
 
         lock (_gate)
         {
-            if (!_config.TryGetValue(type, out var typeProperties))
-            {
-                typeProperties = [];
-                _config[type] = typeProperties;
-            }
+            ref var typeProperties = ref CollectionsMarshal.GetValueRefOrAddDefault(_config, type, out _);
+            typeProperties ??= [];
 
             typeProperties[property] = new(affinity, createObservable);
 
@@ -293,27 +291,19 @@ public abstract class ObservableForPropertyBase : ICreatesObservableForProperty
 
 #if UIKIT
     /// <summary>Fused sink that turns a <see cref="UIControlEvent"/> into change notifications.</summary>
-    private sealed class ControlEventObservable : IObservable<IObservedChange<object, object?>>
+    /// <param name="sender">The native sender (must be a <see cref="UIControl"/>).</param>
+    /// <param name="expression">The expression associated with the observed change.</param>
+    /// <param name="evt">The control event to listen for.</param>
+    private sealed class ControlEventObservable(NSObject sender, Expression expression, UIControlEvent evt) : IObservable<IObservedChange<object, object?>>
     {
         /// <summary>The native sender that owns the control event.</summary>
-        private readonly NSObject _sender;
+        private readonly NSObject _sender = sender;
 
         /// <summary>The expression associated with the observed property change.</summary>
-        private readonly Expression _expression;
+        private readonly Expression _expression = expression;
 
         /// <summary>The control event mask to listen for.</summary>
-        private readonly UIControlEvent _evt;
-
-        /// <summary>Initializes a new instance of the <see cref="ControlEventObservable"/> class.</summary>
-        /// <param name="sender">The native sender (must be a <see cref="UIControl"/>).</param>
-        /// <param name="expression">The expression associated with the observed change.</param>
-        /// <param name="evt">The control event to listen for.</param>
-        public ControlEventObservable(NSObject sender, Expression expression, UIControlEvent evt)
-        {
-            _sender = sender;
-            _expression = expression;
-            _evt = evt;
-        }
+        private readonly UIControlEvent _evt = evt;
 
         /// <inheritdoc/>
         public IDisposable Subscribe(IObserver<IObservedChange<object, object?>> observer)
@@ -323,37 +313,29 @@ public abstract class ObservableForPropertyBase : ICreatesObservableForProperty
             var control = (UIControl)_sender;
 
             // Stable delegate allows deterministic unsubscription.
-            void Handler(object? s, EventArgs e) =>
+            EventHandler handler = (_, _) =>
                 observer.OnNext(new ObservedChange<object, object?>(_sender, _expression, default));
 
-            control.AddTarget(Handler, _evt);
-            return new ActionDisposable(() => control.RemoveTarget(Handler, _evt));
+            control.AddTarget(handler, _evt);
+            return new ActionDisposable(() => control.RemoveTarget(handler, _evt));
         }
     }
 #endif
 
     /// <summary>Fused sink that turns an <see cref="NSNotificationCenter"/> notification into change notifications.</summary>
-    private sealed class NotificationObservable : IObservable<IObservedChange<object, object?>>
+    /// <param name="sender">The native sender.</param>
+    /// <param name="expression">The expression associated with the observed change.</param>
+    /// <param name="notification">The notification name to observe.</param>
+    private sealed class NotificationObservable(NSObject sender, Expression expression, NSString notification) : IObservable<IObservedChange<object, object?>>
     {
         /// <summary>The native sender to observe notifications for.</summary>
-        private readonly NSObject _sender;
+        private readonly NSObject _sender = sender;
 
         /// <summary>The expression associated with the observed property change.</summary>
-        private readonly Expression _expression;
+        private readonly Expression _expression = expression;
 
         /// <summary>The notification name to observe.</summary>
-        private readonly NSString _notification;
-
-        /// <summary>Initializes a new instance of the <see cref="NotificationObservable"/> class.</summary>
-        /// <param name="sender">The native sender.</param>
-        /// <param name="expression">The expression associated with the observed change.</param>
-        /// <param name="notification">The notification name to observe.</param>
-        public NotificationObservable(NSObject sender, Expression expression, NSString notification)
-        {
-            _sender = sender;
-            _expression = expression;
-            _notification = notification;
-        }
+        private readonly NSString _notification = notification;
 
         /// <inheritdoc/>
         public IDisposable Subscribe(IObserver<IObservedChange<object, object?>> observer)
@@ -375,31 +357,21 @@ public abstract class ObservableForPropertyBase : ICreatesObservableForProperty
     /// for each occurrence. Equivalent to the old <c>Observable.FromEventPattern(sender, eventName).Subscribe(...)</c>
     /// two-step chain, collapsed into a single subscription.
     /// </summary>
+    /// <param name="sender">The native sender.</param>
+    /// <param name="expression">The expression associated with the observed change.</param>
+    /// <param name="eventName">The name of the CLR event to observe.</param>
     [RequiresUnreferencedCode(RequiresUnreferencedCodeMessage)]
     [RequiresDynamicCode(RequiresDynamicCodeMessage)]
-    private sealed class ReflectionEventObservable : IObservable<IObservedChange<object, object?>>
+    private sealed class ReflectionEventObservable(NSObject sender, Expression expression, string eventName) : IObservable<IObservedChange<object, object?>>
     {
         /// <summary>The native sender that owns the event.</summary>
-        private readonly NSObject _sender;
+        private readonly NSObject _sender = sender;
 
         /// <summary>The expression associated with the observed property change.</summary>
-        private readonly Expression _expression;
+        private readonly Expression _expression = expression;
 
         /// <summary>The name of the CLR event to observe.</summary>
-        private readonly string _eventName;
-
-        /// <summary>Initializes a new instance of the <see cref="ReflectionEventObservable"/> class.</summary>
-        /// <param name="sender">The native sender.</param>
-        /// <param name="expression">The expression associated with the observed change.</param>
-        /// <param name="eventName">The name of the CLR event to observe.</param>
-        [RequiresUnreferencedCode(RequiresUnreferencedCodeMessage)]
-        [RequiresDynamicCode(RequiresDynamicCodeMessage)]
-        public ReflectionEventObservable(NSObject sender, Expression expression, string eventName)
-        {
-            _sender = sender;
-            _expression = expression;
-            _eventName = eventName;
-        }
+        private readonly string _eventName = eventName;
 
         /// <inheritdoc/>
         public IDisposable Subscribe(IObserver<IObservedChange<object, object?>> observer)
@@ -419,36 +391,27 @@ public abstract class ObservableForPropertyBase : ICreatesObservableForProperty
     /// add/remove handlers and produces an <see cref="IObservedChange{TSender, TValue}"/> notification
     /// for each occurrence. The event args are discarded.
     /// </summary>
-    private sealed class NonGenericEventHandlerObservable : IObservable<IObservedChange<object, object?>>
+    /// <param name="sender">The native sender.</param>
+    /// <param name="expression">The expression associated with the observed change.</param>
+    /// <param name="addHandler">Adds the handler to the event source.</param>
+    /// <param name="removeHandler">Removes the handler from the event source.</param>
+    private sealed class NonGenericEventHandlerObservable(
+        NSObject sender,
+        Expression expression,
+        Action<EventHandler> addHandler,
+        Action<EventHandler> removeHandler) : IObservable<IObservedChange<object, object?>>
     {
         /// <summary>The native sender.</summary>
-        private readonly NSObject _sender;
+        private readonly NSObject _sender = sender;
 
         /// <summary>The expression associated with the observed property change.</summary>
-        private readonly Expression _expression;
+        private readonly Expression _expression = expression;
 
         /// <summary>Delegate that wires the handler to the event source.</summary>
-        private readonly Action<EventHandler> _addHandler;
+        private readonly Action<EventHandler> _addHandler = addHandler;
 
         /// <summary>Delegate that unwires the handler from the event source.</summary>
-        private readonly Action<EventHandler> _removeHandler;
-
-        /// <summary>Initializes a new instance of the <see cref="NonGenericEventHandlerObservable"/> class.</summary>
-        /// <param name="sender">The native sender.</param>
-        /// <param name="expression">The expression associated with the observed change.</param>
-        /// <param name="addHandler">Adds the handler to the event source.</param>
-        /// <param name="removeHandler">Removes the handler from the event source.</param>
-        public NonGenericEventHandlerObservable(
-            NSObject sender,
-            Expression expression,
-            Action<EventHandler> addHandler,
-            Action<EventHandler> removeHandler)
-        {
-            _sender = sender;
-            _expression = expression;
-            _addHandler = addHandler;
-            _removeHandler = removeHandler;
-        }
+        private readonly Action<EventHandler> _removeHandler = removeHandler;
 
         /// <inheritdoc/>
         public IDisposable Subscribe(IObserver<IObservedChange<object, object?>> observer)
@@ -456,11 +419,11 @@ public abstract class ObservableForPropertyBase : ICreatesObservableForProperty
             ArgumentExceptionHelper.ThrowIfNull(observer);
 
             // Stable handler for deterministic unsubscription.
-            void Handler(object? s, EventArgs e) =>
+            EventHandler handler = (_, _) =>
                 observer.OnNext(new ObservedChange<object, object?>(_sender, _expression, default));
 
-            _addHandler(Handler);
-            return new ActionDisposable(() => _removeHandler(Handler));
+            _addHandler(handler);
+            return new ActionDisposable(() => _removeHandler(handler));
         }
     }
 
@@ -470,37 +433,28 @@ public abstract class ObservableForPropertyBase : ICreatesObservableForProperty
     /// The event args are discarded; only the notification itself matters.
     /// </summary>
     /// <typeparam name="TEventArgs">The event argument type.</typeparam>
-    private sealed class EventHandlerObservable<TEventArgs> : IObservable<IObservedChange<object, object?>>
+    /// <param name="sender">The native sender.</param>
+    /// <param name="expression">The expression associated with the observed change.</param>
+    /// <param name="addHandler">Adds the handler to the event source.</param>
+    /// <param name="removeHandler">Removes the handler from the event source.</param>
+    private sealed class EventHandlerObservable<TEventArgs>(
+        NSObject sender,
+        Expression expression,
+        Action<EventHandler<TEventArgs>> addHandler,
+        Action<EventHandler<TEventArgs>> removeHandler) : IObservable<IObservedChange<object, object?>>
         where TEventArgs : EventArgs
     {
         /// <summary>The native sender.</summary>
-        private readonly NSObject _sender;
+        private readonly NSObject _sender = sender;
 
         /// <summary>The expression associated with the observed property change.</summary>
-        private readonly Expression _expression;
+        private readonly Expression _expression = expression;
 
         /// <summary>Delegate that wires the handler to the event source.</summary>
-        private readonly Action<EventHandler<TEventArgs>> _addHandler;
+        private readonly Action<EventHandler<TEventArgs>> _addHandler = addHandler;
 
         /// <summary>Delegate that unwires the handler from the event source.</summary>
-        private readonly Action<EventHandler<TEventArgs>> _removeHandler;
-
-        /// <summary>Initializes a new instance of the <see cref="EventHandlerObservable{TEventArgs}"/> class.</summary>
-        /// <param name="sender">The native sender.</param>
-        /// <param name="expression">The expression associated with the observed change.</param>
-        /// <param name="addHandler">Adds the handler to the event source.</param>
-        /// <param name="removeHandler">Removes the handler from the event source.</param>
-        public EventHandlerObservable(
-            NSObject sender,
-            Expression expression,
-            Action<EventHandler<TEventArgs>> addHandler,
-            Action<EventHandler<TEventArgs>> removeHandler)
-        {
-            _sender = sender;
-            _expression = expression;
-            _addHandler = addHandler;
-            _removeHandler = removeHandler;
-        }
+        private readonly Action<EventHandler<TEventArgs>> _removeHandler = removeHandler;
 
         /// <inheritdoc/>
         public IDisposable Subscribe(IObserver<IObservedChange<object, object?>> observer)
@@ -508,11 +462,11 @@ public abstract class ObservableForPropertyBase : ICreatesObservableForProperty
             ArgumentExceptionHelper.ThrowIfNull(observer);
 
             // Stable handler for deterministic unsubscription.
-            void Handler(object? s, TEventArgs e) =>
+            EventHandler<TEventArgs> handler = (_, _) =>
                 observer.OnNext(new ObservedChange<object, object?>(_sender, _expression, default));
 
-            _addHandler(Handler);
-            return new ActionDisposable(() => _removeHandler(Handler));
+            _addHandler(handler);
+            return new ActionDisposable(() => _removeHandler(handler));
         }
     }
 
@@ -528,9 +482,9 @@ public abstract class ObservableForPropertyBase : ICreatesObservableForProperty
             (Affinity, CreateObservable) = (affinity, createObservable);
 
         /// <summary>Gets the affinity score for the registration.</summary>
-        public int Affinity { get; }
+        internal int Affinity { get; }
 
         /// <summary>Gets the observable factory for the registration.</summary>
-        public Func<NSObject, Expression, IObservable<IObservedChange<object, object?>>> CreateObservable { get; }
+        internal Func<NSObject, Expression, IObservable<IObservedChange<object, object?>>> CreateObservable { get; }
     }
 }

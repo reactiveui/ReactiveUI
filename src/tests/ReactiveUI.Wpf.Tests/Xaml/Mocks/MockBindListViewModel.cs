@@ -12,22 +12,21 @@ namespace ReactiveUI.Tests.Xaml.Mocks;
 public sealed class MockBindListViewModel : ReactiveObject
 {
     /// <summary>Initializes static members of the <see cref="MockBindListViewModel"/> class.</summary>
-    static MockBindListViewModel()
-    {
+    static MockBindListViewModel() =>
         AppLocator.CurrentMutable.Register(static () => new MockBindListView(), typeof(IViewFor<MockBindListViewModel>));
-    }
 
     /// <summary>Initializes a new instance of the <see cref="MockBindListViewModel"/> class.</summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
-        "Major Code Smell",
-        "S3366:\"this\" should not be exposed from constructors",
-        Justification = "OAPH/WhenAny initialization requires 'this'; single-threaded test fixture.")]
+        "Design",
+        "SST2403:Do not let 'this' escape from a constructor",
+        Justification = "The change-notification subscription requires 'this'; single-threaded test fixture.")]
     public MockBindListViewModel()
     {
         ListItems = new(ActiveListItem);
 
         // ActiveItem tracks the last element; re-raise it whenever the source list changes.
-        ActiveListItem.CollectionChanged += (_, _) => this.RaisePropertyChanged(nameof(ActiveItem));
+        ActiveListItem.CollectionChanged += (_, _) =>
+            ((IReactiveObject)this).RaisePropertyChanged(new(nameof(ActiveItem)));
 
         SelectItem = ReactiveCommand.Create(
             (MockBindListItemViewModel item) =>

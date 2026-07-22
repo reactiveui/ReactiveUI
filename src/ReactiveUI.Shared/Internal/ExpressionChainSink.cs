@@ -114,10 +114,6 @@ internal sealed class ExpressionChainSink<TSender, TValue>(ExpressionChainParame
             _notify = parameters.Notify;
             _skipNext = parameters.SkipInitial;
             _levels = new Level[_links.Length];
-            for (var i = 0; i < _links.Length; i++)
-            {
-                _levels[i] = new(this, i, i == _links.Length - 1);
-            }
         }
 
         /// <summary>Establishes the chain from the root value.</summary>
@@ -125,6 +121,11 @@ internal sealed class ExpressionChainSink<TSender, TValue>(ExpressionChainParame
         {
             lock (_gate)
             {
+                for (var i = 0; i < _links.Length; i++)
+                {
+                    _levels[i] = new(this, i, i == _links.Length - 1);
+                }
+
                 if (_links.Length == 0)
                 {
                     return;
@@ -281,9 +282,18 @@ internal sealed class ExpressionChainSink<TSender, TValue>(ExpressionChainParame
             /// <inheritdoc/>
             public void Dispose() => _subscription.Dispose();
 
+            /// <summary>Builds the value fetcher for a link once, returning null when the member has no fetcher.</summary>
+            /// <param name="link">The member-access link.</param>
+            /// <returns>The cached fetcher, or null for an unsupported member.</returns>
+            private static Func<object?, object?[]?, object?>? GetLinkFetcher(Expression link)
+            {
+                var member = link.GetMemberInfo();
+                return member is null ? null : Reflection.GetValueFetcherForProperty(member);
+            }
+
             /// <summary>Handles a notification for this link by re-reading the value and propagating it.</summary>
             /// <param name="change">The notification (its value is read via reflection).</param>
-            public void OnNotification(IObservedChange<object?, object?> change)
+            private void OnNotification(IObservedChange<object?, object?> change)
             {
                 lock (sink._gate)
                 {
@@ -298,16 +308,7 @@ internal sealed class ExpressionChainSink<TSender, TValue>(ExpressionChainParame
 
             /// <summary>Forwards a link-subscription error to the downstream observer.</summary>
             /// <param name="error">The error to forward.</param>
-            public void ForwardError(Exception error) => sink._downstream.OnError(error);
-
-            /// <summary>Builds the value fetcher for a link once, returning null when the member has no fetcher.</summary>
-            /// <param name="link">The member-access link.</param>
-            /// <returns>The cached fetcher, or null for an unsupported member.</returns>
-            private static Func<object?, object?[]?, object?>? GetLinkFetcher(Expression link)
-            {
-                var member = link.GetMemberInfo();
-                return member is null ? null : Reflection.GetValueFetcherForProperty(member);
-            }
+            private void ForwardError(Exception error) => sink._downstream.OnError(error);
 
             /// <summary>Reads the current value of this link from a parent using the cached fetcher.</summary>
             /// <param name="parent">The object the link is read from.</param>

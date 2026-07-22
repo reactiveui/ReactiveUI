@@ -130,10 +130,10 @@ public class ReactiveObjectTests
         var expectedEventProperties = new[] { NullableIntName, NullableIntName, IsNotNullStringName };
         using (Assert.Multiple())
         {
-            await Assert.That(changing.Select(e => e.PropertyName!)).IsEquivalentTo(expectedEventProperties);
-            await Assert.That(changed.Select(e => e.PropertyName!)).IsEquivalentTo(expectedEventProperties);
-            await Assert.That(propertyChangingEvents.Select(e => e.PropertyName!)).IsEquivalentTo(expectedEventProperties);
-            await Assert.That(propertyChangedEvents.Select(e => e.PropertyName!)).IsEquivalentTo(expectedEventProperties);
+            await Assert.That(changing.Select(static e => e.PropertyName!)).IsEquivalentTo(expectedEventProperties);
+            await Assert.That(changed.Select(static e => e.PropertyName!)).IsEquivalentTo(expectedEventProperties);
+            await Assert.That(propertyChangingEvents.Select(static e => e.PropertyName!)).IsEquivalentTo(expectedEventProperties);
+            await Assert.That(propertyChangedEvents.Select(static e => e.PropertyName!)).IsEquivalentTo(expectedEventProperties);
         }
     }
 
@@ -188,7 +188,7 @@ public class ReactiveObjectTests
     {
         var fixture = new TestFixture { IsNotNullString = FooText, IsOnlyOneWord = BazText };
         var output = new List<string>();
-        _ = fixture.Changed.Where(x => x.PropertyName is not null).Select(x => x.PropertyName!).Subscribe(output.Add);
+        _ = fixture.Changed.Where(static x => x.PropertyName is not null).Select(static x => x.PropertyName!).Subscribe(output.Add);
 
         fixture.UsesExprRaiseSet = FooText;
         fixture.UsesExprRaiseSet = FooText; // This one shouldn't raise a change notification
@@ -257,7 +257,7 @@ public class ReactiveObjectTests
     {
         var fixture = new TestFixture();
         var observable = fixture.WhenAnyValue(x => x.IsOnlyOneWord).Skip(1);
-        _ = observable.Subscribe(_ => throw new InvalidOperationException("This is a test."));
+        _ = observable.Subscribe(static _ => throw new InvalidOperationException("This is a test."));
 
         _ = Assert.Throws<Exception>(() => fixture.IsOnlyOneWord = "Two Words");
     }
@@ -271,8 +271,8 @@ public class ReactiveObjectTests
         var output = new List<string>();
         var fixture = new TestFixture();
 
-        _ = fixture.Changing.Where(x => x.PropertyName is not null).Select(x => x.PropertyName!).Subscribe(outputChanging.Add);
-        _ = fixture.Changed.Where(x => x.PropertyName is not null).Select(x => x.PropertyName!).Subscribe(output.Add);
+        _ = fixture.Changing.Where(static x => x.PropertyName is not null).Select(static x => x.PropertyName!).Subscribe(outputChanging.Add);
+        _ = fixture.Changed.Where(static x => x.PropertyName is not null).Select(static x => x.PropertyName!).Subscribe(output.Add);
 
         fixture.IsNotNullString = "Foo Bar Baz";
         fixture.IsOnlyOneWord = FooText;

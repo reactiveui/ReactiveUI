@@ -78,6 +78,10 @@ public class ExpressionMixinsTests
         /// <summary>Gets the value at the specified index.</summary>
         /// <param name="index">The index.</param>
         /// <returns>An empty string.</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage(
+            "Design",
+            "SST2324:A member is declared more accessible than its containing type",
+            Justification = "Referenced by an expression tree in the enclosing test type, which requires public access; the private test double is intentional.")]
         public string this[int index] => string.Empty;
     }
 
@@ -87,6 +91,10 @@ public class ExpressionMixinsTests
         /// <summary>Gets the value at the specified index.</summary>
         /// <param name="index">The index.</param>
         /// <returns>An empty string.</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage(
+            "Design",
+            "SST2324:A member is declared more accessible than its containing type",
+            Justification = "Referenced by an expression tree in the enclosing test type, which requires public access; the private test double is intentional.")]
         public string this[int index] => string.Empty;
     }
 }

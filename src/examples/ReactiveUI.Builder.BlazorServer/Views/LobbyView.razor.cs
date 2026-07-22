@@ -3,7 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using Microsoft.AspNetCore.Components.Web;
 using ReactiveUI.Blazor;
 using ReactiveUI.Builder.BlazorServer.Models;
 using ReactiveUI.Builder.BlazorServer.ViewModels;
@@ -14,27 +13,19 @@ namespace ReactiveUI.Builder.BlazorServer.Views;
 public partial class LobbyView : ReactiveComponentBase<LobbyViewModel>
 {
     /// <summary>Handles the create-room button click by executing the view model's create command.</summary>
-    /// <param name="args">The mouse event arguments raised by the button click.</param>
     /// <returns>A task that represents the asynchronous create operation.</returns>
-    private async Task OnCreateRoomClicked(MouseEventArgs args)
+    private async Task OnCreateRoomClicked()
     {
-        if (ViewModel is null)
-        {
-            throw new ArgumentNullException(nameof(ViewModel));
-        }
+        ArgumentExceptionHelper.ThrowIfNull(ViewModel);
 
         await ViewModel.CreateRoom.Execute();
     }
 
     /// <summary>Handles the delete button click by executing the view model's delete command for the selected room.</summary>
-    /// <param name="args">The mouse event arguments raised by the button click.</param>
     /// <returns>A task that represents the asynchronous delete operation.</returns>
-    private async Task OnDeleteSelectedClicked(MouseEventArgs args)
+    private async Task OnDeleteSelectedClicked()
     {
-        if (ViewModel is null)
-        {
-            throw new ArgumentNullException(nameof(ViewModel));
-        }
+        ArgumentExceptionHelper.ThrowIfNull(ViewModel);
 
         if (ViewModel.SelectedChatRoom is null)
         {
@@ -48,10 +39,7 @@ public partial class LobbyView : ReactiveComponentBase<LobbyViewModel>
     /// <param name="room">The room that was clicked.</param>
     private void OnRoomClicked(ChatRoom room)
     {
-        if (ViewModel is null)
-        {
-            throw new ArgumentNullException(nameof(ViewModel));
-        }
+        ArgumentExceptionHelper.ThrowIfNull(ViewModel);
 
         ViewModel.SelectedChatRoom = room;
     }
@@ -61,10 +49,7 @@ public partial class LobbyView : ReactiveComponentBase<LobbyViewModel>
     /// <returns>A task that represents the asynchronous join operation.</returns>
     private async Task OnRoomDoubleClicked(ChatRoom room)
     {
-        if (ViewModel is null)
-        {
-            throw new ArgumentNullException(nameof(ViewModel));
-        }
+        ArgumentExceptionHelper.ThrowIfNull(ViewModel);
 
         await ViewModel.JoinRoom.Execute(room);
     }

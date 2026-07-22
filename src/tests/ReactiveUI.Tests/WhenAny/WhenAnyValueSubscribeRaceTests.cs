@@ -19,6 +19,9 @@ namespace ReactiveUI.Tests.WhenAny;
 /// </remarks>
 public class WhenAnyValueSubscribeRaceTests
 {
+    /// <summary>The property value written mid-race to prove the update was not lost.</summary>
+    private const string RacedWord = "raced";
+
     /// <summary>
     /// Deterministically reproduces the missed-update race using a synchronous wedge: the subscriber's
     /// initial <c>OnNext</c> mutates the source property before <c>WhenAnyValue</c> has had a chance to
@@ -42,16 +45,16 @@ public class WhenAnyValueSubscribeRaceTests
                 return;
             }
 
-            fixture.IsOnlyOneWord = "raced";
+            fixture.IsOnlyOneWord = RacedWord;
         });
 
         // Sanity check: the property actually holds the racing value.
-        await Assert.That(fixture.IsOnlyOneWord).IsEqualTo("raced");
+        await Assert.That(fixture.IsOnlyOneWord).IsEqualTo(RacedWord);
 
         // The subscriber must eventually see the racing value: either because the initial read
         // captured it, or because the PropertyChanged handler picked it up. With the bug, the
         // handler was attached after the event fired, so neither path delivered the update.
-        await Assert.That(values).Contains("raced");
+        await Assert.That(values).Contains(RacedWord);
     }
 
     /// <summary>
@@ -116,7 +119,7 @@ public class WhenAnyValueSubscribeRaceTests
                 mutatorReady.Set();
                 for (var j = 1; j <= mutationsPerIteration; j++)
                 {
-                    fixture.IsOnlyOneWord = "v" + j.ToString(CultureInfo.InvariantCulture);
+                    fixture.IsOnlyOneWord = $"v{j.ToString(CultureInfo.InvariantCulture)}";
                 }
 
                 mutatorDone.Set();
@@ -160,7 +163,7 @@ public class WhenAnyValueSubscribeRaceTests
                 }
 
                 field = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Value)));
+                PropertyChanged?.Invoke(this, new(nameof(Value)));
             }
         }
     }

@@ -4,17 +4,19 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Diagnostics.CodeAnalysis;
+using Expression = System.Linq.Expressions.Expression;
 
 namespace ReactiveUI.Tests.Bindings.Property.Mocks;
-
-using Expression = System.Linq.Expressions.Expression;
 
 /// <summary>Test mock for <see cref="IPropertyBindingExpressionCompiler"/>.</summary>
 /// <remarks>
 /// This mock provides configurable behavior for testing property binding expression compilation
 /// without requiring actual expression tree compilation.
 /// </remarks>
-[SuppressMessage("Major Code Smell", "S4018:Generic methods should provide type parameters", Justification = "Type parameter cannot be inferred.")]
+[SuppressMessage(
+    "Design",
+    "SST2324:member is declared 'public' but its containing type is only reachable as 'internal'",
+    Justification = "the public surface is required for interface/reflection binding; the containing test double is an intentionally non-public detail.")]
 internal sealed class MockPropertyBindingExpressionCompiler : IPropertyBindingExpressionCompiler
 {
     /// <summary>The configured set-then-get function returned by the compiler.</summary>
@@ -94,7 +96,7 @@ internal sealed class MockPropertyBindingExpressionCompiler : IPropertyBindingEx
         Func<Type?, Type?, Func<object?, object?, object?[]?, object?>?> getSetConverter)
         where TTarget : class
     {
-        ArgumentNullException.ThrowIfNull(target);
+        ArgumentExceptionHelper.ThrowIfNull(target);
         ArgumentNullException.ThrowIfNull(observedChanged);
         ArgumentNullException.ThrowIfNull(viewExpression);
         ArgumentNullException.ThrowIfNull(getter);
@@ -106,8 +108,8 @@ internal sealed class MockPropertyBindingExpressionCompiler : IPropertyBindingEx
 
         return observedChanged.Synchronize()
             .Select(value => setThenGet(target, value, arguments))
-            .Where(result => result.ShouldEmit)
-            .Select(result => (result.ShouldEmit, result.Value is null ? default! : (TValue)result.Value));
+            .Where(static result => result.ShouldEmit)
+            .Select(static result => (result.ShouldEmit, result.Value is null ? default! : (TValue)result.Value));
     }
 
     /// <inheritdoc/>
@@ -121,7 +123,7 @@ internal sealed class MockPropertyBindingExpressionCompiler : IPropertyBindingEx
         Func<Type?, Type?, Func<object?, object?, object?[]?, object?>?> getSetConverter)
         where TTarget : class
     {
-        ArgumentNullException.ThrowIfNull(target);
+        ArgumentExceptionHelper.ThrowIfNull(target);
         ArgumentNullException.ThrowIfNull(observedChanged);
         ArgumentNullException.ThrowIfNull(viewExpression);
         ArgumentNullException.ThrowIfNull(hostExpressionChain);
@@ -136,7 +138,7 @@ internal sealed class MockPropertyBindingExpressionCompiler : IPropertyBindingEx
 
         return observedChanged.Synchronize()
             .Select(value => setThenGet(target, value, arguments))
-            .Where(result => result.ShouldEmit)
-            .Select(result => (result.ShouldEmit, result.Value is null ? default! : (TValue)result.Value));
+            .Where(static result => result.ShouldEmit)
+            .Select(static result => (result.ShouldEmit, result.Value is null ? default! : (TValue)result.Value));
     }
 }

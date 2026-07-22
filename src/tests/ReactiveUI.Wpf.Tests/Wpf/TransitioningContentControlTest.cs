@@ -169,26 +169,20 @@ public class TransitioningContentControlTest
     /// <summary>Tests that TransitionProperty is registered.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public async Task TransitionProperty_IsRegistered()
-    {
+    public async Task TransitionProperty_IsRegistered() =>
         await Assert.That(TransitioningContentControl.TransitionProperty).IsNotNull();
-    }
 
     /// <summary>Tests that TransitionDirectionProperty is registered.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public async Task TransitionDirectionProperty_IsRegistered()
-    {
+    public async Task TransitionDirectionProperty_IsRegistered() =>
         await Assert.That(TransitioningContentControl.TransitionDirectionProperty).IsNotNull();
-    }
 
     /// <summary>Tests that TransitionDurationProperty is registered.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public async Task TransitionDurationProperty_IsRegistered()
-    {
+    public async Task TransitionDurationProperty_IsRegistered() =>
         await Assert.That(TransitioningContentControl.TransitionDurationProperty).IsNotNull();
-    }
 
     /// <summary>Tests that OverrideDpi can be set to true.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
@@ -320,7 +314,7 @@ public class TransitioningContentControlTest
         };
 
         // Force a measure and arrange to set ActualWidth/Height
-        control.Measure(new Size(ControlSize, ControlSize));
+        control.Measure(new(ControlSize, ControlSize));
         control.Arrange(new(0, 0, ControlSize, ControlSize));
 
         var storyboard = new Storyboard();
@@ -361,7 +355,7 @@ public class TransitioningContentControlTest
             Height = ControlSize
         };
 
-        control.Measure(new Size(ControlSize, ControlSize));
+        control.Measure(new(ControlSize, ControlSize));
         control.Arrange(new(0, 0, ControlSize, ControlSize));
 
         var storyboard = new Storyboard();
@@ -400,7 +394,7 @@ public class TransitioningContentControlTest
             Height = ControlSize
         };
 
-        control.Measure(new Size(ControlSize, ControlSize));
+        control.Measure(new(ControlSize, ControlSize));
         control.Arrange(new(0, 0, ControlSize, ControlSize));
 
         var storyboard = new Storyboard();
@@ -517,8 +511,8 @@ public class TransitioningContentControlTest
             Content = "Test"
         };
 
-        button.Measure(new Size(ButtonWidth, ButtonHeight));
-        button.Arrange(new Rect(0, 0, ButtonWidth, ButtonHeight));
+        button.Measure(new(ButtonWidth, ButtonHeight));
+        button.Arrange(new(0, 0, ButtonWidth, ButtonHeight));
 
         TransitioningContentControl.OverrideDpi = true;
         var bitmap = TransitioningContentControl.GetRenderTargetBitmapFromUiElement(button);
@@ -603,7 +597,7 @@ public class TransitioningContentControlTest
             Height = ControlSize
         };
 
-        control.Measure(new Size(ControlSize, ControlSize));
+        control.Measure(new(ControlSize, ControlSize));
         control.Arrange(new(0, 0, ControlSize, ControlSize));
 
         // Should not throw even without storyboards set (methods check for null)
@@ -713,7 +707,7 @@ public class TransitioningContentControlTest
             Height = ControlSize
         };
 
-        control.Measure(new Size(ControlSize, ControlSize));
+        control.Measure(new(ControlSize, ControlSize));
         control.Arrange(new(0, 0, ControlSize, ControlSize));
 
         var storyboard = new Storyboard();
@@ -734,7 +728,7 @@ public class TransitioningContentControlTest
         var control = CreateControlWithTemplate();
         control.Width = ControlSize;
         control.Height = ControlSize;
-        control.Measure(new Size(ControlSize, ControlSize));
+        control.Measure(new(ControlSize, ControlSize));
         control.Arrange(new(0, 0, ControlSize, ControlSize));
 
         // Set initial content
@@ -1043,12 +1037,12 @@ public class TransitioningContentControlTest
         var storyboard = new Storyboard();
         var opacityAnimation = new DoubleAnimation(1.0, 1.0, new Duration(TimeSpan.Zero));
         Storyboard.SetTarget(opacityAnimation, control);
-        Storyboard.SetTargetProperty(opacityAnimation, new PropertyPath(UIElement.OpacityProperty));
+        Storyboard.SetTargetProperty(opacityAnimation, new(UIElement.OpacityProperty));
         storyboard.Children.Add(opacityAnimation);
 
         var secondAnimation = new DoubleAnimation(1.0, 1.0, new Duration(TimeSpan.Zero));
         Storyboard.SetTarget(secondAnimation, control);
-        Storyboard.SetTargetProperty(secondAnimation, new PropertyPath(UIElement.OpacityProperty));
+        Storyboard.SetTargetProperty(secondAnimation, new(UIElement.OpacityProperty));
         storyboard.Children.Add(secondAnimation);
 
         var completed = false;
@@ -1083,10 +1077,12 @@ public class TransitioningContentControlTest
         {
             control.Content = newContent;
         }
-        catch (Exception ex) when (ex is NullReferenceException or InvalidOperationException)
+        catch (SystemException)
         {
             // The exception originates inside WPF's VisualStateManager when flattening target-less storyboards; the
-            // control's own transition logic has already executed by this point.
+            // control's own transition logic has already executed by this point. VisualStateManager raises either a
+            // NullReferenceException or an InvalidOperationException here depending on the WPF build, and both derive
+            // from SystemException; catching the shared base tolerates the internal failure without singling one out.
         }
     }
 
@@ -1127,10 +1123,10 @@ public class TransitioningContentControlTest
             AddTransitionStates(stateGroup);
             var groups = VisualStateManager.GetVisualStateGroups(container);
             _ = groups.Add(stateGroup);
-            control.PresentationStateGroup = groups.OfType<VisualStateGroup>().FirstOrDefault(g => g.Name == PresentationStatesName);
+            control.PresentationStateGroup = groups.OfType<VisualStateGroup>().FirstOrDefault(static g => g.Name == PresentationStatesName);
         }
 
-        control.Measure(new Size(ControlSize, ControlSize));
+        control.Measure(new(ControlSize, ControlSize));
         control.Arrange(new(0, 0, ControlSize, ControlSize));
         control.UpdateLayout();
 
@@ -1170,7 +1166,7 @@ public class TransitioningContentControlTest
 
             // Manually update the PresentationStateGroup property since OnApplyTemplate already ran
             // Get the first group with name "PresentationStates"
-            control.PresentationStateGroup = groups.OfType<VisualStateGroup>().FirstOrDefault(g => g.Name == PresentationStatesName);
+            control.PresentationStateGroup = groups.OfType<VisualStateGroup>().FirstOrDefault(static g => g.Name == PresentationStatesName);
         }
 
         return control;

@@ -11,10 +11,22 @@
     <IsTestProject>true</IsTestProject>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <!--
+      BL0006: RenderTree types are not recommended for use outside of the Blazor framework. Driving a component
+      through its real render and activation lifecycle in a test requires subclassing Renderer and overriding
+      UpdateDisplayAsync(in RenderBatch); there is no other API to host a root component. This warning fires solely
+      in the BlazorTestContext / BlazorTestRenderer harness and is scoped to this test project alone.
+    -->
+    <NoWarn>$(NoWarn);BL0006</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="bunit"/>
+    <!-- Concrete DI container (BuildServiceProvider) for the Blazor test host. The DependencyInjection.Abstractions
+         that Microsoft.AspNetCore.Components brings in transitively does not include the container implementation. -->
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection"/>
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\ReactiveUI.Blazor\ReactiveUI.Blazor.csproj"/>
     <ProjectReference Include="..\ReactiveUI.Test.Utilities\ReactiveUI.Test.Utilities.csproj"/>
   </ItemGroup>

@@ -146,7 +146,7 @@ public class CreatesCommandBindingViaEventTests
     {
         var binder = new CreatesCommandBindingViaEvent();
         var target = new object();
-        var command = ReactiveCommand.Create(() => { }, outputScheduler: Sequencer.Immediate);
+        var command = ReactiveCommand.Create(static () => { }, outputScheduler: Sequencer.Immediate);
 
         _ = Assert.Throws<Exception>(() =>
             binder.BindCommandToObject(command, target, Signal.Emit<object?>(null)));
@@ -157,7 +157,7 @@ public class CreatesCommandBindingViaEventTests
     public void BindCommandToObject_WithNullTarget_Throws()
     {
         var binder = new CreatesCommandBindingViaEvent();
-        var command = ReactiveCommand.Create(() => { }, outputScheduler: Sequencer.Immediate);
+        var command = ReactiveCommand.Create(static () => { }, outputScheduler: Sequencer.Immediate);
 
         _ = Assert.Throws<ArgumentNullException>(() =>
             binder.BindCommandToObject<ClickableControl>(command, null, Signal.Emit<object?>(null)));
@@ -205,10 +205,6 @@ public class CreatesCommandBindingViaEventTests
     /// <summary>Verifies that the affinity check returns 3 for a target exposing a Click event.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
-    [SuppressMessage(
-        "Major Code Smell",
-        "S4144:Methods should not have identical implementations",
-        Justification = "Intentional duplicate test scenario.")]
     public async Task GetAffinityForObject_WithClickEvent_Returns3()
     {
         var binder = new CreatesCommandBindingViaEvent();
@@ -219,10 +215,6 @@ public class CreatesCommandBindingViaEventTests
     /// <summary>Verifies that the affinity check returns 5 when an event target is requested.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
-    [SuppressMessage(
-        "Major Code Smell",
-        "S4144:Methods should not have identical implementations",
-        Justification = "Intentional duplicate test scenario.")]
     public async Task GetAffinityForObject_WithEventTarget_Returns5()
     {
         var binder = new CreatesCommandBindingViaEvent();
@@ -288,7 +280,7 @@ public class CreatesCommandBindingViaEventTests
     {
         var binder = new CreatesCommandBindingViaEvent();
         var target = new ClickableControl();
-        var command = ReactiveCommand.Create(() => { }, outputScheduler: Sequencer.Immediate);
+        var command = ReactiveCommand.Create(static () => { }, outputScheduler: Sequencer.Immediate);
 
         _ = Assert.Throws<ArgumentNullException>(() =>
             binder.BindCommandToObject<ClickableControl, EventArgs>(
@@ -304,7 +296,7 @@ public class CreatesCommandBindingViaEventTests
     {
         var binder = new CreatesCommandBindingViaEvent();
         var target = new ClickableControl();
-        var command = ReactiveCommand.Create(() => { }, outputScheduler: Sequencer.Immediate);
+        var command = ReactiveCommand.Create(static () => { }, outputScheduler: Sequencer.Immediate);
 
         _ = Assert.Throws<ArgumentException>(() =>
             binder.BindCommandToObject<ClickableControl, EventArgs>(
@@ -407,15 +399,15 @@ public class CreatesCommandBindingViaEventTests
     public void BindCommandToObject_WithAddRemoveHandlers_NullTarget_Throws()
     {
         var binder = new CreatesCommandBindingViaEvent();
-        var command = ReactiveCommand.Create(() => { }, outputScheduler: Sequencer.Immediate);
+        var command = ReactiveCommand.Create(static () => { }, outputScheduler: Sequencer.Immediate);
 
         _ = Assert.Throws<ArgumentNullException>(() =>
             binder.BindCommandToObject<ClickableControlWithGenericEvent, EventArgs>(
                 command,
                 null,
                 Signal.Emit<object?>(null),
-                handler => { },
-                handler => { }));
+                static handler => { },
+                static handler => { }));
     }
 
     /// <summary>Verifies that an add/remove handler binding with a null add handler throws an <see cref="ArgumentNullException"/>.</summary>
@@ -424,7 +416,7 @@ public class CreatesCommandBindingViaEventTests
     {
         var binder = new CreatesCommandBindingViaEvent();
         var target = new ClickableControlWithGenericEvent();
-        var command = ReactiveCommand.Create(() => { }, outputScheduler: Sequencer.Immediate);
+        var command = ReactiveCommand.Create(static () => { }, outputScheduler: Sequencer.Immediate);
 
         _ = Assert.Throws<ArgumentNullException>(() =>
             binder.BindCommandToObject<ClickableControlWithGenericEvent, EventArgs>(
@@ -432,7 +424,7 @@ public class CreatesCommandBindingViaEventTests
                 target,
                 Signal.Emit<object?>(null),
                 null!,
-                handler => { }));
+                static handler => { }));
     }
 
     /// <summary>Verifies that an add/remove handler binding with a null remove handler throws an <see cref="ArgumentNullException"/>.</summary>
@@ -441,14 +433,14 @@ public class CreatesCommandBindingViaEventTests
     {
         var binder = new CreatesCommandBindingViaEvent();
         var target = new ClickableControlWithGenericEvent();
-        var command = ReactiveCommand.Create(() => { }, outputScheduler: Sequencer.Immediate);
+        var command = ReactiveCommand.Create(static () => { }, outputScheduler: Sequencer.Immediate);
 
         _ = Assert.Throws<ArgumentNullException>(() =>
             binder.BindCommandToObject<ClickableControlWithGenericEvent, EventArgs>(
                 command,
                 target,
                 Signal.Emit<object?>(null),
-                handler => { },
+                static handler => { },
                 null!));
     }
 
@@ -532,6 +524,11 @@ public class CreatesCommandBindingViaEventTests
     private sealed class MouseUpControl
     {
         /// <summary>Occurs when the mouse button is released over the control.</summary>
+        [SuppressMessage(
+            "Design",
+            "SST2324:Public member unreachable outside the assembly",
+            Justification = "the public surface is required for interface/reflection binding; the containing "
+                + "test double is an intentionally non-public detail.")]
         public event EventHandler? MouseUp;
 
         /// <summary>Raises the <see cref="MouseUp"/> event.</summary>
@@ -542,6 +539,11 @@ public class CreatesCommandBindingViaEventTests
     private sealed class TouchUpInsideControl
     {
         /// <summary>Occurs when a touch is released inside the control.</summary>
+        [SuppressMessage(
+            "Design",
+            "SST2324:Public member unreachable outside the assembly",
+            Justification = "the public surface is required for interface/reflection binding; the containing "
+                + "test double is an intentionally non-public detail.")]
         public event EventHandler? TouchUpInside;
 
         /// <summary>Raises the <see cref="TouchUpInside"/> event.</summary>

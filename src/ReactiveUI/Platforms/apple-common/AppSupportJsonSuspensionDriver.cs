@@ -79,7 +79,7 @@ public sealed class AppSupportJsonSuspensionDriver : ISuspensionDriver
             using var stream = File.OpenRead(path);
 
             var result = JsonSerializer.Deserialize(stream, typeInfo);
-            return Signal.Emit<T?>(result);
+            return Signal.Emit(result);
         }
         catch (Exception ex)
         {
@@ -99,7 +99,7 @@ public sealed class AppSupportJsonSuspensionDriver : ISuspensionDriver
 
             // Reflection-based: object deserialization typically requires metadata at runtime.
             var result = JsonSerializer.Deserialize<object>(stream);
-            return Signal.Emit<object?>(result);
+            return Signal.Emit(result);
         }
         catch (Exception ex)
         {

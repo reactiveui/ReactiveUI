@@ -22,7 +22,7 @@ public sealed class TerminalViewModel : ReactiveObject, IRoutableViewModel
     private const long MaximumAmountCents = 9_999_999;
 
     /// <summary>The number of cents in one currency unit.</summary>
-    private const decimal CentsPerUnit = 100m;
+    private const decimal CentsPerUnit = 100M;
 
     /// <summary>The base used when shifting digits onto the entered amount.</summary>
     private const long Radix = 10;
@@ -43,9 +43,9 @@ public sealed class TerminalViewModel : ReactiveObject, IRoutableViewModel
     /// <param name="hostScreen">The screen hosting this view model.</param>
     /// <param name="processor">The payment processor used to authorize transactions.</param>
     [SuppressMessage(
-        "Major Code Smell",
-        "S3366:Make sure the use of this in constructors is safe",
-        Justification = "Single-threaded WPF view model fully constructed before the reactive pipelines run.")]
+        "Correctness",
+        "SST2403:Do not let 'this' escape from a constructor",
+        Justification = "Single-threaded WPF sample view model; ToProperty binds the OAPH to this after all fields are set.")]
     public TerminalViewModel(IScreen hostScreen, IPaymentProcessor processor)
     {
         ArgumentExceptionHelper.ThrowIfNull(processor);

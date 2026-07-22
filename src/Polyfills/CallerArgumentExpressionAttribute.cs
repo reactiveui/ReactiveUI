@@ -16,6 +16,10 @@ namespace System.Runtime.CompilerServices;
 [ExcludeFromCodeCoverage]
 [DebuggerNonUserCode]
 [AttributeUsage(AttributeTargets.Parameter)]
+[SuppressMessage(
+    "Design",
+    "SST2324:Do not declare a member more accessible than its containing type",
+    Justification = "Mirrors the shape of the corresponding BCL type (System.Runtime.CompilerServices.CallerArgumentExpressionAttribute); the polyfill compiles only where the BCL lacks it.")]
 internal sealed class CallerArgumentExpressionAttribute : Attribute
 {
     /// <summary>Initializes a new instance of the <see cref="CallerArgumentExpressionAttribute"/> class.</summary>

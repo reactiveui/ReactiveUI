@@ -3,7 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Diagnostics.CodeAnalysis;
 using ReactiveUI.Tests.ReactiveObjects.Mocks;
 
 namespace ReactiveUI.Tests.WhenAny;
@@ -14,10 +13,6 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
     /// <summary>WhenAnyValue with ten parameters (values projector).</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
-    [SuppressMessage(
-        "Major Code Smell",
-        "S107:Methods should not have too many parameters",
-        Justification = "Selector arity mirrors the variadic production WhenAny API.")]
     public async Task WhenAnyValueWith10ParamertersReturnsValues()
     {
         var fixture = new WhenAnyTestFixture();
@@ -35,7 +30,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
             x => x.Value8,
             x => x.Value9,
             x => x.Value10,
-            (v1, v2, v3, v4, v5, v6, v7, v8, v9, v10) => (v1, v2, v3, v4, v5, v6, v7, v8, v9, v10)).Select(tuple =>
+            static (v1, v2, v3, v4, v5, v6, v7, v8, v9, v10) => (v1, v2, v3, v4, v5, v6, v7, v8, v9, v10)).Select(static tuple =>
         {
             var (value1, value2, value3, value4, value5, value6, value7, value8, value9, value10) = tuple;
 
@@ -48,10 +43,6 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
     /// <summary>WhenAnyValue with eleven parameters (values projector).</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
-    [SuppressMessage(
-        "Major Code Smell",
-        "S107:Methods should not have too many parameters",
-        Justification = "Selector arity mirrors the variadic production WhenAny API.")]
     public async Task WhenAnyValueWith11ParamertersReturnsValues()
     {
         var fixture = new WhenAnyTestFixture();
@@ -70,8 +61,8 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
             x => x.Value9,
             x => x.Value10,
             x => x.Value11,
-            (v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11) =>
-                (v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11)).Select(tuple =>
+            static (v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11) =>
+                (v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11)).Select(static tuple =>
         {
             var (value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11) =
                 tuple;
@@ -86,10 +77,6 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
     /// <summary>WhenAnyValue with twelve parameters (values projector).</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
-    [SuppressMessage(
-        "Major Code Smell",
-        "S107:Methods should not have too many parameters",
-        Justification = "Selector arity mirrors the variadic production WhenAny API.")]
     public async Task WhenAnyValueWith12ParamertersReturnsValues()
     {
         var fixture = new WhenAnyTestFixture();
@@ -109,8 +96,8 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
             x => x.Value10,
             x => x.Value11,
             x => x.Value12,
-            (v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12) =>
-                (v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12)).Select(tuple =>
+            static (v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12) =>
+                (v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12)).Select(static tuple =>
         {
             var (value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11,
                 value12) = tuple;
@@ -201,7 +188,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
 
         _ = fixture.WhenAnyValue(
             x => x.Value1,
-            x => x.Value2).Select(tuple =>
+            x => x.Value2).Select(static tuple =>
         {
             var (value1, value2) = tuple;
 
@@ -223,7 +210,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
         _ = fixture.WhenAnyValue(
             x => x.Value1,
             x => x.Value2,
-            (v1, v2) => (v1, v2)).Select(tuple =>
+            static (v1, v2) => (v1, v2)).Select(static tuple =>
         {
             var (value1, value2) = tuple;
 
@@ -245,7 +232,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
         _ = fixture.WhenAnyValue(
             x => x.Value1,
             x => x.Value2,
-            x => x.Value3).Select(tuple =>
+            x => x.Value3).Select(static tuple =>
         {
             var (value1, value2, value3) = tuple;
 
@@ -268,7 +255,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
             x => x.Value1,
             x => x.Value2,
             x => x.Value3,
-            (v1, v2, v3) => (v1, v2, v3)).Select(tuple =>
+            static (v1, v2, v3) => (v1, v2, v3)).Select(static tuple =>
         {
             var (value1, value2, value3) = tuple;
 
@@ -291,7 +278,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
             x => x.Value1,
             x => x.Value2,
             x => x.Value3,
-            x => x.Value4).Select(tuple =>
+            x => x.Value4).Select(static tuple =>
         {
             var (value1, value2, value3, value4) = tuple;
 
@@ -315,7 +302,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
             x => x.Value2,
             x => x.Value3,
             x => x.Value4,
-            (v1, v2, v3, v4) => (v1, v2, v3, v4)).Select(tuple =>
+            static (v1, v2, v3, v4) => (v1, v2, v3, v4)).Select(static tuple =>
         {
             var (value1, value2, value3, value4) = tuple;
 
@@ -339,7 +326,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
             x => x.Value2,
             x => x.Value3,
             x => x.Value4,
-            x => x.Value5).Select(tuple =>
+            x => x.Value5).Select(static tuple =>
         {
             var (value1, value2, value3, value4, value5) = tuple;
 
@@ -364,7 +351,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
             x => x.Value3,
             x => x.Value4,
             x => x.Value5,
-            (v1, v2, v3, v4, v5) => (v1, v2, v3, v4, v5)).Select(tuple =>
+            static (v1, v2, v3, v4, v5) => (v1, v2, v3, v4, v5)).Select(static tuple =>
         {
             var (value1, value2, value3, value4, value5) = tuple;
 
@@ -389,7 +376,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
             x => x.Value3,
             x => x.Value4,
             x => x.Value5,
-            x => x.Value6).Select(tuple =>
+            x => x.Value6).Select(static tuple =>
         {
             var (value1, value2, value3, value4, value5, value6) = tuple;
 
@@ -415,7 +402,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
             x => x.Value4,
             x => x.Value5,
             x => x.Value6,
-            (v1, v2, v3, v4, v5, v6) => (v1, v2, v3, v4, v5, v6)).Select(tuple =>
+            static (v1, v2, v3, v4, v5, v6) => (v1, v2, v3, v4, v5, v6)).Select(static tuple =>
         {
             var (value1, value2, value3, value4, value5, value6) = tuple;
 
@@ -441,7 +428,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
             x => x.Value4,
             x => x.Value5,
             x => x.Value6,
-            x => x.Value7).Select(tuple =>
+            x => x.Value7).Select(static tuple =>
         {
             var (value1, value2, value3, value4, value5, value6, value7) = tuple;
 
@@ -468,7 +455,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
             x => x.Value5,
             x => x.Value6,
             x => x.Value7,
-            (v1, v2, v3, v4, v5, v6, v7) => (v1, v2, v3, v4, v5, v6, v7)).Select(tuple =>
+            static (v1, v2, v3, v4, v5, v6, v7) => (v1, v2, v3, v4, v5, v6, v7)).Select(static tuple =>
         {
             var (value1, value2, value3, value4, value5, value6, value7) = tuple;
 
@@ -481,10 +468,6 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
     /// <summary>WhenAnyValue with eight parameters (values projector).</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
-    [SuppressMessage(
-        "Major Code Smell",
-        "S107:Methods should not have too many parameters",
-        Justification = "Selector arity mirrors the variadic production WhenAny API.")]
     public async Task WhenAnyValueWith8ParamertersReturnsValues()
     {
         var fixture = new WhenAnyTestFixture();
@@ -500,7 +483,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
             x => x.Value6,
             x => x.Value7,
             x => x.Value8,
-            (v1, v2, v3, v4, v5, v6, v7, v8) => (v1, v2, v3, v4, v5, v6, v7, v8)).Select(tuple =>
+            static (v1, v2, v3, v4, v5, v6, v7, v8) => (v1, v2, v3, v4, v5, v6, v7, v8)).Select(static tuple =>
         {
             var (value1, value2, value3, value4, value5, value6, value7, value8) = tuple;
 
@@ -513,10 +496,6 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
     /// <summary>WhenAnyValue with nine parameters (values projector).</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
-    [SuppressMessage(
-        "Major Code Smell",
-        "S107:Methods should not have too many parameters",
-        Justification = "Selector arity mirrors the variadic production WhenAny API.")]
     public async Task WhenAnyValueWith9ParamertersReturnsValues()
     {
         var fixture = new WhenAnyTestFixture();
@@ -533,7 +512,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
             x => x.Value7,
             x => x.Value8,
             x => x.Value9,
-            (v1, v2, v3, v4, v5, v6, v7, v8, v9) => (v1, v2, v3, v4, v5, v6, v7, v8, v9)).Select(tuple =>
+            static (v1, v2, v3, v4, v5, v6, v7, v8, v9) => (v1, v2, v3, v4, v5, v6, v7, v8, v9)).Select(static tuple =>
         {
             var (value1, value2, value3, value4, value5, value6, value7, value8, value9) = tuple;
 

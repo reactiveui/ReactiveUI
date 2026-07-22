@@ -42,6 +42,9 @@ public class CombinedReactiveCommand<TParam, TResult> : ReactiveCommandBase<TPar
     /// <summary>Subscription that observes (and discards) the inner command's exceptions to keep them handled.</summary>
     private readonly IDisposable _innerExceptionsSubscription;
 
+    /// <summary>The merged exception stream surfaced by <see cref="ThrownExceptions"/>.</summary>
+    private readonly MergedExceptionsObservable _thrownExceptions;
+
     /// <summary>Initializes a new instance of the <see cref="CombinedReactiveCommand{TParam, TResult}"/> class using the default output scheduler.</summary>
     /// <param name="childCommands">The child commands which will be executed.</param>
     /// <param name="canExecute">An observable indicating when the command can be executed.</param>
@@ -128,10 +131,10 @@ public class CombinedReactiveCommand<TParam, TResult> : ReactiveCommandBase<TPar
 
         exceptionSources[childCommandsArray.Length] = new CanExecuteFailureObservable(parentGate);
 
-        ThrownExceptions = new MergedExceptionsObservable(exceptionSources);
+        _thrownExceptions = new(exceptionSources);
         _innerExceptionsSubscription = _innerCommand.ThrownExceptions.Subscribe(new DelegateObserver<Exception>(static _ => { }));
 
-        _canExecuteSubscription = CanExecute.Subscribe(new DelegateObserver<bool>(OnCanExecuteChanged));
+        _canExecuteSubscription = _innerCommand.CanExecute.Subscribe(new DelegateObserver<bool>(OnCanExecuteChanged));
     }
 
     /// <inheritdoc/>
@@ -141,7 +144,7 @@ public class CombinedReactiveCommand<TParam, TResult> : ReactiveCommandBase<TPar
     public override IObservable<bool> IsExecuting => _innerCommand.IsExecuting;
 
     /// <inheritdoc/>
-    public override IObservable<Exception> ThrownExceptions { get; }
+    public override IObservable<Exception> ThrownExceptions => _thrownExceptions;
 
     /// <inheritdoc/>
     public override IDisposable Subscribe(IObserver<IList<TResult>> observer) => _innerCommand.Subscribe(observer);
@@ -170,17 +173,19 @@ public class CombinedReactiveCommand<TParam, TResult> : ReactiveCommandBase<TPar
     /// them are currently true. Specialised to the combined command; no generic combine-latest operator.
     /// </summary>
     /// <param name="sources">The parent gate followed by each child command's <c>CanExecute</c>.</param>
-    private sealed class AllTrueCanExecuteObservable(IObservable<bool>[] sources) : IObservable<bool>
+    internal sealed class AllTrueCanExecuteObservable(IObservable<bool>[] sources) : IObservable<bool>
     {
         /// <inheritdoc/>
         public IDisposable Subscribe(IObserver<bool> observer)
         {
             ArgumentExceptionHelper.ThrowIfNull(observer);
-            return new Sink(observer, sources);
+            var sink = new Sink(observer, sources);
+            sink.Run();
+            return sink;
         }
 
         /// <summary>Tracks the latest value of each source and emits their all-true when every source has reported.</summary>
-        private sealed class Sink : IDisposable
+        internal sealed class Sink : IDisposable
         {
             /// <summary>Guards the latest values and the arrival/completion counters.</summary>
 #if NET9_0_OR_GREATER
@@ -191,6 +196,9 @@ public class CombinedReactiveCommand<TParam, TResult> : ReactiveCommandBase<TPar
 
             /// <summary>The observer receiving the combined value.</summary>
             private readonly IObserver<bool> _downstream;
+
+            /// <summary>The sources to combine.</summary>
+            private readonly IObservable<bool>[] _sources;
 
             /// <summary>The latest value reported by each source.</summary>
             private readonly bool[] _latest;
@@ -210,19 +218,16 @@ public class CombinedReactiveCommand<TParam, TResult> : ReactiveCommandBase<TPar
             /// <summary>Whether the downstream has terminated.</summary>
             private bool _stopped;
 
-            /// <summary>Initializes a new instance of the <see cref="Sink"/> class and subscribes to every source.</summary>
+            /// <summary>Initializes a new instance of the <see cref="Sink"/> class.</summary>
             /// <param name="downstream">The observer receiving the combined value.</param>
             /// <param name="sources">The sources to combine.</param>
             public Sink(IObserver<bool> downstream, IObservable<bool>[] sources)
             {
                 _downstream = downstream;
+                _sources = sources;
                 _latest = new bool[sources.Length];
                 _has = new bool[sources.Length];
                 _subscriptions = new IDisposable?[sources.Length];
-                for (var i = 0; i < sources.Length; i++)
-                {
-                    _subscriptions[i] = sources[i].Subscribe(new Element(this, i));
-                }
             }
 
             /// <inheritdoc/>
@@ -231,6 +236,15 @@ public class CombinedReactiveCommand<TParam, TResult> : ReactiveCommandBase<TPar
                 for (var i = 0; i < _subscriptions.Length; i++)
                 {
                     _subscriptions[i]?.Dispose();
+                }
+            }
+
+            /// <summary>Subscribes to every source, driving the combined value.</summary>
+            internal void Run()
+            {
+                for (var i = 0; i < _sources.Length; i++)
+                {
+                    _subscriptions[i] = _sources[i].Subscribe(new Element(this, i));
                 }
             }
 
@@ -295,7 +309,13 @@ public class CombinedReactiveCommand<TParam, TResult> : ReactiveCommandBase<TPar
             {
                 lock (_gate)
                 {
-                    if (_stopped || ++_doneCount < _latest.Length)
+                    if (_stopped)
+                    {
+                        return;
+                    }
+
+                    _doneCount++;
+                    if (_doneCount < _latest.Length)
                     {
                         return;
                     }
@@ -328,17 +348,19 @@ public class CombinedReactiveCommand<TParam, TResult> : ReactiveCommandBase<TPar
     /// value. Specialised to the combined command; no generic combine-latest operator.
     /// </summary>
     /// <param name="sources">The in-flight execution of each child command.</param>
-    private sealed class CombinedResultsObservable(IObservable<TResult>[] sources) : IObservable<IList<TResult>>
+    internal sealed class CombinedResultsObservable(IObservable<TResult>[] sources) : IObservable<IList<TResult>>
     {
         /// <inheritdoc/>
         public IDisposable Subscribe(IObserver<IList<TResult>> observer)
         {
             ArgumentExceptionHelper.ThrowIfNull(observer);
-            return new Sink(observer, sources);
+            var sink = new Sink(observer, sources);
+            sink.Run();
+            return sink;
         }
 
         /// <summary>Tracks the latest result of each child and emits their list once every child has reported.</summary>
-        private sealed class Sink : IDisposable
+        internal sealed class Sink : IDisposable
         {
             /// <summary>Guards the latest results and the arrival/completion counters.</summary>
 #if NET9_0_OR_GREATER
@@ -349,6 +371,9 @@ public class CombinedReactiveCommand<TParam, TResult> : ReactiveCommandBase<TPar
 
             /// <summary>The observer receiving the combined list.</summary>
             private readonly IObserver<IList<TResult>> _downstream;
+
+            /// <summary>The child executions to combine.</summary>
+            private readonly IObservable<TResult>[] _sources;
 
             /// <summary>The latest result reported by each child.</summary>
             private readonly TResult[] _latest;
@@ -368,19 +393,16 @@ public class CombinedReactiveCommand<TParam, TResult> : ReactiveCommandBase<TPar
             /// <summary>Whether the downstream has terminated.</summary>
             private bool _stopped;
 
-            /// <summary>Initializes a new instance of the <see cref="Sink"/> class and subscribes to every child execution.</summary>
+            /// <summary>Initializes a new instance of the <see cref="Sink"/> class.</summary>
             /// <param name="downstream">The observer receiving the combined list.</param>
             /// <param name="sources">The child executions to combine.</param>
             public Sink(IObserver<IList<TResult>> downstream, IObservable<TResult>[] sources)
             {
                 _downstream = downstream;
+                _sources = sources;
                 _latest = new TResult[sources.Length];
                 _has = new bool[sources.Length];
                 _subscriptions = new IDisposable?[sources.Length];
-                for (var i = 0; i < sources.Length; i++)
-                {
-                    _subscriptions[i] = sources[i].Subscribe(new Element(this, i));
-                }
             }
 
             /// <inheritdoc/>
@@ -389,6 +411,15 @@ public class CombinedReactiveCommand<TParam, TResult> : ReactiveCommandBase<TPar
                 for (var i = 0; i < _subscriptions.Length; i++)
                 {
                     _subscriptions[i]?.Dispose();
+                }
+            }
+
+            /// <summary>Subscribes to every child execution, driving the combined list.</summary>
+            internal void Run()
+            {
+                for (var i = 0; i < _sources.Length; i++)
+                {
+                    _subscriptions[i] = _sources[i].Subscribe(new Element(this, i));
                 }
             }
 
@@ -445,7 +476,13 @@ public class CombinedReactiveCommand<TParam, TResult> : ReactiveCommandBase<TPar
             {
                 lock (_gate)
                 {
-                    if (_stopped || ++_doneCount < _latest.Length)
+                    if (_stopped)
+                    {
+                        return;
+                    }
+
+                    _doneCount++;
+                    if (_doneCount < _latest.Length)
                     {
                         return;
                     }
@@ -478,7 +515,7 @@ public class CombinedReactiveCommand<TParam, TResult> : ReactiveCommandBase<TPar
     /// completion. Used so a parent-gate error reaches the combined command's exception stream once.
     /// </summary>
     /// <param name="source">The parent CanExecute gate to observe for failure.</param>
-    private sealed class CanExecuteFailureObservable(IObservable<bool> source) : IObservable<Exception>
+    internal sealed class CanExecuteFailureObservable(IObservable<bool> source) : IObservable<Exception>
     {
         /// <inheritdoc/>
         public IDisposable Subscribe(IObserver<Exception> observer)
@@ -513,17 +550,19 @@ public class CombinedReactiveCommand<TParam, TResult> : ReactiveCommandBase<TPar
     /// to the combined command; no generic merge operator.
     /// </summary>
     /// <param name="sources">The child exception streams and the parent-gate failure stream.</param>
-    private sealed class MergedExceptionsObservable(IObservable<Exception>[] sources) : IObservable<Exception>
+    internal sealed class MergedExceptionsObservable(IObservable<Exception>[] sources) : IObservable<Exception>
     {
         /// <inheritdoc/>
         public IDisposable Subscribe(IObserver<Exception> observer)
         {
             ArgumentExceptionHelper.ThrowIfNull(observer);
-            return new Sink(observer, sources);
+            var sink = new Sink(observer, sources);
+            sink.Run();
+            return sink;
         }
 
         /// <summary>Forwards every source value and completes once every source has completed.</summary>
-        private sealed class Sink : IDisposable
+        internal sealed class Sink : IDisposable
         {
             /// <summary>Guards downstream delivery and the completion counter.</summary>
 #if NET9_0_OR_GREATER
@@ -534,6 +573,9 @@ public class CombinedReactiveCommand<TParam, TResult> : ReactiveCommandBase<TPar
 
             /// <summary>The observer receiving the merged exceptions.</summary>
             private readonly IObserver<Exception> _downstream;
+
+            /// <summary>The exception streams to merge.</summary>
+            private readonly IObservable<Exception>[] _sources;
 
             /// <summary>The subscriptions to each source.</summary>
             private readonly IDisposable?[] _subscriptions;
@@ -547,18 +589,15 @@ public class CombinedReactiveCommand<TParam, TResult> : ReactiveCommandBase<TPar
             /// <summary>Whether the downstream has terminated.</summary>
             private bool _stopped;
 
-            /// <summary>Initializes a new instance of the <see cref="Sink"/> class and subscribes to every source.</summary>
+            /// <summary>Initializes a new instance of the <see cref="Sink"/> class.</summary>
             /// <param name="downstream">The observer receiving the merged exceptions.</param>
             /// <param name="sources">The exception streams to merge.</param>
             public Sink(IObserver<Exception> downstream, IObservable<Exception>[] sources)
             {
                 _downstream = downstream;
+                _sources = sources;
                 _count = sources.Length;
                 _subscriptions = new IDisposable?[sources.Length];
-                for (var i = 0; i < sources.Length; i++)
-                {
-                    _subscriptions[i] = sources[i].Subscribe(new Element(this));
-                }
             }
 
             /// <inheritdoc/>
@@ -567,6 +606,15 @@ public class CombinedReactiveCommand<TParam, TResult> : ReactiveCommandBase<TPar
                 for (var i = 0; i < _subscriptions.Length; i++)
                 {
                     _subscriptions[i]?.Dispose();
+                }
+            }
+
+            /// <summary>Subscribes to every source, forwarding merged exceptions.</summary>
+            internal void Run()
+            {
+                for (var i = 0; i < _sources.Length; i++)
+                {
+                    _subscriptions[i] = _sources[i].Subscribe(new Element(this));
                 }
             }
 
@@ -607,7 +655,13 @@ public class CombinedReactiveCommand<TParam, TResult> : ReactiveCommandBase<TPar
             {
                 lock (_gate)
                 {
-                    if (_stopped || ++_doneCount < _count)
+                    if (_stopped)
+                    {
+                        return;
+                    }
+
+                    _doneCount++;
+                    if (_doneCount < _count)
                     {
                         return;
                     }

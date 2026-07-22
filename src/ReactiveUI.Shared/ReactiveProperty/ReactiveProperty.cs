@@ -152,10 +152,6 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
     /// notification.</remarks>
     [DataMember]
     [JsonInclude]
-    [SuppressMessage(
-        "Critical Bug",
-        "S4275:Getters and setters should access the expected fields",
-        Justification = "Setter writes _value via SetValue().")]
     public T? Value
     {
         get => _value;
@@ -280,7 +276,7 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
                 if (lastHasErrors != currentHasErrors)
                 {
                     _ = _scheduler.ScheduleOrInline(() =>
-                        this.RaisePropertyChanged(SingletonPropertyChangedEventArgs.HasErrors.PropertyName));
+                        this.RaisingPropertyChanged(SingletonPropertyChangedEventArgs.HasErrors.PropertyName!));
                 }
 
                 _errorChanged.Value.OnNext(x);
@@ -410,7 +406,7 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
     {
         SetValue(_value);
         _valueRefereshed.OnNext(_value);
-        this.RaisePropertyChanged(nameof(Value));
+        this.RaisingPropertyChanged(nameof(Value));
     }
 
     /// <summary>Gets the validation errors for the specified property or for the entire object.</summary>
@@ -529,7 +525,7 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
     /// <param name="skipCount">The number of initial values to skip.</param>
     /// <param name="isDistinct">Whether consecutive equal values are suppressed.</param>
     /// <param name="comparer">The equality comparer used by the distinct gate.</param>
-    private sealed class ValueChangeRelay(IObserver<T?> relay, int skipCount, bool isDistinct, EqualityComparer<T?> comparer) : IObserver<T?>
+    internal sealed class ValueChangeRelay(IObserver<T?> relay, int skipCount, bool isDistinct, EqualityComparer<T?> comparer) : IObserver<T?>
     {
         /// <summary>The remaining number of initial values to skip.</summary>
         private int _toSkip = skipCount;
@@ -574,17 +570,19 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
     /// </summary>
     /// <param name="validators">The per-validator error streams.</param>
     /// <param name="scheduler">The scheduler aggregated results are delivered on.</param>
-    private sealed class ValidationStream(IObservable<IEnumerable?>[] validators, ISequencer scheduler) : IObservable<IEnumerable?>
+    internal sealed class ValidationStream(IObservable<IEnumerable?>[] validators, ISequencer scheduler) : IObservable<IEnumerable?>
     {
         /// <inheritdoc/>
         public IDisposable Subscribe(IObserver<IEnumerable?> observer)
         {
             ArgumentExceptionHelper.ThrowIfNull(observer);
-            return new Sink(new SchedulingObserver<IEnumerable?>(observer, scheduler), validators);
+            var sink = new Sink(new SchedulingObserver<IEnumerable?>(observer, scheduler), validators);
+            sink.Run();
+            return sink;
         }
 
         /// <summary>Tracks the latest error sequence of each validator and emits their aggregate once all have reported.</summary>
-        private sealed class Sink : IDisposable
+        internal sealed class Sink : IDisposable
         {
             /// <summary>Guards the latest values and the arrival/completion counters.</summary>
 #if NET9_0_OR_GREATER
@@ -595,6 +593,9 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
 
             /// <summary>The observer receiving the aggregated errors (already scheduled).</summary>
             private readonly IObserver<IEnumerable?> _downstream;
+
+            /// <summary>The per-validator error streams.</summary>
+            private readonly IObservable<IEnumerable?>[] _validators;
 
             /// <summary>The latest error sequence reported by each validator.</summary>
             private readonly IEnumerable?[] _latest;
@@ -614,19 +615,16 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
             /// <summary>Whether the downstream has terminated.</summary>
             private bool _stopped;
 
-            /// <summary>Initializes a new instance of the <see cref="Sink"/> class and subscribes to every validator.</summary>
+            /// <summary>Initializes a new instance of the <see cref="Sink"/> class.</summary>
             /// <param name="downstream">The observer receiving the aggregated errors.</param>
             /// <param name="validators">The per-validator error streams.</param>
             public Sink(IObserver<IEnumerable?> downstream, IObservable<IEnumerable?>[] validators)
             {
                 _downstream = downstream;
+                _validators = validators;
                 _latest = new IEnumerable?[validators.Length];
                 _has = new bool[validators.Length];
                 _subscriptions = new IDisposable?[validators.Length];
-                for (var i = 0; i < validators.Length; i++)
-                {
-                    _subscriptions[i] = validators[i].Subscribe(new Element(this, i));
-                }
             }
 
             /// <inheritdoc/>
@@ -635,6 +633,15 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
                 for (var i = 0; i < _subscriptions.Length; i++)
                 {
                     _subscriptions[i]?.Dispose();
+                }
+            }
+
+            /// <summary>Subscribes to every validator, driving the aggregate.</summary>
+            internal void Run()
+            {
+                for (var i = 0; i < _validators.Length; i++)
+                {
+                    _subscriptions[i] = _validators[i].Subscribe(new Element(this, i));
                 }
             }
 
@@ -676,6 +683,10 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
             /// the remaining sequences, then both are copied once into a pre-sized result (strings first).
             /// </summary>
             /// <returns>The aggregated errors, or <see langword="null"/> when every validator reported null.</returns>
+            [SuppressMessage(
+                "Design",
+                "SST2326:Interface instances should not be narrowed to concrete types",
+                Justification = "A string is an IEnumerable of chars; the test distinguishes a scalar string from the collection validators so it is emitted as one value rather than flattened.")]
             private object?[]? BuildAggregate()
             {
                 if (Array.TrueForAll(_latest, static x => x is null))
@@ -735,7 +746,13 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
             {
                 lock (_gate)
                 {
-                    if (_stopped || ++_doneCount < _latest.Length)
+                    if (_stopped)
+                    {
+                        return;
+                    }
+
+                    _doneCount++;
+                    if (_doneCount < _latest.Length)
                     {
                         return;
                     }
@@ -782,7 +799,9 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
         }
 
         /// <summary>Runs the selector per source value and merges the task results under a gate.</summary>
-        private sealed class Sink : IObserver<TIn>, IDisposable
+        /// <param name="downstream">The observer receiving merged task results.</param>
+        /// <param name="selector">Produces a task for each source value.</param>
+        private sealed class Sink(IObserver<TOut> downstream, Func<TIn, Task<TOut>> selector) : IObserver<TIn>, IDisposable
         {
             /// <summary>Serializes downstream delivery and the active-task accounting.</summary>
 #if NET9_0_OR_GREATER
@@ -792,10 +811,10 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
 #endif
 
             /// <summary>The observer receiving merged task results.</summary>
-            private readonly IObserver<TOut> _downstream;
+            private readonly IObserver<TOut> _downstream = downstream;
 
             /// <summary>Produces a task for each source value.</summary>
-            private readonly Func<TIn, Task<TOut>> _selector;
+            private readonly Func<TIn, Task<TOut>> _selector = selector;
 
             /// <summary>The subscription to the source.</summary>
             private IDisposable? _sourceSubscription;
@@ -805,15 +824,6 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
 
             /// <summary>Whether the downstream has been terminated.</summary>
             private bool _stopped;
-
-            /// <summary>Initializes a new instance of the <see cref="Sink"/> class.</summary>
-            /// <param name="downstream">The observer receiving merged task results.</param>
-            /// <param name="selector">Produces a task for each source value.</param>
-            public Sink(IObserver<TOut> downstream, Func<TIn, Task<TOut>> selector)
-            {
-                _downstream = downstream;
-                _selector = selector;
-            }
 
             /// <summary>Subscribes to the source after construction so <c>this</c> is not exposed during construction.</summary>
             /// <param name="source">The source observable.</param>

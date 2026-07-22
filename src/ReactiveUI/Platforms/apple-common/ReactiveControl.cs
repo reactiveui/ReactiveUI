@@ -111,8 +111,13 @@ public class ReactiveControl : UIControl, IReactiveNotifyPropertyChanged<Reactiv
 
     /// <inheritdoc/>
     void ICanForceManualActivation.Activate(bool isActivating) =>
-        RxSchedulers.MainThreadScheduler.Schedule(() =>
-            (isActivating ? _activated : _deactivated).OnNext(RxVoid.Default));
+        RxSchedulers.MainThreadScheduler.Schedule(
+            (Owner: this, IsActivating: isActivating),
+            static (_, state) =>
+            {
+                (state.IsActivating ? state.Owner._activated : state.Owner._deactivated).OnNext(RxVoid.Default);
+                return EmptyDisposable.Instance;
+            });
 
     /// <inheritdoc/>
     void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args) => PropertyChanging?.Invoke(this, args);

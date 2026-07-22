@@ -20,9 +20,6 @@ public class ReflectionAdvancedTests
     /// <summary>The name of the default indexer property.</summary>
     private const string ItemPropertyName = "Item";
 
-    /// <summary>The value stored against the dictionary key in reflection tests.</summary>
-    private const int DictionaryValue = 42;
-
     /// <summary>A sample string value used when exercising setter paths.</summary>
     private const string SampleValue = "sample";
 
@@ -343,10 +340,12 @@ public class ReflectionAdvancedTests
     [Test]
     public async Task ExpressionToPropertyNames_WithMultiArgIndexer_SeparatesWithComma()
     {
+        const int SecondIndexValue = 2;
+
         var parameter = Expression.Parameter(typeof(MultiIndexerClass), "x");
         var indexer = typeof(MultiIndexerClass).GetProperty(ItemPropertyName)!;
         var firstArg = Expression.Constant(1);
-        var secondArg = Expression.Constant(2);
+        var secondArg = Expression.Constant(SecondIndexValue);
         var indexExpr = Expression.MakeIndex(parameter, indexer, [firstArg, secondArg]);
 
         var result = Reflection.ExpressionToPropertyNames(indexExpr);
@@ -458,7 +457,7 @@ public class ReflectionAdvancedTests
 
         object? observed = null;
         using var subscription = Reflection
-            .ViewModelWhenAnyValue<SampleView, SampleViewModel>(view.ViewModel, view, expr.Body)
+            .ViewModelWhenAnyValue(view.ViewModel, view, expr.Body)
             .Subscribe(x => observed = x);
 
         await Assert.That(observed).IsEqualTo("vmValue");
@@ -606,6 +605,9 @@ public class ReflectionAdvancedTests
         [SuppressMessage("Maintainability", "SST1401:Field should be private", Justification = "Public field required for reflection tests")]
         public string? NullableField;
 
+        /// <summary>The value stored against the dictionary key in reflection tests.</summary>
+        private const int DictionaryValue = 42;
+
         /// <summary>Gets or sets a static property.</summary>
         public static string? StaticProperty { get; set; }
 
@@ -625,10 +627,6 @@ public class ReflectionAdvancedTests
         public string ReadOnlyProperty { get; } = "readonly";
 
         /// <summary>An instance method used to exercise unsupported member type handling.</summary>
-        [SuppressMessage(
-            "Microsoft.Performance",
-            "CA1822:Mark members as static",
-            Justification = "Test needs instance method for reflection")]
         public void TestMethod()
         {
             // No-op: only its existence as a method member is needed for reflection tests.
@@ -639,10 +637,6 @@ public class ReflectionAdvancedTests
     public class DerivedTestClass : TestClass
     {
         /// <summary>An instance method that hides the base method for overload-check tests.</summary>
-        [SuppressMessage(
-            "Microsoft.Performance",
-            "CA1822:Mark members as static",
-            Justification = "Test needs instance method for reflection")]
         public new void TestMethod()
         {
             // No-op: only its existence as a hiding method member is needed for overload-check tests.

@@ -13,7 +13,6 @@ using Windows.UI.Xaml.Controls;
 #else
 using System.Windows;
 #endif
-using System.Diagnostics.CodeAnalysis;
 using ReactiveUI.Primitives;
 using Splat;
 
@@ -57,7 +56,7 @@ public
 
     /// <summary>The ContractFallbackByPass dependency property.</summary>
     public static readonly DependencyProperty ContractFallbackByPassProperty =
-        DependencyProperty.Register("ContractFallbackByPass", typeof(bool), typeof(ViewModelViewHost), new(false));
+        DependencyProperty.Register(nameof(ContractFallbackByPass), typeof(bool), typeof(ViewModelViewHost), new(false));
 
     /// <summary>Stores the most recently observed view contract.</summary>
     private string? _viewContract;
@@ -66,7 +65,7 @@ public
     public ViewModelViewHost()
     {
         var platform = AppLocator.Current.GetService<IPlatformOperations>();
-        Func<string?> platformGetter = () => null;
+        Func<string?> platformGetter = static () => null;
 
         if (platform is null)
         {
@@ -87,9 +86,9 @@ public
             : new StartWithObservable<string?>(
                 new FromEventObservable<string?>(onNext =>
                 {
-                    void Handler(object? sender, SizeChangedEventArgs e) => onNext(platformGetter());
-                    SizeChanged += Handler;
-                    return new ActionDisposable(() => SizeChanged -= Handler);
+                    SizeChangedEventHandler handler = (_, _) => onNext(platformGetter());
+                    SizeChanged += handler;
+                    return new ActionDisposable(() => SizeChanged -= handler);
                 }),
                 platformGetter())
                 .DistinctUntilChanged();
@@ -102,7 +101,7 @@ public
             ViewModel);
         var viewModelAndContract = contractChanged.CombineLatest(
             viewModelChanged,
-            (contract, vm) => (ViewModel: vm, Contract: contract));
+            static (contract, vm) => (ViewModel: vm, Contract: contract));
 
         _ = this.WhenActivated(d =>
         {
@@ -136,14 +135,10 @@ public
     }
 
     /// <summary>Gets or sets the view contract.</summary>
-    [SuppressMessage(
-        "Critical Bug",
-        "S4275:Getters and setters should access the expected fields",
-        Justification = "Setter intentionally routes through ViewContractObservable rather than the field.")]
     public string? ViewContract
     {
         get => _viewContract;
-        set => ViewContractObservable = Signal.Emit<string?>(value);
+        set => ViewContractObservable = Signal.Emit(value);
     }
 
     /// <summary>Gets or sets the view locator.</summary>

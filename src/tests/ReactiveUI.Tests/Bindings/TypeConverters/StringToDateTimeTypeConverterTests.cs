@@ -23,10 +23,6 @@ public class StringToDateTimeTypeConverterTests
     /// <summary>Verifies that a valid string converts successfully.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
-    [System.Diagnostics.CodeAnalysis.SuppressMessage(
-        "Major Code Smell",
-        "S6566:Prefer using DateTimeOffset instead of DateTime",
-        Justification = "Converter under test operates on DateTime.")]
     public async Task TryConvert_ValidString_Succeeds()
     {
         var converter = new StringToDateTimeTypeConverter();

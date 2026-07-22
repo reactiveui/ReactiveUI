@@ -3,8 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Diagnostics.CodeAnalysis;
-
 namespace ReactiveUI.Tests;
 
 /// <summary>Tests for WhenAnyDynamic methods in VariadicTemplates.cs.</summary>
@@ -13,10 +11,6 @@ public partial class WhenAnyDynamicTest
     /// <summary>Verifies the WhenAnyDynamic overload for 8 properties with a selector.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
-    [SuppressMessage(
-        "Major Code Smell",
-        "S107:Methods should not have too many parameters",
-        Justification = "Selector arity mirrors the variadic production WhenAny API.")]
     public async Task WhenAnyDynamic_8Props_Selector()
     {
         var vm = new TestViewModel();
@@ -39,7 +33,7 @@ public partial class WhenAnyDynamicTest
             property6,
             property7,
             property8,
-            (_, _, _, _, _, _, _, _) => "x").ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
+            static (_, _, _, _, _, _, _, _) => "x").ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
         vm.Property1 = "a";
         await Assert.That(list).Count().IsGreaterThan(1);
@@ -48,10 +42,6 @@ public partial class WhenAnyDynamicTest
     /// <summary>Verifies the WhenAnyDynamic overload for 8 properties with a selector and distinct-until-changed enabled.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
-    [SuppressMessage(
-        "Major Code Smell",
-        "S107:Methods should not have too many parameters",
-        Justification = "Selector arity mirrors the variadic production WhenAny API.")]
     public async Task WhenAnyDynamic_8Props_Selector_Distinct()
     {
         var vm = new TestViewModel();
@@ -74,7 +64,7 @@ public partial class WhenAnyDynamicTest
             property6,
             property7,
             property8,
-            (_, _, _, _, _, _, _, _) => "x",
+            static (_, _, _, _, _, _, _, _) => "x",
             true).ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
         vm.Property1 = "a";
@@ -84,10 +74,6 @@ public partial class WhenAnyDynamicTest
     /// <summary>Verifies the WhenAnyDynamic overload for 8 properties with a selector and distinct-until-changed disabled.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
-    [SuppressMessage(
-        "Major Code Smell",
-        "S107:Methods should not have too many parameters",
-        Justification = "Selector arity mirrors the variadic production WhenAny API.")]
     public async Task WhenAnyDynamic_8Props_Selector_NotDistinct()
     {
         var vm = new TestViewModel();
@@ -110,7 +96,7 @@ public partial class WhenAnyDynamicTest
             property6,
             property7,
             property8,
-            (_, _, _, _, _, _, _, _) => "x",
+            static (_, _, _, _, _, _, _, _) => "x",
             false).ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
         vm.Property1 = "a";
@@ -120,10 +106,6 @@ public partial class WhenAnyDynamicTest
     /// <summary>Verifies the WhenAnyDynamic overload for 9 properties with a selector.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
-    [SuppressMessage(
-        "Major Code Smell",
-        "S107:Methods should not have too many parameters",
-        Justification = "Selector arity mirrors the variadic production WhenAny API.")]
     public async Task WhenAnyDynamic_9Props_Selector()
     {
         var vm = new TestViewModel();
@@ -148,7 +130,7 @@ public partial class WhenAnyDynamicTest
             property7,
             property8,
             property9,
-            (_, _, _, _, _, _, _, _, _) => "x").ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
+            static (_, _, _, _, _, _, _, _, _) => "x").ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
         vm.Property1 = "a";
         await Assert.That(list).Count().IsGreaterThan(1);
@@ -157,10 +139,6 @@ public partial class WhenAnyDynamicTest
     /// <summary>Verifies the WhenAnyDynamic overload for 9 properties with a selector and distinct-until-changed enabled.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
-    [SuppressMessage(
-        "Major Code Smell",
-        "S107:Methods should not have too many parameters",
-        Justification = "Selector arity mirrors the variadic production WhenAny API.")]
     public async Task WhenAnyDynamic_9Props_Selector_Distinct()
     {
         var vm = new TestViewModel();
@@ -185,7 +163,7 @@ public partial class WhenAnyDynamicTest
             property7,
             property8,
             property9,
-            (_, _, _, _, _, _, _, _, _) => "x",
+            static (_, _, _, _, _, _, _, _, _) => "x",
             true).ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
         vm.Property1 = "a";
@@ -195,10 +173,6 @@ public partial class WhenAnyDynamicTest
     /// <summary>Verifies the WhenAnyDynamic overload for 9 properties with a selector and distinct-until-changed disabled.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
-    [SuppressMessage(
-        "Major Code Smell",
-        "S107:Methods should not have too many parameters",
-        Justification = "Selector arity mirrors the variadic production WhenAny API.")]
     public async Task WhenAnyDynamic_9Props_Selector_NotDistinct()
     {
         var vm = new TestViewModel();
@@ -223,7 +197,7 @@ public partial class WhenAnyDynamicTest
             property7,
             property8,
             property9,
-            (_, _, _, _, _, _, _, _, _) => "x",
+            static (_, _, _, _, _, _, _, _, _) => "x",
             false).ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
         vm.Property1 = "a";
@@ -233,10 +207,6 @@ public partial class WhenAnyDynamicTest
     /// <summary>Verifies the WhenAnyDynamic overload for 10 properties with a selector.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
-    [SuppressMessage(
-        "Major Code Smell",
-        "S107:Methods should not have too many parameters",
-        Justification = "Selector arity mirrors the variadic production WhenAny API.")]
     public async Task WhenAnyDynamic_10Props_Selector()
     {
         var vm = new TestViewModel();
@@ -263,7 +233,7 @@ public partial class WhenAnyDynamicTest
             property8,
             property9,
             property10,
-            (_, _, _, _, _, _, _, _, _, _) => "x").ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
+            static (_, _, _, _, _, _, _, _, _, _) => "x").ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
         vm.Property1 = "a";
         await Assert.That(list).Count().IsGreaterThan(1);
@@ -272,10 +242,6 @@ public partial class WhenAnyDynamicTest
     /// <summary>Verifies the WhenAnyDynamic overload for 10 properties with a selector and distinct-until-changed enabled.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
-    [SuppressMessage(
-        "Major Code Smell",
-        "S107:Methods should not have too many parameters",
-        Justification = "Selector arity mirrors the variadic production WhenAny API.")]
     public async Task WhenAnyDynamic_10Props_Selector_Distinct()
     {
         var vm = new TestViewModel();
@@ -302,7 +268,7 @@ public partial class WhenAnyDynamicTest
             property8,
             property9,
             property10,
-            (_, _, _, _, _, _, _, _, _, _) => "x",
+            static (_, _, _, _, _, _, _, _, _, _) => "x",
             true).ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
         vm.Property1 = "a";
@@ -312,10 +278,6 @@ public partial class WhenAnyDynamicTest
     /// <summary>Verifies the WhenAnyDynamic overload for 10 properties with a selector and distinct-until-changed disabled.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
-    [SuppressMessage(
-        "Major Code Smell",
-        "S107:Methods should not have too many parameters",
-        Justification = "Selector arity mirrors the variadic production WhenAny API.")]
     public async Task WhenAnyDynamic_10Props_Selector_NotDistinct()
     {
         var vm = new TestViewModel();
@@ -342,7 +304,7 @@ public partial class WhenAnyDynamicTest
             property8,
             property9,
             property10,
-            (_, _, _, _, _, _, _, _, _, _) => "x",
+            static (_, _, _, _, _, _, _, _, _, _) => "x",
             false).ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
         vm.Property1 = "a";
@@ -352,10 +314,6 @@ public partial class WhenAnyDynamicTest
     /// <summary>Verifies the WhenAnyDynamic overload for 11 properties with a selector.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
-    [SuppressMessage(
-        "Major Code Smell",
-        "S107:Methods should not have too many parameters",
-        Justification = "Selector arity mirrors the variadic production WhenAny API.")]
     public async Task WhenAnyDynamic_11Props_Selector()
     {
         var vm = new TestViewModel();
@@ -384,7 +342,7 @@ public partial class WhenAnyDynamicTest
             property9,
             property10,
             property11,
-            (_, _, _, _, _, _, _, _, _, _, _) => "x").ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
+            static (_, _, _, _, _, _, _, _, _, _, _) => "x").ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
         vm.Property1 = "a";
         await Assert.That(list).Count().IsGreaterThan(1);
@@ -393,10 +351,6 @@ public partial class WhenAnyDynamicTest
     /// <summary>Verifies the WhenAnyDynamic overload for 11 properties with a selector and distinct-until-changed enabled.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
-    [SuppressMessage(
-        "Major Code Smell",
-        "S107:Methods should not have too many parameters",
-        Justification = "Selector arity mirrors the variadic production WhenAny API.")]
     public async Task WhenAnyDynamic_11Props_Selector_Distinct()
     {
         var vm = new TestViewModel();
@@ -425,7 +379,7 @@ public partial class WhenAnyDynamicTest
             property9,
             property10,
             property11,
-            (_, _, _, _, _, _, _, _, _, _, _) => "x",
+            static (_, _, _, _, _, _, _, _, _, _, _) => "x",
             true).ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
         vm.Property1 = "a";
@@ -435,10 +389,6 @@ public partial class WhenAnyDynamicTest
     /// <summary>Verifies the WhenAnyDynamic overload for 11 properties with a selector and distinct-until-changed disabled.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
-    [SuppressMessage(
-        "Major Code Smell",
-        "S107:Methods should not have too many parameters",
-        Justification = "Selector arity mirrors the variadic production WhenAny API.")]
     public async Task WhenAnyDynamic_11Props_Selector_NotDistinct()
     {
         var vm = new TestViewModel();
@@ -467,7 +417,7 @@ public partial class WhenAnyDynamicTest
             property9,
             property10,
             property11,
-            (_, _, _, _, _, _, _, _, _, _, _) => "x",
+            static (_, _, _, _, _, _, _, _, _, _, _) => "x",
             false).ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
         vm.Property1 = "a";
@@ -477,10 +427,6 @@ public partial class WhenAnyDynamicTest
     /// <summary>Verifies the WhenAnyDynamic overload for 12 properties with a selector.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
-    [SuppressMessage(
-        "Major Code Smell",
-        "S107:Methods should not have too many parameters",
-        Justification = "Selector arity mirrors the variadic production WhenAny API.")]
     public async Task WhenAnyDynamic_12Props_Selector()
     {
         var vm = new TestViewModel();
@@ -511,7 +457,7 @@ public partial class WhenAnyDynamicTest
             property10,
             property11,
             property12,
-            (_, _, _, _, _, _, _, _, _, _, _, _) => "x").ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
+            static (_, _, _, _, _, _, _, _, _, _, _, _) => "x").ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
         vm.Property1 = "a";
         await Assert.That(list).Count().IsGreaterThan(1);
@@ -520,10 +466,6 @@ public partial class WhenAnyDynamicTest
     /// <summary>Verifies the WhenAnyDynamic overload for 12 properties with a selector and distinct-until-changed enabled.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
-    [SuppressMessage(
-        "Major Code Smell",
-        "S107:Methods should not have too many parameters",
-        Justification = "Selector arity mirrors the variadic production WhenAny API.")]
     public async Task WhenAnyDynamic_12Props_Selector_Distinct()
     {
         var vm = new TestViewModel();
@@ -554,7 +496,7 @@ public partial class WhenAnyDynamicTest
             property10,
             property11,
             property12,
-            (_, _, _, _, _, _, _, _, _, _, _, _) => "x",
+            static (_, _, _, _, _, _, _, _, _, _, _, _) => "x",
             true).ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
         vm.Property1 = "a";
@@ -564,10 +506,6 @@ public partial class WhenAnyDynamicTest
     /// <summary>Verifies the WhenAnyDynamic overload for 12 properties with a selector and distinct-until-changed disabled.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
-    [SuppressMessage(
-        "Major Code Smell",
-        "S107:Methods should not have too many parameters",
-        Justification = "Selector arity mirrors the variadic production WhenAny API.")]
     public async Task WhenAnyDynamic_12Props_Selector_NotDistinct()
     {
         var vm = new TestViewModel();
@@ -598,7 +536,7 @@ public partial class WhenAnyDynamicTest
             property10,
             property11,
             property12,
-            (_, _, _, _, _, _, _, _, _, _, _, _) => "x",
+            static (_, _, _, _, _, _, _, _, _, _, _, _) => "x",
             false).ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
         vm.Property1 = "a";

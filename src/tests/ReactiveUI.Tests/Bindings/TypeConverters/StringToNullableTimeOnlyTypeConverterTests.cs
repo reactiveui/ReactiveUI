@@ -24,8 +24,11 @@ public class StringToNullableTimeOnlyTypeConverterTests
     [Test]
     public async Task TryConvert_ValidString_Succeeds()
     {
+        const int ExpectedHour = 10;
+        const int ExpectedMinute = 30;
+
         var converter = new StringToNullableTimeOnlyTypeConverter();
-        var expected = new TimeOnly(10, 30, 0);
+        var expected = new TimeOnly(ExpectedHour, ExpectedMinute, 0);
 
         var result = converter.TryConvert(expected.ToString(), null, out var output);
 

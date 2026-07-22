@@ -23,7 +23,8 @@ internal sealed class ActivityResultAwaiter
     private readonly int _requestCode;
 
     /// <summary>Completion source backing the returned task.</summary>
-    private readonly TaskCompletionSource<(Result result, Intent? intent)> _completion = new();
+    private readonly TaskCompletionSource<(Result result, Intent? intent)> _completion =
+        new(TaskCreationOptions.RunContinuationsAsynchronously);
 
     /// <summary>Holds the source subscription so it can be torn down once settled.</summary>
     private readonly OnceDisposable _subscription = new();
@@ -34,19 +35,6 @@ internal sealed class ActivityResultAwaiter
     /// <summary>Initializes a new instance of the <see cref="ActivityResultAwaiter"/> class.</summary>
     /// <param name="requestCode">The request code to await.</param>
     private ActivityResultAwaiter(int requestCode) => _requestCode = requestCode;
-
-    /// <summary>Subscribes to the activity-result stream and returns a task for the first matching result.</summary>
-    /// <param name="source">The activity-result stream.</param>
-    /// <param name="requestCode">The request code to await.</param>
-    /// <returns>A task that completes with the result and intent of the first matching activity result.</returns>
-    public static Task<(Result result, Intent? intent)> Await(
-        IObservable<(int requestCode, Result result, Intent? intent)> source,
-        int requestCode)
-    {
-        var awaiter = new ActivityResultAwaiter(requestCode);
-        awaiter._subscription.Disposable = source.Subscribe(awaiter);
-        return awaiter._completion.Task;
-    }
 
     /// <inheritdoc/>
     public void OnNext((int requestCode, Result result, Intent? intent) value)
@@ -86,4 +74,17 @@ internal sealed class ActivityResultAwaiter
 
     /// <inheritdoc/>
     public void Dispose() => _subscription.Dispose();
+
+    /// <summary>Subscribes to the activity-result stream and returns a task for the first matching result.</summary>
+    /// <param name="source">The activity-result stream.</param>
+    /// <param name="requestCode">The request code to await.</param>
+    /// <returns>A task that completes with the result and intent of the first matching activity result.</returns>
+    internal static Task<(Result result, Intent? intent)> Await(
+        IObservable<(int requestCode, Result result, Intent? intent)> source,
+        int requestCode)
+    {
+        var awaiter = new ActivityResultAwaiter(requestCode);
+        awaiter._subscription.Disposable = source.Subscribe(awaiter);
+        return awaiter._completion.Task;
+    }
 }

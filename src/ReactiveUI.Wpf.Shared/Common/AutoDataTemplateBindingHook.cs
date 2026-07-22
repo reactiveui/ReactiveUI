@@ -34,13 +34,14 @@ public class AutoDataTemplateBindingHook : IPropertyBindingHook
 #else
         const string XamlClrNamespace = "clr-namespace:ReactiveUI";
 #endif
-        const string Template = "<DataTemplate xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation' " +
-                                "xmlns:xaml='" + XamlClrNamespace + ";assembly=__ASSEMBLYNAME__'> " +
-                                "<xaml:ViewModelViewHost ViewModel=\"{Binding Mode=OneWay}\" VerticalContentAlignment=\"Stretch\" HorizontalContentAlignment=\"Stretch\" IsTabStop=\"False\" />" +
-                                "</DataTemplate>";
+        const string TemplateHeader =
+            $"<DataTemplate xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation' xmlns:xaml='{XamlClrNamespace};assembly=__ASSEMBLYNAME__'>";
+        const string TemplateBody =
+            " <xaml:ViewModelViewHost ViewModel=\"{Binding Mode=OneWay}\" VerticalContentAlignment=\"Stretch\" HorizontalContentAlignment=\"Stretch\" IsTabStop=\"False\" /></DataTemplate>";
+        const string Template = TemplateHeader + TemplateBody;
 
         var assemblyName = typeof(AutoDataTemplateBindingHook).Assembly.FullName;
-        assemblyName = assemblyName?.Substring(0, assemblyName.IndexOf(",", StringComparison.Ordinal));
+        assemblyName = assemblyName?.Substring(0, assemblyName.IndexOf(','));
 
 #if NET8_0_OR_GREATER
         return (DataTemplate)XamlReader.Parse(Template.Replace("__ASSEMBLYNAME__", assemblyName ?? string.Empty, StringComparison.Ordinal));

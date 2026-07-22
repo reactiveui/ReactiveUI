@@ -25,23 +25,8 @@ namespace ReactiveUI;
 /// </remarks>
 public sealed class CreatesCommandBindingViaEvent : ICreatesCommandBinding
 {
-    /// <summary>Default events to attempt, in priority order.</summary>
-    /// <remarks>
-    /// The first event found on the target type is used.
-    /// </remarks>
-    private static readonly (string Name, Type ArgsType)[] DefaultEventsToBind =
-    [
-        ("Click", typeof(EventArgs)),
-        ("TouchUpInside", typeof(EventArgs)),
-        ("MouseUp", typeof(EventArgs))
-    ];
-
     /// <inheritdoc/>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    [SuppressMessage(
-        "Major Code Smell",
-        "S4018:Generic methods should provide type parameter",
-        Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
     public int GetAffinityForObject<
         [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents |
                                     DynamicallyAccessedMemberTypes.PublicProperties)]
@@ -103,10 +88,6 @@ public sealed class CreatesCommandBindingViaEvent : ICreatesCommandBinding
     /// Thrown when <paramref name="eventName"/> is empty.
     /// </exception>
     [RequiresUnreferencedCode("String/reflection-based event binding may require members removed by trimming.")]
-    [SuppressMessage(
-        "Major Code Smell",
-        "S4018:Generic methods should provide type parameter",
-        Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
     public IDisposable? BindCommandToObject<T, TEventArgs>(
         ICommand? command,
         T? target,
@@ -193,13 +174,15 @@ public sealed class CreatesCommandBindingViaEvent : ICreatesCommandBinding
 
         var parameterSub = commandParameter.Subscribe(new DelegateObserver<object?>(x => Volatile.Write(ref latestParameter, x)));
 
-        addHandler(Handler);
+        EventHandler<TEventArgs> handler = (_, _) => Execute();
+
+        addHandler(handler);
 
         return new MultipleDisposable(
             parameterSub,
-            new ActionDisposable(() => removeHandler(Handler)));
+            new ActionDisposable(() => removeHandler(handler)));
 
-        void Handler(object? s, TEventArgs e)
+        void Execute()
         {
             var param = Volatile.Read(ref latestParameter);
             if (!command.CanExecute(param))
@@ -241,16 +224,18 @@ public sealed class CreatesCommandBindingViaEvent : ICreatesCommandBinding
 
         object? latestParameter = null;
 
+        EventHandler handler = (_, _) => Execute();
+
         MultipleDisposable ret =
         [
             commandParameter.Subscribe(new DelegateObserver<object?>(x => Volatile.Write(ref latestParameter, x))),
-            new ActionDisposable(() => removeHandler(Handler))
+            new ActionDisposable(() => removeHandler(handler))
         ];
 
-        addHandler(Handler);
+        addHandler(handler);
         return ret;
 
-        void Handler(object? s, EventArgs e)
+        void Execute()
         {
             var param = Volatile.Read(ref latestParameter);
             if (!command.CanExecute(param))
@@ -275,15 +260,22 @@ public sealed class CreatesCommandBindingViaEvent : ICreatesCommandBinding
         /// <summary>Gets a value indicating whether <typeparamref name="T"/> has any default event supported by this binder.</summary>
         public static readonly bool HasDefaultEvent = DefaultEventName is not null;
 
-        /// <summary>Scans the default events list and returns the name of the first event found on the type, or null if none exist.</summary>
+        /// <summary>Scans the default events (in priority order) and returns the name of the first event found on the type, or null if none exist.</summary>
         /// <returns>The name of the first supported default event, or null if none exist.</returns>
         private static string? FindDefaultEventName()
         {
+            (string Name, Type ArgsType)[] defaultEventsToBind =
+            [
+                ("Click", typeof(EventArgs)),
+                ("TouchUpInside", typeof(EventArgs)),
+                ("MouseUp", typeof(EventArgs))
+            ];
+
             var type = typeof(T);
 
-            for (var i = 0; i < DefaultEventsToBind.Length; i++)
+            for (var i = 0; i < defaultEventsToBind.Length; i++)
             {
-                var name = DefaultEventsToBind[i].Name;
+                var name = defaultEventsToBind[i].Name;
                 if (type.GetRuntimeEvent(name) is not null)
                 {
                     return name;

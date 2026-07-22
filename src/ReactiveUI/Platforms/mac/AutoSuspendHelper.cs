@@ -105,9 +105,14 @@ public class AutoSuspendHelper<[DynamicallyAccessedMembers(DynamicallyAccessedMe
         ThrowIfDisposed();
 
         // Ensure the persist notification is emitted on the main thread, as callers typically interact with AppKit.
-        _ = RxSchedulers.MainThreadScheduler.Schedule(() =>
-            _shouldPersistState.OnNext(
-                Scope.Create(() => sender.ReplyToApplicationShouldTerminate(true))));
+        _ = RxSchedulers.MainThreadScheduler.Schedule(
+            (host: this, sender),
+            static (_, state) =>
+            {
+                state.host._shouldPersistState.OnNext(
+                    Scope.Create(state.sender, static s => s.ReplyToApplicationShouldTerminate(true)));
+                return EmptyDisposable.Instance;
+            });
 
         return NSApplicationTerminateReply.Later;
     }
@@ -150,7 +155,6 @@ public class AutoSuspendHelper<[DynamicallyAccessedMembers(DynamicallyAccessedMe
     /// <remarks>
     /// Initiates a quick save when the app is hidden, mirroring the behavior of <see cref="DidResignActive"/>.
     /// </remarks>
-    [SuppressMessage("Major Code Smell", "S4144:Methods should not have identical implementations", Justification = "Both lifecycle callbacks intentionally route to the same handler.")]
     public void DidHide(NSNotification notification)
     {
         ThrowIfDisposed();

@@ -26,7 +26,7 @@ public class SwitchSubscribeMixinTests
         const IObservable<IObservable<int>?> source = null!;
 
         // Act & Assert
-        await Assert.That(() => source.SwitchSubscribe(_ => { }))
+        await Assert.That(static () => source.SwitchSubscribe(static _ => { }))
             .Throws<ArgumentException>();
     }
 
@@ -107,9 +107,9 @@ public class SwitchSubscribeMixinTests
     {
         // Arrange
         var source = Signal.Emit(Signal.Emit(1));
-        Action<int> onNext = _ => { };
-        Action<Exception> onError = _ => { };
-        var onCompleted = () => { };
+        Action<int> onNext = static _ => { };
+        Action<Exception> onError = static _ => { };
+        var onCompleted = static () => { };
 
         // Act & Assert
         await Assert.That(() => ((IObservable<IObservable<int>?>)null!).SwitchSubscribe(onNext, onError, onCompleted))
@@ -133,7 +133,7 @@ public class SwitchSubscribeMixinTests
         Exception? capturedError = null;
 
         // Act
-        using var subscription = outer.SwitchSubscribe(_ => { }, ex => capturedError = ex, () => { });
+        using var subscription = outer.SwitchSubscribe(static _ => { }, ex => capturedError = ex, static () => { });
         inner.OnError(new InvalidOperationException("test error"));
 
         // Assert
@@ -152,7 +152,7 @@ public class SwitchSubscribeMixinTests
         var completed = false;
 
         // Act
-        using var subscription = outer.SwitchSubscribe(_ => { }, _ => { }, () => completed = true);
+        using var subscription = outer.SwitchSubscribe(static _ => { }, static _ => { }, () => completed = true);
         inner.OnCompleted(); // Complete the inner observable first
         outer.OnCompleted(); // Then complete the outer observable
 
@@ -169,7 +169,7 @@ public class SwitchSubscribeMixinTests
         const IObservable<string?> source = null!;
 
         // Act & Assert
-        await Assert.That(() => SwitchSubscribeMixins.SwitchSelect(source, _ => Signal.Emit(1)))
+        await Assert.That(static () => SwitchSubscribeMixins.SwitchSelect(source, static _ => Signal.Emit(1)))
             .Throws<ArgumentException>();
     }
 
@@ -199,7 +199,7 @@ public class SwitchSubscribeMixinTests
         var values = new List<int>();
 
         // Act
-        using var subscription = SwitchSubscribeMixins.SwitchSelect(outer, vm => vm.Observable).Subscribe(values.Add);
+        using var subscription = SwitchSubscribeMixins.SwitchSelect(outer, static vm => vm.Observable).Subscribe(values.Add);
 
         outer.OnNext(new() { Observable = subject2 });
 
@@ -217,7 +217,7 @@ public class SwitchSubscribeMixinTests
         var outer = new BehaviorSignal<TestViewModel?>(new() { Observable = subject });
         var values = new List<int>();
 
-        using var subscription = SwitchSubscribeMixins.SwitchSelect(outer, vm => vm.Observable).Subscribe(values.Add);
+        using var subscription = SwitchSubscribeMixins.SwitchSelect(outer, static vm => vm.Observable).Subscribe(values.Add);
 
         // Act
         outer.OnNext(null);
@@ -233,8 +233,8 @@ public class SwitchSubscribeMixinTests
     {
         // Arrange
         var source = Signal.Emit(new TestViewModel { Observable = Signal.Emit(1) });
-        Func<TestViewModel, IObservable<int>> selector = vm => vm.Observable;
-        Action<int> onNext = _ => { };
+        Func<TestViewModel, IObservable<int>> selector = static vm => vm.Observable;
+        Action<int> onNext = static _ => { };
 
         // Act & Assert
         await Assert.That(() => ((IObservable<TestViewModel?>)null!).SwitchSubscribe(selector, onNext))
@@ -258,7 +258,7 @@ public class SwitchSubscribeMixinTests
         const int SecondValue = 2;
 
         // Act
-        using var subscription = outer.SwitchSubscribe(vm => vm.Observable, values.Add);
+        using var subscription = outer.SwitchSubscribe(static vm => vm.Observable, values.Add);
         subject.OnNext(SecondValue);
 
         // Assert
@@ -272,10 +272,10 @@ public class SwitchSubscribeMixinTests
     {
         // Arrange
         var source = Signal.Emit(new TestViewModel { Observable = Signal.Emit(1) });
-        Func<TestViewModel, IObservable<int>> selector = vm => vm.Observable;
-        Action<int> onNext = _ => { };
-        Action<Exception> onError = _ => { };
-        var onCompleted = () => { };
+        Func<TestViewModel, IObservable<int>> selector = static vm => vm.Observable;
+        Action<int> onNext = static _ => { };
+        Action<Exception> onError = static _ => { };
+        var onCompleted = static () => { };
 
         // Act & Assert
         await Assert.That(() =>
@@ -300,7 +300,7 @@ public class SwitchSubscribeMixinTests
         const IObservable<IReactiveCommand<int, int>?> source = null!;
 
         // Act & Assert
-        await Assert.That(() => source.SwitchSubscribe(_ => { }))
+        await Assert.That(static () => source.SwitchSubscribe(static _ => { }))
             .Throws<ArgumentException>();
     }
 
@@ -310,7 +310,7 @@ public class SwitchSubscribeMixinTests
     public async Task SwitchSubscribe_Command_ShouldThrowArgumentNullException_WhenOnNextIsNull()
     {
         // Arrange
-        var command = ReactiveCommand.Create<int, int>(x => x * DoubleMultiplier, outputScheduler: Sequencer.Immediate);
+        var command = ReactiveCommand.Create<int, int>(static x => x * DoubleMultiplier, outputScheduler: Sequencer.Immediate);
         var source = Signal.Emit<IReactiveCommand<int, int>?>(command);
 
         // Act & Assert
@@ -325,7 +325,7 @@ public class SwitchSubscribeMixinTests
     {
         // Arrange
         const int ExpectedResult = CommandInput * DoubleMultiplier;
-        var command = ReactiveCommand.Create<int, int>(x => x * DoubleMultiplier, outputScheduler: Sequencer.Immediate);
+        var command = ReactiveCommand.Create<int, int>(static x => x * DoubleMultiplier, outputScheduler: Sequencer.Immediate);
         var outer = new BehaviorSignal<IReactiveCommand<int, int>?>(command);
         var results = new List<int>();
 
@@ -345,8 +345,8 @@ public class SwitchSubscribeMixinTests
         // Arrange
         const int FirstExpectedResult = CommandInput * DoubleMultiplier;
         const int SecondExpectedResult = CommandInput * TripleMultiplier;
-        var command1 = ReactiveCommand.Create<int, int>(x => x * DoubleMultiplier, outputScheduler: Sequencer.Immediate);
-        var command2 = ReactiveCommand.Create<int, int>(x => x * TripleMultiplier, outputScheduler: Sequencer.Immediate);
+        var command1 = ReactiveCommand.Create<int, int>(static x => x * DoubleMultiplier, outputScheduler: Sequencer.Immediate);
+        var command2 = ReactiveCommand.Create<int, int>(static x => x * TripleMultiplier, outputScheduler: Sequencer.Immediate);
         var outer = new BehaviorSignal<IReactiveCommand<int, int>?>(command1);
         var results = new List<int>();
 
@@ -368,7 +368,7 @@ public class SwitchSubscribeMixinTests
     {
         // Arrange
         const int ExpectedResult = CommandInput * DoubleMultiplier;
-        var command = ReactiveCommand.Create<int, int>(x => x * DoubleMultiplier, outputScheduler: Sequencer.Immediate);
+        var command = ReactiveCommand.Create<int, int>(static x => x * DoubleMultiplier, outputScheduler: Sequencer.Immediate);
         var outer = new BehaviorSignal<IReactiveCommand<int, int>?>(command);
         var results = new List<int>();
 
@@ -388,11 +388,11 @@ public class SwitchSubscribeMixinTests
     public async Task SwitchSubscribe_CommandWithHandlers_ShouldThrowArgumentNullException_WhenAnyParameterIsNull()
     {
         // Arrange
-        var command = ReactiveCommand.Create<int, int>(x => x * DoubleMultiplier, outputScheduler: Sequencer.Immediate);
+        var command = ReactiveCommand.Create<int, int>(static x => x * DoubleMultiplier, outputScheduler: Sequencer.Immediate);
         var source = Signal.Emit<IReactiveCommand<int, int>?>(command);
-        Action<int> onNext = _ => { };
-        Action<Exception> onError = _ => { };
-        var onCompleted = () => { };
+        Action<int> onNext = static _ => { };
+        Action<Exception> onError = static _ => { };
+        var onCompleted = static () => { };
 
         // Act & Assert
         await Assert.That(() =>
@@ -415,7 +415,7 @@ public class SwitchSubscribeMixinTests
         const IObservable<IReactiveCommand<int, int>?> source = null!;
 
         // Act & Assert
-        await Assert.That(() => SwitchSubscribeMixins.SwitchSelect(source, cmd => cmd.IsExecuting))
+        await Assert.That(static () => SwitchSubscribeMixins.SwitchSelect(source, static cmd => cmd.IsExecuting))
             .Throws<ArgumentException>();
     }
 
@@ -425,7 +425,7 @@ public class SwitchSubscribeMixinTests
     public async Task SwitchSelect_Command_ShouldThrowArgumentNullException_WhenSelectorIsNull()
     {
         // Arrange
-        var command = ReactiveCommand.Create<int, int>(x => x * DoubleMultiplier, outputScheduler: Sequencer.Immediate);
+        var command = ReactiveCommand.Create<int, int>(static x => x * DoubleMultiplier, outputScheduler: Sequencer.Immediate);
         var source = Signal.Emit<IReactiveCommand<int, int>?>(command);
 
         // Act & Assert
@@ -439,12 +439,12 @@ public class SwitchSubscribeMixinTests
     public async Task SwitchSelect_Command_ShouldProjectCommandProperty()
     {
         // Arrange
-        var command = ReactiveCommand.Create<int, int>(x => x * DoubleMultiplier, outputScheduler: Sequencer.Immediate);
+        var command = ReactiveCommand.Create<int, int>(static x => x * DoubleMultiplier, outputScheduler: Sequencer.Immediate);
         var outer = new BehaviorSignal<IReactiveCommand<int, int>?>(command);
         var isExecutingValues = new List<bool>();
 
         // Act
-        using var subscription = SwitchSubscribeMixins.SwitchSelect(outer, cmd => cmd.IsExecuting).Subscribe(isExecutingValues.Add);
+        using var subscription = SwitchSubscribeMixins.SwitchSelect(outer, static cmd => cmd.IsExecuting).Subscribe(isExecutingValues.Add);
 
         await command.Execute(CommandInput);
 
@@ -460,12 +460,12 @@ public class SwitchSubscribeMixinTests
     {
         // Arrange
         const int MinimumValueCount = 2;
-        var command1 = ReactiveCommand.Create<int, int>(x => x * DoubleMultiplier, outputScheduler: Sequencer.Immediate);
-        var command2 = ReactiveCommand.Create<int, int>(x => x * TripleMultiplier, outputScheduler: Sequencer.Immediate);
+        var command1 = ReactiveCommand.Create<int, int>(static x => x * DoubleMultiplier, outputScheduler: Sequencer.Immediate);
+        var command2 = ReactiveCommand.Create<int, int>(static x => x * TripleMultiplier, outputScheduler: Sequencer.Immediate);
         var outer = new BehaviorSignal<IReactiveCommand<int, int>?>(command1);
         var canExecuteValues = new List<bool>();
 
-        using var subscription = SwitchSubscribeMixins.SwitchSelect(outer, cmd => cmd.CanExecute).Subscribe(canExecuteValues.Add);
+        using var subscription = SwitchSubscribeMixins.SwitchSelect(outer, static cmd => cmd.CanExecute).Subscribe(canExecuteValues.Add);
 
         // Act - Switch to new command
         outer.OnNext(command2);
@@ -480,10 +480,10 @@ public class SwitchSubscribeMixinTests
     public async Task SwitchSubscribe_CommandWithSelector_ShouldThrowArgumentNullException_WhenAnyParameterIsNull()
     {
         // Arrange
-        var command = ReactiveCommand.Create<int, int>(x => x * DoubleMultiplier, outputScheduler: Sequencer.Immediate);
+        var command = ReactiveCommand.Create<int, int>(static x => x * DoubleMultiplier, outputScheduler: Sequencer.Immediate);
         var source = Signal.Emit<IReactiveCommand<int, int>?>(command);
-        Func<IReactiveCommand<int, int>, IObservable<bool>> selector = cmd => cmd.IsExecuting;
-        Action<bool> onNext = _ => { };
+        Func<IReactiveCommand<int, int>, IObservable<bool>> selector = static cmd => cmd.IsExecuting;
+        Action<bool> onNext = static _ => { };
 
         // Act & Assert
         await Assert.That(() => ((IObservable<IReactiveCommand<int, int>?>)null!).SwitchSubscribe(selector, onNext))
@@ -500,12 +500,12 @@ public class SwitchSubscribeMixinTests
     public async Task SwitchSubscribe_CommandWithSelector_ShouldProjectAndSubscribe()
     {
         // Arrange
-        var command = ReactiveCommand.Create<int, int>(x => x * DoubleMultiplier, outputScheduler: Sequencer.Immediate);
+        var command = ReactiveCommand.Create<int, int>(static x => x * DoubleMultiplier, outputScheduler: Sequencer.Immediate);
         var outer = new BehaviorSignal<IReactiveCommand<int, int>?>(command);
         var isExecutingValues = new List<bool>();
 
         // Act
-        using var subscription = outer.SwitchSubscribe(cmd => cmd.IsExecuting, isExecutingValues.Add);
+        using var subscription = outer.SwitchSubscribe(static cmd => cmd.IsExecuting, isExecutingValues.Add);
         await command.Execute(CommandInput);
 
         // Assert
@@ -519,12 +519,12 @@ public class SwitchSubscribeMixinTests
         SwitchSubscribe_CommandWithSelectorAndHandlers_ShouldThrowArgumentNullException_WhenAnyParameterIsNull()
     {
         // Arrange
-        var command = ReactiveCommand.Create<int, int>(x => x * DoubleMultiplier, outputScheduler: Sequencer.Immediate);
+        var command = ReactiveCommand.Create<int, int>(static x => x * DoubleMultiplier, outputScheduler: Sequencer.Immediate);
         var source = Signal.Emit<IReactiveCommand<int, int>?>(command);
-        Func<IReactiveCommand<int, int>, IObservable<bool>> selector = cmd => cmd.IsExecuting;
-        Action<bool> onNext = _ => { };
-        Action<Exception> onError = _ => { };
-        var onCompleted = () => { };
+        Func<IReactiveCommand<int, int>, IObservable<bool>> selector = static cmd => cmd.IsExecuting;
+        Action<bool> onNext = static _ => { };
+        Action<Exception> onError = static _ => { };
+        var onCompleted = static () => { };
 
         // Act & Assert
         await Assert.That(() =>

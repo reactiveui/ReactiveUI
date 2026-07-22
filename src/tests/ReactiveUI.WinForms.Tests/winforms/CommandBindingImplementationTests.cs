@@ -47,7 +47,7 @@ public class CommandBindingImplementationTests
 
         await Assert.That(invokeCount).IsEqualTo(1);
 
-        vm.Command1 = ReactiveCommand.Create(() => { });
+        vm.Command1 = ReactiveCommand.Create(static () => { });
 
         view.Command1.PerformClick();
         await Assert.That(invokeCount).IsEqualTo(1);
