@@ -6,7 +6,7 @@
 namespace ReactiveUI.AOT.Tests;
 
 /// <summary>Test routable view model for AOT testing.</summary>
-internal sealed class TestRoutableViewModel : ReactiveObject, IRoutableViewModel
+internal sealed class TestRoutableViewModel : ReactiveObject, IRoutableViewModel, IDisposable
 {
     /// <inheritdoc/>
     public string? UrlPathSegment { get; } = "test";
@@ -15,5 +15,8 @@ internal sealed class TestRoutableViewModel : ReactiveObject, IRoutableViewModel
     public IScreen HostScreen { get; } = null!;
 
     /// <summary>Gets the view model activator.</summary>
-    public ViewModelActivator Activator { get; } = new();
+    internal ViewModelActivator Activator { get; } = new();
+
+    /// <inheritdoc/>
+    public void Dispose() => Activator.Dispose();
 }

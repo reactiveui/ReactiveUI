@@ -293,7 +293,7 @@ public class RoutedViewHostTest
         // Navigate -> OnNavigateRequested -> StacksAreDifferent() == true -> schedules OnNavigateAsync ->
         // ResolveCurrentPage resolves and pushes the current view model's page.
         var navigateTarget = new TestRoutableViewModel();
-        _ = host.Router.Navigate.Execute(navigateTarget).Subscribe(_ => { });
+        _ = host.Router.Navigate.Execute(navigateTarget).Subscribe(static _ => { });
         await Task.Delay(SchedulerProcessingDelayMs);
 
         await Assert.That(host.Navigation.NavigationStack).IsNotEmpty();
@@ -315,7 +315,7 @@ public class RoutedViewHostTest
 
         var initialCount = host.Navigation.NavigationStack.Count;
 
-        _ = host.Router.Navigate.Execute(viewModel).Subscribe(_ => { });
+        _ = host.Router.Navigate.Execute(viewModel).Subscribe(static _ => { });
         await Task.Delay(SchedulerProcessingDelayMs);
 
         await Assert.That(host.Navigation.NavigationStack.Count).IsEqualTo(initialCount);
@@ -339,7 +339,7 @@ public class RoutedViewHostTest
             base.Initialize();
 
             // Deliberately do not register an IScreen so the RoutedViewHost constructor throws.
-            _helper.Initialize(builder => _ = builder.WithMaui().WithCoreServices());
+            _helper.Initialize(static builder => _ = builder.WithMaui().WithCoreServices());
         }
 
         /// <inheritdoc/>
@@ -362,7 +362,7 @@ public class RoutedViewHostTest
         {
             base.Initialize();
 
-            _helper.Initialize(builder =>
+            _helper.Initialize(static builder =>
             {
                 _ = builder
                     .WithMaui()
@@ -370,7 +370,7 @@ public class RoutedViewHostTest
                     .WithCoreServices();
 
                 // Register IScreen for constructor
-                AppLocator.CurrentMutable.Register<IScreen>(() => new TestScreen());
+                AppLocator.CurrentMutable.Register<IScreen>(static () => new TestScreen());
             });
         }
 
@@ -403,11 +403,6 @@ public class RoutedViewHostTest
         /// <summary>Exposes the protected InvalidateCurrentViewModel method.</summary>
         public void PublicInvalidateCurrentViewModel() =>
             InvalidateCurrentViewModel();
-
-        /// <summary>Exposes the protected SyncNavigationStacksAsync method.</summary>
-        /// <returns>A task representing the asynchronous operation.</returns>
-        public Task PublicSyncNavigationStacksAsync() =>
-            SyncNavigationStacksAsync();
     }
 
     /// <summary>Test routable view model.</summary>

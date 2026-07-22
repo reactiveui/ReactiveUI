@@ -3,7 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Diagnostics.CodeAnalysis;
 using ReactiveUI.Primitives.Disposables;
 
 #if REACTIVE_SHIM
@@ -43,19 +42,15 @@ public class ReactiveCommand<TParam, TResult> : ReactiveCommandBase<TParam, TRes
     private readonly IDisposable _canExecuteSubscription;
 
     /// <summary>Broadcaster for the effective canExecute value.</summary>
-    [SuppressMessage("Major Code Smell", "S3459:Unassigned members should be removed", Justification = "Mutated in place via Broadcaster methods.")]
     private Broadcaster<bool> _canExecuteBroadcaster;
 
     /// <summary>Broadcaster for the isExecuting value.</summary>
-    [SuppressMessage("Major Code Smell", "S3459:Unassigned members should be removed", Justification = "Mutated in place via Broadcaster methods.")]
     private Broadcaster<bool> _isExecutingBroadcaster;
 
     /// <summary>Broadcaster for thrown exceptions.</summary>
-    [SuppressMessage("Major Code Smell", "S3459:Unassigned members should be removed", Justification = "Mutated in place via Broadcaster methods.")]
     private Broadcaster<Exception> _exceptionsBroadcaster;
 
     /// <summary>Broadcaster for result values delivered to command subscribers.</summary>
-    [SuppressMessage("Major Code Smell", "S3459:Unassigned members should be removed", Justification = "Mutated in place via Broadcaster methods.")]
     private Broadcaster<TResult> _resultsBroadcaster;
 
     /// <summary>The latest value from the user-supplied canExecute observable (false until it first emits).</summary>
@@ -73,6 +68,15 @@ public class ReactiveCommand<TParam, TResult> : ReactiveCommandBase<TParam, TRes
     /// <summary>Latched once the command has been disposed.</summary>
     private bool _disposed;
 
+    /// <summary>Lazily created canExecute stream; deferred so the constructor does not leak <c>this</c>.</summary>
+    private BoolStream? _canExecuteStream;
+
+    /// <summary>Lazily created isExecuting stream; deferred so the constructor does not leak <c>this</c>.</summary>
+    private BoolStream? _isExecutingStream;
+
+    /// <summary>Lazily created thrown-exceptions stream; deferred so the constructor does not leak <c>this</c>.</summary>
+    private ExceptionStream? _thrownExceptionsStream;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="ReactiveCommand{TParam, TResult}" /> class for work that
     /// signals cancellation through a separate callback (as opposed to cancelling by unsubscribing).
@@ -88,9 +92,6 @@ public class ReactiveCommand<TParam, TResult> : ReactiveCommandBase<TParam, TRes
     {
         _execute = execute ?? throw new ArgumentNullException(nameof(execute));
         _outputScheduler = outputScheduler ?? RxSchedulers.MainThreadScheduler;
-        CanExecute = new BoolStream(this, isExecuting: false);
-        IsExecuting = new BoolStream(this, isExecuting: true);
-        ThrownExceptions = new ExceptionStream(this);
         _canExecuteSubscription = (canExecute ?? new ReturnSignal<bool>(true, Sequencer.Immediate))
             .Subscribe(new DelegateObserver<bool>(OnUserCanExecute, OnUserCanExecuteError));
     }
@@ -112,13 +113,13 @@ public class ReactiveCommand<TParam, TResult> : ReactiveCommandBase<TParam, TRes
     }
 
     /// <inheritdoc/>
-    public override IObservable<bool> CanExecute { get; }
+    public override IObservable<bool> CanExecute => _canExecuteStream ??= new BoolStream(this, isExecuting: false);
 
     /// <inheritdoc/>
-    public override IObservable<bool> IsExecuting { get; }
+    public override IObservable<bool> IsExecuting => _isExecutingStream ??= new BoolStream(this, isExecuting: true);
 
     /// <inheritdoc/>
-    public override IObservable<Exception> ThrownExceptions { get; }
+    public override IObservable<Exception> ThrownExceptions => _thrownExceptionsStream ??= new ExceptionStream(this);
 
     /// <inheritdoc/>
     public override IObservable<TResult> Execute(TParam parameter) => new ExecuteObservable(this, parameter);

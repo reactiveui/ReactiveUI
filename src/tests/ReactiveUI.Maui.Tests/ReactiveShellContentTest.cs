@@ -93,7 +93,7 @@ public class ReactiveShellContentTest
         {
             base.Initialize();
 
-            _helper.Initialize(builder => _ = builder.WithMaui().WithCoreServices());
+            _helper.Initialize(static builder => _ = builder.WithMaui().WithCoreServices());
 
             AppLocator.CurrentMutable.Register<IViewFor<TestViewModel>>(static () => new TestView());
         }

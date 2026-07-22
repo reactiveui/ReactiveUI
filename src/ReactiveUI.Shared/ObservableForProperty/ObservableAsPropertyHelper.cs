@@ -3,7 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Diagnostics.CodeAnalysis;
 using ReactiveUI.Primitives.Disposables;
 using Splat;
 
@@ -41,6 +40,9 @@ namespace ReactiveUI;
 [System.Diagnostics.DebuggerDisplay("Value = {_lastValue}, IsSubscribed = {IsSubscribed}")]
 public sealed class ObservableAsPropertyHelper<T> : IHandleObservableErrors, IDisposable, IEnableLogger
 {
+    /// <summary>The no-op onChanging callback used when the caller supplies none.</summary>
+    private static readonly Action<T?> _noOp = static _ => { };
+
     /// <summary>Guards the distinct/skip state and the exception observer state.</summary>
 #if NET9_0_OR_GREATER
     private readonly Lock _gate = new();
@@ -67,7 +69,6 @@ public sealed class ObservableAsPropertyHelper<T> : IHandleObservableErrors, IDi
     private readonly IObservable<T?> _sourceObservable;
 
     /// <summary>Broadcasts exceptions thrown during property change handling.</summary>
-    [SuppressMessage("Major Code Smell", "S3459:Unassigned members should be removed", Justification = "Mutated in place via Broadcaster methods.")]
     private Broadcaster<Exception> _exceptions;
 
     /// <summary>Lazily-created observable wrapper over <see cref="_exceptions"/>.</summary>
@@ -167,7 +168,7 @@ public sealed class ObservableAsPropertyHelper<T> : IHandleObservableErrors, IDi
         IObservable<T?> observable,
         Action<T?> onChanged,
         Action<T?>? onChanging)
-        : this(observable, onChanged, onChanging, () => default, false, null)
+        : this(observable, onChanged, onChanging, static () => default, false, null)
     {
     }
 
@@ -272,10 +273,6 @@ public sealed class ObservableAsPropertyHelper<T> : IHandleObservableErrors, IDi
     /// <param name="getInitialValue">Factory that returns the initial value; null defaults to returning default(T).</param>
     /// <param name="deferSubscription">When true, defers source subscription until the first read of Value.</param>
     /// <param name="scheduler">The scheduler on which change notifications are delivered.</param>
-    [SuppressMessage(
-        "Style",
-        "IDE0200:Lambda expression can be removed",
-        Justification = "Method group would force eager Lazy initialization.")]
     public ObservableAsPropertyHelper(
         IObservable<T?> observable,
         Action<T?> onChanged,
@@ -288,7 +285,7 @@ public sealed class ObservableAsPropertyHelper<T> : IHandleObservableErrors, IDi
         ArgumentExceptionHelper.ThrowIfNull(onChanged);
 
         _scheduler = scheduler ?? Sequencer.CurrentThread;
-        _onChanging = onChanging ?? NoOp;
+        _onChanging = onChanging ?? _noOp;
         _onChanged = onChanged;
         _getInitialValue = getInitialValue ?? GetDefault;
         _skipInitial = deferSubscription;
@@ -305,7 +302,7 @@ public sealed class ObservableAsPropertyHelper<T> : IHandleObservableErrors, IDi
         _distinctPrevious = initial;
         _hasDistinctPrevious = true;
         ScheduleDeliver(initial);
-        _sourceSubscription = _sourceObservable.Subscribe(new SourceObserver(this));
+        _sourceSubscription = SubscribeToSource();
         _activated = 1;
     }
 
@@ -329,7 +326,7 @@ public sealed class ObservableAsPropertyHelper<T> : IHandleObservableErrors, IDi
     /// Useful for scenarios where you use deferred subscription and want to know if
     /// the ObservableAsPropertyHelper Value has been accessed yet.
     /// </summary>
-    public bool IsSubscribed => _activated > 0;
+    public bool IsSubscribed => Volatile.Read(ref _activated) > 0;
 
     /// <summary>Gets an observable which signals whenever an exception would normally terminate ReactiveUI internal state.</summary>
     public IObservable<Exception> ThrownExceptions => _thrownExceptions ??= new(this);
@@ -379,7 +376,7 @@ public sealed class ObservableAsPropertyHelper<T> : IHandleObservableErrors, IDi
     internal void ActivateOnFirstAccess()
     {
         _lastValue = _getInitialValue();
-        var subscription = _sourceObservable.Subscribe(new SourceObserver(this));
+        var subscription = SubscribeToSource();
         lock (_gate)
         {
             if (_disposed)
@@ -422,16 +419,13 @@ public sealed class ObservableAsPropertyHelper<T> : IHandleObservableErrors, IDi
         ScheduleDeliver(value);
     }
 
-    /// <summary>The no-op onChanging callback used when none is supplied.</summary>
-    /// <param name="value">The unused value.</param>
-    private static void NoOp(T? value)
-    {
-        // Intentionally empty: the default onChanging callback does nothing when the caller supplies none.
-    }
-
     /// <summary>Returns the default value of <typeparamref name="T"/>.</summary>
     /// <returns>The default value.</returns>
     private static T? GetDefault() => default;
+
+    /// <summary>Subscribes the helper to its source observable.</summary>
+    /// <returns>The source subscription.</returns>
+    private IDisposable SubscribeToSource() => _sourceObservable.Subscribe(new SourceObserver(this));
 
     /// <summary>Schedules delivery of a value's change notifications on the configured scheduler.</summary>
     /// <param name="value">The value to deliver.</param>

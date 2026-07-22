@@ -32,22 +32,20 @@ public static partial class WhenAnyObservableMixins
             Expression<Func<TSender, IObservable<TRet>?>> obs1,
             Expression<Func<TSender, IObservable<TRet>?>> obs2,
             Expression<Func<TSender, IObservable<TRet>?>> obs3,
-            Expression<Func<TSender, IObservable<TRet>?>> obs4)
-        {
-            return new WhenAnyObservableMergeSink<TRet>(
+            Expression<Func<TSender, IObservable<TRet>?>> obs4) =>
+            new WhenAnyObservableMergeSink<TRet>(
                 sender.WhenAny(
                     obs1,
                     obs2,
                     obs3,
                     obs4,
-                    (o1, o2, o3, o4) => new[]
+                    static (o1, o2, o3, o4) => new[]
                     {
                         o1.Value!.EmptyIfNull(),
                         o2.Value!.EmptyIfNull(),
                         o3.Value!.EmptyIfNull(),
                         o4.Value!.EmptyIfNull(),
                     }));
-        }
 
         /// <summary>Observes several observable-valued properties and combines their latest values with a selector.</summary>
         /// <typeparam name="TRet">The type of the resulting value.</typeparam>

@@ -23,7 +23,7 @@ public partial class WhenAnySinkDirectTests
         var s3 = new Signal<string>();
         var s4 = new Signal<string>();
         var rec = new Recorder<string>();
-        using (new WhenAnyChangeSink<string, string, string, string, string>(s1, s2, s3, s4, (x1, x2, x3, x4) => x1 + x2 + x3 + x4).Subscribe(rec))
+        using (new WhenAnyChangeSink<string, string, string, string, string>(s1, s2, s3, s4, static (x1, x2, x3, x4) => x1 + x2 + x3 + x4).Subscribe(rec))
         {
             s1.OnNext("v1");
             s2.OnNext("v2");
@@ -40,7 +40,7 @@ public partial class WhenAnySinkDirectTests
         var e3 = new Signal<string>();
         var e4 = new Signal<string>();
         var errRec = new Recorder<string>();
-        _ = new WhenAnyChangeSink<string, string, string, string, string>(e1, e2, e3, e4, (x1, x2, x3, x4) => x1 + x2 + x3 + x4).Subscribe(errRec);
+        _ = new WhenAnyChangeSink<string, string, string, string, string>(e1, e2, e3, e4, static (x1, x2, x3, x4) => x1 + x2 + x3 + x4).Subscribe(errRec);
         e1.OnError(ex);
 
         var k1 = new Signal<string>();
@@ -48,7 +48,7 @@ public partial class WhenAnySinkDirectTests
         var k3 = new Signal<string>();
         var k4 = new Signal<string>();
         var cmpRec = new Recorder<string>();
-        _ = new WhenAnyChangeSink<string, string, string, string, string>(k1, k2, k3, k4, (x1, x2, x3, x4) => x1 + x2 + x3 + x4).Subscribe(cmpRec);
+        _ = new WhenAnyChangeSink<string, string, string, string, string>(k1, k2, k3, k4, static (x1, x2, x3, x4) => x1 + x2 + x3 + x4).Subscribe(cmpRec);
         k1.OnCompleted();
         k2.OnCompleted();
         k3.OnCompleted();

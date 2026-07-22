@@ -40,7 +40,7 @@ public class CombinedReactiveCommandBenchmarks
             _children[i] = ReactiveCommand.Create<RxVoid, RxVoid>(static parameter => parameter, outputScheduler: Sequencer.Immediate);
         }
 
-        _combined = ReactiveCommand.CreateCombined<RxVoid, RxVoid>(_children, null, Sequencer.Immediate);
+        _combined = ReactiveCommand.CreateCombined(_children, null, Sequencer.Immediate);
     }
 
     /// <summary>Disposes the combined and child commands.</summary>

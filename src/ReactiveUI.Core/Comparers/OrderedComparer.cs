@@ -33,8 +33,8 @@ public static class OrderedComparer
     /// <typeparam name="T">The comparison type.</typeparam>
     /// <returns>A comparer builder.</returns>
     [SuppressMessage(
-        "Major Code Smell",
-        "S4018:Generic methods should provide type parameter",
+        "Design",
+        "SST2307:A generic method's type parameter appears in no parameter, so no caller can infer it",
         Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
     public static IComparerBuilder<T> For<T>() => OrderedComparerTypeWrapper<T>.Instance;
 

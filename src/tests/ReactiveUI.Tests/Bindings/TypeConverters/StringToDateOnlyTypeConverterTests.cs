@@ -24,8 +24,11 @@ public class StringToDateOnlyTypeConverterTests
     [Test]
     public async Task TryConvert_ValidString_Succeeds()
     {
+        const int ExpectedYear = 2_024;
+        const int ExpectedDay = 15;
+
         var converter = new StringToDateOnlyTypeConverter();
-        var expected = new DateOnly(2_024, 1, 15);
+        var expected = new DateOnly(ExpectedYear, 1, ExpectedDay);
 
         var result = converter.TryConvert(expected.ToString(), null, out var output);
 

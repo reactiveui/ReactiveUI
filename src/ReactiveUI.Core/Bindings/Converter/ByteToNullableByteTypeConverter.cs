@@ -7,7 +7,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace ReactiveUI;
 
-/// <summary>Converts <see cref="byte"/> to <see cref="Nullable{Byte}"/>.</summary>
+/// <summary>Converts <see cref="byte"/> to <see cref="byte"/>?.</summary>
 public sealed class ByteToNullableByteTypeConverter : IBindingTypeConverter<byte, byte?>
 {
     /// <inheritdoc/>

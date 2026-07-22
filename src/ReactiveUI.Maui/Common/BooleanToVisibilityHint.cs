@@ -3,8 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Diagnostics.CodeAnalysis;
-
 #if REACTIVE_SHIM
 namespace ReactiveUI.Reactive;
 #else
@@ -13,10 +11,6 @@ namespace ReactiveUI;
 
 /// <summary>Enum that hints at the visibility of a ui element.</summary>
 [Flags]
-[SuppressMessage(
-    "Minor Code Smell",
-    "S2342:Enumeration types should comply with a naming convention",
-    Justification = "Established public API; renaming is breaking.")]
 public enum BooleanToVisibilityHint
 {
     /// <summary>Do not modify the boolean type conversion from it's default action of using the Visibility.Collapsed.</summary>

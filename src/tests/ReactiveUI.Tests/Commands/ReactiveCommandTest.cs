@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics.CodeAnalysis;
 using ReactiveUI.Tests.Utilities.Schedulers;
 using TUnit.Core.Executors;
 
@@ -47,7 +48,7 @@ public partial class ReactiveCommandTest
     public async Task CanExecute_IsBehavioral()
     {
         var command = ReactiveCommand.Create(
-            () => { },
+            static () => { },
             outputScheduler: Sequencer.Immediate);
         var canExecute = command.CanExecute.Collect();
 
@@ -66,7 +67,7 @@ public partial class ReactiveCommandTest
     {
         var scheduler = TestContext.Current.GetVirtualTimeScheduler();
         var execute = ImmutableReturnRxVoidSignal.Instance.Delay(TimeSpan.FromSeconds(1), scheduler);
-        var command = ReactiveCommand.CreateFromObservable<RxVoid>(
+        var command = ReactiveCommand.CreateFromObservable(
             () => execute,
             outputScheduler: scheduler);
         var canExecute = command.CanExecute.Collect();
@@ -91,7 +92,7 @@ public partial class ReactiveCommandTest
     {
         var canExecuteSubject = new BehaviorSignal<bool>(false);
         var command = ReactiveCommand.Create(
-            () => { },
+            static () => { },
             canExecuteSubject,
             Sequencer.Immediate);
         var canExecute = command.CanExecute.Collect();
@@ -118,7 +119,7 @@ public partial class ReactiveCommandTest
     {
         var canExecuteSubject = new BehaviorSignal<bool>(false);
         var command = ReactiveCommand.Create(
-            () => { },
+            static () => { },
             canExecuteSubject,
             Sequencer.Immediate);
         var canExecute = command.CanExecute.Collect();
@@ -145,7 +146,7 @@ public partial class ReactiveCommandTest
     {
         var canExecuteSubject = new Signal<bool>();
         var command = ReactiveCommand.Create(
-            () => { },
+            static () => { },
             canExecuteSubject,
             Sequencer.Immediate);
         var exceptions = command.ThrownExceptions.Collect();
@@ -163,7 +164,7 @@ public partial class ReactiveCommandTest
     {
         var canExecuteSubject = new BehaviorSignal<bool>(true);
         var command = ReactiveCommand.Create(
-            () => { },
+            static () => { },
             canExecuteSubject,
             Sequencer.Immediate);
 
@@ -215,7 +216,7 @@ public partial class ReactiveCommandTest
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task Create_Action_ThrowsOnNullExecute() =>
-        await Assert.ThrowsExactlyAsync<ArgumentNullException>(async () =>
+        await Assert.ThrowsExactlyAsync<ArgumentNullException>(static async () =>
         {
             _ = ReactiveCommand.Create(null!);
             await Task.CompletedTask;
@@ -267,7 +268,7 @@ public partial class ReactiveCommandTest
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task Create_ActionWithParam_ThrowsOnNullExecute() =>
-        await Assert.ThrowsExactlyAsync<ArgumentNullException>(async () =>
+        await Assert.ThrowsExactlyAsync<ArgumentNullException>(static async () =>
         {
             _ = ReactiveCommand.Create((Action<int>)null!);
             await Task.CompletedTask;
@@ -279,7 +280,7 @@ public partial class ReactiveCommandTest
     public async Task Create_Func_ReturnsResult()
     {
         var command = ReactiveCommand.Create(
-            () => ParameterValue,
+            static () => ParameterValue,
             outputScheduler: Sequencer.Immediate);
         var results = command.Collect();
 
@@ -293,7 +294,7 @@ public partial class ReactiveCommandTest
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task Create_Func_ThrowsOnNullExecute() =>
-        await Assert.ThrowsExactlyAsync<ArgumentNullException>(async () =>
+        await Assert.ThrowsExactlyAsync<ArgumentNullException>(static async () =>
         {
             _ = ReactiveCommand.Create((Func<int>)null!);
             await Task.CompletedTask;
@@ -334,7 +335,7 @@ public partial class ReactiveCommandTest
     public async Task Create_FuncWithParam_ReturnsResultFromParameter()
     {
         var command = ReactiveCommand.Create<int, string>(
-            param => param.ToString(),
+            static param => param.ToString(),
             outputScheduler: Sequencer.Immediate);
         var results = command.Collect();
 
@@ -347,7 +348,7 @@ public partial class ReactiveCommandTest
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task Create_FuncWithParam_ThrowsOnNullExecute() =>
-        await Assert.ThrowsExactlyAsync<ArgumentNullException>(async () =>
+        await Assert.ThrowsExactlyAsync<ArgumentNullException>(static async () =>
         {
             _ = ReactiveCommand.Create((Func<int, string>)null!);
             await Task.CompletedTask;
@@ -369,7 +370,7 @@ public partial class ReactiveCommandTest
         const int ThirdIndex = 2;
 
         var command = ReactiveCommand.Create<int, int>(
-            param => param * Multiplier,
+            static param => param * Multiplier,
             outputScheduler: Sequencer.Immediate);
         var results = command.Collect();
 
@@ -395,11 +396,11 @@ public partial class ReactiveCommandTest
         var canExecute2 = new BehaviorSignal<bool>(false);
 
         var cmd1 = ReactiveCommand.Create<int, int>(
-            x => x,
+            static x => x,
             canExecute1,
             Sequencer.Immediate);
         var cmd2 = ReactiveCommand.Create<int, int>(
-            x => x,
+            static x => x,
             canExecute2,
             Sequencer.Immediate);
 
@@ -483,10 +484,10 @@ public partial class ReactiveCommandTest
     public async Task CreateCombined_PropagatesChildExceptions()
     {
         var cmd1 = ReactiveCommand.Create<int, int>(
-            x => x,
+            static x => x,
             outputScheduler: Sequencer.Immediate);
         var cmd2 = ReactiveCommand.Create<int, int>(
-            x => throw new InvalidOperationException("Test exception"),
+            static x => throw new InvalidOperationException("Test exception"),
             outputScheduler: Sequencer.Immediate);
 
         var combined = ReactiveCommand.CreateCombined(
@@ -497,7 +498,7 @@ public partial class ReactiveCommandTest
 
         const int Parameter = 5;
 
-        _ = combined.Execute(Parameter).Subscribe(_ => { }, _ => { });
+        _ = combined.Execute(Parameter).Subscribe(static _ => { }, static _ => { });
 
         await Assert.That(exceptions).Count().IsEqualTo(1);
         await Assert.That(exceptions[0]).IsTypeOf<InvalidOperationException>();
@@ -507,7 +508,7 @@ public partial class ReactiveCommandTest
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task CreateCombined_ThrowsOnEmptyChildCommands() =>
-        await Assert.ThrowsAsync<ArgumentException>(async () =>
+        await Assert.ThrowsAsync<ArgumentException>(static async () =>
         {
             _ = ReactiveCommand.CreateCombined<int, int>([]);
             await Task.CompletedTask;
@@ -517,7 +518,7 @@ public partial class ReactiveCommandTest
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task CreateCombined_ThrowsOnNullChildCommands() =>
-        await Assert.ThrowsExactlyAsync<ArgumentNullException>(async () =>
+        await Assert.ThrowsExactlyAsync<ArgumentNullException>(static async () =>
         {
             _ = ReactiveCommand.CreateCombined<int, int>(null!);
             await Task.CompletedTask;
@@ -534,7 +535,7 @@ public partial class ReactiveCommandTest
         const int ThirdIndex = 2;
 
         var command = ReactiveCommand.CreateFromObservable(
-            () => new[] { 1, SecondValue, ThirdValue }.ToObservable(),
+            static () => new[] { 1, SecondValue, ThirdValue }.ToObservable(),
             outputScheduler: Sequencer.Immediate);
         var results = command.Collect();
 
@@ -555,7 +556,7 @@ public partial class ReactiveCommandTest
     public async Task CreateFromObservable_WithoutParam_EmitsObservableResults()
     {
         var command = ReactiveCommand.CreateFromObservable(
-            () => Signal.Emit(ParameterValue),
+            static () => Signal.Emit(ParameterValue),
             outputScheduler: Sequencer.Immediate);
         var results = command.Collect();
 
@@ -568,7 +569,7 @@ public partial class ReactiveCommandTest
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task CreateFromObservable_WithoutParam_ThrowsOnNullExecute() =>
-        await Assert.ThrowsExactlyAsync<ArgumentNullException>(async () =>
+        await Assert.ThrowsExactlyAsync<ArgumentNullException>(static async () =>
         {
             _ = ReactiveCommand.CreateFromObservable((Func<IObservable<int>>)null!);
             await Task.CompletedTask;
@@ -577,10 +578,15 @@ public partial class ReactiveCommandTest
     /// <summary>Verifies that a parameterized observable command passes the parameter to its observable factory.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
+    [SuppressMessage(
+        "Performance",
+        "PSH1211:pass the value directly instead of calling ToString",
+        Justification = "ToString() converts the int parameter to the string result type required by " +
+            "CreateFromObservable<int, string>; removing it would change the observable's element type.")]
     public async Task CreateFromObservable_WithParam_PassesParameterToObservable()
     {
         var command = ReactiveCommand.CreateFromObservable<int, string>(
-            param => Signal.Emit(param.ToString()),
+            static param => Signal.Emit(param.ToString()),
             outputScheduler: Sequencer.Immediate);
         var results = command.Collect();
 
@@ -592,7 +598,7 @@ public partial class ReactiveCommandTest
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task CreateFromObservable_WithParam_ThrowsOnNullExecute() =>
-        await Assert.ThrowsExactlyAsync<ArgumentNullException>(async () =>
+        await Assert.ThrowsExactlyAsync<ArgumentNullException>(static async () =>
         {
             _ = ReactiveCommand.CreateFromObservable((Func<int, IObservable<string>>)null!);
             await Task.CompletedTask;

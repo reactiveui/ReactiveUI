@@ -70,19 +70,17 @@ public class ReactiveObject : IReactiveNotifyPropertyChanged<IReactiveObject>, I
     }
 
     /// <summary>Backing handler for the PropertyChanging event.</summary>
-    [SuppressMessage("Roslynator", "RCS1159:Use EventHandler<T>", Justification = "Long term design.")]
     [SuppressMessage(
-        "Major Code Smell",
-        "S3908:Generic event handlers should be used",
-        Justification = "Backs the INotifyPropertyChanging.PropertyChanging interface event.")]
+        "Design",
+        "SST2304:Events should use the standard handler signature",
+        Justification = "Backs the INotifyPropertyChanging.PropertyChanging interface event, whose fixed PropertyChangingEventHandler delegate is forwarded through this handler.")]
     private event PropertyChangingEventHandler? PropertyChangingHandler;
 
     /// <summary>Backing handler for the PropertyChanged event.</summary>
-    [SuppressMessage("Roslynator", "RCS1159:Use EventHandler<T>", Justification = "Long term design.")]
     [SuppressMessage(
-        "Major Code Smell",
-        "S3908:Generic event handlers should be used",
-        Justification = "Backs the INotifyPropertyChanged.PropertyChanged interface event.")]
+        "Design",
+        "SST2304:Events should use the standard handler signature",
+        Justification = "Backs the INotifyPropertyChanged.PropertyChanged interface event, whose fixed PropertyChangedEventHandler delegate is forwarded through this handler.")]
     private event PropertyChangedEventHandler? PropertyChangedHandler;
 
     /// <inheritdoc />

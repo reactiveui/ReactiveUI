@@ -16,6 +16,10 @@ namespace System.Diagnostics.CodeAnalysis;
 [ExcludeFromCodeCoverage]
 [DebuggerNonUserCode]
 [AttributeUsage(AttributeTargets.Parameter)]
+[SuppressMessage(
+    "Design",
+    "SST2324:Do not declare a member more accessible than its containing type",
+    Justification = "Mirrors the shape of the corresponding BCL type (System.Diagnostics.CodeAnalysis.MaybeNullWhenAttribute); the polyfill compiles only where the BCL lacks it.")]
 internal sealed class MaybeNullWhenAttribute : Attribute
 {
     /// <summary>Initializes a new instance of the <see cref="MaybeNullWhenAttribute"/> class.</summary>

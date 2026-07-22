@@ -23,9 +23,9 @@ public class BuilderMixinsTests
     {
         var builder = RxAppBuilder.CreateReactiveUIBuilder();
 
-        var afterTyped = BuilderMixins.WithConverter<string, int>(builder, new StubTypedConverter<string, int>());
+        var afterTyped = BuilderMixins.WithConverter(builder, new StubTypedConverter<string, int>());
         var afterInterface = BuilderMixins.WithConverter(builder, (IBindingTypeConverter)new StubTypedConverter<string, int>());
-        var afterTypedFactory = BuilderMixins.WithConverter<string, int>(builder, static () => new StubTypedConverter<string, int>());
+        var afterTypedFactory = BuilderMixins.WithConverter(builder, static () => new StubTypedConverter<string, int>());
         var afterInterfaceFactory = BuilderMixins.WithConverter(builder, static () => (IBindingTypeConverter)new StubTypedConverter<string, int>());
         var afterMany = BuilderMixins.WithConverters(builder, new StubTypedConverter<string, int>(), new StubTypedConverter<string, int>());
 

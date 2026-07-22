@@ -30,7 +30,6 @@ namespace ReactiveUI;
 /// </para>
 /// </remarks>
 [SuppressMessage("ReSharper", "InconsistentNaming", Justification = "Legacy naming convention")]
-[SuppressMessage("Minor Code Smell", "S101:Types should be named in PascalCase", Justification = "Legacy naming convention")]
 public sealed class POCOObservableForProperty : ICreatesObservableForProperty
 {
     /// <summary>Tracks whether a warning has been logged for a given (runtime type, property name) pair.</summary>

@@ -8,6 +8,9 @@ namespace ReactiveUI.Tests;
 /// <summary>Tests for <see cref="OrderedComparer" /> and <see cref="OrderedComparer{T}" />.</summary>
 public class OrderedComparerTest
 {
+    /// <summary>The value assigned to the second comparison item in ordering assertions.</summary>
+    private const int SecondItemValue = 2;
+
     /// <summary>Tests that builder OrderBy creates a comparer.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
@@ -15,7 +18,7 @@ public class OrderedComparerTest
     {
         var builder = OrderedComparer.For<TestClass>();
 
-        var comparer = builder.OrderBy(x => x.Value);
+        var comparer = builder.OrderBy(static x => x.Value);
 
         await Assert.That(comparer).IsNotNull();
     }
@@ -27,7 +30,7 @@ public class OrderedComparerTest
     {
         var builder = OrderedComparer.For<TestClass>();
 
-        var comparer = builder.OrderByDescending(x => x.Value);
+        var comparer = builder.OrderByDescending(static x => x.Value);
 
         await Assert.That(comparer).IsNotNull();
     }
@@ -59,9 +62,9 @@ public class OrderedComparerTest
     [Test]
     public async Task OrderBy_SortsAscending()
     {
-        var comparer = OrderedComparer<TestClass>.OrderBy(x => x.Value);
+        var comparer = OrderedComparer<TestClass>.OrderBy(static x => x.Value);
         var obj1 = new TestClass { Value = 1 };
-        var obj2 = new TestClass { Value = 2 };
+        var obj2 = new TestClass { Value = SecondItemValue };
 
         var result = comparer.Compare(obj1, obj2);
 
@@ -73,10 +76,10 @@ public class OrderedComparerTest
     [Test]
     public async Task OrderBy_WithCustomComparer_UsesCustomComparer()
     {
-        var customComparer = Comparer<int>.Create((x, y) => y.CompareTo(x)); // Reverse order
-        var comparer = OrderedComparer<TestClass>.OrderBy(x => x.Value, customComparer);
+        var customComparer = Comparer<int>.Create(static (x, y) => y.CompareTo(x)); // Reverse order
+        var comparer = OrderedComparer<TestClass>.OrderBy(static x => x.Value, customComparer);
         var obj1 = new TestClass { Value = 1 };
-        var obj2 = new TestClass { Value = 2 };
+        var obj2 = new TestClass { Value = SecondItemValue };
 
         var result = comparer.Compare(obj1, obj2);
 
@@ -88,9 +91,9 @@ public class OrderedComparerTest
     [Test]
     public async Task OrderByDescending_SortsDescending()
     {
-        var comparer = OrderedComparer<TestClass>.OrderByDescending(x => x.Value);
+        var comparer = OrderedComparer<TestClass>.OrderByDescending(static x => x.Value);
         var obj1 = new TestClass { Value = 1 };
-        var obj2 = new TestClass { Value = 2 };
+        var obj2 = new TestClass { Value = SecondItemValue };
 
         var result = comparer.Compare(obj1, obj2);
 
@@ -102,10 +105,10 @@ public class OrderedComparerTest
     [Test]
     public async Task OrderByDescending_WithCustomComparer_UsesCustomComparer()
     {
-        var customComparer = Comparer<int>.Create((x, y) => y.CompareTo(x)); // Reverse order
-        var comparer = OrderedComparer<TestClass>.OrderByDescending(x => x.Value, customComparer);
+        var customComparer = Comparer<int>.Create(static (x, y) => y.CompareTo(x)); // Reverse order
+        var comparer = OrderedComparer<TestClass>.OrderByDescending(static x => x.Value, customComparer);
         var obj1 = new TestClass { Value = 1 };
-        var obj2 = new TestClass { Value = 2 };
+        var obj2 = new TestClass { Value = SecondItemValue };
 
         var result = comparer.Compare(obj1, obj2);
 

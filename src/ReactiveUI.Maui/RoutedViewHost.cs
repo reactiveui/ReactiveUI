@@ -35,6 +35,9 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
         typeof(RoutedViewHost),
         false);
 
+    /// <summary>The number of trailing navigation pages the stack reconciliation keeps in place before pruning the pages beneath them.</summary>
+    private const int TrailingPageCount = 2;
+
     /// <summary>The subscriptions created by this host.</summary>
     private readonly MultipleDisposable _subscriptions = [];
 
@@ -49,6 +52,10 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
     [RequiresUnreferencedCode(
         "This class uses reflection to determine view model types at runtime through ViewLocator, which may be incompatible with trimming.")]
     [RequiresDynamicCode("ViewLocator.ResolveView uses reflection which is incompatible with AOT compilation.")]
+    [SuppressMessage(
+        "Design",
+        "SST2403:'this' escapes before construction finishes",
+        Justification = "'this' is passed to the main-thread scheduler to marshal the initial navigation-stack sync onto the UI thread; the scheduled work runs after construction completes.")]
     public RoutedViewHost()
     {
         // Resolve the Router before wiring the subscriptions: SubscribeToNavigationStackChanges hooks
@@ -68,7 +75,11 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
         // navigation state must only be mutated from the UI thread, and marshalling here serialises the initial
         // sync with any subsequent navigation instead of racing it on a background thread (the previous Task.Run
         // could interleave its own PushAsync with a caller's push and leave CurrentPage pointing at the wrong page).
-        _ = RxSchedulers.MainThreadScheduler.Schedule(() => _ = PerformInitialNavigationSyncAsync());
+        _ = RxSchedulers.MainThreadScheduler.Schedule(this, static (scheduler, state) =>
+        {
+            _ = state.PerformInitialNavigationSyncAsync();
+            return EmptyDisposable.Instance;
+        });
     }
 
     /// <summary>Gets or sets the <see cref="RoutingState"/> of the view model stack.</summary>
@@ -117,7 +128,7 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
             pg.Title = vm.UrlPathSegment;
         }
 
-        return Signal.Emit<Page>(pg);
+        return Signal.Emit(pg);
     }
 
     /// <summary>Page for view model.</summary>
@@ -147,7 +158,11 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
 
         if (SetTitleOnNavigate)
         {
-            _ = RxSchedulers.MainThreadScheduler.Schedule(() => pg.Title = vm.UrlPathSegment);
+            _ = RxSchedulers.MainThreadScheduler.Schedule((page: pg, vm), static (_, state) =>
+            {
+                state.page.Title = state.vm.UrlPathSegment;
+                return EmptyDisposable.Instance;
+            });
         }
 
         return pg;
@@ -189,9 +204,9 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
             return;
         }
 
-        if (Navigation.NavigationStack.Count > 2)
+        if (Navigation.NavigationStack.Count > TrailingPageCount)
         {
-            for (var i = Navigation.NavigationStack.Count - 2; i >= 0; i--)
+            for (var i = Navigation.NavigationStack.Count - TrailingPageCount; i >= 0; i--)
             {
                 Navigation.RemovePage(Navigation.NavigationStack[i]);
             }
@@ -246,11 +261,11 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
     private void SubscribeToNavigationStackChanges() =>
         new FromEventObservable<RxVoid>(onNext =>
             {
-                void Handler(object? sender, NotifyCollectionChangedEventArgs e) => onNext(RxVoid.Default);
-                Router.NavigationStack.CollectionChanged += Handler;
-                return new ActionDisposable(() => Router.NavigationStack.CollectionChanged -= Handler);
+                NotifyCollectionChangedEventHandler handler = (_, _) => onNext(RxVoid.Default);
+                Router.NavigationStack.CollectionChanged += handler;
+                return new ActionDisposable(() => Router.NavigationStack.CollectionChanged -= handler);
             })
-            .Subscribe(new DelegateObserver<RxVoid>(async _ =>
+            .Subscribe(new DelegateObserver<RxVoid>(changed =>
             {
                 // Replaces .Where(_ => !_currentlyNavigating && Router?.NavigationStack.Count == 0).
                 if (_currentlyNavigating || Router?.NavigationStack.Count != 0)
@@ -258,7 +273,7 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
                     return;
                 }
 
-                await SyncNavigationStacksAsync();
+                _ = SyncNavigationStacksAsync();
             }))
             .DisposeWith(_subscriptions);
 
@@ -271,7 +286,7 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
     private void SubscribeToNavigateBack() =>
         Router?
             .NavigateBack
-            .Subscribe(new DelegateObserver<IRoutableViewModel>(async _ => await OnNavigateBackAsync()))
+            .Subscribe(new DelegateObserver<IRoutableViewModel>(vm => _ = OnNavigateBackAsync()))
             .DisposeWith(_subscriptions);
 
     /// <summary>Pops the page for a back navigation request and resyncs the stacks.</summary>
@@ -326,7 +341,11 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
             return;
         }
 
-        _ = RxSchedulers.MainThreadScheduler.Schedule(() => _ = OnNavigateAsync());
+        _ = RxSchedulers.MainThreadScheduler.Schedule(this, static (scheduler, state) =>
+        {
+            _ = state.OnNavigateAsync();
+            return EmptyDisposable.Instance;
+        });
     }
 
     /// <summary>Resolves the page for the current view model. PagesForViewModel emits a single page synchronously
@@ -385,9 +404,9 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
     {
         var poppingEvent = new FromEventObservable<RxVoid>(onNext =>
         {
-            void Handler(object? sender, NavigationEventArgs e) => onNext(RxVoid.Default);
-            Popped += Handler;
-            return new ActionDisposable(() => Popped -= Handler);
+            EventHandler<NavigationEventArgs> handler = (_, _) => onNext(RxVoid.Default);
+            Popped += handler;
+            return new ActionDisposable(() => Popped -= handler);
         });
 
         // NB: User pressed the Application back as opposed to requesting Back via Router.NavigateBack.
@@ -416,9 +435,9 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
     {
         var poppingToRootEvent = new FromEventObservable<RxVoid>(onNext =>
         {
-            void Handler(object? sender, NavigationEventArgs e) => onNext(RxVoid.Default);
-            PoppedToRoot += Handler;
-            return new ActionDisposable(() => PoppedToRoot -= Handler);
+            EventHandler<NavigationEventArgs> handler = (_, _) => onNext(RxVoid.Default);
+            PoppedToRoot += handler;
+            return new ActionDisposable(() => PoppedToRoot -= handler);
         });
 
         _ = poppingToRootEvent

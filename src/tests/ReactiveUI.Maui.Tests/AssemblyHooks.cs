@@ -3,7 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System;
 using Splat;
 using TUnit.Core;
 
@@ -18,16 +17,6 @@ public static class AssemblyHooks
 
         // Override ModeDetector to ensure we're detected as being in a unit test runner
         ModeDetector.OverrideModeDetector(new TestModeDetector());
-
-    /// <summary>Called after all tests in this assembly complete.</summary>
-    [After(Assembly)]
-    public static void AssemblyTeardown()
-    {
-        // Clean up resources
-        GC.Collect();
-        GC.WaitForPendingFinalizers();
-        GC.Collect();
-    }
 
     /// <summary>Mode detector that always indicates we're in a unit test runner.</summary>
     private sealed class TestModeDetector : IModeDetector

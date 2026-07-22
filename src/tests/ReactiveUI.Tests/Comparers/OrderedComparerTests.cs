@@ -10,6 +10,12 @@ namespace ReactiveUI.Tests.Comparers;
 /// <summary>Tests for the <see cref="OrderedComparer{T}" /> functionality.</summary>
 public class OrderedComparerTests
 {
+    /// <summary>The salary shared by Alice, Carol, and Xavier used to exercise tie-breaking by name.</summary>
+    private const int TiedSalary = 100;
+
+    /// <summary>The age shared by Carol and Xavier used to exercise tie-breaking by salary.</summary>
+    private const int TiedAge = 35;
+
     /// <summary>Test for checking that chaining the onto regular IComparable works.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
@@ -53,11 +59,17 @@ public class OrderedComparerTests
     [Test]
     public async Task SmokeTest()
     {
-        var adam = new Employee { Name = "Adam", Age = 50, Salary = 125 };
-        var alice = new Employee { Name = "Alice", Age = 25, Salary = 100 };
-        var bob = new Employee { Name = "Bob", Age = 30, Salary = 75 };
-        var carol = new Employee { Name = "Carol", Age = 35, Salary = 100 };
-        var xavier = new Employee { Name = "Xavier", Age = 35, Salary = 100 };
+        const int AdamAge = 50;
+        const int AdamSalary = 125;
+        const int AliceAge = 25;
+        const int BobAge = 30;
+        const int BobSalary = 75;
+
+        var adam = new Employee { Name = "Adam", Age = AdamAge, Salary = AdamSalary };
+        var alice = new Employee { Name = "Alice", Age = AliceAge, Salary = TiedSalary };
+        var bob = new Employee { Name = "Bob", Age = BobAge, Salary = BobSalary };
+        var carol = new Employee { Name = "Carol", Age = TiedAge, Salary = TiedSalary };
+        var xavier = new Employee { Name = "Xavier", Age = TiedAge, Salary = TiedSalary };
 
         var employees = new List<Employee>
         {

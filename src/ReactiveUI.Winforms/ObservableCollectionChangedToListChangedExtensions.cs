@@ -66,6 +66,12 @@ internal static class ObservableCollectionChangedToListChangedExtensions
                             ea.OldStartingIndex);
                         break;
                     }
+
+                default:
+                    {
+                        // Add/Remove with null items, or any future action, yields nothing.
+                        break;
+                    }
             }
         }
     }

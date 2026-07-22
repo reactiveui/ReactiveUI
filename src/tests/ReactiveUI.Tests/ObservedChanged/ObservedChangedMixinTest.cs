@@ -119,7 +119,7 @@ public class ObservedChangedMixinTest
     {
         const IObservedChange<TestFixture, string?> item = null!;
 
-        await Assert.That(() => item!.GetPropertyName())
+        await Assert.That(static () => item!.GetPropertyName())
             .Throws<ArgumentNullException>();
     }
 
@@ -195,7 +195,7 @@ public class ObservedChangedMixinTest
         var fixture = new TestFixture();
 
         // ...whereas ObservableForProperty *is* guaranteed to.
-        _ = ObservableMixins.WhereNotNull(fixture.ObservableForProperty(x => x.IsOnlyOneWord).Select(x => x.GetValue())).Subscribe(output.Add);
+        _ = ObservableMixins.WhereNotNull(fixture.ObservableForProperty(x => x.IsOnlyOneWord).Select(static x => x.GetValue())).Subscribe(output.Add);
 
         foreach (var v in input)
         {

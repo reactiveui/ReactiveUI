@@ -41,25 +41,6 @@ internal sealed class ScheduledObserver<T> : IObserver<T>, IDisposable
         _onError = onError;
     }
 
-    /// <summary>Subscribes to <paramref name="source"/>, delivering notifications to the callbacks on <paramref name="scheduler"/>.</summary>
-    /// <param name="source">The source observable.</param>
-    /// <param name="scheduler">The scheduler each notification is delivered on.</param>
-    /// <param name="onNext">The per-value callback.</param>
-    /// <param name="onError">The error callback.</param>
-    /// <returns>A disposable that tears down the subscription.</returns>
-    public static IDisposable Subscribe(
-        IObservable<T> source,
-        ISequencer scheduler,
-        Action<T> onNext,
-        Action<Exception> onError)
-    {
-        ArgumentExceptionHelper.ThrowIfNull(source);
-
-        var observer = new ScheduledObserver<T>(scheduler, onNext, onError);
-        observer._subscription = source.Subscribe(observer);
-        return observer;
-    }
-
     /// <inheritdoc/>
     public void OnNext(T value) =>
         _scheduler.Schedule(
@@ -87,4 +68,23 @@ internal sealed class ScheduledObserver<T> : IObserver<T>, IDisposable
 
     /// <inheritdoc/>
     public void Dispose() => _subscription?.Dispose();
+
+    /// <summary>Subscribes to <paramref name="source"/>, delivering notifications to the callbacks on <paramref name="scheduler"/>.</summary>
+    /// <param name="source">The source observable.</param>
+    /// <param name="scheduler">The scheduler each notification is delivered on.</param>
+    /// <param name="onNext">The per-value callback.</param>
+    /// <param name="onError">The error callback.</param>
+    /// <returns>A disposable that tears down the subscription.</returns>
+    internal static IDisposable Subscribe(
+        IObservable<T> source,
+        ISequencer scheduler,
+        Action<T> onNext,
+        Action<Exception> onError)
+    {
+        ArgumentExceptionHelper.ThrowIfNull(source);
+
+        var observer = new ScheduledObserver<T>(scheduler, onNext, onError);
+        observer._subscription = source.Subscribe(observer);
+        return observer;
+    }
 }

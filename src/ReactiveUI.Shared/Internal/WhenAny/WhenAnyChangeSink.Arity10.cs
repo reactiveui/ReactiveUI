@@ -36,7 +36,7 @@ namespace ReactiveUI.Internal;
 /// <param name="source9">Source observable 9.</param>
 /// <param name="source10">Source observable 10.</param>
 /// <param name="selector">Combines the ready values into a result.</param>
-[SuppressMessage("Major Code Smell", "S107:Methods should not have too many parameters", Justification = "Parameter count is inherent to the arity of this WhenAny sink.")]
+[SuppressMessage("Design", "SST1472:Signatures should not declare too many parameters", Justification = "Parameter count is intrinsic to the fixed WhenAny arity.")]
 internal sealed class WhenAnyChangeSink<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TResult>(
     IObservable<T1> source1,
     IObservable<T2> source2,
@@ -62,7 +62,6 @@ internal sealed class WhenAnyChangeSink<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10,
     /// <summary>Captures the latest value of each source under a single gate and emits the selector result once every source is ready.</summary>
     /// <param name="downstream">The observer receiving the combined results.</param>
     /// <param name="selector">Combines the ready values into a result.</param>
-    [SuppressMessage("Major Code Smell", "S107:Methods should not have too many parameters", Justification = "Parameter count is inherent to the arity of this WhenAny sink.")]
     private sealed class Sink(IObserver<TResult> downstream, Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TResult> selector) : IDisposable
     {
 #if NET9_0_OR_GREATER
@@ -163,21 +162,40 @@ internal sealed class WhenAnyChangeSink<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10,
             IObservable<T10> source10)
         {
             var i = 0;
-            _subscriptions[i++] = source1.Subscribe(new DelegateObserver<T1>(On1, OnError, OnSourceCompleted));
-            _subscriptions[i++] = source2.Subscribe(new DelegateObserver<T2>(On2, OnError, OnSourceCompleted));
-            _subscriptions[i++] = source3.Subscribe(new DelegateObserver<T3>(On3, OnError, OnSourceCompleted));
-            _subscriptions[i++] = source4.Subscribe(new DelegateObserver<T4>(On4, OnError, OnSourceCompleted));
-            _subscriptions[i++] = source5.Subscribe(new DelegateObserver<T5>(On5, OnError, OnSourceCompleted));
-            _subscriptions[i++] = source6.Subscribe(new DelegateObserver<T6>(On6, OnError, OnSourceCompleted));
-            _subscriptions[i++] = source7.Subscribe(new DelegateObserver<T7>(On7, OnError, OnSourceCompleted));
-            _subscriptions[i++] = source8.Subscribe(new DelegateObserver<T8>(On8, OnError, OnSourceCompleted));
-            _subscriptions[i++] = source9.Subscribe(new DelegateObserver<T9>(On9, OnError, OnSourceCompleted));
-            _subscriptions[i++] = source10.Subscribe(new DelegateObserver<T10>(On10, OnError, OnSourceCompleted));
+            _subscriptions[i] = source1.Subscribe(new DelegateObserver<T1>(On1, OnError, OnSourceCompleted));
+            i++;
+            _subscriptions[i] = source2.Subscribe(new DelegateObserver<T2>(On2, OnError, OnSourceCompleted));
+            i++;
+            _subscriptions[i] = source3.Subscribe(new DelegateObserver<T3>(On3, OnError, OnSourceCompleted));
+            i++;
+            _subscriptions[i] = source4.Subscribe(new DelegateObserver<T4>(On4, OnError, OnSourceCompleted));
+            i++;
+            _subscriptions[i] = source5.Subscribe(new DelegateObserver<T5>(On5, OnError, OnSourceCompleted));
+            i++;
+            _subscriptions[i] = source6.Subscribe(new DelegateObserver<T6>(On6, OnError, OnSourceCompleted));
+            i++;
+            _subscriptions[i] = source7.Subscribe(new DelegateObserver<T7>(On7, OnError, OnSourceCompleted));
+            i++;
+            _subscriptions[i] = source8.Subscribe(new DelegateObserver<T8>(On8, OnError, OnSourceCompleted));
+            i++;
+            _subscriptions[i] = source9.Subscribe(new DelegateObserver<T9>(On9, OnError, OnSourceCompleted));
+            i++;
+            _subscriptions[i] = source10.Subscribe(new DelegateObserver<T10>(On10, OnError, OnSourceCompleted));
+            i++;
+        }
+
+        /// <inheritdoc/>
+        public void Dispose()
+        {
+            for (var i = 0; i < _subscriptions.Length; i++)
+            {
+                _subscriptions[i]?.Dispose();
+            }
         }
 
         /// <summary>Captures the value from source 1 and emits when every source is ready.</summary>
         /// <param name="change">The notification from source 1.</param>
-        public void On1(T1 change)
+        private void On1(T1 change)
         {
             lock (_gate)
             {
@@ -194,7 +212,7 @@ internal sealed class WhenAnyChangeSink<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10,
 
         /// <summary>Captures the value from source 2 and emits when every source is ready.</summary>
         /// <param name="change">The notification from source 2.</param>
-        public void On2(T2 change)
+        private void On2(T2 change)
         {
             lock (_gate)
             {
@@ -211,7 +229,7 @@ internal sealed class WhenAnyChangeSink<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10,
 
         /// <summary>Captures the value from source 3 and emits when every source is ready.</summary>
         /// <param name="change">The notification from source 3.</param>
-        public void On3(T3 change)
+        private void On3(T3 change)
         {
             lock (_gate)
             {
@@ -228,7 +246,7 @@ internal sealed class WhenAnyChangeSink<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10,
 
         /// <summary>Captures the value from source 4 and emits when every source is ready.</summary>
         /// <param name="change">The notification from source 4.</param>
-        public void On4(T4 change)
+        private void On4(T4 change)
         {
             lock (_gate)
             {
@@ -245,7 +263,7 @@ internal sealed class WhenAnyChangeSink<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10,
 
         /// <summary>Captures the value from source 5 and emits when every source is ready.</summary>
         /// <param name="change">The notification from source 5.</param>
-        public void On5(T5 change)
+        private void On5(T5 change)
         {
             lock (_gate)
             {
@@ -262,7 +280,7 @@ internal sealed class WhenAnyChangeSink<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10,
 
         /// <summary>Captures the value from source 6 and emits when every source is ready.</summary>
         /// <param name="change">The notification from source 6.</param>
-        public void On6(T6 change)
+        private void On6(T6 change)
         {
             lock (_gate)
             {
@@ -279,7 +297,7 @@ internal sealed class WhenAnyChangeSink<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10,
 
         /// <summary>Captures the value from source 7 and emits when every source is ready.</summary>
         /// <param name="change">The notification from source 7.</param>
-        public void On7(T7 change)
+        private void On7(T7 change)
         {
             lock (_gate)
             {
@@ -296,7 +314,7 @@ internal sealed class WhenAnyChangeSink<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10,
 
         /// <summary>Captures the value from source 8 and emits when every source is ready.</summary>
         /// <param name="change">The notification from source 8.</param>
-        public void On8(T8 change)
+        private void On8(T8 change)
         {
             lock (_gate)
             {
@@ -313,7 +331,7 @@ internal sealed class WhenAnyChangeSink<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10,
 
         /// <summary>Captures the value from source 9 and emits when every source is ready.</summary>
         /// <param name="change">The notification from source 9.</param>
-        public void On9(T9 change)
+        private void On9(T9 change)
         {
             lock (_gate)
             {
@@ -330,7 +348,7 @@ internal sealed class WhenAnyChangeSink<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10,
 
         /// <summary>Captures the value from source 10 and emits when every source is ready.</summary>
         /// <param name="change">The notification from source 10.</param>
-        public void On10(T10 change)
+        private void On10(T10 change)
         {
             lock (_gate)
             {
@@ -347,7 +365,7 @@ internal sealed class WhenAnyChangeSink<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10,
 
         /// <summary>Forwards an error from any source and tears down the subscriptions.</summary>
         /// <param name="error">The error to forward.</param>
-        public void OnError(Exception error)
+        private void OnError(Exception error)
         {
             lock (_gate)
             {
@@ -358,23 +376,15 @@ internal sealed class WhenAnyChangeSink<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10,
         }
 
         /// <summary>Completes the result once every source has completed.</summary>
-        public void OnSourceCompleted()
+        private void OnSourceCompleted()
         {
             lock (_gate)
             {
-                if (--_active == 0)
+                _active--;
+                if (_active == 0)
                 {
                     downstream.OnCompleted();
                 }
-            }
-        }
-
-        /// <inheritdoc/>
-        public void Dispose()
-        {
-            for (var i = 0; i < _subscriptions.Length; i++)
-            {
-                _subscriptions[i]?.Dispose();
             }
         }
 

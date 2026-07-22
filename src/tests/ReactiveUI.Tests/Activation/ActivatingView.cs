@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics.CodeAnalysis;
 #if REACTIVE_SHIM
 using ICanActivateContract = ReactiveUI.Reactive.ICanActivate;
 #else
@@ -15,6 +16,10 @@ namespace ReactiveUI.Tests.Activation;
 public sealed class ActivatingView : ReactiveObject, IViewFor<ActivatingViewModel>, ICanActivateContract, IDisposable
 {
     /// <summary>Initializes a new instance of the <see cref="ActivatingView" /> class.</summary>
+    [SuppressMessage(
+        "Performance",
+        "PSH1011:Anonymous function captures state",
+        Justification = "The deactivation callback decrements this view's own counter; capturing the instance is the intended activation pattern.")]
     public ActivatingView() =>
         this.WhenActivated(d =>
         {

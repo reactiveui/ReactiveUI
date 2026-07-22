@@ -24,8 +24,10 @@ public class StringToTimeOnlyTypeConverterTests
     [Test]
     public async Task TryConvert_ValidString_Succeeds()
     {
+        const int Hour = 10;
+        const int Minute = 30;
         var converter = new StringToTimeOnlyTypeConverter();
-        var expected = new TimeOnly(10, 30, 0);
+        var expected = new TimeOnly(Hour, Minute, 0);
 
         var result = converter.TryConvert(expected.ToString(), null, out var output);
 

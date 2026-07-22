@@ -9,7 +9,6 @@ using System.Windows;
 using ReactiveUI.Builder.WpfApp.Models;
 using ReactiveUI.Builder.WpfApp.Services;
 using ReactiveUI.Builder.WpfApp.ViewModels;
-using Splat;
 
 namespace ReactiveUI.Builder.WpfApp;
 

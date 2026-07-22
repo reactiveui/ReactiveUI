@@ -39,22 +39,22 @@ internal class UITableViewAdapter : IUICollViewAdapter<UITableView, UITableViewC
     public IObservable<bool> IsReloadingData => _isReloadingData;
 
     /// <summary>Gets or sets the row animation used when inserting sections.</summary>
-    public UITableViewRowAnimation InsertSectionsAnimation { get; set; } = UITableViewRowAnimation.Automatic;
+    internal UITableViewRowAnimation InsertSectionsAnimation { get; set; } = UITableViewRowAnimation.Automatic;
 
     /// <summary>Gets or sets the row animation used when deleting sections.</summary>
-    public UITableViewRowAnimation DeleteSectionsAnimation { get; set; } = UITableViewRowAnimation.Automatic;
+    internal UITableViewRowAnimation DeleteSectionsAnimation { get; set; } = UITableViewRowAnimation.Automatic;
 
     /// <summary>Gets or sets the row animation used when reloading sections.</summary>
-    public UITableViewRowAnimation ReloadSectionsAnimation { get; set; } = UITableViewRowAnimation.Automatic;
+    internal UITableViewRowAnimation ReloadSectionsAnimation { get; set; } = UITableViewRowAnimation.Automatic;
 
     /// <summary>Gets or sets the row animation used when inserting rows.</summary>
-    public UITableViewRowAnimation InsertRowsAnimation { get; set; } = UITableViewRowAnimation.Automatic;
+    internal UITableViewRowAnimation InsertRowsAnimation { get; set; } = UITableViewRowAnimation.Automatic;
 
     /// <summary>Gets or sets the row animation used when deleting rows.</summary>
-    public UITableViewRowAnimation DeleteRowsAnimation { get; set; } = UITableViewRowAnimation.Automatic;
+    internal UITableViewRowAnimation DeleteRowsAnimation { get; set; } = UITableViewRowAnimation.Automatic;
 
     /// <summary>Gets or sets the row animation used when reloading rows.</summary>
-    public UITableViewRowAnimation ReloadRowsAnimation { get; set; } = UITableViewRowAnimation.Automatic;
+    internal UITableViewRowAnimation ReloadRowsAnimation { get; set; } = UITableViewRowAnimation.Automatic;
 
     /// <inheritdoc/>
     public void ReloadData()

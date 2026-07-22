@@ -13,9 +13,9 @@ namespace ReactiveUI;
 #endif
 /// <summary>Provides the arity-10 WhenAny / WhenAnyValue / WhenAnyDynamic extension overloads.</summary>
 [SuppressMessage(
-    "Major Code Smell",
-    "S107:Methods should not have too many parameters",
-    Justification = "Arity-N variadic overloads intentionally expose more than seven parameters.")]
+    "Design",
+    "SST1472:Method declares too many parameters",
+    Justification = "Parameter count is intrinsic to the fixed WhenAny arity API.")]
 public static partial class WhenAnyMixins
 {
     /// <summary>Provides the arity-10 WhenAny / WhenAnyValue / WhenAnyDynamic extension members for an observed source object.</summary>

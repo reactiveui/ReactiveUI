@@ -42,7 +42,12 @@ jobs:
             #    generators or boxing-based erasure; suppressing CPD here keeps the metric honest
             #    while every other Sonar rule still runs on them. Sonar path matchers only support
             #    *, **, ? — use ? twice to cover 1- and 2-digit arities.
-            sonarCpdExclusions: '**/tests/**,**/integrationtests/**,**/benchmarks/**,**/examples/**,**/*.Arity?.cs,**/*.Arity??.cs'
+            #  - WhenAnyMixins.Arity{N}.Dynamic.cs and the builder instance-resolution surfaces
+            #    BuilderMixins.Instance.cs and ReactiveUIBuilder.Build.cs are the same irreducible
+            #    per-arity shape: after the shared scaffold is factored out, the residual is one typed
+            #    GetService list per arity, which cannot be folded further without variadic generics
+            #    (absent in C#) or reflection/boxing. Same treatment as the Arity{N} files above.
+            sonarCpdExclusions: '**/tests/**,**/integrationtests/**,**/benchmarks/**,**/examples/**,**/*.Arity?.cs,**/*.Arity??.cs,**/*.Arity?.Dynamic.cs,**/*.Arity??.Dynamic.cs,**/BuilderMixins.Instance.cs,**/ReactiveUIBuilder.Build.cs'
             sonarTestExclusions: '**/tests/**,**/integrationtests/**,**/benchmarks/**'
             testTimeout: '15m'
         secrets:

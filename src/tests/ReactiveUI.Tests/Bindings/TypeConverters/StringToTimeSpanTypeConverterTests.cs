@@ -23,8 +23,10 @@ public class StringToTimeSpanTypeConverterTests
     [Test]
     public async Task TryConvert_ValidString_Succeeds()
     {
+        const double ExpectedHours = 2.5;
+
         var converter = new StringToTimeSpanTypeConverter();
-        var expected = TimeSpan.FromHours(2.5);
+        var expected = TimeSpan.FromHours(ExpectedHours);
 
         var result = converter.TryConvert(expected.ToString(), null, out var output);
 

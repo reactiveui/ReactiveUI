@@ -15,7 +15,7 @@ internal static class ObservableExtensions
     {
         /// <summary>Returns the source observable, or an empty observable when it is null.</summary>
         /// <returns>The source observable, or an empty observable when the source is null.</returns>
-        public IObservable<T> EmptyIfNull() =>
+        internal IObservable<T> EmptyIfNull() =>
             @this ?? Signal.None<T>();
     }
 }

@@ -12,35 +12,35 @@ namespace ReactiveUI.Benchmarks;
 internal sealed class BenchmarkViewModel : ReactiveObject
 {
     /// <summary>Gets or sets the first observable string property.</summary>
-    public string? First
+    internal string? First
     {
         get => field;
         set => this.RaiseAndSetIfChanged(ref field, value);
     }
 
     /// <summary>Gets or sets the second observable string property.</summary>
-    public string? Second
+    internal string? Second
     {
         get => field;
         set => this.RaiseAndSetIfChanged(ref field, value);
     }
 
     /// <summary>Gets or sets the third observable string property (used by higher-arity WhenAnyValue benchmarks).</summary>
-    public string? Third
+    internal string? Third
     {
         get => field;
         set => this.RaiseAndSetIfChanged(ref field, value);
     }
 
     /// <summary>Gets or sets the fourth observable string property (used by higher-arity WhenAnyValue benchmarks).</summary>
-    public string? Fourth
+    internal string? Fourth
     {
         get => field;
         set => this.RaiseAndSetIfChanged(ref field, value);
     }
 
     /// <summary>Gets or sets an observable integer property.</summary>
-    public int Count
+    internal int Count
     {
         get => field;
         set => this.RaiseAndSetIfChanged(ref field, value);

@@ -157,7 +157,7 @@ public class DependencyObjectObservableForProperty : ICreatesObservableForProper
         var typeInfo = type.GetTypeInfo();
 
         // Look for the DependencyProperty attached to this property name
-        var pi = ActuallyGetProperty(typeInfo, propertyName + "Property");
+        var pi = ActuallyGetProperty(typeInfo, $"{propertyName}Property");
         if (pi is not null)
         {
             var value = pi.GetValue(null);
@@ -165,7 +165,7 @@ public class DependencyObjectObservableForProperty : ICreatesObservableForProper
             return value is null ? null : () => (DependencyProperty)value;
         }
 
-        var fi = ActuallyGetField(typeInfo, propertyName + "Property");
+        var fi = ActuallyGetField(typeInfo, $"{propertyName}Property");
         if (fi is not null)
         {
             var value = fi.GetValue(null);

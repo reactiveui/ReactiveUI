@@ -20,7 +20,6 @@ namespace ReactiveUI;
 /// Reflection is used to inspect runtime types, which may have implications for trimming or ahead-of-time (AOT)
 /// compilation.</remarks>
 [SuppressMessage("ReSharper", "InconsistentNaming", Justification = "Legacy naming convention")]
-[SuppressMessage("Minor Code Smell", "S101:Types should be named in PascalCase", Justification = "Legacy naming convention")]
 public class INPCObservableForProperty : ICreatesObservableForProperty
 {
     /// <inheritdoc/>
@@ -69,25 +68,25 @@ public class INPCObservableForProperty : ICreatesObservableForProperty
     {
         ArgumentExceptionHelper.ThrowIfNull(expression);
 
-        var expectedName = expression.NodeType == ExpressionType.Index ? propertyName + "[]" : propertyName;
+        var observedName = expression.NodeType == ExpressionType.Index ? $"{propertyName}[]" : propertyName;
 
         if (beforeChanged && sender is INotifyPropertyChanging before)
         {
-            return new BeforeChangeNotification(before, sender, expression, expectedName);
+            return new BeforeChangeNotification(before, sender, expression, observedName);
         }
 
         return sender is INotifyPropertyChanged after
-            ? new ChangeNotification(after, sender, expression, expectedName)
+            ? new ChangeNotification(after, sender, expression, observedName)
             : Signal.Silent<IObservedChange<object?, object?>>();
     }
 
     /// <summary>Determines whether a notified property name matches the observed property (an empty name means "all properties").</summary>
     /// <param name="notifiedName">The property name carried by the notification.</param>
-    /// <param name="expectedName">The observed property name.</param>
+    /// <param name="observedName">The observed property name.</param>
     /// <returns><see langword="true"/> if the notification applies to the observed property.</returns>
-    private static bool Matches(string? notifiedName, string expectedName) =>
+    private static bool Matches(string? notifiedName, string observedName) =>
         string.IsNullOrEmpty(notifiedName) ||
-        string.Equals(notifiedName, expectedName, StringComparison.InvariantCulture);
+        string.Equals(notifiedName, observedName, StringComparison.InvariantCulture);
 
     /// <summary>
     /// A single-layer observable over <see cref="INotifyPropertyChanged.PropertyChanged"/>: each subscription attaches
@@ -96,18 +95,18 @@ public class INPCObservableForProperty : ICreatesObservableForProperty
     /// <param name="notifier">The change notifier to hook.</param>
     /// <param name="sender">The object surfaced on the observed change.</param>
     /// <param name="expression">The expression surfaced on the observed change.</param>
-    /// <param name="expectedName">The observed property name.</param>
+    /// <param name="observedName">The observed property name.</param>
     private sealed class ChangeNotification(
         INotifyPropertyChanged notifier,
         object sender,
         Expression expression,
-        string expectedName) : IObservable<IObservedChange<object?, object?>>
+        string observedName) : IObservable<IObservedChange<object?, object?>>
     {
         /// <inheritdoc/>
         public IDisposable Subscribe(IObserver<IObservedChange<object?, object?>> observer)
         {
             ArgumentExceptionHelper.ThrowIfNull(observer);
-            return new Subscription(notifier, sender, expression, expectedName, observer);
+            return new Subscription(notifier, sender, expression, observedName, observer);
         }
 
         /// <summary>Attaches the property-changed handler for the lifetime of the subscription.</summary>
@@ -117,7 +116,7 @@ public class INPCObservableForProperty : ICreatesObservableForProperty
             private readonly INotifyPropertyChanged _notifier;
 
             /// <summary>The observed property name.</summary>
-            private readonly string _expectedName;
+            private readonly string _observedName;
 
             /// <summary>The observer receiving observed changes.</summary>
             private readonly IObserver<IObservedChange<object?, object?>> _observer;
@@ -130,17 +129,17 @@ public class INPCObservableForProperty : ICreatesObservableForProperty
             /// <param name="notifier">The change notifier to hook.</param>
             /// <param name="sender">The object surfaced on the observed change.</param>
             /// <param name="expression">The expression surfaced on the observed change.</param>
-            /// <param name="expectedName">The observed property name.</param>
+            /// <param name="observedName">The observed property name.</param>
             /// <param name="observer">The observer receiving observed changes.</param>
             public Subscription(
                 INotifyPropertyChanged notifier,
                 object sender,
                 Expression expression,
-                string expectedName,
+                string observedName,
                 IObserver<IObservedChange<object?, object?>> observer)
             {
                 _notifier = notifier;
-                _expectedName = expectedName;
+                _observedName = observedName;
                 _observer = observer;
                 _change = new ObservedChange<object?, object?>(sender, expression, null);
                 _notifier.PropertyChanged += OnPropertyChanged;
@@ -154,7 +153,7 @@ public class INPCObservableForProperty : ICreatesObservableForProperty
             /// <param name="e">The property-changed event arguments.</param>
             private void OnPropertyChanged(object? sender, PropertyChangedEventArgs e)
             {
-                if (!Matches(e.PropertyName, _expectedName))
+                if (!Matches(e.PropertyName, _observedName))
                 {
                     return;
                 }
@@ -171,18 +170,18 @@ public class INPCObservableForProperty : ICreatesObservableForProperty
     /// <param name="notifier">The change notifier to hook.</param>
     /// <param name="sender">The object surfaced on the observed change.</param>
     /// <param name="expression">The expression surfaced on the observed change.</param>
-    /// <param name="expectedName">The observed property name.</param>
+    /// <param name="observedName">The observed property name.</param>
     private sealed class BeforeChangeNotification(
         INotifyPropertyChanging notifier,
         object sender,
         Expression expression,
-        string expectedName) : IObservable<IObservedChange<object?, object?>>
+        string observedName) : IObservable<IObservedChange<object?, object?>>
     {
         /// <inheritdoc/>
         public IDisposable Subscribe(IObserver<IObservedChange<object?, object?>> observer)
         {
             ArgumentExceptionHelper.ThrowIfNull(observer);
-            return new Subscription(notifier, sender, expression, expectedName, observer);
+            return new Subscription(notifier, sender, expression, observedName, observer);
         }
 
         /// <summary>Attaches the property-changing handler for the lifetime of the subscription.</summary>
@@ -192,7 +191,7 @@ public class INPCObservableForProperty : ICreatesObservableForProperty
             private readonly INotifyPropertyChanging _notifier;
 
             /// <summary>The observed property name.</summary>
-            private readonly string _expectedName;
+            private readonly string _observedName;
 
             /// <summary>The observer receiving observed changes.</summary>
             private readonly IObserver<IObservedChange<object?, object?>> _observer;
@@ -205,17 +204,17 @@ public class INPCObservableForProperty : ICreatesObservableForProperty
             /// <param name="notifier">The change notifier to hook.</param>
             /// <param name="sender">The object surfaced on the observed change.</param>
             /// <param name="expression">The expression surfaced on the observed change.</param>
-            /// <param name="expectedName">The observed property name.</param>
+            /// <param name="observedName">The observed property name.</param>
             /// <param name="observer">The observer receiving observed changes.</param>
             public Subscription(
                 INotifyPropertyChanging notifier,
                 object sender,
                 Expression expression,
-                string expectedName,
+                string observedName,
                 IObserver<IObservedChange<object?, object?>> observer)
             {
                 _notifier = notifier;
-                _expectedName = expectedName;
+                _observedName = observedName;
                 _observer = observer;
                 _change = new ObservedChange<object?, object?>(sender, expression, null);
                 _notifier.PropertyChanging += OnPropertyChanging;
@@ -229,7 +228,7 @@ public class INPCObservableForProperty : ICreatesObservableForProperty
             /// <param name="e">The property-changing event arguments.</param>
             private void OnPropertyChanging(object? sender, PropertyChangingEventArgs e)
             {
-                if (!Matches(e.PropertyName, _expectedName))
+                if (!Matches(e.PropertyName, _observedName))
                 {
                     return;
                 }

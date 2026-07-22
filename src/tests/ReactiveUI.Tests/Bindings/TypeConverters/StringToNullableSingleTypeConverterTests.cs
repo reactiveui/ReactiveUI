@@ -48,8 +48,8 @@ public class StringToNullableSingleTypeConverterTests
     public async Task TryConvert_StringToSingleNullable_Succeeds()
     {
         var converter = new StringToNullableSingleTypeConverter();
-        const float ExpectedValue = 123.456f;
-        const float Tolerance = 0.001f;
+        const float ExpectedValue = 123.456F;
+        const float Tolerance = 0.001F;
 
         var result = converter.TryConvert("123.456", null, out var output);
 

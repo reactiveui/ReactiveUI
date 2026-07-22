@@ -62,7 +62,7 @@ public class StringBasedSemanticsTests
         string? observed = null;
 
         _ = obj.ObservableForProperty<TestReactiveObject, string?>(nameof(TestReactiveObject.TestProperty), true, true)
-            .Select(x => x.Value)
+            .Select(static x => x.Value)
             .Subscribe(v => observed = v);
 
         obj.TestProperty = "next";

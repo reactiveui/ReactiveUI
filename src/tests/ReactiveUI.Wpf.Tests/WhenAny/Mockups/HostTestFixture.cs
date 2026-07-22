@@ -15,8 +15,8 @@ public sealed class HostTestFixture : ReactiveObject
 
     /// <summary>Initializes a new instance of the <see cref="HostTestFixture"/> class.</summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
-        "Major Code Smell",
-        "S3366:\"this\" should not be exposed from constructors",
+        "Design",
+        "SST2403:Do not let 'this' escape from a constructor",
         Justification = "OAPH/WhenAny initialization requires 'this'; single-threaded test fixture.")]
     public HostTestFixture() =>
         _ownerName = ObservableMixins.WhereNotNull(this.WhenAnyValue(static x => x.Owner))

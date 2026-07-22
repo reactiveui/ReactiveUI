@@ -6,7 +6,6 @@
 using System.Windows;
 using System.Windows.Controls;
 using ReactiveUI.Tests.WhenAny.Mockups;
-using PropertyMetadata = System.Windows.PropertyMetadata;
 
 namespace ReactiveUI.Tests.Xaml.Mocks;
 
@@ -14,7 +13,7 @@ namespace ReactiveUI.Tests.Xaml.Mocks;
 public class HostTestView : Control, IViewFor<HostTestFixture>
 {
     /// <summary>The view model property.</summary>
-    public static readonly DependencyProperty ViewModelProperty = DependencyProperty.Register("ViewModel", typeof(HostTestFixture), typeof(HostTestView), new(null));
+    public static readonly DependencyProperty ViewModelProperty = DependencyProperty.Register(nameof(ViewModel), typeof(HostTestFixture), typeof(HostTestView), new(null));
 
     /// <inheritdoc/>
     public HostTestFixture? ViewModel

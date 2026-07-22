@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics.CodeAnalysis;
 using ReactiveUI.Builder.WpfApp.Services;
 using Splat;
 
@@ -14,6 +15,10 @@ namespace ReactiveUI.Builder.WpfApp.ViewModels;
 public sealed class AppBootstrapper : ReactiveObject, IScreen
 {
     /// <summary>Initializes a new instance of the <see cref="AppBootstrapper"/> class.</summary>
+    [SuppressMessage(
+        "Correctness",
+        "SST2403:Do not let 'this' escape from a constructor",
+        Justification = "Single-threaded WPF sample; the fully-constructed screen is handed to its first routed view model after Router is set.")]
     public AppBootstrapper()
     {
         Router = new();

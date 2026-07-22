@@ -6,7 +6,7 @@
 namespace ReactiveUI.Tests.ObservableAsPropertyHelper.Mocks;
 
 /// <summary>A test fixture for OAPH.</summary>
-internal sealed class OaphIndexerTestFixture : ReactiveObject
+public sealed class OaphIndexerTestFixture : ReactiveObject
 {
     /// <summary>The test selector value for the Observable.Return scenario.</summary>
     private const int ObservableReturnScenario = 2;
@@ -15,9 +15,9 @@ internal sealed class OaphIndexerTestFixture : ReactiveObject
     /// <param name="test">The test scenario selector.</param>
     /// <param name="scheduler">The scheduler used for the property binding.</param>
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
-        "Major Code Smell",
-        "S3366:Make sure the use of this in constructors is safe here",
-        Justification = "OAPH initialization requires 'this' in the constructor; single-threaded test fixture.")]
+        "Design",
+        "SST2403:'this' escapes before construction finishes",
+        Justification = "canonical ObservableAsPropertyHelper initialization requires 'this' in the constructor; the single-threaded fixture never exposes the half-built instance.")]
     public OaphIndexerTestFixture(int test, ISequencer scheduler)
     {
         switch (test)

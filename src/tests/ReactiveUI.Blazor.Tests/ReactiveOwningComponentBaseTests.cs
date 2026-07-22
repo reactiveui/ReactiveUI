@@ -3,13 +3,12 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using Bunit;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace ReactiveUI.Blazor.Tests;
 
 /// <summary>Tests for the <see cref="ReactiveOwningComponentBase{T}"/> class. Verifies that the owning component correctly manages the scope and reactivity of its ViewModel.</summary>
-public class ReactiveOwningComponentBaseTests : BunitContext
+public class ReactiveOwningComponentBaseTests : BlazorTestContext
 {
     /// <summary>The expected number of renders after the initial render of the component.</summary>
     private const int ExpectedRenderCount = 2;
@@ -25,9 +24,9 @@ public class ReactiveOwningComponentBaseTests : BunitContext
         var viewModel = new TestViewModel();
 
         // OwningComponentBase<T> typically expects T to be resolvable from the service provider.
-        _ = Services.AddScoped(_ => new TestViewModel());
+        _ = Services.AddScoped(static _ => new TestViewModel());
 
-        var cut = Render<TestOwningComponent>(parameters => parameters.Add(p => p.ViewModel, viewModel));
+        var cut = await RenderAsync<TestOwningComponent>(parameters => parameters.Add(p => p.ViewModel, viewModel));
 
         await Assert.That(cut.Instance.RenderCount).IsEqualTo(ExpectedRenderCount);
 

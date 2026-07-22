@@ -47,8 +47,8 @@ public interface IViewLocator : IEnableLogger
     /// <typeparam name="TViewModel">The view model type to resolve a view for.</typeparam>
     /// <returns>The resolved view or null when no registration is available.</returns>
     [SuppressMessage(
-        "Major Code Smell",
-        "S4018:Generic methods should provide type parameter",
+        "Design",
+        "SST2307:A generic method's type parameter appears in no parameter, so no caller can infer it",
         Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
     IViewFor<TViewModel>? ResolveView<TViewModel>()
         where TViewModel : class;
@@ -58,8 +58,8 @@ public interface IViewLocator : IEnableLogger
     /// <param name="contract">Optional contract allowing multiple view registrations per view model.</param>
     /// <returns>The resolved view or null when no registration is available.</returns>
     [SuppressMessage(
-        "Major Code Smell",
-        "S4018:Generic methods should provide type parameter",
+        "Design",
+        "SST2307:A generic method's type parameter appears in no parameter, so no caller can infer it",
         Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
     IViewFor<TViewModel>? ResolveView<TViewModel>(string? contract)
         where TViewModel : class;

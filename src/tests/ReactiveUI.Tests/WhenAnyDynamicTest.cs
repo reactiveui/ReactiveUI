@@ -19,7 +19,7 @@ public partial class WhenAnyDynamicTest
         var list = new List<string>();
         _ = vm.WhenAnyDynamic(
             property1,
-            _ => "x",
+            static _ => "x",
             true).ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
         vm.Property1 = "a";
@@ -37,7 +37,7 @@ public partial class WhenAnyDynamicTest
         var list = new List<string>();
         _ = vm.WhenAnyDynamic(
             property1,
-            _ => "x",
+            static _ => "x",
             false).ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
         vm.Property1 = "a";
@@ -57,7 +57,7 @@ public partial class WhenAnyDynamicTest
         _ = vm.WhenAnyDynamic(
             property1,
             property2,
-            (_, _) => "x").ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
+            static (_, _) => "x").ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
         vm.Property1 = "a";
         await Assert.That(list).Count().IsGreaterThan(1);
@@ -76,7 +76,7 @@ public partial class WhenAnyDynamicTest
         _ = vm.WhenAnyDynamic(
             property1,
             property2,
-            (_, _) => "x",
+            static (_, _) => "x",
             true).ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
         vm.Property1 = "a";
@@ -96,7 +96,7 @@ public partial class WhenAnyDynamicTest
         _ = vm.WhenAnyDynamic(
             property1,
             property2,
-            (_, _) => "x",
+            static (_, _) => "x",
             false).ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
         vm.Property1 = "a";
@@ -118,7 +118,7 @@ public partial class WhenAnyDynamicTest
             property1,
             property2,
             property3,
-            (_, _, _) => "x").ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
+            static (_, _, _) => "x").ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
         vm.Property1 = "a";
         await Assert.That(list).Count().IsGreaterThan(1);
@@ -139,7 +139,7 @@ public partial class WhenAnyDynamicTest
             property1,
             property2,
             property3,
-            (_, _, _) => "x",
+            static (_, _, _) => "x",
             true).ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
         vm.Property1 = "a";
@@ -161,7 +161,7 @@ public partial class WhenAnyDynamicTest
             property1,
             property2,
             property3,
-            (_, _, _) => "x",
+            static (_, _, _) => "x",
             false).ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
         vm.Property1 = "a";
@@ -185,7 +185,7 @@ public partial class WhenAnyDynamicTest
             property2,
             property3,
             property4,
-            (_, _, _, _) => "x").ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
+            static (_, _, _, _) => "x").ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
         vm.Property1 = "a";
         await Assert.That(list).Count().IsGreaterThan(1);
@@ -208,7 +208,7 @@ public partial class WhenAnyDynamicTest
             property2,
             property3,
             property4,
-            (_, _, _, _) => "x",
+            static (_, _, _, _) => "x",
             true).ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
         vm.Property1 = "a";
@@ -232,7 +232,7 @@ public partial class WhenAnyDynamicTest
             property2,
             property3,
             property4,
-            (_, _, _, _) => "x",
+            static (_, _, _, _) => "x",
             false).ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
         vm.Property1 = "a";
@@ -258,7 +258,7 @@ public partial class WhenAnyDynamicTest
             property3,
             property4,
             property5,
-            (_, _, _, _, _) => "x").ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
+            static (_, _, _, _, _) => "x").ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
         vm.Property1 = "a";
         await Assert.That(list).Count().IsGreaterThan(1);
@@ -283,7 +283,7 @@ public partial class WhenAnyDynamicTest
             property3,
             property4,
             property5,
-            (_, _, _, _, _) => "x",
+            static (_, _, _, _, _) => "x",
             true).ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
         vm.Property1 = "a";
@@ -309,7 +309,7 @@ public partial class WhenAnyDynamicTest
             property3,
             property4,
             property5,
-            (_, _, _, _, _) => "x",
+            static (_, _, _, _, _) => "x",
             false).ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
         vm.Property1 = "a";
@@ -337,7 +337,7 @@ public partial class WhenAnyDynamicTest
             property4,
             property5,
             property6,
-            (_, _, _, _, _, _) => "x").ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
+            static (_, _, _, _, _, _) => "x").ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
         vm.Property1 = "a";
         await Assert.That(list).Count().IsGreaterThan(1);
@@ -364,7 +364,7 @@ public partial class WhenAnyDynamicTest
             property4,
             property5,
             property6,
-            (_, _, _, _, _, _) => "x",
+            static (_, _, _, _, _, _) => "x",
             true).ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
         vm.Property1 = "a";
@@ -392,7 +392,7 @@ public partial class WhenAnyDynamicTest
             property4,
             property5,
             property6,
-            (_, _, _, _, _, _) => "x",
+            static (_, _, _, _, _, _) => "x",
             false).ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
         vm.Property1 = "a";
@@ -422,7 +422,7 @@ public partial class WhenAnyDynamicTest
             property5,
             property6,
             property7,
-            (_, _, _, _, _, _, _) => "x").ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
+            static (_, _, _, _, _, _, _) => "x").ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
         vm.Property1 = "a";
         await Assert.That(list).Count().IsGreaterThan(1);
@@ -451,7 +451,7 @@ public partial class WhenAnyDynamicTest
             property5,
             property6,
             property7,
-            (_, _, _, _, _, _, _) => "x",
+            static (_, _, _, _, _, _, _) => "x",
             true).ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
         vm.Property1 = "a";
@@ -481,7 +481,7 @@ public partial class WhenAnyDynamicTest
             property5,
             property6,
             property7,
-            (_, _, _, _, _, _, _) => "x",
+            static (_, _, _, _, _, _, _) => "x",
             false).ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
         vm.Property1 = "a";

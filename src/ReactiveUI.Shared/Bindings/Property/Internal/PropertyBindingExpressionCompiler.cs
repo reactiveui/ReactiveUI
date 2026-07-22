@@ -95,10 +95,6 @@ internal class PropertyBindingExpressionCompiler : IPropertyBindingExpressionCom
     }
 
     /// <inheritdoc/>
-    [SuppressMessage(
-        "Major Code Smell",
-        "S4018:Generic methods should provide type parameter",
-        Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
     public IObservable<(bool ShouldEmit, TValue Value)> CreateDirectSetObservable<TTarget, TValue, TObs>(
         TTarget? target,
         IObservable<TObs> observedChanged,
@@ -134,10 +130,6 @@ internal class PropertyBindingExpressionCompiler : IPropertyBindingExpressionCom
     }
 
     /// <inheritdoc/>
-    [SuppressMessage(
-        "Major Code Smell",
-        "S4018:Generic methods should provide type parameter",
-        Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
     public IObservable<(bool ShouldEmit, TValue Value)> CreateChainedSetObservable<TTarget, TValue, TObs>(
         TTarget? target,
         IObservable<TObs> observedChanged,
@@ -162,7 +154,7 @@ internal class PropertyBindingExpressionCompiler : IPropertyBindingExpressionCom
 
         var hostExpression = viewExpression.GetParent() ??
                              throw new InvalidOperationException("Host expression was not found.");
-        var hostChanges = new SynchronizeObservable<object?>(target.WhenAnyDynamic(hostExpression, x => x.Value));
+        var hostChanges = new SynchronizeObservable<object?>(target.WhenAnyDynamic(hostExpression, static x => x.Value));
         var propertyDefaultValue = CreateDefaultValueForType(viewExpression.Type);
         var shouldReplayOnHostChanges = ShouldReplayOnHostChanges(hostExpressionChain);
 

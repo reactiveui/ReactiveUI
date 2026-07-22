@@ -346,10 +346,6 @@ public static class PropertyBindingMixins
         /// <param name="viewModelToViewConverterOverride">An optional converter to use when converting from the view model to view property.</param>
         /// <param name="viewToViewModelConverterOverride">An optional converter to use when converting from the view to view model property.</param>
         /// <returns>An instance of IDisposable that, when disposed, disconnects the binding.</returns>
-        [SuppressMessage(
-            "Major Code Smell",
-            "S107:Methods should not have too many parameters",
-            Justification = "This overload is part of the public binding API surface; the parameter count is intentional.")]
         [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
         [RequiresDynamicCode("Uses dynamic binding paths which may require runtime code generation or reflection-based invocation.")]
         public IReactiveBinding<TView, (object? view, bool isViewModel)> Bind<
@@ -397,12 +393,12 @@ public static class PropertyBindingMixins
         /// An instance of <see cref="IDisposable" /> that, when disposed,
         /// disconnects the binding.
         /// </returns>
-        [SuppressMessage(
-            "Major Code Smell",
-            "S107:Methods should not have too many parameters",
-            Justification = "This overload is part of the public binding API surface; the parameter count is intentional.")]
         [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
         [RequiresDynamicCode("Uses dynamic binding paths which may require runtime code generation or reflection-based invocation.")]
+        [SuppressMessage(
+            "Maintainability",
+            "SST1472:Signatures should not declare too many parameters",
+            Justification = "This overload is part of the public binding API surface; the parameter count is intentional and cannot change without breaking callers.")]
         public IReactiveBinding<TView, (object? view, bool isViewModel)> Bind<
             TViewModel,
             TViewModelPropertyType,
@@ -525,10 +521,6 @@ public static class PropertyBindingMixins
         /// An instance of <see cref="IDisposable" /> that, when disposed,
         /// disconnects the binding.
         /// </returns>
-        [SuppressMessage(
-            "Major Code Smell",
-            "S107:Methods should not have too many parameters",
-            Justification = "This overload is part of the public binding API surface; the parameter count is intentional.")]
         [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
         [RequiresDynamicCode("Uses dynamic binding paths which may require runtime code generation or reflection-based invocation.")]
         public IReactiveBinding<TView, (object? view, bool isViewModel)> Bind<

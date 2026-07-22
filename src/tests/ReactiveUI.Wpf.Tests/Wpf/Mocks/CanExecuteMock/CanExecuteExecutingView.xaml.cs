@@ -10,6 +10,10 @@ namespace ReactiveUI.Tests.Wpf.Mocks.CanExecuteMock;
 public partial class CanExecuteExecutingView
 {
     /// <summary>Initializes a new instance of the <see cref="CanExecuteExecutingView"/> class.</summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "Design",
+        "SST2403:Do not let 'this' escape from a constructor",
+        Justification = "WhenActivated requires 'this' during view construction; single-threaded test fixture.")]
     public CanExecuteExecutingView()
     {
         InitializeComponent();

@@ -5,22 +5,18 @@
 
 using System.Windows.Forms;
 
-namespace ReactiveUI.WinForms.Tests.Winforms.Mocks
-{
-    /// <summary>A test control that records when it has been activated.</summary>
-    internal sealed class DesignModeTestControl : Control, IActivatableView
-    {
-        /// <summary>Initializes a new instance of the <see cref="DesignModeTestControl"/> class.</summary>
-        public DesignModeTestControl()
-        {
-            _ = this.WhenActivated(() =>
-            {
-                Activated = true;
-                return [];
-            });
-        }
+namespace ReactiveUI.WinForms.Tests.Winforms.Mocks;
 
-        /// <summary>Gets a value indicating whether this control has been activated.</summary>
-        public bool Activated { get; private set; }
-    }
+/// <summary>A test control that records when it has been activated.</summary>
+internal sealed class DesignModeTestControl : Control, IActivatableView
+{
+    /// <summary>Initializes a new instance of the <see cref="DesignModeTestControl"/> class.</summary>
+    public DesignModeTestControl() => _ = this.WhenActivated(() =>
+    {
+        Activated = true;
+        return [];
+    });
+
+    /// <summary>Gets a value indicating whether this control has been activated.</summary>
+    internal bool Activated { get; private set; }
 }

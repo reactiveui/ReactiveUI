@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using ReactiveUI.Tests.Utilities.AppBuilder;
 using Splat;
@@ -36,6 +37,10 @@ public static class AssemblyHooks
 
     /// <summary>Called after all tests in this assembly complete.</summary>
     [After(Assembly)]
+    [SuppressMessage(
+        "Performance",
+        "PSH1021:Remove this 'GC.Collect'/'GC.WaitForPendingFinalizers' call",
+        Justification = "assembly teardown deliberately forces a final collection to release test-fixture resources before the process reports results.")]
     public static void AssemblyTeardown()
     {
         // Clean up resources

@@ -24,8 +24,11 @@ public class NullableTimeOnlyToStringTypeConverterTests
     [Test]
     public async Task TryConvert_TimeOnly_Succeeds()
     {
+        const int Hour = 10;
+        const int Minute = 30;
+        const int Second = 45;
         var converter = new NullableTimeOnlyToStringTypeConverter();
-        TimeOnly? value = new TimeOnly(10, 30, 45);
+        TimeOnly? value = new TimeOnly(Hour, Minute, Second);
 
         var result = converter.TryConvert(value, null, out var output);
 
