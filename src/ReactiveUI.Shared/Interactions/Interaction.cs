@@ -118,8 +118,6 @@ public class Interaction<TInput, TOutput>(ISequencer? handlerScheduler = null) :
 
         return RegisterHandlerCore(ContentHandler);
 
-        // Yield before invoking the async handler so it is not run inside the current scheduler
-        // trampoline (see #4351).
         IObservable<RxVoid> ContentHandler(IInteractionContext<TInput, TOutput> interaction) =>
             new TaskUnitObservable(InvokeAsync(interaction, handler));
 
@@ -127,7 +125,10 @@ public class Interaction<TInput, TOutput>(ISequencer? handlerScheduler = null) :
             IInteractionContext<TInput, TOutput> interaction,
             Func<IInteractionContext<TInput, TOutput>, Task> asyncHandler)
         {
-            await YieldToCurrentContext().ConfigureAwait(false);
+            // Yield so the handler is not invoked inside the current scheduler trampoline (see #4351). Task.Yield
+            // resumes on the captured SynchronizationContext, so a handler registered from a UI thread runs back on
+            // that context instead of a thread-pool thread (see #4393); ConfigureAwait(false) here would discard it.
+            await Task.Yield();
             await asyncHandler(interaction).ConfigureAwait(false);
         }
     }
@@ -168,10 +169,6 @@ public class Interaction<TInput, TOutput>(ISequencer? handlerScheduler = null) :
     /// <returns>The interaction context.</returns>
     protected virtual IOutputContext<TInput, TOutput> GenerateContext(TInput input) =>
         new InteractionContext<TInput, TOutput>(input);
-
-    /// <summary>Yields once so asynchronous handlers are not invoked inside the current scheduler trampoline.</summary>
-    /// <returns>A task that completes after the current context has yielded.</returns>
-    private static async Task YieldToCurrentContext() => await Task.Yield();
 
     /// <summary>Registers a normalized interaction handler that produces a <see cref="RxVoid"/> stream.</summary>
     /// <param name="contentHandler">The normalized handler.</param>
