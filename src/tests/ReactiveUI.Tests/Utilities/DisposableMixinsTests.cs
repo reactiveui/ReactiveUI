@@ -3,6 +3,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics.CodeAnalysis;
+
 namespace ReactiveUI.Tests.Utilities;
 
 /// <summary>Tests for DisposableMixins utility methods.</summary>
@@ -14,8 +16,8 @@ public class DisposableMixinsTests
     public async Task DisposeWith_AddsToComposite()
     {
         // Arrange
-        var disposable1 = Scope.Create(() => { });
-        var disposable2 = Scope.Create(() => { });
+        var disposable1 = Scope.Create(static () => { });
+        var disposable2 = Scope.Create(static () => { });
         var compositeDisposable = new MultipleDisposable();
 
         // Act
@@ -30,6 +32,10 @@ public class DisposableMixinsTests
     /// <summary>Tests that DisposeWith disposes when composite is disposed.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
+    [SuppressMessage(
+        "Performance",
+        "PSH1011:Use the 'Create' overload with a state argument so this lambda does not capture",
+        Justification = "the captured value is test-local setup; the allocation is irrelevant in a unit test.")]
     public async Task DisposeWith_DisposesWhenCompositeDisposed()
     {
         // Arrange
@@ -51,7 +57,7 @@ public class DisposableMixinsTests
     public async Task DisposeWith_ReturnsOriginalDisposable()
     {
         // Arrange
-        var disposable = Scope.Create(() => { });
+        var disposable = Scope.Create(static () => { });
         var compositeDisposable = new MultipleDisposable();
 
         // Act

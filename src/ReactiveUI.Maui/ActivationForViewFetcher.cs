@@ -74,12 +74,10 @@ public class ActivationForViewFetcher : IActivationForViewFetcher
     /// <summary>Gets the activation stream for an <see cref="ICanActivate"/>, or null when not applicable.</summary>
     /// <param name="canActivate">The view to observe, or null.</param>
     /// <returns>The activation stream, or null when <paramref name="canActivate"/> is null.</returns>
-    private static IObservable<bool>? GetActivationFor(ICanActivate? canActivate)
-    {
-        return canActivate is null ? null : Signal.Blend<bool>(
+    private static IObservable<bool>? GetActivationFor(ICanActivate? canActivate) =>
+        canActivate is null ? null : Signal.Blend(
             new MapSignal<RxVoid, bool>(canActivate.Activated, static _ => true),
             new MapSignal<RxVoid, bool>(canActivate.Deactivated, static _ => false));
-    }
 
 #if IS_MAUI
     /// <summary>Gets the activation stream for a <see cref="Page"/>, or null when not applicable.</summary>
@@ -94,19 +92,19 @@ public class ActivationForViewFetcher : IActivationForViewFetcher
 
         var appearing = new FromEventObservable<bool>(onNext =>
         {
-            void Handler(object? sender, EventArgs e) => onNext(true);
-            page.Appearing += Handler;
-            return new ActionDisposable(() => page.Appearing -= Handler);
+            EventHandler handler = (_, _) => onNext(true);
+            page.Appearing += handler;
+            return new ActionDisposable(() => page.Appearing -= handler);
         });
 
         var disappearing = new FromEventObservable<bool>(onNext =>
         {
-            void Handler(object? sender, EventArgs e) => onNext(false);
-            page.Disappearing += Handler;
-            return new ActionDisposable(() => page.Disappearing -= Handler);
+            EventHandler handler = (_, _) => onNext(false);
+            page.Disappearing += handler;
+            return new ActionDisposable(() => page.Disappearing -= handler);
         });
 
-        return Signal.Blend<bool>(appearing, disappearing);
+        return Signal.Blend(appearing, disappearing);
     }
 #endif
 
@@ -123,20 +121,20 @@ public class ActivationForViewFetcher : IActivationForViewFetcher
 
         var loaded = new FromEventObservable<bool>(onNext =>
         {
-            void Handler(object? sender, EventArgs e) => onNext(true);
-            view.Loaded += Handler;
-            return new ActionDisposable(() => view.Loaded -= Handler);
+            EventHandler handler = (_, _) => onNext(true);
+            view.Loaded += handler;
+            return new ActionDisposable(() => view.Loaded -= handler);
         });
 
         var unloaded = new FromEventObservable<bool>(onNext =>
         {
-            void Handler(object? sender, EventArgs e) => onNext(false);
-            view.Unloaded += Handler;
-            return new ActionDisposable(() => view.Unloaded -= Handler);
+            EventHandler handler = (_, _) => onNext(false);
+            view.Unloaded += handler;
+            return new ActionDisposable(() => view.Unloaded -= handler);
         });
 
         // Replaces loaded.Merge(unloaded).StartWith(view.IsLoaded).DistinctUntilChanged().
-        return new StartWithObservable<bool>(Signal.Blend<bool>(loaded, unloaded), view.IsLoaded)
+        return new StartWithObservable<bool>(Signal.Blend(loaded, unloaded), view.IsLoaded)
             .DistinctUntilChanged();
     }
 
@@ -152,19 +150,19 @@ public class ActivationForViewFetcher : IActivationForViewFetcher
 
         var appearing = new FromEventObservable<bool>(onNext =>
         {
-            void Handler(object? sender, EventArgs e) => onNext(true);
-            cell.Appearing += Handler;
-            return new ActionDisposable(() => cell.Appearing -= Handler);
+            EventHandler handler = (_, _) => onNext(true);
+            cell.Appearing += handler;
+            return new ActionDisposable(() => cell.Appearing -= handler);
         });
 
         var disappearing = new FromEventObservable<bool>(onNext =>
         {
-            void Handler(object? sender, EventArgs e) => onNext(false);
-            cell.Disappearing += Handler;
-            return new ActionDisposable(() => cell.Disappearing -= Handler);
+            EventHandler handler = (_, _) => onNext(false);
+            cell.Disappearing += handler;
+            return new ActionDisposable(() => cell.Disappearing -= handler);
         });
 
-        return Signal.Blend<bool>(appearing, disappearing);
+        return Signal.Blend(appearing, disappearing);
     }
 #else
     /// <summary>Gets the activation stream for a <see cref="FrameworkElement"/>, or null when not applicable.</summary>
@@ -179,16 +177,16 @@ public class ActivationForViewFetcher : IActivationForViewFetcher
 
         var viewLoaded = new FromEventObservable<bool>(onNext =>
         {
-            void Handler(FrameworkElement sender, object args) => onNext(true);
-            view.Loading += Handler;
-            return new ActionDisposable(() => view.Loading -= Handler);
+            Windows.Foundation.TypedEventHandler<FrameworkElement, object> handler = (_, _) => onNext(true);
+            view.Loading += handler;
+            return new ActionDisposable(() => view.Loading -= handler);
         });
 
         var viewUnloaded = new FromEventObservable<bool>(onNext =>
         {
-            void Handler(object sender, RoutedEventArgs args) => onNext(false);
-            view.Unloaded += Handler;
-            return new ActionDisposable(() => view.Unloaded -= Handler);
+            RoutedEventHandler handler = (_, _) => onNext(false);
+            view.Unloaded += handler;
+            return new ActionDisposable(() => view.Unloaded -= handler);
         });
 
         // Observe IsHitTestVisible property changes using DependencyProperty (AOT-safe)
@@ -200,7 +198,7 @@ public class ActivationForViewFetcher : IActivationForViewFetcher
 
         // Replaces Merge(...).Select(b => b ? hitTest.SkipWhile(!x) : false).Switch().DistinctUntilChanged().
         return new MapSignal<bool, IObservable<bool>>(
-                Signal.Blend<bool>(viewLoaded, viewUnloaded),
+                Signal.Blend(viewLoaded, viewUnloaded),
                 b => b ? isHitTestVisible.SkipWhile(static x => !x) : Signal.Emit<bool>(false))
             .Switch()
             .DistinctUntilChanged();

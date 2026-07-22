@@ -18,6 +18,10 @@ namespace System.Diagnostics.CodeAnalysis;
              Targets.Constructor |
              Targets.Class,
     Inherited = false)]
+[SuppressMessage(
+    "Design",
+    "SST2324:Do not declare a member more accessible than its containing type",
+    Justification = "Mirrors the shape of the corresponding BCL type (System.Diagnostics.CodeAnalysis.RequiresDynamicCodeAttribute); the polyfill compiles only where the BCL lacks it.")]
 internal sealed class RequiresDynamicCodeAttribute :
     Attribute
 {

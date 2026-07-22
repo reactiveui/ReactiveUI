@@ -25,7 +25,7 @@ namespace ReactiveUI.Tests.Utilities.AppBuilder;
 /// <item><description>Customizable AppBuilder configuration via virtual method</description></item>
 /// </list>
 /// </remarks>
-public abstract class BaseAppBuilderTestExecutor : ITestExecutor
+public class BaseAppBuilderTestExecutor : ITestExecutor
 {
     /// <summary>The helper that manages AppBuilder lifecycle for the test.</summary>
     private readonly AppBuilderTestHelper _helper = new();

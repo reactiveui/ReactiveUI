@@ -3,7 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Diagnostics.CodeAnalysis;
 using ReactiveUI.Primitives;
 using Splat;
 
@@ -43,16 +42,16 @@ public
 {
     /// <summary>The router dependency property.</summary>
     public static readonly DependencyProperty RouterProperty =
-        DependencyProperty.Register("Router", typeof(RoutingState), typeof(RoutedViewHost), new(null));
+        DependencyProperty.Register(nameof(Router), typeof(RoutingState), typeof(RoutedViewHost), new(null));
 
     /// <summary>The default content property.</summary>
     public static readonly DependencyProperty DefaultContentProperty =
-        DependencyProperty.Register("DefaultContent", typeof(object), typeof(RoutedViewHost), new(null));
+        DependencyProperty.Register(nameof(DefaultContent), typeof(object), typeof(RoutedViewHost), new(null));
 
     /// <summary>The view contract observable property.</summary>
     public static readonly DependencyProperty ViewContractObservableProperty =
         DependencyProperty.Register(
-            "ViewContractObservable",
+            nameof(ViewContractObservable),
             typeof(IObservable<string>),
             typeof(RoutedViewHost),
             new(Signal.Emit<string>(default!)));
@@ -67,7 +66,7 @@ public
         VerticalContentAlignment = VerticalAlignment.Stretch;
 
         var platform = AppLocator.Current.GetService<IPlatformOperations>();
-        Func<string?> platformGetter = () => null;
+        Func<string?> platformGetter = static () => null;
 
         if (platform is null)
         {
@@ -88,9 +87,9 @@ public
             : new StartWithObservable<string?>(
                 new FromEventObservable<string?>(onNext =>
                 {
-                    void Handler(object sender, SizeChangedEventArgs e) => onNext(platformGetter());
-                    SizeChanged += Handler;
-                    return new ActionDisposable(() => SizeChanged -= Handler);
+                    SizeChangedEventHandler handler = (_, _) => onNext(platformGetter());
+                    SizeChanged += handler;
+                    return new ActionDisposable(() => SizeChanged -= handler);
                 }),
                 platformGetter())
                 .DistinctUntilChanged();
@@ -103,7 +102,7 @@ public
                 new StartWithObservable<string?>(
                     this.WhenAnyObservable(x => x.ViewContractObservable).Do(x => _viewContract = x),
                     ViewContract),
-                (viewModel, contract) => (viewModel, contract));
+                static (viewModel, contract) => (viewModel, contract));
 
         // NB: The DistinctUntilChanged is useful because most views in
         // WinRT will end up getting here twice - once for configuring
@@ -112,7 +111,7 @@ public
             d(viewModelAndContract.DistinctUntilChanged()
                 .Subscribe(new DelegateObserver<(IRoutableViewModel? viewModel, string? contract)>(
                     ResolveViewForViewModel,
-                    ex => RxState.DefaultExceptionHandler.OnNext(ex)))));
+                    RxState.DefaultExceptionHandler.OnNext))));
     }
 
     /// <summary>Gets or sets the <see cref="RoutingState"/> of the view model stack.</summary>
@@ -140,14 +139,10 @@ public
     }
 
     /// <summary>Gets or sets the view contract.</summary>
-    [SuppressMessage(
-        "Critical Bug",
-        "S4275:Getters and setters should access the expected fields",
-        Justification = "Setter intentionally routes through ViewContractObservable rather than the field.")]
     public string? ViewContract
     {
         get => _viewContract;
-        set => ViewContractObservable = Signal.Emit<string?>(value);
+        set => ViewContractObservable = Signal.Emit(value);
     }
 
     /// <summary>Gets or sets the view locator.</summary>

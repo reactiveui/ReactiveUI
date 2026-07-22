@@ -22,7 +22,7 @@ public class CreatesCommandBindingTests
         using var locator = new ModernDependencyResolver();
         using (locator.WithResolver())
         {
-            await Assert.That(() => Bind(new TestFixture())).Throws<InvalidOperationException>();
+            await Assert.That(static () => Bind(new())).Throws<InvalidOperationException>();
         }
     }
 
@@ -31,6 +31,7 @@ public class CreatesCommandBindingTests
     [Test]
     public async Task EventBinderBindsToExplicitEvent()
     {
+        const int SignalValue = 5;
         var input = new TestFixture();
         var fixture = new CreatesCommandBindingViaEvent();
         var wasCalled = false;
@@ -45,7 +46,7 @@ public class CreatesCommandBindingTests
         var disposable = fixture.BindCommandToObject<TestFixture, PropertyChangedEventArgs>(
             cmd,
             input,
-            Signal.Emit((object)5),
+            Signal.Emit((object)SignalValue),
             "PropertyChanged");
         input.IsNotNullString = "Foo";
         await Assert.That(wasCalled).IsTrue();
@@ -61,5 +62,5 @@ public class CreatesCommandBindingTests
     /// <returns>The binding disposable.</returns>
     [RequiresUnreferencedCode("Exercises the reflection-based command binder lookup.")]
     private static IDisposable Bind(TestFixture target) =>
-        CreatesCommandBinding.BindCommandToObject(ReactiveCommand.Create(() => { }), target, Signal.Silent<object?>());
+        CreatesCommandBinding.BindCommandToObject(ReactiveCommand.Create(static () => { }), target, Signal.Silent<object?>());
 }

@@ -7,7 +7,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace ReactiveUI;
 
-/// <summary>Converts <see cref="Nullable{Decimal}"/> to <see cref="decimal"/>.</summary>
+/// <summary>Converts <see cref="decimal"/>? to <see cref="decimal"/>.</summary>
 /// <remarks>
 /// When the nullable value is null, the conversion fails and returns false.
 /// </remarks>

@@ -3,7 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using ReactiveUI.Builder.WpfApp.Models;
 
@@ -13,7 +12,7 @@ namespace ReactiveUI.Builder.WpfApp.Services;
 public sealed class MockPaymentProcessor : IPaymentProcessor
 {
     /// <summary>The amount above which a transaction is declined for exceeding the floor limit.</summary>
-    private const decimal FloorLimit = 1000m;
+    private const decimal FloorLimit = 1000M;
 
     /// <summary>The simulated authorization round-trip duration, in milliseconds.</summary>
     private const int AuthorizationDelayMilliseconds = 1400;
@@ -44,12 +43,12 @@ public sealed class MockPaymentProcessor : IPaymentProcessor
         var sequence = Interlocked.Increment(ref _sequence);
         var cents = (long)Math.Round(amount * CentsPerUnit);
         var declinedForLimit = amount > FloorLimit;
-        var declinedByIssuer = cents % CentsPerUnit == DeclineCents;
+        var declinedByIssuer = Math.Abs(cents) % CentsPerUnit == DeclineCents;
         var approved = !declinedForLimit && !declinedByIssuer;
 
         return new Transaction
         {
-            Reference = "RX" + sequence.ToString("D8", CultureInfo.InvariantCulture),
+            Reference = $"RX{sequence.ToString("D8", CultureInfo.InvariantCulture)}",
             Amount = amount,
             Approved = approved,
             Outcome = BuildOutcome(approved, declinedForLimit, sequence),
@@ -77,7 +76,6 @@ public sealed class MockPaymentProcessor : IPaymentProcessor
 
     /// <summary>Gets the current UTC instant.</summary>
     /// <returns>The current UTC instant.</returns>
-    [SuppressMessage("Major Code Smell", "S6354:Use a testable date/time provider", Justification = "Not available on all target frameworks.")]
     private static DateTimeOffset UtcNow() =>
 #if NET8_0_OR_GREATER
         TimeProvider.System.GetUtcNow();

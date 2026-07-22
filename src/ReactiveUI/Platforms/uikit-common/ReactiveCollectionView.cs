@@ -4,7 +4,6 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.ComponentModel;
-using System.Diagnostics.CodeAnalysis;
 using CoreGraphics;
 using Foundation;
 using UIKit;
@@ -18,8 +17,7 @@ namespace ReactiveUI;
 /// This is a UICollectionView that is both an UICollectionView and has ReactiveObject powers
 /// (i.e. you can call RaiseAndSetIfChanged).
 /// </summary>
-[SuppressMessage("Design", "CA1010: Implement generic IEnumerable", Justification = "UI Kit exposes IEnumerable")]
-public abstract class ReactiveCollectionView
+public class ReactiveCollectionView
     : UICollectionView, IReactiveNotifyPropertyChanged<ReactiveCollectionView>, IHandleObservableErrors, IReactiveObject, ICanActivate, ICanForceManualActivation
 {
     /// <summary>The subject used to signal view activation.</summary>
@@ -109,8 +107,13 @@ public abstract class ReactiveCollectionView
 
     /// <inheritdoc/>
     void ICanForceManualActivation.Activate(bool isActivating) =>
-        RxSchedulers.MainThreadScheduler.Schedule(() =>
-                                               (isActivating ? _activated : _deactivated).OnNext(RxVoid.Default));
+        RxSchedulers.MainThreadScheduler.Schedule(
+            (self: this, isActivating),
+            static (_, state) =>
+            {
+                (state.isActivating ? state.self._activated : state.self._deactivated).OnNext(RxVoid.Default);
+                return EmptyDisposable.Instance;
+            });
 
     /// <inheritdoc/>
     protected override void Dispose(bool disposing)

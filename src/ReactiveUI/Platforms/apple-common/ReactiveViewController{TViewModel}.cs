@@ -12,7 +12,7 @@ namespace ReactiveUI;
 #endif
 /// <summary>This is a View that is both a NSViewController and has ReactiveObject powers (i.e. you can call RaiseAndSetIfChanged).</summary>
 /// <typeparam name="TViewModel">The view model type.</typeparam>
-public abstract class ReactiveViewController<TViewModel> : ReactiveViewController, IViewFor<TViewModel>
+public class ReactiveViewController<TViewModel> : ReactiveViewController, IViewFor<TViewModel>
     where TViewModel : class
 {
     /// <summary>Initializes a new instance of the <see cref="ReactiveViewController{TViewModel}"/> class.</summary>

@@ -11,6 +11,10 @@ namespace ReactiveUI.Builder.BlazorServer.ViewModels;
 public class AppBootstrapper : ReactiveObject, IScreen
 {
     /// <summary>Initializes a new instance of the <see cref="AppBootstrapper"/> class.</summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "Design",
+        "SST2403:'this' escapes before construction finishes",
+        Justification = "The root screen passes itself as host screen for the initial navigation; the single-threaded Blazor circuit never observes the half-built instance.")]
     public AppBootstrapper()
     {
         CircuitId = Guid.NewGuid();

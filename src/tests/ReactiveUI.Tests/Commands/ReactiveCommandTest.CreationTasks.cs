@@ -17,9 +17,9 @@ public partial class ReactiveCommandTest
     [Test]
     public async Task CreateFromTask_Cancellable_ProperlyCancelsExecution()
     {
-        var tcsStarted = new TaskCompletionSource<RxVoid>();
-        var tcsCaught = new TaskCompletionSource<RxVoid>();
-        var tcsFinish = new TaskCompletionSource<RxVoid>();
+        var tcsStarted = new TaskCompletionSource<RxVoid>(TaskCreationOptions.RunContinuationsAsynchronously);
+        var tcsCaught = new TaskCompletionSource<RxVoid>(TaskCreationOptions.RunContinuationsAsynchronously);
+        var tcsFinish = new TaskCompletionSource<RxVoid>(TaskCreationOptions.RunContinuationsAsynchronously);
 
         const int LongDelayMilliseconds = 10_000;
         const int WaitTimeoutSeconds = 2;
@@ -42,7 +42,7 @@ public partial class ReactiveCommandTest
             },
             outputScheduler: Sequencer.Immediate);
 
-        _ = fixture.ThrownExceptions.Subscribe(_ => { });
+        _ = fixture.ThrownExceptions.Subscribe(static _ => { });
 
         var disposable = fixture.Execute().Subscribe();
 
@@ -80,7 +80,7 @@ public partial class ReactiveCommandTest
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task CreateFromTask_Cancellable_Unit_WithoutParam_ThrowsOnNullExecute() =>
-        await Assert.ThrowsExactlyAsync<ArgumentNullException>(async () =>
+        await Assert.ThrowsExactlyAsync<ArgumentNullException>(static async () =>
         {
             _ = ReactiveCommand.CreateFromTask((Func<CancellationToken, Task>)null!);
             await Task.CompletedTask;
@@ -117,7 +117,7 @@ public partial class ReactiveCommandTest
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task CreateFromTask_Cancellable_Unit_WithParam_ThrowsOnNullExecute() =>
-        await Assert.ThrowsExactlyAsync<ArgumentNullException>(async () =>
+        await Assert.ThrowsExactlyAsync<ArgumentNullException>(static async () =>
         {
             _ = ReactiveCommand.CreateFromTask((Func<int, CancellationToken, Task>)null!);
             await Task.CompletedTask;
@@ -151,7 +151,7 @@ public partial class ReactiveCommandTest
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task CreateFromTask_Cancellable_WithoutParam_ThrowsOnNullExecute() =>
-        await Assert.ThrowsExactlyAsync<ArgumentNullException>(async () =>
+        await Assert.ThrowsExactlyAsync<ArgumentNullException>(static async () =>
         {
             _ = ReactiveCommand.CreateFromTask((Func<CancellationToken, Task<int>>)null!);
             await Task.CompletedTask;
@@ -193,7 +193,7 @@ public partial class ReactiveCommandTest
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task CreateFromTask_Cancellable_WithParam_ThrowsOnNullExecute() =>
-        await Assert.ThrowsExactlyAsync<ArgumentNullException>(async () =>
+        await Assert.ThrowsExactlyAsync<ArgumentNullException>(static async () =>
         {
             _ = ReactiveCommand.CreateFromTask((Func<int, CancellationToken, Task<string>>)null!);
             await Task.CompletedTask;
@@ -221,7 +221,7 @@ public partial class ReactiveCommandTest
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task CreateFromTask_Unit_WithoutParam_ThrowsOnNullExecute() =>
-        await Assert.ThrowsExactlyAsync<ArgumentNullException>(async () =>
+        await Assert.ThrowsExactlyAsync<ArgumentNullException>(static async () =>
         {
             _ = ReactiveCommand.CreateFromTask((Func<Task>)null!);
             await Task.CompletedTask;
@@ -249,7 +249,7 @@ public partial class ReactiveCommandTest
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task CreateFromTask_Unit_WithParam_ThrowsOnNullExecute() =>
-        await Assert.ThrowsExactlyAsync<ArgumentNullException>(async () =>
+        await Assert.ThrowsExactlyAsync<ArgumentNullException>(static async () =>
         {
             _ = ReactiveCommand.CreateFromTask((Func<int, Task>)null!);
             await Task.CompletedTask;
@@ -261,7 +261,7 @@ public partial class ReactiveCommandTest
     public async Task CreateFromTask_WithoutParam_ReturnsTaskResult()
     {
         var command = ReactiveCommand.CreateFromTask(
-            () => Task.FromResult(ParameterValue),
+            static () => Task.FromResult(ParameterValue),
             outputScheduler: Sequencer.Immediate);
         var results = command.Collect();
 
@@ -273,7 +273,7 @@ public partial class ReactiveCommandTest
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task CreateFromTask_WithoutParam_ThrowsOnNullExecute() =>
-        await Assert.ThrowsExactlyAsync<ArgumentNullException>(async () =>
+        await Assert.ThrowsExactlyAsync<ArgumentNullException>(static async () =>
         {
             _ = ReactiveCommand.CreateFromTask((Func<Task<int>>)null!);
             await Task.CompletedTask;
@@ -285,7 +285,7 @@ public partial class ReactiveCommandTest
     public async Task CreateFromTask_WithParam_PassesParameterToTask()
     {
         var command = ReactiveCommand.CreateFromTask<int, string>(
-            param => Task.FromResult(param.ToString()),
+            static param => Task.FromResult(param.ToString()),
             outputScheduler: Sequencer.Immediate);
         var results = command.Collect();
 
@@ -297,7 +297,7 @@ public partial class ReactiveCommandTest
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task CreateFromTask_WithParam_ThrowsOnNullExecute() =>
-        await Assert.ThrowsExactlyAsync<ArgumentNullException>(async () =>
+        await Assert.ThrowsExactlyAsync<ArgumentNullException>(static async () =>
         {
             _ = ReactiveCommand.CreateFromTask((Func<int, Task<string>>)null!);
             await Task.CompletedTask;
@@ -322,7 +322,7 @@ public partial class ReactiveCommandTest
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task CreateRunInBackground_Action_ThrowsOnNullExecute() =>
-        await Assert.ThrowsExactlyAsync<ArgumentNullException>(async () =>
+        await Assert.ThrowsExactlyAsync<ArgumentNullException>(static async () =>
         {
             _ = ReactiveCommand.CreateRunInBackground(null!);
             await Task.CompletedTask;
@@ -347,7 +347,7 @@ public partial class ReactiveCommandTest
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task CreateRunInBackground_ActionWithParam_ThrowsOnNullExecute() =>
-        await Assert.ThrowsExactlyAsync<ArgumentNullException>(async () =>
+        await Assert.ThrowsExactlyAsync<ArgumentNullException>(static async () =>
         {
             _ = ReactiveCommand.CreateRunInBackground((Action<int>)null!);
             await Task.CompletedTask;
@@ -359,7 +359,7 @@ public partial class ReactiveCommandTest
     public async Task CreateRunInBackground_Func_ReturnsResult()
     {
         var command = ReactiveCommand.CreateRunInBackground(
-            () => ParameterValue,
+            static () => ParameterValue,
             backgroundScheduler: Sequencer.Immediate,
             outputScheduler: Sequencer.Immediate);
         var results = command.Collect();
@@ -373,7 +373,7 @@ public partial class ReactiveCommandTest
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task CreateRunInBackground_Func_ThrowsOnNullExecute() =>
-        await Assert.ThrowsExactlyAsync<ArgumentNullException>(async () =>
+        await Assert.ThrowsExactlyAsync<ArgumentNullException>(static async () =>
         {
             _ = ReactiveCommand.CreateRunInBackground((Func<int>)null!);
             await Task.CompletedTask;
@@ -383,7 +383,7 @@ public partial class ReactiveCommandTest
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task CreateRunInBackground_FuncWithParam_ThrowsOnNullExecute() =>
-        await Assert.ThrowsExactlyAsync<ArgumentNullException>(async () =>
+        await Assert.ThrowsExactlyAsync<ArgumentNullException>(static async () =>
         {
             _ = ReactiveCommand.CreateRunInBackground((Func<int, string>)null!);
             await Task.CompletedTask;
@@ -395,7 +395,7 @@ public partial class ReactiveCommandTest
     public async Task CreateRunInBackground_FuncWithParam_TransformsParameter()
     {
         var command = ReactiveCommand.CreateRunInBackground<int, string>(
-            param => param.ToString(),
+            static param => param.ToString(),
             backgroundScheduler: Sequencer.Immediate,
             outputScheduler: Sequencer.Immediate);
         var results = command.Collect();

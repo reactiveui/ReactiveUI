@@ -7,7 +7,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace ReactiveUI;
 
-/// <summary>Converts <see cref="Nullable{Int16}"/> to <see cref="short"/>.</summary>
+/// <summary>Converts <see cref="short"/>? to <see cref="short"/>.</summary>
 /// <remarks>
 /// When the nullable value is null, the conversion fails and returns false.
 /// </remarks>

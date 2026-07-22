@@ -46,7 +46,7 @@ public partial class ViewModelViewHost<
 
     /// <summary>The ContractFallbackByPass dependency property.</summary>
     public static readonly DependencyProperty ContractFallbackByPassProperty =
-        DependencyProperty.Register("ContractFallbackByPass", typeof(bool), typeof(ViewModelViewHost<TViewModel>), new(false));
+        DependencyProperty.Register(nameof(ContractFallbackByPass), typeof(bool), typeof(ViewModelViewHost<TViewModel>), new(false));
 
     /// <summary>The subscriptions created during construction, disposed together.</summary>
     private readonly MultipleDisposable _subscriptions = [];
@@ -55,11 +55,14 @@ public partial class ViewModelViewHost<
     private string? _viewContract;
 
     /// <summary>Initializes a new instance of the <see cref="ViewModelViewHost{TViewModel}"/> class.</summary>
-    [SuppressMessage("Major Bug", "S3366:Do not call overridable methods in constructors", Justification = "Wires reactive bindings to this control's own dependency properties during construction.")]
+    [SuppressMessage(
+        "Design",
+        "SST2403:'this' escapes before construction finishes",
+        Justification = "The single-threaded UI control hands 'this' to MauiReactiveHelpers to observe its own dependency-property changes; it is never published to another thread.")]
     public ViewModelViewHost()
     {
         var platform = AppLocator.Current.GetService<IPlatformOperations>();
-        Func<string?> platformGetter = () => default;
+        Func<string?> platformGetter = static () => default;
 
         if (platform is null)
         {
@@ -81,9 +84,9 @@ public partial class ViewModelViewHost<
             : new StartWithObservable<string?>(
                     new FromEventObservable<string?>(onNext =>
                     {
-                        void Handler(object? sender, SizeChangedEventArgs args) => onNext(platformGetter());
-                        SizeChanged += Handler;
-                        return new ActionDisposable(() => SizeChanged -= Handler);
+                        SizeChangedEventHandler handler = (_, _) => onNext(platformGetter());
+                        SizeChanged += handler;
+                        return new ActionDisposable(() => SizeChanged -= handler);
                     }),
                     platformGetter())
                 .DistinctUntilChanged();
@@ -141,14 +144,14 @@ public partial class ViewModelViewHost<
     }
 
     /// <summary>Gets or sets the view contract.</summary>
-    [SuppressMessage(
-        "Critical Bug",
-        "S4275:Getters and setters should access the expected fields",
-        Justification = "Setter routes through ViewContractObservable; _viewContract is updated by its subscription.")]
     public string? ViewContract
     {
         get => _viewContract;
-        set => ViewContractObservable = Signal.Emit<string?>(value);
+        set
+        {
+            _viewContract = value;
+            ViewContractObservable = Signal.Emit(value);
+        }
     }
 
     /// <summary>Gets or sets a value indicating whether should bypass the default contract fallback behavior.</summary>

@@ -82,10 +82,10 @@ public class DependencyObjectObservableForProperty : ICreatesObservableForProper
         {
             if (!suppressWarnings)
             {
-                this.Log().Error("Couldn't find dependency property " + propertyName + " on " + type.Name);
+                this.Log().Error($"Couldn't find dependency property {propertyName} on {type.Name}");
             }
 
-            throw new InvalidOperationException("Couldn't find dependency property " + propertyName + " on " + type.Name);
+            throw new InvalidOperationException($"Couldn't find dependency property {propertyName} on {type.Name}");
         }
 
         return new FromEventObservable<IObservedChange<object, object?>>(onNext =>
@@ -114,7 +114,7 @@ public class DependencyObjectObservableForProperty : ICreatesObservableForProper
     {
         var fi = Array.Find(
             type.GetTypeInfo().GetFields(BindingFlags.FlattenHierarchy | BindingFlags.Static | BindingFlags.Public),
-            x => x.Name == propertyName + "Property" && x.IsStatic);
+            x => x.Name == $"{propertyName}Property" && x.IsStatic);
 
         return (DependencyProperty?)fi?.GetValue(null);
     }

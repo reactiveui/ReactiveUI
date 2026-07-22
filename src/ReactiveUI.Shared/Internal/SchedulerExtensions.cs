@@ -28,7 +28,7 @@ internal static class SchedulerExtensions
         /// <param name="state">The state passed to the action.</param>
         /// <param name="action">The action to run on the scheduler.</param>
         /// <returns>The disposable controlling the scheduled (or inline-completed) work.</returns>
-        public IDisposable ScheduleOrInline<TState>(TState state, Func<ISequencer, TState, IDisposable> action) =>
+        internal IDisposable ScheduleOrInline<TState>(TState state, Func<ISequencer, TState, IDisposable> action) =>
             ReferenceEquals(scheduler, Sequencer.Immediate)
                 ? action(scheduler, state)
                 : scheduler.Schedule(state, action);
@@ -39,7 +39,7 @@ internal static class SchedulerExtensions
         /// </summary>
         /// <param name="action">The action to run on the scheduler.</param>
         /// <returns>The disposable controlling the scheduled (or inline-completed) work.</returns>
-        public IDisposable ScheduleOrInline(Action action)
+        internal IDisposable ScheduleOrInline(Action action)
         {
             if (ReferenceEquals(scheduler, Sequencer.Immediate))
             {

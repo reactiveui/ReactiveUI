@@ -57,8 +57,8 @@ public static class CreatesCommandBinding
     /// <exception cref="Exception">Thrown if a suitable command binder cannot be found for the specified target type and event name.</exception>
     [RequiresUnreferencedCode("String/reflection-based event binding may require members removed by trimming.")]
     [SuppressMessage(
-        "Major Code Smell",
-        "S4018:Generic methods should provide type parameter",
+        "Design",
+        "SST2307:A generic method's type parameter appears in no parameter, so no caller can infer it",
         Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
     public static IDisposable BindCommandToObject<
         [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents |
@@ -82,10 +82,6 @@ public static class CreatesCommandBinding
     /// <param name="hasEventTarget">true if the target object exposes an event to bind to; otherwise, false.</param>
     /// <returns>An instance of ICreatesCommandBinding that is best suited for the specified target type.</returns>
     /// <exception cref="Exception">Thrown if no suitable command binding provider can be found for the specified target type.</exception>
-    [SuppressMessage(
-        "Major Code Smell",
-        "S4018:Generic methods should provide type parameter",
-        Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
     private static ICreatesCommandBinding GetBinder<
         [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents |
                                     DynamicallyAccessedMemberTypes.NonPublicEvents |

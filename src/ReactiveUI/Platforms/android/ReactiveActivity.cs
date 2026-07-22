@@ -152,7 +152,8 @@ public class ReactiveActivity : Activity, IReactiveObject, IReactiveNotifyProper
         private readonly int _requestCode;
 
         /// <summary>Completes when the first matching activity result arrives.</summary>
-        private readonly TaskCompletionSource<(Result resultCode, Intent? intent)> _completion = new();
+        private readonly TaskCompletionSource<(Result resultCode, Intent? intent)> _completion =
+            new(TaskCreationOptions.RunContinuationsAsynchronously);
 
         /// <summary>The subscription to the activity-result stream.</summary>
         private readonly OnceDisposable _subscription = new();

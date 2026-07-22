@@ -35,24 +35,16 @@ public static class SuspensionHostExtensions
 
     /// <summary>Gets or sets the ensure load app state function. Internal for testing purposes only.</summary>
     [SuppressMessage(
-        "Minor Code Smell",
-        "S2292:Trivial properties should be auto-implemented",
-        Justification = "Backing field required for Interlocked.Exchange(ref).")]
-    [SuppressMessage(
         "Roslynator",
         "RCS1085:Use auto-implemented property",
         Justification = "Need explicit backing field for Interlocked.Exchange")]
     internal static Func<IObservable<RxVoid>>? EnsureLoadAppStateFunc
     {
-        get => _ensureLoadAppStateFunc;
-        set => _ensureLoadAppStateFunc = value;
+        get => Volatile.Read(ref _ensureLoadAppStateFunc);
+        set => Volatile.Write(ref _ensureLoadAppStateFunc, value);
     }
 
     /// <summary>Gets or sets the suspension driver. Internal for testing purposes only.</summary>
-    [SuppressMessage(
-        "Minor Code Smell",
-        "S2292:Trivial properties should be auto-implemented",
-        Justification = "Backing field required for Interlocked.Exchange(ref).")]
     [SuppressMessage(
         "Roslynator",
         "RCS1085:Use auto-implemented property",
@@ -81,8 +73,8 @@ public static class SuspensionHostExtensions
             "This overload may invoke ISuspensionDriver.LoadState(), which is commonly reflection-based. " +
             "Prefer GetAppState<TAppState>(ISuspensionHost<TAppState>) used with SetupDefaultSuspendResume<TAppState>(..., JsonTypeInfo<TAppState>, ...) for trimming/AOT scenarios.")]
         [SuppressMessage(
-            "Major Code Smell",
-            "S4018:Generic methods should provide type parameter",
+            "Design",
+            "SST2307:Generic method type parameters should be inferable from the parameters",
             Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
         public T GetAppState<T>()
         {
@@ -107,8 +99,8 @@ public static class SuspensionHostExtensions
             "This overload uses WhenAny, which can require unreferenced/dynamic code in trimming/AOT scenarios. " +
             "Prefer ObserveAppState<TAppState>(ISuspensionHost<TAppState>) for trimming/AOT scenarios.")]
         [SuppressMessage(
-            "Major Code Smell",
-            "S4018:Generic methods should provide type parameter",
+            "Design",
+            "SST2307:Generic method type parameters should be inferable from the parameters",
             Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
         public IObservable<T> ObserveAppState<T>()
             where T : class

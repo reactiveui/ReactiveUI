@@ -114,13 +114,13 @@ public class CombinedReactiveCommandTest
     public async Task ExceptionsAreDeliveredOnOutputScheduler()
     {
         var scheduler = TestContext.Current!.GetScheduler();
-        var child = ReactiveCommand.CreateFromObservable(() =>
+        var child = ReactiveCommand.CreateFromObservable(static () =>
             Signal.Fail<RxVoid>(new InvalidOperationException("oops")));
         var childCommands = new[] { child };
         var fixture = ReactiveCommand.CreateCombined(childCommands, outputScheduler: scheduler);
         Exception? exception = null;
         _ = fixture.ThrownExceptions.Subscribe(ex => exception = ex);
-        _ = fixture.Execute().Subscribe(_ => { }, _ => { });
+        _ = fixture.Execute().Subscribe(static _ => { }, static _ => { });
 
         // With ImmediateScheduler, exceptions are delivered immediately
         await Assert.That(exception).IsTypeOf<InvalidOperationException>();

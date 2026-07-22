@@ -15,9 +15,7 @@ namespace ReactiveUI;
 /// AOT-friendly generic registration helpers for IMutableDependencyResolver.
 /// These avoid reflection by relying on generic constraints and parameterless constructors.
 /// </summary>
-[SuppressMessage("Minor Code Smell", "S100:Methods and properties should be named in PascalCase", Justification = "This is a legacy method name.")]
 [SuppressMessage("ReSharper", "InconsistentNaming", Justification = "This is a legacy method name.")]
-[SuppressMessage("Minor Code Smell", "S101:Types should be named in PascalCase", Justification = "This is a legacy method name.")]
 internal static class MutableDependencyResolverAOTExtensions
 {
     /// <summary>Initializes static members of the <see cref="MutableDependencyResolverAOTExtensions"/> class.</summary>
@@ -39,10 +37,6 @@ internal static class MutableDependencyResolverAOTExtensions
         /// <param name="contract">An optional contract string to distinguish this registration from others. If null, the registration is made
         /// without a contract.</param>
         /// <returns>The dependency resolver instance, enabling method chaining.</returns>
-        [SuppressMessage(
-            "Major Code Smell",
-            "S4018:Generic methods should provide type parameter",
-            Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
         internal IMutableDependencyResolver RegisterViewForViewModelAOT<TView, TViewModel>(
             string? contract = null)
             where TView : class, IViewFor<TViewModel>, new()
@@ -73,10 +67,6 @@ internal static class MutableDependencyResolverAOTExtensions
         /// <param name="contract">An optional contract string to associate with the registration. If null, the registration is made without a
         /// contract.</param>
         /// <returns>The dependency resolver instance, enabling method chaining.</returns>
-        [SuppressMessage(
-            "Major Code Smell",
-            "S4018:Generic methods should provide type parameter",
-            Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
         internal IMutableDependencyResolver RegisterSingletonViewForViewModelAOT<TView, TViewModel>(
             string? contract = null)
             where TView : class, IViewFor<TViewModel>, new()

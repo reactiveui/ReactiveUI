@@ -3,7 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Diagnostics.CodeAnalysis;
 using Android.Content;
 using Android.OS;
 using Context = Android.Content.Context;
@@ -52,10 +51,10 @@ public static class ContextExtensions
         /// description (action, category, etc) matching an IntentFilter; bound here with default options.
         /// </param>
         /// <typeparam name="TBinder">The binder type to cast each connected service binder to (bound with default options).</typeparam>
-        [SuppressMessage(
-            "Major Code Smell",
-            "S4018:Generic methods should provide type parameter",
-            Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage(
+            "Design",
+            "SST2307:A generic method's type parameter appears in no parameter, so no caller can infer it",
+            Justification = "'TBinder' is the binder contract the caller names explicitly to identify and cast the bound service; there is no argument it could be inferred from.")]
         public IObservable<TBinder?> ServiceBound<TBinder>(
             Intent intent)
             where TBinder : class, IBinder
@@ -70,10 +69,10 @@ public static class ContextExtensions
         /// </param>
         /// <param name="flags">The bind options applied when connecting to the strongly-typed service.</param>
         /// <typeparam name="TBinder">The binder type to cast each connected service binder to (bound with the supplied flags).</typeparam>
-        [SuppressMessage(
-            "Major Code Smell",
-            "S4018:Generic methods should provide type parameter",
-            Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage(
+            "Design",
+            "SST2307:A generic method's type parameter appears in no parameter, so no caller can infer it",
+            Justification = "'TBinder' is the binder contract the caller names explicitly to identify and cast the bound service; there is no argument it could be inferred from.")]
         public IObservable<TBinder?> ServiceBound<TBinder>(
             Intent intent,
             Bind flags)

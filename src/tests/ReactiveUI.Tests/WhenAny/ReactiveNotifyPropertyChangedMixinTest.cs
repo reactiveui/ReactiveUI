@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using ReactiveUI.Tests.ReactiveObjects.Mocks;
 using ReactiveUI.Tests.Utilities.Schedulers;
@@ -274,8 +275,8 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
         IEnumerable<AccountUser>? result = null;
 
         _ = fixture.WhenAnyValue(x => x.AccountService.AccountUsers)
-            .Where(users => users.Count > 0)
-            .Select(users => users.Values.Where(x => !string.IsNullOrWhiteSpace(x.LastName)))
+            .Where(static users => users.Count > 0)
+            .Select(static users => users.Values.Where(static x => !string.IsNullOrWhiteSpace(x.LastName)))
             .Subscribe(dict => result = dict);
 
         await Assert.That(result!.Count()).IsEqualTo(ExpectedCount);
@@ -294,11 +295,11 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
 
         _ = fixture.WhenAnyValue(
             x => x.ProjectService.Projects,
-            x => x.AccountService.AccountUsers).Where(tuple => tuple.Value1?.Count > 0 && tuple.Value2?.Count > 0).Select(tuple =>
+            x => x.AccountService.AccountUsers).Where(static tuple => tuple.Value1?.Count > 0 && tuple.Value2?.Count > 0).Select(static tuple =>
                 {
                     var (_, users) = tuple;
 
-                    return users.Values.Where(x => !string.IsNullOrWhiteSpace(x.LastName));
+                    return users.Values.Where(static x => !string.IsNullOrWhiteSpace(x.LastName));
                 }).Subscribe(dict => result = dict);
 
         await Assert.That(result!.Count()).IsEqualTo(ExpectedCount);
@@ -316,8 +317,8 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
         IEnumerable<AccountUser?>? result = null;
 
         _ = fixture.WhenAnyValue(x => x.AccountService.AccountUsersNullable)
-            .Where(users => users.Count > 0)
-            .Select(users => users.Values.Where(x => !string.IsNullOrWhiteSpace(x?.LastName)))
+            .Where(static users => users.Count > 0)
+            .Select(static users => users.Values.Where(static x => !string.IsNullOrWhiteSpace(x?.LastName)))
             .Subscribe(dict => result = dict);
 
         await Assert.That(result!.Count()).IsEqualTo(ExpectedCount);
@@ -336,11 +337,11 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
 
         _ = fixture.WhenAnyValue(
             x => x.ProjectService.ProjectsNullable,
-            x => x.AccountService.AccountUsersNullable).Where(tuple => tuple.Value1.Count > 0 && tuple.Value2?.Count > 0).Select(tuple =>
+            x => x.AccountService.AccountUsersNullable).Where(static tuple => tuple.Value1.Count > 0 && tuple.Value2?.Count > 0).Select(static tuple =>
                 {
                     var (_, users) = tuple;
 
-                    return users?.Values.Where(x => !string.IsNullOrWhiteSpace(x?.LastName));
+                    return users?.Values.Where(static x => !string.IsNullOrWhiteSpace(x?.LastName));
                 }).Subscribe(dict => result = dict);
 
         await Assert.That(result!.Count()).IsEqualTo(ExpectedCount);
@@ -349,6 +350,10 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
     /// <summary>Ensures intermediate objects are eligible for GC when property value changes.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
+    [SuppressMessage(
+        "Performance",
+        "PSH1021:Remove this 'GC.Collect'/'GC.WaitForPendingFinalizers' call",
+        Justification = "the weak-reference test deliberately forces a collection to observe reclamation.")]
     public async Task ObjectShouldBeGarbageCollectedWhenPropertyValueChanges()
     {
         static (ObjChain1, WeakReference) GetWeakReference1()
@@ -528,7 +533,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
         _ = fixture.WhenAny(
             x => x.SomeOtherParam,
             x => x.Child!.IsNotNullString,
-            (sop, nns) => (sop, nns)).Subscribe(x =>
+            static (sop, nns) => (sop, nns)).Subscribe(x =>
             {
                 output1.Add(x.sop);
 
@@ -640,7 +645,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
         _ = fixture.WhenAnyValue(
             x => x.SomeOtherParam,
             x => x.Child!.IsNotNullString,
-            (sop, nns) => (sop, nns)).Subscribe(x =>
+            static (sop, nns) => (sop, nns)).Subscribe(x =>
             {
                 output1.Add(x.sop);
 

@@ -23,7 +23,7 @@ public class CompatMixinsTests
         items.Run(x => processedItems.Add(x * Multiplier));
 
         // Assert
-        await Assert.That(processedItems).IsEquivalentTo(Enumerable.Range(1, SequenceLength).Select(x => x * Multiplier));
+        await Assert.That(processedItems).IsEquivalentTo(Enumerable.Range(1, SequenceLength).Select(static x => x * Multiplier));
     }
 
     /// <summary>Tests that SkipLast with count greater than collection returns empty.</summary>

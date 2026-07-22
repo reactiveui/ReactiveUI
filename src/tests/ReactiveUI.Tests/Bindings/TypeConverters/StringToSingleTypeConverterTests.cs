@@ -48,8 +48,8 @@ public class StringToSingleTypeConverterTests
     public async Task TryConvert_StringToSingle_Succeeds()
     {
         var converter = new StringToSingleTypeConverter();
-        const float ExpectedValue = 123.456f;
-        const float Tolerance = 0.001f;
+        const float ExpectedValue = 123.456F;
+        const float Tolerance = 0.001F;
 
         var result = converter.TryConvert("123.456", null, out var output);
 
@@ -67,7 +67,7 @@ public class StringToSingleTypeConverterTests
         var result = converter.TryConvert(null, null, out var output);
 
         await Assert.That(result).IsFalse();
-        await Assert.That(output).IsEqualTo(0.0f);
+        await Assert.That(output).IsEqualTo(0.0F);
     }
 
     /// <summary>Verifies that a zero value converts successfully.</summary>
@@ -80,7 +80,7 @@ public class StringToSingleTypeConverterTests
         var result = converter.TryConvert("0", null, out var output);
 
         await Assert.That(result).IsTrue();
-        await Assert.That(output).IsEqualTo(0.0f);
+        await Assert.That(output).IsEqualTo(0.0F);
     }
 
     /// <summary>Verifies that a negative value converts successfully.</summary>
@@ -89,8 +89,8 @@ public class StringToSingleTypeConverterTests
     public async Task TryConvert_NegativeValue_Succeeds()
     {
         var converter = new StringToSingleTypeConverter();
-        const float ExpectedValue = -123.456f;
-        const float Tolerance = 0.001f;
+        const float ExpectedValue = -123.456F;
+        const float Tolerance = 0.001F;
 
         var result = converter.TryConvert("-123.456", null, out var output);
 
@@ -104,8 +104,8 @@ public class StringToSingleTypeConverterTests
     public async Task TryConvert_ScientificNotation_Succeeds()
     {
         var converter = new StringToSingleTypeConverter();
-        const float ExpectedValue = 1.23E+5f;
-        const float Tolerance = 0.1f;
+        const float ExpectedValue = 1.23E+5F;
+        const float Tolerance = 0.1F;
 
         var result = converter.TryConvert("1.23E+5", null, out var output);
 
@@ -119,8 +119,8 @@ public class StringToSingleTypeConverterTests
     public async Task TryConvertTyped_ValidString_Succeeds()
     {
         var converter = new StringToSingleTypeConverter();
-        const float ExpectedValue = 456.789f;
-        const float Tolerance = 0.001f;
+        const float ExpectedValue = 456.789F;
+        const float Tolerance = 0.001F;
 
         var result = converter.TryConvertTyped("456.789", null, out var output);
 

@@ -64,9 +64,16 @@ internal sealed class WhenAnyObservableMergeSink<TResult>(IObservable<IObservabl
         public void Run(IObservable<IObservable<TResult>[]> source) =>
             _outer = source.Subscribe(new DelegateObserver<IObservable<TResult>[]>(OnNextOuter, OnError, OnOuterCompleted));
 
+        /// <inheritdoc/>
+        public void Dispose()
+        {
+            _outer?.Dispose();
+            _innerGroup.Dispose();
+        }
+
         /// <summary>Forwards an error from the outer or any current inner and tears down.</summary>
         /// <param name="error">The error to forward.</param>
-        public void OnError(Exception error)
+        private void OnError(Exception error)
         {
             lock (_gate)
             {
@@ -74,13 +81,6 @@ internal sealed class WhenAnyObservableMergeSink<TResult>(IObservable<IObservabl
             }
 
             Dispose();
-        }
-
-        /// <inheritdoc/>
-        public void Dispose()
-        {
-            _outer?.Dispose();
-            _innerGroup.Dispose();
         }
 
         /// <summary>Switches to a new set of inner observables, dropping the previous set, and merges it.</summary>
@@ -139,7 +139,13 @@ internal sealed class WhenAnyObservableMergeSink<TResult>(IObservable<IObservabl
         {
             lock (_gate)
             {
-                if (id != _index || --_activeInners != 0)
+                if (id != _index)
+                {
+                    return;
+                }
+
+                _activeInners--;
+                if (_activeInners != 0)
                 {
                     return;
                 }

@@ -58,7 +58,7 @@ public class IroObservableForPropertyTest
         var sender = new object();
         Expression<Func<object, string?>> expression = x => x.ToString();
 
-        await Assert.That(() => oaph.GetNotificationForProperty(sender, expression.Body, "ToString"))
+        await Assert.That(() => oaph.GetNotificationForProperty(sender, expression.Body, nameof(object.ToString)))
             .Throws<ArgumentException>();
     }
 

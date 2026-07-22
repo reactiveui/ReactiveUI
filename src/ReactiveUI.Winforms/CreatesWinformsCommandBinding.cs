@@ -46,10 +46,6 @@ public sealed class CreatesWinformsCommandBinding : ICreatesCommandBinding
     ];
 
     /// <inheritdoc/>
-    [SuppressMessage(
-        "Major Code Smell",
-        "S4018:Generic methods should provide type parameter",
-        Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
     public int GetAffinityForObject<
         [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents |
                                     DynamicallyAccessedMemberTypes.PublicProperties)]
@@ -149,10 +145,6 @@ public sealed class CreatesWinformsCommandBinding : ICreatesCommandBinding
     }
 
     /// <inheritdoc/>
-    [SuppressMessage(
-        "Major Code Smell",
-        "S4018:Generic methods should provide type parameter",
-        Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
     public IDisposable? BindCommandToObject<T, TEventArgs>(
         ICommand? command,
         T? target,
@@ -197,9 +189,9 @@ public sealed class CreatesWinformsCommandBinding : ICreatesCommandBinding
             // Replaces FromEvent(CanExecuteChanged).StartWith(initial).Subscribe(...).
             var canExecuteChanged = new FromEventObservable<bool>(onNext =>
             {
-                void Handler(object? sender, EventArgs e) => onNext(command.CanExecute(latestParameter));
-                command.CanExecuteChanged += Handler;
-                return new ActionDisposable(() => command.CanExecuteChanged -= Handler);
+                EventHandler handler = (_, _) => onNext(command.CanExecute(latestParameter));
+                command.CanExecuteChanged += handler;
+                return new ActionDisposable(() => command.CanExecuteChanged -= handler);
             });
 
             ret.Add(new StartWithObservable<bool>(canExecuteChanged, command.CanExecute(latestParameter))
@@ -243,9 +235,9 @@ public sealed class CreatesWinformsCommandBinding : ICreatesCommandBinding
             ? EmptyDisposable.Instance
             : BindToHandler(command, target, typeof(T), commandParameter, execute =>
             {
-                void Handler(object? s, TEventArgs e) => execute();
-                addHandler(Handler);
-                return new ActionDisposable(() => removeHandler(Handler));
+                EventHandler<TEventArgs> handler = (_, _) => execute();
+                addHandler(handler);
+                return new ActionDisposable(() => removeHandler(handler));
             });
     }
 
@@ -281,9 +273,9 @@ public sealed class CreatesWinformsCommandBinding : ICreatesCommandBinding
             ? EmptyDisposable.Instance
             : BindToHandler(command, target, typeof(T), commandParameter, execute =>
             {
-                void Handler(object? s, EventArgs e) => execute();
-                addHandler(Handler);
-                return new ActionDisposable(() => removeHandler(Handler));
+                EventHandler handler = (_, _) => execute();
+                addHandler(handler);
+                return new ActionDisposable(() => removeHandler(handler));
             });
     }
 
@@ -333,9 +325,9 @@ public sealed class CreatesWinformsCommandBinding : ICreatesCommandBinding
                 // Replaces FromEvent(CanExecuteChanged).StartWith(initial).Subscribe(...).
                 var canExecuteChanged = new FromEventObservable<bool>(onNext =>
                 {
-                    void CanExecuteHandler(object? sender, EventArgs e) => onNext(command.CanExecute(Volatile.Read(ref latestParameter)));
-                    command.CanExecuteChanged += CanExecuteHandler;
-                    return new ActionDisposable(() => command.CanExecuteChanged -= CanExecuteHandler);
+                    EventHandler canExecuteHandler = (_, _) => onNext(command.CanExecute(Volatile.Read(ref latestParameter)));
+                    command.CanExecuteChanged += canExecuteHandler;
+                    return new ActionDisposable(() => command.CanExecuteChanged -= canExecuteHandler);
                 });
 
                 ret.Add(new StartWithObservable<bool>(canExecuteChanged, command.CanExecute(Volatile.Read(ref latestParameter)))

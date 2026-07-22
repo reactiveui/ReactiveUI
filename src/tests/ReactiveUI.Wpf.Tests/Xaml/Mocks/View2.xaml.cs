@@ -11,8 +11,5 @@ namespace ReactiveUI.Tests.Xaml.Mocks;
 public partial class View2 : UserControl
 {
     /// <summary>Initializes a new instance of the <see cref="View2"/> class.</summary>
-    public View2()
-    {
-        InitializeComponent();
-    }
+    public View2() => InitializeComponent();
 }

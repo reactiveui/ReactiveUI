@@ -36,7 +36,6 @@ namespace ReactiveUI;
 /// and instead filters ReactiveObject change streams by property name.
 /// </para>
 /// </remarks>
-[SuppressMessage("Minor Code Smell", "S2326:Unused type parameters should be removed", Justification = "TSource is part of the public API surface and provides call-site type-safety for consumers.")]
 internal sealed class CommonReactiveSource<TSource, TUIView, TUIViewCell, TSectionInfo> : ReactiveObject, IDisposable
     where TSectionInfo : ISectionInformation<TUIViewCell>
 {
@@ -50,7 +49,6 @@ internal sealed class CommonReactiveSource<TSource, TUIView, TUIViewCell, TSecti
     private readonly MultipleDisposable _mainDisposables;
 
     /// <summary>Holds subscriptions associated with the current <see cref="SectionInfo"/> value. Replaced when SectionInfo changes.</summary>
-    [SuppressMessage("Usage", "CA2213:Disposable fields should be disposed", Justification = "Handled by the SwapDisposable")]
     private readonly SwapDisposable _sectionInfoDisposable;
 
     /// <summary>Pending collection changes captured while the UI is not reloading and before a scheduled batch update is applied.</summary>
@@ -65,6 +63,10 @@ internal sealed class CommonReactiveSource<TSource, TUIView, TUIViewCell, TSecti
     /// <summary>Initializes a new instance of the <see cref="CommonReactiveSource{TSource, TUIView, TUIViewCell, TSectionInfo}"/> class.</summary>
     /// <param name="adapter">The adapter to use which we want to display information for.</param>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="adapter"/> is <see langword="null"/>.</exception>
+    [SuppressMessage(
+        "Design",
+        "SST2403:Do not let 'this' escape from a constructor",
+        Justification = "Change-notification subscriptions established here capture the instance to route SectionInfo changes; the object is fully constructed before any callback runs.")]
     public CommonReactiveSource(IUICollViewAdapter<TUIView, TUIViewCell> adapter)
     {
         ArgumentExceptionHelper.ThrowIfNull(adapter);
@@ -101,7 +103,7 @@ internal sealed class CommonReactiveSource<TSource, TUIView, TUIViewCell, TSecti
     /// <remarks>
     /// Assigning this property replaces all subscriptions associated with the prior section information.
     /// </remarks>
-    public IReadOnlyList<TSectionInfo> SectionInfo
+    internal IReadOnlyList<TSectionInfo> SectionInfo
     {
         get => _sectionInfo;
         set => this.RaiseAndSetIfChanged(ref _sectionInfo, value);
@@ -110,9 +112,12 @@ internal sealed class CommonReactiveSource<TSource, TUIView, TUIViewCell, TSecti
     /// <summary>Gets a value indicating whether debug logging is enabled.</summary>
     private bool IsDebugEnabled => this.Log().Level <= LogLevel.Debug;
 
+    /// <summary>Disposes subscriptions and managed resources associated with this instance.</summary>
+    public void Dispose() => _mainDisposables.Dispose();
+
     /// <summary>Returns the number of sections.</summary>
     /// <returns>The number of sections.</returns>
-    public int NumberOfSections()
+    internal int NumberOfSections()
     {
         VerifyOnMainThread();
 
@@ -125,7 +130,7 @@ internal sealed class CommonReactiveSource<TSource, TUIView, TUIViewCell, TSecti
     /// <summary>Returns the number of rows in a section.</summary>
     /// <param name="section">The section index.</param>
     /// <returns>The number of rows in the specified section.</returns>
-    public int RowsInSection(int section)
+    internal int RowsInSection(int section)
     {
         VerifyOnMainThread();
 
@@ -140,7 +145,7 @@ internal sealed class CommonReactiveSource<TSource, TUIView, TUIViewCell, TSecti
     /// <summary>Returns the item at the specified index path.</summary>
     /// <param name="path">The index path.</param>
     /// <returns>The item at the index path, or <see langword="null"/>.</returns>
-    public object? ItemAt(NSIndexPath path)
+    internal object? ItemAt(NSIndexPath path)
     {
         VerifyOnMainThread();
 
@@ -153,7 +158,7 @@ internal sealed class CommonReactiveSource<TSource, TUIView, TUIViewCell, TSecti
     /// <summary>Dequeues and configures a cell for the specified index path.</summary>
     /// <param name="indexPath">The index path.</param>
     /// <returns>The configured view cell.</returns>
-    public TUIViewCell GetCell(NSIndexPath indexPath)
+    internal TUIViewCell GetCell(NSIndexPath indexPath)
     {
         VerifyOnMainThread();
 
@@ -177,20 +182,9 @@ internal sealed class CommonReactiveSource<TSource, TUIView, TUIViewCell, TSecti
         return cell;
     }
 
-    /// <summary>Disposes subscriptions and managed resources associated with this instance.</summary>
-    public void Dispose()
-    {
-        _mainDisposables.Dispose();
-    }
-
     /// <summary>No-op initializer used when a section does not provide an initialization callback.</summary>
-    /// <param name="cell">The cell to initialize.</param>
-    private static void NoOpInitializeCell(TUIViewCell cell)
-    {
-        // Intentionally empty: used as a no-op default when no section-level initialization callback is provided.
-        // The cell parameter is required to match the Action<TUIViewCell> delegate signature.
-        _ = cell;
-    }
+    /// <param name="cell">The cell to initialize. It is discarded; the parameter exists only to match the initialization callback delegate signature.</param>
+    private static void NoOpInitializeCell(TUIViewCell cell) => _ = cell;
 
     /// <summary>Builds the list of updates for a pending collection change event.</summary>
     /// <param name="pendingChange">The pending change.</param>
@@ -213,7 +207,7 @@ internal sealed class CommonReactiveSource<TSource, TUIView, TUIViewCell, TSecti
             NotifyCollectionChangedAction.Replace =>
                 GetReplaceUpdates(pendingChange),
 
-            _ => throw new NotSupportedException("Don't know how to deal with " + pendingChange.Action),
+            _ => throw new NotSupportedException($"Don't know how to deal with {pendingChange.Action}"),
         };
 
     /// <summary>Builds the delete updates for a <see cref="NotifyCollectionChangedAction.Remove"/> change.</summary>
@@ -272,8 +266,9 @@ internal sealed class CommonReactiveSource<TSource, TUIView, TUIViewCell, TSecti
     /// <returns>An enumerable of paired delete and add updates.</returns>
     private static List<Update> GetReplaceUpdates(PendingChange pendingChange)
     {
+        const int UpdatesPerReplacedItem = 2;
         var count = pendingChange.NewItems is null ? 1 : pendingChange.NewItems.Count;
-        List<Update> updates = new(count * 2);
+        List<Update> updates = new(count * UpdatesPerReplacedItem);
         for (var i = 0; i < count; i++)
         {
             var index = pendingChange.NewStartingIndex + i;
@@ -329,7 +324,7 @@ internal sealed class CommonReactiveSource<TSource, TUIView, TUIViewCell, TSecti
 
         var disposables = new MultipleDisposable
         {
-            Scope.Create(() => this.Log().Debug(CultureInfo.InvariantCulture, "[#{0}] Disposed of section info", sectionInfoId))
+            Scope.Create((self: this, sectionInfoId), static state => state.self.Log().Debug(CultureInfo.InvariantCulture, "[#{0}] Disposed of section info", state.sectionInfoId))
         };
 
         _sectionInfoDisposable.Disposable = disposables;
@@ -430,15 +425,17 @@ internal sealed class CommonReactiveSource<TSource, TUIView, TUIViewCell, TSecti
 
             applyPendingChangesDisposable.Disposable =
                 RxSchedulers.MainThreadScheduler.Schedule(
-                    () =>
+                    (self: this, sectionInfoId, applyPendingChangesDisposable),
+                    static (_, state) =>
                     {
-                        ApplyPendingChanges(sectionInfoId);
+                        state.self.ApplyPendingChanges(state.sectionInfoId);
 
-                        this.Log().Debug(CultureInfo.InvariantCulture, "[#{0}] EndUpdates", sectionInfoId);
-                        _adapter.EndUpdates();
+                        state.self.Log().Debug(CultureInfo.InvariantCulture, "[#{0}] EndUpdates", state.sectionInfoId);
+                        state.self._adapter.EndUpdates();
 
-                        _isCollectingChanges = false;
-                        applyPendingChangesDisposable.Disposable = null;
+                        state.self._isCollectingChanges = false;
+                        state.applyPendingChangesDisposable.Disposable = null;
+                        return EmptyDisposable.Instance;
                     });
         }
 
@@ -546,7 +543,7 @@ internal sealed class CommonReactiveSource<TSource, TUIView, TUIViewCell, TSecti
                 sectionInfoId,
                 section);
 
-            _adapter.ReloadSections(new NSIndexSet((nuint)section));
+            _adapter.ReloadSections(new((nuint)section));
             return endIndex;
         }
 
@@ -640,7 +637,7 @@ internal sealed class CommonReactiveSource<TSource, TUIView, TUIViewCell, TSecti
                 CultureInfo.InvariantCulture,
                 "Calling {0}: [{1}]",
                 method.Method.Name,
-                toChange[0].Section + "-" + toChange[0].Row);
+                $"{toChange[0].Section}-{toChange[0].Row}");
         }
 
         method(toChange);
@@ -665,16 +662,22 @@ internal sealed class CommonReactiveSource<TSource, TUIView, TUIViewCell, TSecti
     /// Replaces the previous <c>Publish</c>/<c>Join</c>/<c>Connect</c> multicast pipeline with a single sink that
     /// tracks the reload state and dispatches changes directly.
     /// </summary>
-    private sealed class ReloadAwareSectionSink : IDisposable
+    /// <param name="parent">The owning source.</param>
+    /// <param name="sectionInfoId">A correlation id for logging.</param>
+    /// <param name="applyPendingChangesDisposable">Serial disposable that holds the scheduled apply-changes action.</param>
+    private sealed class ReloadAwareSectionSink(
+        CommonReactiveSource<TSource, TUIView, TUIViewCell, TSectionInfo> parent,
+        int sectionInfoId,
+        SwapDisposable applyPendingChangesDisposable) : IDisposable
     {
         /// <summary>The owning source whose adapter and state the sink drives.</summary>
-        private readonly CommonReactiveSource<TSource, TUIView, TUIViewCell, TSectionInfo> _parent;
+        private readonly CommonReactiveSource<TSource, TUIView, TUIViewCell, TSectionInfo> _parent = parent;
 
         /// <summary>A correlation id for logging.</summary>
-        private readonly int _sectionInfoId;
+        private readonly int _sectionInfoId = sectionInfoId;
 
         /// <summary>Serial disposable that holds the scheduled apply-changes action.</summary>
-        private readonly SwapDisposable _applyPendingChangesDisposable;
+        private readonly SwapDisposable _applyPendingChangesDisposable = applyPendingChangesDisposable;
 
         /// <summary>All subscriptions created by this sink.</summary>
         private readonly MultipleDisposable _subscriptions = [];
@@ -684,20 +687,6 @@ internal sealed class CommonReactiveSource<TSource, TUIView, TUIViewCell, TSecti
 
         /// <summary>Whether a reload-state value has been observed yet.</summary>
         private bool _hasReloadingValue;
-
-        /// <summary>Initializes a new instance of the <see cref="ReloadAwareSectionSink"/> class.</summary>
-        /// <param name="parent">The owning source.</param>
-        /// <param name="sectionInfoId">A correlation id for logging.</param>
-        /// <param name="applyPendingChangesDisposable">Serial disposable that holds the scheduled apply-changes action.</param>
-        public ReloadAwareSectionSink(
-            CommonReactiveSource<TSource, TUIView, TUIViewCell, TSectionInfo> parent,
-            int sectionInfoId,
-            SwapDisposable applyPendingChangesDisposable)
-        {
-            _parent = parent;
-            _sectionInfoId = sectionInfoId;
-            _applyPendingChangesDisposable = applyPendingChangesDisposable;
-        }
 
         /// <summary>Subscribes to the adapter reload state and to each section's collection changes.</summary>
         /// <param name="sectionInfo">The current section info.</param>

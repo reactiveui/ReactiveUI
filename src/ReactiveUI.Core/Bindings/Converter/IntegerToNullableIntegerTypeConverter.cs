@@ -7,7 +7,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace ReactiveUI;
 
-/// <summary>Converts <see cref="int"/> to <see cref="Nullable{Int32}"/>.</summary>
+/// <summary>Converts <see cref="int"/> to <see cref="int"/>?.</summary>
 public sealed class IntegerToNullableIntegerTypeConverter : IBindingTypeConverter<int, int?>
 {
     /// <inheritdoc/>

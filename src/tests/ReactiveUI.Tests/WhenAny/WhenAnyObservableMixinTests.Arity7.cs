@@ -76,7 +76,7 @@ public partial class WhenAnyObservableMixinTests
             x => x.ObservableProperty5,
             x => x.ObservableProperty6,
             x => x.ObservableProperty7,
-            (_, _, _, _, _, _, _) => "x").ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
+            static (_, _, _, _, _, _, _) => "x").ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
         subj1.OnNext("test");
         subj2.OnNext("test");
         subj3.OnNext("test");

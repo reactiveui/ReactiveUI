@@ -27,15 +27,6 @@ public class ReflectionTests
     /// <summary>The value written when exercising value setters.</summary>
     private const string SetValueText = "setValue";
 
-    /// <summary>The value stored against the dictionary key in reflection tests.</summary>
-    private const int DictionaryValue = 42;
-
-    /// <summary>The second element value used in array reflection tests.</summary>
-    private const int SecondElement = 2;
-
-    /// <summary>The third element value used in array reflection tests.</summary>
-    private const int ThirdElement = 3;
-
     /// <summary>Verifies that a nested property expression is converted to chained property names.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
@@ -51,7 +42,7 @@ public class ReflectionTests
     /// <summary>Verifies that converting a null expression to property names throws.</summary>
     [Test]
     public void ExpressionToPropertyNames_WithNull_Throws() =>
-        Assert.Throws<ArgumentNullException>(() => Reflection.ExpressionToPropertyNames(null));
+        Assert.Throws<ArgumentNullException>(static () => Reflection.ExpressionToPropertyNames(null));
 
     /// <summary>Verifies that a simple property expression is converted to its property name.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
@@ -114,13 +105,13 @@ public class ReflectionTests
 
     /// <summary>Verifies that resolving the event args type for an invalid event throws.</summary>
     [Test]
-    public void GetEventArgsTypeForEvent_WithInvalidEvent_Throws() => Assert.Throws<Exception>(() =>
+    public void GetEventArgsTypeForEvent_WithInvalidEvent_Throws() => Assert.Throws<Exception>(static () =>
         Reflection.GetEventArgsTypeForEvent(typeof(TestClass), "NonExistentEvent"));
 
     /// <summary>Verifies that resolving the event args type with a null type throws.</summary>
     [Test]
     public void GetEventArgsTypeForEvent_WithNullType_Throws() =>
-        Assert.Throws<ArgumentNullException>(() => Reflection.GetEventArgsTypeForEvent(null!, "TestEvent"));
+        Assert.Throws<ArgumentNullException>(static () => Reflection.GetEventArgsTypeForEvent(null!, "TestEvent"));
 
     /// <summary>Verifies that resolving the event args type for a valid event returns the expected type.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
@@ -288,7 +279,7 @@ public class ReflectionTests
     /// <summary>Verifies that requesting a value fetcher with a null member throws.</summary>
     [Test]
     public void GetValueFetcherForProperty_WithNull_Throws() =>
-        Assert.Throws<ArgumentNullException>(() => Reflection.GetValueFetcherForProperty(null));
+        Assert.Throws<ArgumentNullException>(static () => Reflection.GetValueFetcherForProperty(null));
 
     /// <summary>Verifies that a value fetcher reads a value from a property.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
@@ -308,7 +299,7 @@ public class ReflectionTests
     /// <summary>Verifies that requesting a value fetcher or throw with a null member throws.</summary>
     [Test]
     public void GetValueFetcherOrThrow_WithNull_Throws() =>
-        Assert.Throws<ArgumentNullException>(() => Reflection.GetValueFetcherOrThrow(null));
+        Assert.Throws<ArgumentNullException>(static () => Reflection.GetValueFetcherOrThrow(null));
 
     /// <summary>Verifies that GetValueFetcherOrThrow returns a fetcher for a property.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
@@ -341,7 +332,7 @@ public class ReflectionTests
     /// <summary>Verifies that requesting a value setter with a null member throws.</summary>
     [Test]
     public void GetValueSetterForProperty_WithNull_Throws() =>
-        Assert.Throws<ArgumentNullException>(() => Reflection.GetValueSetterForProperty(null));
+        Assert.Throws<ArgumentNullException>(static () => Reflection.GetValueSetterForProperty(null));
 
     /// <summary>Verifies that a value setter writes a value to a property.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
@@ -361,7 +352,7 @@ public class ReflectionTests
     /// <summary>Verifies that requesting a value setter or throw with a null member throws.</summary>
     [Test]
     public void GetValueSetterOrThrow_WithNull_Throws() =>
-        Assert.Throws<ArgumentNullException>(() => Reflection.GetValueSetterOrThrow(null));
+        Assert.Throws<ArgumentNullException>(static () => Reflection.GetValueSetterOrThrow(null));
 
     /// <summary>Verifies that GetValueSetterOrThrow returns a setter for a property.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
@@ -420,7 +411,7 @@ public class ReflectionTests
     /// <summary>Verifies that resolving an invalid type name throws when configured to throw.</summary>
     [Test]
     public void ReallyFindType_WithInvalidTypeNameAndThrow_Throws() =>
-        Assert.Throws<TypeLoadException>(() => Reflection.ReallyFindType("Invalid.Type.Name", true));
+        Assert.Throws<TypeLoadException>(static () => Reflection.ReallyFindType("Invalid.Type.Name", true));
 
     /// <summary>Verifies that resolving a valid type name returns the expected type.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
@@ -497,8 +488,8 @@ public class ReflectionTests
     /// <summary>An empty expression chain has no member to resolve and throws.</summary>
     [Test]
     public void TryGetValueForPropertyChain_EmptyChain_Throws() =>
-        Assert.Throws<InvalidOperationException>(() =>
-            Reflection.TryGetValueForPropertyChain<int>(out _, new object(), []));
+        Assert.Throws<InvalidOperationException>(static () =>
+            Reflection.TryGetValueForPropertyChain<int>(out _, new(), []));
 
     /// <summary>A null intermediate value in the chain yields a failed lookup.</summary>
     /// <returns>A task representing the asynchronous operation.</returns>
@@ -541,6 +532,15 @@ public class ReflectionTests
         /// <summary>A field used for reflection-based fetcher and setter tests.</summary>
         [SuppressMessage("Maintainability", "SST1401:Field should be private", Justification = "Public field required for reflection tests")]
         public int PublicField;
+
+        /// <summary>The value stored against the dictionary key in reflection tests.</summary>
+        private const int DictionaryValue = 42;
+
+        /// <summary>The second element value used in array reflection tests.</summary>
+        private const int SecondElement = 2;
+
+        /// <summary>The third element value used in array reflection tests.</summary>
+        private const int ThirdElement = 3;
 
         /// <summary>An event used for event reflection tests.</summary>
         public event EventHandler? TestEvent;

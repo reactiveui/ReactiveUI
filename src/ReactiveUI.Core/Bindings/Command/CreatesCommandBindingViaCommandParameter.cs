@@ -30,21 +30,11 @@ namespace ReactiveUI;
 /// </remarks>
 public sealed class CreatesCommandBindingViaCommandParameter : ICreatesCommandBinding
 {
-    /// <summary>The expected name of the command property.</summary>
-    private const string CommandPropertyName = "Command";
-
-    /// <summary>The expected name of the command parameter property.</summary>
-    private const string CommandParameterPropertyName = "CommandParameter";
-
     /// <inheritdoc />
     /// <remarks>
     /// If an explicit event target exists, this binder is not applicable and returns 0.
     /// Otherwise, it returns 5 if the target type exposes the required public instance properties; otherwise it returns 0.
     /// </remarks>
-    [SuppressMessage(
-        "Major Code Smell",
-        "S4018:Generic methods should provide type parameter",
-        Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
     public int GetAffinityForObject<
         [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents |
                                     DynamicallyAccessedMemberTypes.PublicProperties)]
@@ -114,9 +104,9 @@ public sealed class CreatesCommandBindingViaCommandParameter : ICreatesCommandBi
     /// </remarks>
     [RequiresUnreferencedCode("String/reflection-based event binding may require members removed by trimming.")]
     [SuppressMessage(
-        "Major Code Smell",
-        "S4018:Generic methods should provide type parameter",
-        Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
+        "Design",
+        "SST1452:A generic type parameter is never used",
+        Justification = "TEventArgs is part of the ICreatesCommandBinding contract; this binder ignores it because event-name binding is not applicable here.")]
     public IDisposable? BindCommandToObject<T, TEventArgs>(
         ICommand? command,
         T? target,
@@ -168,6 +158,12 @@ public sealed class CreatesCommandBindingViaCommandParameter : ICreatesCommandBi
 
         /// <summary>Gets the resolved public instance property named <c>CommandParameter</c>, or <see langword="null"/> if missing.</summary>
         internal static readonly PropertyInfo? CommandParameterProperty;
+
+        /// <summary>The expected name of the command property.</summary>
+        private const string CommandPropertyName = "Command";
+
+        /// <summary>The expected name of the command parameter property.</summary>
+        private const string CommandParameterPropertyName = "CommandParameter";
 
         /// <summary>Initializes static members of the <see cref="Holder{T}"/> class.</summary>
         static Holder()

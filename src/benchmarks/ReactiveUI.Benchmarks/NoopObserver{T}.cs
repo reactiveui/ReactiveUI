@@ -13,13 +13,13 @@ namespace ReactiveUI.Benchmarks;
 internal sealed class NoopObserver<T> : IObserver<T>
 {
     /// <summary>Gets the number of <see cref="OnNext"/> callbacks received.</summary>
-    public long NextCount { get; private set; }
+    internal long NextCount { get; private set; }
 
     /// <summary>Gets the number of <see cref="OnError"/> callbacks received.</summary>
-    public long ErrorCount { get; private set; }
+    internal long ErrorCount { get; private set; }
 
     /// <summary>Gets the number of <see cref="OnCompleted"/> callbacks received.</summary>
-    public long CompletedCount { get; private set; }
+    internal long CompletedCount { get; private set; }
 
     /// <inheritdoc/>
     public void OnNext(T value) => NextCount++;

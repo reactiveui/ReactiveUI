@@ -120,7 +120,7 @@ public class ReactiveUIBuilderCoreTests
     /// <summary>Verifies that creating a builder from a null resolver throws <see cref="ArgumentNullException"/>.</summary>
     [Test]
     public void CreateReactiveUIBuilder_With_Null_Resolver_Should_Throw() =>
-        Assert.Throws<ArgumentNullException>(() =>
+        Assert.Throws<ArgumentNullException>(static () =>
             ((IMutableDependencyResolver)null!).CreateReactiveUIBuilder());
 
     /// <summary>Verifies that building the app produces a valid current locator.</summary>
@@ -191,14 +191,14 @@ public class ReactiveUIBuilderCoreTests
     internal sealed class WithCustomRegistrationExecutor : BuilderTestExecutorBase
     {
         /// <summary>Gets a value indicating whether the custom service was registered.</summary>
-        public static bool CustomServiceRegistered { get; private set; }
+        internal static bool CustomServiceRegistered { get; private set; }
 
         /// <inheritdoc/>
         protected override void ConfigureBuilder()
         {
             CustomServiceRegistered = false;
             _ = RxAppBuilder.CreateReactiveUIBuilder()
-                .WithCustomRegistration(r =>
+                .WithCustomRegistration(static r =>
                 {
                     r.RegisterConstant("TestValue", typeof(string));
                     CustomServiceRegistered = true;
@@ -223,7 +223,7 @@ public class ReactiveUIBuilderCoreTests
     internal sealed class FluentChainingExecutor : BuilderTestExecutorBase
     {
         /// <summary>Gets a value indicating whether the custom service was registered.</summary>
-        public static bool CustomServiceRegistered { get; private set; }
+        internal static bool CustomServiceRegistered { get; private set; }
 
         /// <inheritdoc/>
         protected override void ConfigureBuilder()
@@ -231,7 +231,7 @@ public class ReactiveUIBuilderCoreTests
             CustomServiceRegistered = false;
             _ = RxAppBuilder.CreateReactiveUIBuilder()
                 .WithCoreServices()
-                .WithCustomRegistration(r =>
+                .WithCustomRegistration(static r =>
                 {
                     r.RegisterConstant("Test", typeof(string));
                     CustomServiceRegistered = true;

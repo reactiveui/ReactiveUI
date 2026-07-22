@@ -10,8 +10,6 @@ using ReactiveUI.Primitives;
 using Splat;
 using UIKit;
 
-using NSAction = System.Action;
-
 #if REACTIVE_SHIM
 namespace ReactiveUI.Reactive;
 #else
@@ -63,15 +61,13 @@ public class AutoSuspendHelper<
     /// propagation.
     /// </para>
     /// </remarks>
-    static AutoSuspendHelper()
-    {
+    static AutoSuspendHelper() =>
         Reflection.ThrowIfMethodsNotOverloaded(
             nameof(AutoSuspendHelper<>),
             typeof(T),
             nameof(FinishedLaunching),
             nameof(OnActivated),
             nameof(DidEnterBackground));
-    }
 
     /// <summary>Initializes a new instance of the <see cref="AutoSuspendHelper{T}"/> class.</summary>
     /// <param name="appDelegate">The application delegate instance that forwards lifecycle methods.</param>
@@ -101,7 +97,7 @@ public class AutoSuspendHelper<
                 return Signal.None<IDisposable>();
             }
 
-            return Signal.Emit<IDisposable>(Scope.Create(() => app.EndBackgroundTask(taskId)));
+            return Signal.Emit(Scope.Create((app, taskId), static state => state.app.EndBackgroundTask(state.taskId)));
         });
     }
 

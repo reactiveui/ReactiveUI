@@ -14,7 +14,7 @@ namespace ReactiveUI;
 /// <summary>Interface used to extract a common API between <see cref="UIKit.UITableView"/> and <see cref="UIKit.UICollectionView"/>.</summary>
 /// <typeparam name="TUIView">The ui view type.</typeparam>
 /// <typeparam name="TUIViewCell">The ui view call type.</typeparam>
-[SuppressMessage("Minor Code Smell", "S2326:Unused type parameters should be removed", Justification = "Type parameter is part of the public generic API and preserves call-site type safety.")]
+[SuppressMessage("Design", "SST1452:Remove unused type parameters", Justification = "TUIView is part of the adapter's generic contract and preserves call-site type safety for consumers.")]
 internal interface IUICollViewAdapter<TUIView, TUIViewCell>
 {
     /// <summary>Gets the is reloading data.</summary>

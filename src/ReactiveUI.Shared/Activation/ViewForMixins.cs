@@ -4,7 +4,10 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Diagnostics.CodeAnalysis;
+#if NET8_0_OR_GREATER
 using System.Globalization;
+using System.Text;
+#endif
 using ReactiveUI.Primitives.Disposables;
 using Splat;
 
@@ -29,7 +32,13 @@ public static class ViewForMixins
 {
     /// <summary>Cache mapping view types to their resolved activation fetcher, to avoid repeated service locator lookups.</summary>
     private static readonly MemoizingMRUCache<Type, IActivationForViewFetcher?> _activationFetcherCache =
-        new((t, _) => ResolveActivationFetcher(t), RxCacheSize.SmallCacheLimit);
+        new(static (t, _) => ResolveActivationFetcher(t), RxCacheSize.SmallCacheLimit);
+
+#if NET8_0_OR_GREATER
+    /// <summary>Parsed format for the activation-detection failure message, cached to avoid re-parsing it on each throw.</summary>
+    private static readonly CompositeFormat _activationDetectionFailureFormat = CompositeFormat.Parse(
+        "Don't know how to detect when {0} is activated/deactivated, you may need to implement IActivationForViewFetcher");
+#endif
 
     /// <summary>Provides activation lifecycle extension members for <see cref="IActivatableView"/>.</summary>
     /// <param name="item">The view whose activation lifecycle will manage the disposables.</param>
@@ -79,9 +88,11 @@ public static class ViewForMixins
                     return EmptyDisposable.Instance;
                 }
 
-                const string Msg =
-                    "Don't know how to detect when {0} is activated/deactivated, you may need to implement IActivationForViewFetcher";
-                throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, Msg, item.GetType().FullName));
+#if NET8_0_OR_GREATER
+                throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, _activationDetectionFailureFormat, item.GetType().FullName));
+#else
+                throw new ArgumentException($"Don't know how to detect when {item.GetType().FullName} is activated/deactivated, you may need to implement IActivationForViewFetcher");
+#endif
             }
 
             var activationEvents = activationFetcher.GetActivationForView(item);

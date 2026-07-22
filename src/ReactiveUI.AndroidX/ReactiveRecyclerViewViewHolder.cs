@@ -46,30 +46,30 @@ public class ReactiveRecyclerViewViewHolder<TViewModel> : RecyclerView.ViewHolde
 
         Selected = new FromEventObservable<int>(onNext =>
         {
-            void Handler(object? sender, EventArgs e) => onNext(AbsoluteAdapterPosition);
-            view.Click += Handler;
-            return new ActionDisposable(() => view.Click -= Handler);
+            EventHandler handler = (_, _) => onNext(AbsoluteAdapterPosition);
+            view.Click += handler;
+            return new ActionDisposable(() => view.Click -= handler);
         });
 
         LongClicked = new FromEventObservable<int>(onNext =>
         {
-            void Handler(object? sender, View.LongClickEventArgs e) => onNext(AbsoluteAdapterPosition);
-            view.LongClick += Handler;
-            return new ActionDisposable(() => view.LongClick -= Handler);
+            EventHandler<View.LongClickEventArgs> handler = (_, _) => onNext(AbsoluteAdapterPosition);
+            view.LongClick += handler;
+            return new ActionDisposable(() => view.LongClick -= handler);
         });
 
         SelectedWithViewModel = new FromEventObservable<TViewModel?>(onNext =>
         {
-            void Handler(object? sender, EventArgs e) => onNext(ViewModel);
-            view.Click += Handler;
-            return new ActionDisposable(() => view.Click -= Handler);
+            EventHandler handler = (_, _) => onNext(ViewModel);
+            view.Click += handler;
+            return new ActionDisposable(() => view.Click -= handler);
         });
 
         LongClickedWithViewModel = new FromEventObservable<TViewModel?>(onNext =>
         {
-            void Handler(object? sender, View.LongClickEventArgs e) => onNext(ViewModel);
-            view.LongClick += Handler;
-            return new ActionDisposable(() => view.LongClick -= Handler);
+            EventHandler<View.LongClickEventArgs> handler = (_, _) => onNext(ViewModel);
+            view.LongClick += handler;
+            return new ActionDisposable(() => view.LongClick -= handler);
         });
     }
 

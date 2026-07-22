@@ -25,7 +25,7 @@ namespace ReactiveUI;
 /// This is an  ImageView that is both and ImageView and has a ReactiveObject powers
 /// (i.e. you can call RaiseAndSetIfChanged).
 /// </summary>
-public abstract class ReactiveImageView : NSImageView, IReactiveNotifyPropertyChanged<ReactiveImageView>, IHandleObservableErrors, IReactiveObject, ICanActivate, ICanForceManualActivation
+public class ReactiveImageView : NSImageView, IReactiveNotifyPropertyChanged<ReactiveImageView>, IHandleObservableErrors, IReactiveObject, ICanActivate, ICanForceManualActivation
 {
     /// <summary>The subject used to signal view activation.</summary>
     private readonly Signal<RxVoid> _activated = new();
@@ -138,8 +138,13 @@ public abstract class ReactiveImageView : NSImageView, IReactiveNotifyPropertyCh
 
     /// <inheritdoc/>
     void ICanForceManualActivation.Activate(bool isActivating) =>
-        RxSchedulers.MainThreadScheduler.Schedule(() =>
-            (isActivating ? _activated : _deactivated).OnNext(RxVoid.Default));
+        RxSchedulers.MainThreadScheduler.Schedule(
+            (Owner: this, IsActivating: isActivating),
+            static (_, state) =>
+            {
+                (state.IsActivating ? state.Owner._activated : state.Owner._deactivated).OnNext(RxVoid.Default);
+                return EmptyDisposable.Instance;
+            });
 
     /// <inheritdoc/>
     protected override void Dispose(bool disposing)

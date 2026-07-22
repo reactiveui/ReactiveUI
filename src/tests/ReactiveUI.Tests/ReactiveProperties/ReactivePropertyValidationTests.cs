@@ -29,13 +29,22 @@ public class ReactivePropertyValidationTests
     /// <summary>The delay between polling attempts, in milliseconds.</summary>
     private const int PollDelayMilliseconds = 10;
 
+    /// <summary>A single-element array carrying <see cref="NegativeError"/>, boxed as <c>object[]</c> to mix with a later report.</summary>
+    private static readonly object[] NegativeErrorObjectArray = [NegativeError];
+
+    /// <summary>A single-element array carrying <see cref="NegativeError"/>.</summary>
+    private static readonly string[] NegativeErrorArray = [NegativeError];
+
+    /// <summary>A single-element array carrying <see cref="PositiveError"/>.</summary>
+    private static readonly string[] PositiveErrorArray = [PositiveError];
+
     /// <summary>Verifies the observable-based validator overload surfaces and clears errors as the value changes.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task ObservableValidator_SurfacesError()
     {
         using var rp = new ReactiveProperty<int>(0, Sequencer.Immediate, false, false)
-            .AddValidationError(xs => xs.Select(static x => x < 0 ? ObservableError : null));
+            .AddValidationError(static xs => xs.Select(static x => x < 0 ? ObservableError : null));
 
         await Assert.That(rp.HasErrors).IsFalse();
 
@@ -51,7 +60,7 @@ public class ReactivePropertyValidationTests
     public async Task AsyncValidator_SurfacesError()
     {
         using var rp = new ReactiveProperty<int>(0, Sequencer.Immediate, false, false)
-            .AddValidationError(static x => Task.FromResult<string?>(x < 0 ? AsyncError : null));
+            .AddValidationError(static x => Task.FromResult(x < 0 ? AsyncError : null));
 
         rp.Value = -1;
 
@@ -80,7 +89,7 @@ public class ReactivePropertyValidationTests
     public async Task ObservableEnumerableValidator_SingleArgOverload()
     {
         using var rp = new ReactiveProperty<string>(null, Sequencer.Immediate, false, false)
-            .AddValidationError(xs =>
+            .AddValidationError(static xs =>
                 new MapSignal<string?, IEnumerable?>(xs, static x => string.IsNullOrEmpty(x) ? new[] { ObservableError } : null));
 
         await Assert.That(rp.HasErrors).IsTrue();
@@ -105,7 +114,7 @@ public class ReactivePropertyValidationTests
     public async Task AsyncStringValidator_SingleArgOverload()
     {
         using var rp = new ReactiveProperty<int>(-1, Sequencer.Immediate, false, false)
-            .AddValidationError(static x => Task.FromResult<string?>(x < 0 ? AsyncError : null));
+            .AddValidationError(static x => Task.FromResult(x < 0 ? AsyncError : null));
 
         await Assert.That(rp.GetErrors(null)?.OfType<string>()).Contains(AsyncError);
     }
@@ -123,11 +132,11 @@ public class ReactivePropertyValidationTests
             .AddValidationError(_ => sig1);
 
         // Only the first validator has reported: aggregation must wait for the second.
-        sig0.OnNext(new object[] { NegativeError });
+        sig0.OnNext(NegativeErrorObjectArray);
         await Assert.That(rp.HasErrors).IsFalse();
 
         // Both validators have now reported; a non-string element and a string element are aggregated.
-        sig1.OnNext(new[] { PositiveError });
+        sig1.OnNext(PositiveErrorArray);
 
         using (Assert.Multiple())
         {
@@ -163,7 +172,7 @@ public class ReactivePropertyValidationTests
         secondErroring.OnError(new InvalidOperationException("second"));
 
         // An emission from a still-live validator after the stop is ignored (stopped guard in OnNextAt).
-        live.OnNext(new[] { NegativeError });
+        live.OnNext(NegativeErrorArray);
 
         await Assert.That(rp.HasErrors).IsFalse();
     }
@@ -174,7 +183,7 @@ public class ReactivePropertyValidationTests
     public async Task AsyncValidator_DisposeCompletesSource()
     {
         var rp = new ReactiveProperty<int>(0, Sequencer.Immediate, false, false)
-            .AddValidationError(static x => Task.FromResult<string?>(x < 0 ? AsyncError : null));
+            .AddValidationError(static x => Task.FromResult(x < 0 ? AsyncError : null));
 
         rp.Value = -1;
         await Assert.That(rp.GetErrors(null)?.OfType<string>()).Contains(AsyncError);
@@ -199,7 +208,7 @@ public class ReactivePropertyValidationTests
             .AddValidationError(_ => sig1);
 
         // Both validators report so the aggregate has a full set of latest values.
-        sig0.OnNext(new[] { NegativeError });
+        sig0.OnNext(NegativeErrorArray);
         sig1.OnNext(null);
         await Assert.That(rp.GetErrors(null)?.OfType<string>()).Contains(NegativeError);
 
@@ -207,7 +216,7 @@ public class ReactivePropertyValidationTests
         sig0.OnCompleted();
 
         // The still-open second validator can continue to drive aggregation.
-        sig1.OnNext(new[] { PositiveError });
+        sig1.OnNext(PositiveErrorArray);
         await Assert.That(rp.GetErrors(null)?.OfType<string>()).Contains(PositiveError);
 
         // Completing the last validator terminates the aggregate downstream.
@@ -252,7 +261,7 @@ public class ReactivePropertyValidationTests
     {
         using var rp = new ReactiveProperty<int>(0, Sequencer.Immediate, false, false)
             .AddValidationError(
-                async x =>
+                static async x =>
                 {
                     await Task.Yield();
                     return x < 0 ? AsyncError : null;

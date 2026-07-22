@@ -27,6 +27,6 @@ public class RxAppDependencyObjectTests
         RxAppBuilder.EnsureInitialized();
 
         await Assert.That(AppLocator.Current.GetServices<ICreatesObservableForProperty>()
-                           .Any(static x => x is DependencyObjectObservableForProperty)).IsTrue();
+                           .Any(typeof(DependencyObjectObservableForProperty).IsInstanceOfType)).IsTrue();
     }
 }

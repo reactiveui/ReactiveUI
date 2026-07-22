@@ -3,7 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using ReactiveUI.Helpers;
 
@@ -21,10 +20,6 @@ namespace ReactiveUI;
 /// string-based property identification, allow for optional initial values, and provide control over subscription
 /// timing and notification scheduling. Use these methods to implement read-only reactive properties that automatically
 /// notify listeners when their values change.</remarks>
-[SuppressMessage(
-    "Minor Code Smell",
-    "S101:Types should be named in PascalCase",
-    Justification = "Established public API; renaming is breaking.")]
 public static class OAPHCreationHelperMixins
 {
     /// <summary>Provides ToProperty extension members for <see cref="IObservable{T}"/> sources.</summary>
@@ -1141,7 +1136,7 @@ public static class OAPHCreationHelperMixins
                 observable,
                 _ => target.RaisingPropertyChanged(name),
                 _ => target.RaisingPropertyChanging(name),
-                () => default,
+                static () => default,
                 deferSubscription,
                 scheduler);
         }
@@ -1211,7 +1206,7 @@ public static class OAPHCreationHelperMixins
                 observable,
                 _ => target.RaisingPropertyChanged(property),
                 _ => target.RaisingPropertyChanging(property),
-                () => default,
+                static () => default,
                 deferSubscription,
                 scheduler);
         }

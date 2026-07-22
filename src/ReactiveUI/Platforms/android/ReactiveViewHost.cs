@@ -33,7 +33,7 @@ namespace ReactiveUI;
 /// <see cref="AllPublicProperties"/> for older infrastructure.
 /// </para>
 /// </remarks>
-public abstract class ReactiveViewHost<TViewModel> :
+public class ReactiveViewHost<TViewModel> :
     LayoutViewHost,
     IViewFor<TViewModel>,
     IReactiveNotifyPropertyChanged<ReactiveViewHost<TViewModel>>,

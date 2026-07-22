@@ -4,6 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using ReactiveUI.Primitives;
 
 namespace ReactiveUI.Samples.Winforms;
@@ -11,6 +12,9 @@ namespace ReactiveUI.Samples.Winforms;
 /// <summary>A reactive login view demonstrating WhenActivated and reactive subscriptions for WinForms.</summary>
 public sealed class LoginView : UserControl, IViewFor<LoginViewModel>
 {
+    /// <summary>The padding, in pixels, around the vertical layout panel.</summary>
+    private const int LayoutPadding = 20;
+
     /// <summary>The text box bound to the view model's user name.</summary>
     private readonly TextBox _username = new() { PlaceholderText = "Username", Width = 240, Name = "Username" };
 
@@ -30,13 +34,17 @@ public sealed class LoginView : UserControl, IViewFor<LoginViewModel>
     private readonly Button _cancel = new() { Text = "Cancel", Width = 115, Name = "Cancel" };
 
     /// <summary>Initializes a new instance of the <see cref="LoginView"/> class.</summary>
+    [SuppressMessage(
+        "Correctness",
+        "SST2403:Do not let 'this' escape from a constructor",
+        Justification = "Single-threaded sample view; WhenActivated captures this for activation-scoped binding after construction.")]
     public LoginView()
     {
         var layout = new FlowLayoutPanel
         {
             Dock = DockStyle.Fill,
             FlowDirection = FlowDirection.TopDown,
-            Padding = new(20),
+            Padding = new(LayoutPadding),
             WrapContents = false
         };
 
@@ -65,7 +73,7 @@ public sealed class LoginView : UserControl, IViewFor<LoginViewModel>
                 .DisposeWith(d);
 
             _ = ViewModel.Login
-                .Subscribe(success => MessageBox.Show(
+                .Subscribe(static success => MessageBox.Show(
                     success ? "Welcome!" : "Invalid credentials.",
                     success ? "Login Successful" : "Login Failed"))
                 .DisposeWith(d);

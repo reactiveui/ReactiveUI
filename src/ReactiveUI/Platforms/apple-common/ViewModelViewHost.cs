@@ -59,7 +59,6 @@ public class ViewModelViewHost : ReactiveViewController
     private readonly DisposableBag _subscriptions;
 
     /// <summary>Holds the subscription to <see cref="ViewContractObservable"/> (the inner observable) and swaps it when the property changes.</summary>
-    [SuppressMessage("Usage", "CA2213:Disposable fields should be disposed", Justification = "Disposed by _subscriptions")]
     private readonly SwapDisposable _viewContractObservableSubscription;
 
     /// <summary>Backing field for <see cref="ViewContract"/>. This is updated by observing <see cref="ViewContractObservable"/> and is raised as a property change for bindings.</summary>
@@ -72,6 +71,7 @@ public class ViewModelViewHost : ReactiveViewController
     private object? _viewModel;
 
     /// <summary>Initializes a new instance of the <see cref="ViewModelViewHost"/> class.</summary>
+    [SuppressMessage("Correctness", "SST2403:Do not let 'this' escape from a constructor", Justification = "Wrappers read this host only after construction; the reference does not outlive it.")]
     public ViewModelViewHost()
     {
         _currentView = new();
@@ -275,10 +275,7 @@ public class ViewModelViewHost : ReactiveViewController
 
     /// <summary>Updates the <see cref="ViewContract"/> backing field and raises property changed notifications.</summary>
     /// <param name="contract">The new contract value.</param>
-    private void SetViewContract(string? contract)
-    {
-        _ = this.RaiseAndSetIfChanged(ref _viewContract, contract, nameof(ViewContract));
-    }
+    private void SetViewContract(string? contract) => ViewContract = contract;
 
     /// <summary>
     /// Observes a property on this <see cref="ViewModelViewHost"/> instance. Emits the current value immediately on
@@ -364,13 +361,11 @@ public class ViewModelViewHost : ReactiveViewController
             // Preserve the previous StartWith((string?)null) semantics.
             observer.OnNext(null);
 
-            void SwapInner(IObservable<string?>? source)
-            {
+            void SwapInner(IObservable<string?>? source) =>
                 host._viewContractObservableSubscription.Disposable =
                     source is null
                         ? EmptyDisposable.Instance
                         : source.Subscribe(observer);
-            }
 
             // Subscribe to the initial observable (if any).
             SwapInner(host.ViewContractObservable);

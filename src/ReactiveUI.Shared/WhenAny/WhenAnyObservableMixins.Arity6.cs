@@ -12,10 +12,6 @@ namespace ReactiveUI.Reactive;
 namespace ReactiveUI;
 #endif
 /// <summary>Provides the arity-6 WhenAnyObservable extension overloads.</summary>
-[SuppressMessage(
-    "Major Code Smell",
-    "S107:Methods should not have too many parameters",
-    Justification = "Arity-N variadic overloads intentionally expose more than seven parameters.")]
 public static partial class WhenAnyObservableMixins
 {
     /// <summary>Provides arity-6 WhenAnyObservable extension members for a source object.</summary>
@@ -40,9 +36,8 @@ public static partial class WhenAnyObservableMixins
             Expression<Func<TSender, IObservable<TRet>?>> obs3,
             Expression<Func<TSender, IObservable<TRet>?>> obs4,
             Expression<Func<TSender, IObservable<TRet>?>> obs5,
-            Expression<Func<TSender, IObservable<TRet>?>> obs6)
-        {
-            return new WhenAnyObservableMergeSink<TRet>(
+            Expression<Func<TSender, IObservable<TRet>?>> obs6) =>
+            new WhenAnyObservableMergeSink<TRet>(
                 sender.WhenAny(
                     obs1,
                     obs2,
@@ -50,7 +45,7 @@ public static partial class WhenAnyObservableMixins
                     obs4,
                     obs5,
                     obs6,
-                    (o1, o2, o3, o4, o5, o6) => new[]
+                    static (o1, o2, o3, o4, o5, o6) => new[]
                     {
                         o1.Value!.EmptyIfNull(),
                         o2.Value!.EmptyIfNull(),
@@ -59,7 +54,6 @@ public static partial class WhenAnyObservableMixins
                         o5.Value!.EmptyIfNull(),
                         o6.Value!.EmptyIfNull(),
                     }));
-        }
 
         /// <summary>Observes several observable-valued properties and combines their latest values with a selector.</summary>
         /// <typeparam name="TRet">The type of the resulting value.</typeparam>

@@ -23,8 +23,9 @@ public class DateTimeOffsetToStringTypeConverterTests
     [Test]
     public async Task TryConvert_DateTimeOffset_Succeeds()
     {
+        const int UtcOffsetHours = -5;
         var converter = new DateTimeOffsetToStringTypeConverter();
-        var value = new DateTimeOffset(2_024, 1, 15, 10, 30, 45, TimeSpan.FromHours(-5));
+        var value = new DateTimeOffset(2_024, 1, 15, 10, 30, 45, TimeSpan.FromHours(UtcOffsetHours));
 
         var result = converter.TryConvert(value, null, out var output);
 

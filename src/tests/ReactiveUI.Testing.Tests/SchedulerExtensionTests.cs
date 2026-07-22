@@ -110,7 +110,7 @@ public sealed class SchedulerExtensionTests
         var scheduler = new VirtualTimeScheduler();
         var originalScheduler = RxSchedulers.MainThreadScheduler;
 
-        var result = scheduler.With(s =>
+        var result = scheduler.With(static s =>
         {
             // Inside the block, scheduler should be active
             if (RxSchedulers.MainThreadScheduler != s)
@@ -161,7 +161,7 @@ public sealed class SchedulerExtensionTests
         var scheduler = new VirtualTimeScheduler();
         var originalScheduler = RxSchedulers.MainThreadScheduler;
 
-        var result = await scheduler.WithAsync(s =>
+        var result = await scheduler.WithAsync(static s =>
         {
             // Inside the block, scheduler should be active
             if (RxSchedulers.MainThreadScheduler != s)

@@ -24,7 +24,7 @@ public class DecimalToNullableDecimalTypeConverterTests
     public async Task TryConvert_AlwaysSucceeds()
     {
         var converter = new DecimalToNullableDecimalTypeConverter();
-        const decimal Value = 123.456789m;
+        const decimal Value = 123.456789M;
 
         var result = converter.TryConvert(Value, null, out var output);
 
@@ -56,7 +56,7 @@ public class DecimalToNullableDecimalTypeConverterTests
     public async Task TryConvertTyped_WithValidValue_ReturnsTrueAndOutput()
     {
         var converter = new DecimalToNullableDecimalTypeConverter();
-        const decimal Value = 42.5m;
+        const decimal Value = 42.5M;
 
         var success = converter.TryConvertTyped(Value, null, out var result);
 

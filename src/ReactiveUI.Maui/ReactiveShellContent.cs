@@ -29,7 +29,7 @@ TViewModel> : ShellContent, IActivatableView
         typeof(string),
         typeof(ReactiveShellContent<TViewModel>),
         defaultBindingMode: BindingMode.Default,
-        propertyChanged: ViewModelChanged);
+        propertyChanged: static (bindable, _, _) => (bindable as ReactiveShellContent<TViewModel>)?.UpdateContentTemplate());
 
     /// <summary>The view model property.</summary>
     public static readonly BindableProperty ViewModelProperty = BindableProperty.Create(
@@ -37,13 +37,10 @@ TViewModel> : ShellContent, IActivatableView
         typeof(TViewModel),
         typeof(ReactiveShellContent<TViewModel>),
         defaultBindingMode: BindingMode.Default,
-        propertyChanged: ViewModelChanged);
+        propertyChanged: static (bindable, _, _) => (bindable as ReactiveShellContent<TViewModel>)?.UpdateContentTemplate());
 
     /// <summary>Initializes a new instance of the <see cref="ReactiveShellContent{TViewModel}" /> class.</summary>
-    public ReactiveShellContent()
-    {
-        UpdateContentTemplate();
-    }
+    public ReactiveShellContent() => UpdateContentTemplate();
 
     /// <summary>Gets or sets the view model.</summary>
     /// <value>
@@ -63,20 +60,6 @@ TViewModel> : ShellContent, IActivatableView
     {
         get => (string?)GetValue(ContractProperty);
         set => SetValue(ContractProperty, value);
-    }
-
-    /// <summary>Handles changes to the <see cref="ViewModel"/> or <see cref="Contract"/> properties by resolving and assigning the associated view as the content template.</summary>
-    /// <param name="bindable">The bindable object whose property changed.</param>
-    /// <param name="oldValue">The previous value.</param>
-    /// <param name="newValue">The new value.</param>
-    private static void ViewModelChanged(BindableObject bindable, object? oldValue, object? newValue)
-    {
-        if (bindable is not ReactiveShellContent<TViewModel> svm)
-        {
-            return;
-        }
-
-        svm.UpdateContentTemplate();
     }
 
     /// <summary>Rebuilds the content template when the view model or contract changes.</summary>

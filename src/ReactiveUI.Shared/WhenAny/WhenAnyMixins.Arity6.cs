@@ -13,9 +13,13 @@ namespace ReactiveUI;
 #endif
 /// <summary>Provides the arity-6 WhenAny / WhenAnyValue / WhenAnyDynamic extension overloads.</summary>
 [SuppressMessage(
-    "Major Code Smell",
-    "S107:Methods should not have too many parameters",
-    Justification = "Arity-N variadic overloads intentionally expose more than seven parameters.")]
+    "Design",
+    "SST2307:Generic type parameter cannot be inferred from any parameter",
+    Justification = "The result type parameter is supplied explicitly by callers by design; WhenAny cannot infer it from the property-expression parameters.")]
+[SuppressMessage(
+    "Design",
+    "SST1472:Method declares too many parameters",
+    Justification = "Parameter count is intrinsic to the fixed WhenAny arity API.")]
 public static partial class WhenAnyMixins
 {
     /// <summary>Provides arity-6 WhenAny extension members for <typeparamref name="TSender"/>.</summary>
@@ -52,7 +56,7 @@ public static partial class WhenAnyMixins
                 property4,
                 property5,
                 property6,
-                (c1, c2, c3, c4, c5, c6) => (c1.Value, c2.Value, c3.Value, c4.Value, c5.Value, c6.Value));
+                static (c1, c2, c3, c4, c5, c6) => (c1.Value, c2.Value, c3.Value, c4.Value, c5.Value, c6.Value));
 
         /// <summary>AOT-friendly overload that observes properties by name and projects a tuple.</summary>
         /// <typeparam name="T1">The type of property 1.</typeparam>
@@ -124,7 +128,7 @@ public static partial class WhenAnyMixins
                 property4,
                 property5,
                 property6,
-                (c1, c2, c3, c4, c5, c6) => (c1.Value, c2.Value, c3.Value, c4.Value, c5.Value, c6.Value),
+                static (c1, c2, c3, c4, c5, c6) => (c1.Value, c2.Value, c3.Value, c4.Value, c5.Value, c6.Value),
                 isDistinct);
 
         /// <summary>AOT-friendly overload that observes properties by name and projects a tuple.</summary>

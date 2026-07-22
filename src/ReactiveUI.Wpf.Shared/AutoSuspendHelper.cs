@@ -43,24 +43,27 @@ namespace ReactiveUI;
 /// </remarks>
 public class AutoSuspendHelper : IEnableLogger
 {
+    /// <summary>The default idle timeout, in seconds.</summary>
+    private const double DefaultIdleTimeoutSeconds = 15.0;
+
     /// <summary>Initializes a new instance of the <see cref="AutoSuspendHelper"/> class.</summary>
     /// <param name="app">The application.</param>
     public AutoSuspendHelper(Application app)
     {
-        IdleTimeout = TimeSpan.FromSeconds(15.0);
+        IdleTimeout = TimeSpan.FromSeconds(DefaultIdleTimeoutSeconds);
 
         var isUnpausing = new FromEventObservable<RxVoid>(onNext =>
         {
-            void Handler(object? sender, EventArgs e) => onNext(RxVoid.Default);
-            app.Activated += Handler;
-            return new ActionDisposable(() => app.Activated -= Handler);
+            EventHandler handler = (_, _) => onNext(RxVoid.Default);
+            app.Activated += handler;
+            return new ActionDisposable(() => app.Activated -= handler);
         });
 
         RxSuspension.SuspensionHost.IsLaunchingNew = new FromEventObservable<RxVoid>(onNext =>
         {
-            void Handler(object sender, StartupEventArgs e) => onNext(RxVoid.Default);
-            app.Startup += Handler;
-            return new ActionDisposable(() => app.Startup -= Handler);
+            StartupEventHandler handler = (_, _) => onNext(RxVoid.Default);
+            app.Startup += handler;
+            return new ActionDisposable(() => app.Startup -= handler);
         });
 
         RxSuspension.SuspensionHost.IsUnpausing = isUnpausing;
@@ -70,21 +73,21 @@ public class AutoSuspendHelper : IEnableLogger
         // do it in-process
         var deactivated = new FromEventObservable<RxVoid>(onNext =>
         {
-            void Handler(object? sender, EventArgs e) => onNext(RxVoid.Default);
-            app.Deactivated += Handler;
-            return new ActionDisposable(() => app.Deactivated -= Handler);
+            EventHandler handler = (_, _) => onNext(RxVoid.Default);
+            app.Deactivated += handler;
+            return new ActionDisposable(() => app.Deactivated -= handler);
         });
 
         var exit = new FromEventObservable<IDisposable>(onNext =>
         {
-            void Handler(object sender, ExitEventArgs e) => onNext(EmptyDisposable.Instance);
-            app.Exit += Handler;
-            return new ActionDisposable(() => app.Exit -= Handler);
+            ExitEventHandler handler = (_, _) => onNext(EmptyDisposable.Instance);
+            app.Exit += handler;
+            return new ActionDisposable(() => app.Exit -= handler);
         });
 
         // Persist when the app exits, or when it stays deactivated for the idle timeout without being reactivated
         // (a reset-on-reactivate idle timer), replacing the SelectMany(Timer)+TakeUntil+Repeat+Merge pipeline.
-        RxSuspension.SuspensionHost.ShouldPersistState = Signal.Blend<IDisposable>(
+        RxSuspension.SuspensionHost.ShouldPersistState = Signal.Blend(
             exit,
             new IdleTimeoutObservable(deactivated, isUnpausing, () => IdleTimeout, RxSchedulers.TaskpoolScheduler));
 

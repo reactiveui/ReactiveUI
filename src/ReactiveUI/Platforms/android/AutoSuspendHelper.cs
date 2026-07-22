@@ -70,7 +70,8 @@ public class AutoSuspendHelper : IEnableLogger, IDisposable
     public AutoSuspendHelper(Application hostApplication)
     {
         ArgumentExceptionHelper.ThrowIfNull(hostApplication);
-        hostApplication.RegisterActivityLifecycleCallbacks(new ObservableLifecycle(this));
+        hostApplication.RegisterActivityLifecycleCallbacks(
+            new ObservableLifecycle(_onCreate, _onRestart, _onPause, _onSaveInstanceState));
 
         // Both create and save-instance-state callbacks update the latest bundle (replaces a Merge + Subscribe).
         _ = _onCreate.Subscribe(new DelegateObserver<Bundle?>(static x => LatestBundle = x));
@@ -193,27 +194,34 @@ public class AutoSuspendHelper : IEnableLogger, IDisposable
     /// <remarks>This class implements the Application.IActivityLifecycleCallbacks interface to observe
     /// activity lifecycle changes. It is intended for internal use to bridge Android lifecycle events to reactive
     /// streams managed by AutoSuspendHelper.</remarks>
-    /// <param name="this">The AutoSuspendHelper instance that receives lifecycle event notifications.</param>
-    private sealed class ObservableLifecycle(AutoSuspendHelper @this)
+    /// <param name="onCreate">Relays Activity create callbacks along with the saved-state bundle.</param>
+    /// <param name="onRestart">Relays Activity resume callbacks.</param>
+    /// <param name="onPause">Relays Activity pause callbacks.</param>
+    /// <param name="onSaveInstanceState">Relays Activity save-instance-state callbacks along with the out bundle.</param>
+    private sealed class ObservableLifecycle(
+        Signal<Bundle?> onCreate,
+        Signal<RxVoid> onRestart,
+        Signal<RxVoid> onPause,
+        Signal<Bundle?> onSaveInstanceState)
         : Java.Lang.Object, Application.IActivityLifecycleCallbacks
     {
         /// <inheritdoc/>
         public void OnActivityCreated(Activity? activity, Bundle? savedInstanceState) =>
-            @this._onCreate.OnNext(savedInstanceState);
+            onCreate.OnNext(savedInstanceState);
 
         /// <inheritdoc/>
-        public void OnActivityResumed(Activity? activity) => @this._onRestart.OnNext(RxVoid.Default);
+        public void OnActivityResumed(Activity? activity) => onRestart.OnNext(RxVoid.Default);
 
         /// <inheritdoc/>
         public void OnActivitySaveInstanceState(Activity? activity, Bundle? outState)
         {
             outState?.PutString("___dummy_value_please_create_a_bundle", "VeryYes");
 
-            @this._onSaveInstanceState.OnNext(outState);
+            onSaveInstanceState.OnNext(outState);
         }
 
         /// <inheritdoc/>
-        public void OnActivityPaused(Activity? activity) => @this._onPause.OnNext(RxVoid.Default);
+        public void OnActivityPaused(Activity? activity) => onPause.OnNext(RxVoid.Default);
 
         /// <inheritdoc/>
         public void OnActivityDestroyed(Activity? activity)

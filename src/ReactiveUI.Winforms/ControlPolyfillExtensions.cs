@@ -20,26 +20,16 @@ internal static class ControlPolyfillExtensions
     {
         /// <summary>Determines whether the control, or any of its ancestors, is hosted in a design-mode site.</summary>
         /// <returns>true if the control or one of its ancestors is in design mode; otherwise, false.</returns>
-        public bool GetIsAncestorSiteInDesignMode()
-        {
 #if NET6_0_OR_GREATER
-            return control.IsAncestorSiteInDesignMode;
+        internal bool GetIsAncestorSiteInDesignMode() => control.IsAncestorSiteInDesignMode;
 #else
+        internal bool GetIsAncestorSiteInDesignMode()
+        {
             ArgumentExceptionHelper.ThrowIfNull(control);
 
-            if (control.Site is { DesignMode: true })
-            {
-                return true;
-            }
-            else if (control.Parent is null)
-            {
-                return false;
-            }
-            else
-            {
-                return control.Parent.GetIsAncestorSiteInDesignMode();
-            }
-#endif
+            return control.Site is { DesignMode: true }
+                || control.Parent?.GetIsAncestorSiteInDesignMode() is true;
         }
+#endif
     }
 }

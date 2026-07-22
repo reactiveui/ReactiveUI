@@ -31,7 +31,7 @@ public class TestSequencerTests
         using var subject = new StateSignal<RxVoid>(RxVoid.Default);
 
         // Track async operations to ensure proper coordination
-        var tcs = new TaskCompletionSource<bool>();
+        var tcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
         var advanceCount = 0;
 
         _ = subject.Skip(1).Subscribe(Witness.Create<RxVoid>(ignored => _ = AdvancePhaseAsync()));
@@ -43,7 +43,7 @@ public class TestSequencerTests
         }
 
         // Trigger first advance from subscription
-        tcs = new();
+        tcs = new(TaskCreationOptions.RunContinuationsAsynchronously);
         subject.OnNext(RxVoid.Default);
 
         // Wait briefly for async handler to start
@@ -64,7 +64,7 @@ public class TestSequencerTests
         }
 
         // Trigger second advance from subscription
-        tcs = new();
+        tcs = new(TaskCreationOptions.RunContinuationsAsynchronously);
         subject.OnNext(RxVoid.Default);
 
         // Wait briefly for async handler to start

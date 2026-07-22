@@ -12,6 +12,10 @@ namespace ReactiveUI.Reactive;
 namespace ReactiveUI;
 #endif
 /// <summary>Provides the arity-2 WhenAny / WhenAnyValue / WhenAnyDynamic extension overloads.</summary>
+[SuppressMessage(
+    "Design",
+    "SST2307:Generic type parameter cannot be inferred from any parameter",
+    Justification = "The result type parameter is supplied explicitly by callers by design; WhenAny cannot infer it from the property-expression parameters.")]
 public static partial class WhenAnyMixins
 {
     /// <summary>Provides arity-2 WhenAny extension members for the source object.</summary>
@@ -32,7 +36,7 @@ public static partial class WhenAnyMixins
             sender!.WhenAny(
                 property1,
                 property2,
-                (c1, c2) => (c1.Value, c2.Value));
+                static (c1, c2) => (c1.Value, c2.Value));
 
         /// <summary>AOT-friendly overload that observes properties by name and projects a tuple.</summary>
         /// <typeparam name="T1">The type of property 1.</typeparam>
@@ -68,7 +72,7 @@ public static partial class WhenAnyMixins
             sender!.WhenAny(
                 property1,
                 property2,
-                (c1, c2) => (c1.Value, c2.Value),
+                static (c1, c2) => (c1.Value, c2.Value),
                 isDistinct);
 
         /// <summary>AOT-friendly overload that observes properties by name and projects a tuple.</summary>

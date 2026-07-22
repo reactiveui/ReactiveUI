@@ -16,8 +16,10 @@ public static class TestContextExtensions
         /// <returns>The scheduler instance.</returns>
         public ISequencer GetScheduler()
         {
-            ArgumentNullException.ThrowIfNull(context);
-            return (ISequencer)(context.StateBag.Items["Scheduler"] ?? Sequencer.Immediate);
+            var items = context?.StateBag.Items;
+            return items is not null && items.TryGetValue("Scheduler", out var value) && value is ISequencer scheduler
+                ? scheduler
+                : Sequencer.Immediate;
         }
 
         /// <summary>Gets the VirtualTimeScheduler configured for this test. Only available when using WithVirtualTimeSchedulerExecutor.</summary>
@@ -25,10 +27,11 @@ public static class TestContextExtensions
         /// <exception cref="InvalidOperationException">Thrown when VirtualTimeScheduler is not configured.</exception>
         public VirtualTimeScheduler GetVirtualTimeScheduler()
         {
-            ArgumentNullException.ThrowIfNull(context);
-            return (VirtualTimeScheduler)(context.StateBag.Items["VirtualTimeScheduler"]
-                                          ?? throw new InvalidOperationException(
-                                              "VirtualTimeScheduler not configured. Use [TestExecutor<WithVirtualTimeSchedulerExecutor>] on the test method or class."));
+            var items = context?.StateBag.Items;
+            return items is not null && items.TryGetValue("VirtualTimeScheduler", out var value) && value is VirtualTimeScheduler scheduler
+                ? scheduler
+                : throw new InvalidOperationException(
+                    "VirtualTimeScheduler not configured. Use [TestExecutor<WithVirtualTimeSchedulerExecutor>] on the test method or class.");
         }
     }
 }

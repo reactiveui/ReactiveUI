@@ -36,10 +36,6 @@ public class ReflectionTest
     /// <summary>Tests that ExpressionToPropertyNames converts nested property access.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
-    [SuppressMessage(
-        "Major Code Smell",
-        "S4144:Methods should not have identical implementations",
-        Justification = "Intentional duplicate test scenario.")]
     public async Task ExpressionToPropertyNames_NestedProperty_ReturnsPropertyPath()
     {
         Expression<Func<HostTestFixture, string?>> expression = x => x.Child!.IsOnlyOneWord;
@@ -53,7 +49,7 @@ public class ReflectionTest
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task ExpressionToPropertyNames_NullExpression_Throws() =>
-        await Assert.That(() => Reflection.ExpressionToPropertyNames(null))
+        await Assert.That(static () => Reflection.ExpressionToPropertyNames(null))
             .Throws<ArgumentNullException>();
 
     /// <summary>Tests that ExpressionToPropertyNames converts simple property access.</summary>
@@ -72,14 +68,14 @@ public class ReflectionTest
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task GetEventArgsTypeForEvent_InvalidEvent_Throws() =>
-        await Assert.That(() => Reflection.GetEventArgsTypeForEvent(typeof(TestClassWithEvent), "NonExistentEvent"))
+        await Assert.That(static () => Reflection.GetEventArgsTypeForEvent(typeof(TestClassWithEvent), "NonExistentEvent"))
             .Throws<Exception>();
 
     /// <summary>Tests that GetEventArgsTypeForEvent throws for null type.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task GetEventArgsTypeForEvent_NullType_Throws() =>
-        await Assert.That(() => Reflection.GetEventArgsTypeForEvent(null!, "TestEvent"))
+        await Assert.That(static () => Reflection.GetEventArgsTypeForEvent(null!, "TestEvent"))
             .Throws<ArgumentNullException>();
 
     /// <summary>Tests that GetEventArgsTypeForEvent returns EventArgs type.</summary>
@@ -113,7 +109,7 @@ public class ReflectionTest
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task GetValueFetcherForProperty_NullMember_Throws() =>
-        await Assert.That(() => Reflection.GetValueFetcherForProperty(null))
+        await Assert.That(static () => Reflection.GetValueFetcherForProperty(null))
             .Throws<ArgumentNullException>();
 
     /// <summary>Tests that GetValueFetcherForProperty returns fetcher for property.</summary>
@@ -135,7 +131,7 @@ public class ReflectionTest
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task GetValueFetcherOrThrow_NullMember_Throws() =>
-        await Assert.That(() => Reflection.GetValueFetcherOrThrow(null))
+        await Assert.That(static () => Reflection.GetValueFetcherOrThrow(null))
             .Throws<ArgumentNullException>();
 
     /// <summary>Tests that GetValueFetcherOrThrow returns fetcher for valid property.</summary>
@@ -172,7 +168,7 @@ public class ReflectionTest
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task GetValueSetterForProperty_NullMember_Throws() =>
-        await Assert.That(() => Reflection.GetValueSetterForProperty(null))
+        await Assert.That(static () => Reflection.GetValueSetterForProperty(null))
             .Throws<ArgumentNullException>();
 
     /// <summary>Tests that GetValueSetterForProperty returns setter for property.</summary>
@@ -194,7 +190,7 @@ public class ReflectionTest
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task GetValueSetterOrThrow_NullMember_Throws() =>
-        await Assert.That(() => Reflection.GetValueSetterOrThrow(null))
+        await Assert.That(static () => Reflection.GetValueSetterOrThrow(null))
             .Throws<ArgumentNullException>();
 
     /// <summary>Tests that GetValueSetterOrThrow returns setter for valid property.</summary>
@@ -277,7 +273,7 @@ public class ReflectionTest
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task ReallyFindType_InvalidTypeWithThrow_Throws() =>
-        await Assert.That(() => Reflection.ReallyFindType("InvalidType.DoesNotExist", true))
+        await Assert.That(static () => Reflection.ReallyFindType("InvalidType.DoesNotExist", true))
             .Throws<TypeLoadException>();
 
     /// <summary>Tests that ReallyFindType finds a valid type.</summary>
@@ -469,6 +465,11 @@ public class ReflectionTest
         public event EventHandler? TestEvent;
 
         /// <summary>Raises the test event.</summary>
+        [SuppressMessage(
+            "Design",
+            "SST2324:public member on non-public type",
+            Justification = "the public method mirrors the public TestEvent event for API symmetry in this " +
+                "reflection-test fixture; the containing test double is an intentionally non-public detail.")]
         public void OnTestEvent() => TestEvent?.Invoke(this, EventArgs.Empty);
     }
 
@@ -484,7 +485,6 @@ public class ReflectionTest
     private sealed class TestClassWithOverriddenMethods
     {
         /// <summary>A test method.</summary>
-        [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Needed for test")]
         public void TestMethod()
         {
             // No-op: only its existence as a method member is needed for the overload check.

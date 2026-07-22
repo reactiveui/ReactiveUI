@@ -18,12 +18,13 @@ namespace ReactiveUI.Drawing;
 public class Registrations : IWantsToRegisterStuff
 {
     /// <inheritdoc/>
+#if NETFRAMEWORK || (NET5_0_OR_GREATER && WINDOWS)
     public void Register(IRegistrar registrar)
     {
         ArgumentExceptionHelper.ThrowIfNull(registrar);
-
-#if NETFRAMEWORK || (NET5_0_OR_GREATER && WINDOWS)
         registrar.RegisterConstant<IBitmapLoader>(static () => new PlatformBitmapLoader());
-#endif
     }
+#else
+    public void Register(IRegistrar registrar) => ArgumentExceptionHelper.ThrowIfNull(registrar);
+#endif
 }

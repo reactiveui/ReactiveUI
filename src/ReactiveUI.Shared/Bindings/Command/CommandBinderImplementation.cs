@@ -144,7 +144,7 @@ public class CommandBinderImplementation : ICommandBinderImplementation
         where TViewModel : class
         where TProp : ICommand
         where TControl : class =>
-        BindCommand<TView, TViewModel, TProp, TControl, TParam>(viewModel, view, viewModelProperty, controlProperty, withParameter, null);
+        BindCommand(viewModel, view, viewModelProperty, controlProperty, withParameter, null);
 
     /// <summary>
     /// Binds a command from the view model to a control on the view, enabling the control to execute the command with
@@ -256,7 +256,7 @@ public class CommandBinderImplementation : ICommandBinderImplementation
         where TViewModel : class
         where TProp : ICommand
         where TControl : class =>
-        BindCommand<TView, TViewModel, TProp, TControl, TParam>(viewModel, view, viewModelProperty, controlProperty, withParameter, null);
+        BindCommand(viewModel, view, viewModelProperty, controlProperty, withParameter, null);
 
     /// <summary>
     /// Binds an observable command to a control property or event on a view, updating the binding when the command or
@@ -278,10 +278,6 @@ public class CommandBinderImplementation : ICommandBinderImplementation
     /// <param name="toEvent">The name of the event on the control to bind the command to. If null or empty, the default event is used.</param>
     /// <returns>An IDisposable that can be used to unbind the command and release associated resources.</returns>
     [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
-    [SuppressMessage(
-        "Major Code Smell",
-        "S4018:Generic methods should provide type parameter",
-        Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
     private static MultipleDisposable BindCommandInternal<
         TView,
         TProp,
@@ -336,21 +332,32 @@ public class CommandBinderImplementation : ICommandBinderImplementation
 
             isInitialBind = false;
             currentControl = control;
-            currentBinding.Disposable =
-                !string.IsNullOrEmpty(toEvent)
-                    ? CreatesCommandBinding.BindCommandToObject<TControl, object>(
-                        command,
-                        control,
-                        boxedParameter,
-                        toEvent!)
-                    : CreatesCommandBinding.BindCommandToObject(
-                        command,
-                        control,
-                        boxedParameter);
+            currentBinding.Disposable = BindResolvedCommand(command, control, boxedParameter, toEvent);
         }));
 
         return new(subscription, currentBinding);
     }
+
+    /// <summary>Binds a single resolved command to a control, wiring either a named event or the control's command property.</summary>
+    /// <typeparam name="TProp">The command type.</typeparam>
+    /// <typeparam name="TParam">The command parameter type.</typeparam>
+    /// <typeparam name="TControl">The control type.</typeparam>
+    /// <param name="command">The command to bind.</param>
+    /// <param name="control">The control receiving the binding.</param>
+    /// <param name="boxedParameter">The boxed command-parameter stream.</param>
+    /// <param name="toEvent">The event to bind to, or null/empty to bind the command property.</param>
+    /// <returns>A disposable that removes the binding.</returns>
+    [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
+    private static IDisposable BindResolvedCommand<TProp, TParam, TControl>(
+        TProp command,
+        TControl? control,
+        MapSignal<TParam?, object?> boxedParameter,
+        string? toEvent)
+        where TProp : ICommand
+        where TControl : class =>
+        !string.IsNullOrEmpty(toEvent)
+            ? CreatesCommandBinding.BindCommandToObject<TControl, object>(command, control, boxedParameter, toEvent!)
+            : CreatesCommandBinding.BindCommandToObject(command, control, boxedParameter);
 
     /// <summary>
     /// Combines the latest value of two sources through a selector, emitting once both have produced a value.
@@ -362,7 +369,7 @@ public class CommandBinderImplementation : ICommandBinderImplementation
     /// <param name="first">The first source.</param>
     /// <param name="second">The second source.</param>
     /// <param name="selector">Combines the latest value of each source.</param>
-    private sealed class CombineLatest2Observable<T1, T2, TResult>(
+    internal sealed class CombineLatest2Observable<T1, T2, TResult>(
         IObservable<T1> first,
         IObservable<T2> second,
         Func<T1, T2, TResult> selector) : IObservable<TResult>
@@ -371,11 +378,17 @@ public class CommandBinderImplementation : ICommandBinderImplementation
         public IDisposable Subscribe(IObserver<TResult> observer)
         {
             ArgumentExceptionHelper.ThrowIfNull(observer);
-            return new Sink(observer, selector, first, second);
+            var sink = new Sink(observer, selector, first, second);
+            sink.Run();
+            return sink;
         }
 
         /// <summary>Tracks the latest value of each source and emits the combination once both have reported.</summary>
-        private sealed class Sink : IDisposable
+        /// <param name="downstream">The observer receiving the combined values.</param>
+        /// <param name="selector">Combines the latest value of each source.</param>
+        /// <param name="first">The first source.</param>
+        /// <param name="second">The second source.</param>
+        internal sealed class Sink(IObserver<TResult> downstream, Func<T1, T2, TResult> selector, IObservable<T1> first, IObservable<T2> second) : IDisposable
         {
             /// <summary>The number of combined sources.</summary>
             private const int SourceCount = 2;
@@ -388,16 +401,22 @@ public class CommandBinderImplementation : ICommandBinderImplementation
 #endif
 
             /// <summary>The observer receiving the combined values.</summary>
-            private readonly IObserver<TResult> _downstream;
+            private readonly IObserver<TResult> _downstream = downstream;
 
             /// <summary>Combines the latest value of each source.</summary>
-            private readonly Func<T1, T2, TResult> _selector;
+            private readonly Func<T1, T2, TResult> _selector = selector;
+
+            /// <summary>The first source.</summary>
+            private readonly IObservable<T1> _first = first;
+
+            /// <summary>The second source.</summary>
+            private readonly IObservable<T2> _second = second;
 
             /// <summary>The subscription to the first source.</summary>
-            private readonly IDisposable _firstSubscription;
+            private IDisposable? _firstSubscription;
 
             /// <summary>The subscription to the second source.</summary>
-            private readonly IDisposable _secondSubscription;
+            private IDisposable? _secondSubscription;
 
             /// <summary>The latest value of the first source.</summary>
             private T1 _latest1 = default!;
@@ -417,24 +436,18 @@ public class CommandBinderImplementation : ICommandBinderImplementation
             /// <summary>Whether the downstream has terminated.</summary>
             private bool _stopped;
 
-            /// <summary>Initializes a new instance of the <see cref="Sink"/> class and subscribes to both sources.</summary>
-            /// <param name="downstream">The observer receiving the combined values.</param>
-            /// <param name="selector">Combines the latest value of each source.</param>
-            /// <param name="first">The first source.</param>
-            /// <param name="second">The second source.</param>
-            public Sink(IObserver<TResult> downstream, Func<T1, T2, TResult> selector, IObservable<T1> first, IObservable<T2> second)
-            {
-                _downstream = downstream;
-                _selector = selector;
-                _firstSubscription = first.Subscribe(new FirstObserver(this));
-                _secondSubscription = second.Subscribe(new SecondObserver(this));
-            }
-
             /// <inheritdoc/>
             public void Dispose()
             {
-                _firstSubscription.Dispose();
-                _secondSubscription.Dispose();
+                _firstSubscription?.Dispose();
+                _secondSubscription?.Dispose();
+            }
+
+            /// <summary>Subscribes to both sources, driving the combined value.</summary>
+            internal void Run()
+            {
+                _firstSubscription = _first.Subscribe(new FirstObserver(this));
+                _secondSubscription = _second.Subscribe(new SecondObserver(this));
             }
 
             /// <summary>Records the first source's latest value and emits if both are present.</summary>
@@ -509,7 +522,13 @@ public class CommandBinderImplementation : ICommandBinderImplementation
             {
                 lock (_gate)
                 {
-                    if (_stopped || ++_doneCount < SourceCount)
+                    if (_stopped)
+                    {
+                        return;
+                    }
+
+                    _doneCount++;
+                    if (_doneCount < SourceCount)
                     {
                         return;
                     }

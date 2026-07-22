@@ -54,8 +54,8 @@ public class WhenAnyValueBenchmarks
         _arity3ViewModel = new();
 
         _arity1Subscription = _arity1ViewModel.WhenAnyValue(x => x.First).Subscribe(_arity1Sink);
-        _arity2Subscription = _arity2ViewModel.WhenAnyValue(x => x.First, x => x.Second, (first, second) => (first, second)).Subscribe(_arity2Sink);
-        _arity3Subscription = _arity3ViewModel.WhenAnyValue(x => x.First, x => x.Second, x => x.Count, (first, second, count) => (first, second, count)).Subscribe(_arity3Sink);
+        _arity2Subscription = _arity2ViewModel.WhenAnyValue(x => x.First, x => x.Second, static (first, second) => (first, second)).Subscribe(_arity2Sink);
+        _arity3Subscription = _arity3ViewModel.WhenAnyValue(x => x.First, x => x.Second, x => x.Count, static (first, second, count) => (first, second, count)).Subscribe(_arity3Sink);
     }
 
     /// <summary>Disposes the live subscriptions.</summary>
@@ -78,14 +78,14 @@ public class WhenAnyValueBenchmarks
     [Benchmark]
     public void Subscribe_Arity2()
     {
-        using var subscription = _arity2ViewModel.WhenAnyValue(x => x.First, x => x.Second, (first, second) => (first, second)).Subscribe(_arity2Sink);
+        using var subscription = _arity2ViewModel.WhenAnyValue(x => x.First, x => x.Second, static (first, second) => (first, second)).Subscribe(_arity2Sink);
     }
 
     /// <summary>Measures cold subscribe + dispose of a three-property <c>WhenAnyValue</c>.</summary>
     [Benchmark]
     public void Subscribe_Arity3()
     {
-        using var subscription = _arity3ViewModel.WhenAnyValue(x => x.First, x => x.Second, x => x.Count, (first, second, count) => (first, second, count)).Subscribe(_arity3Sink);
+        using var subscription = _arity3ViewModel.WhenAnyValue(x => x.First, x => x.Second, x => x.Count, static (first, second, count) => (first, second, count)).Subscribe(_arity3Sink);
     }
 
     /// <summary>Measures value propagation through a live single-property subscription.</summary>

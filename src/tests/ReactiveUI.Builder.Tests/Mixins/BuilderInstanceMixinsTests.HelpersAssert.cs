@@ -30,7 +30,7 @@ public partial class BuilderInstanceMixinsTests
     /// <returns>A task representing the asynchronous assertions.</returns>
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Major Code Smell",
-        "S107:Methods should not have too many parameters",
+        "SST1472:Signatures should not declare too many parameters",
         Justification = "Test exercises a variadic overload.")]
     private static async Task AssertSameReferences09(
         InstanceService01? captured1,
@@ -87,7 +87,7 @@ public partial class BuilderInstanceMixinsTests
     /// <returns>A task representing the asynchronous assertions.</returns>
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Major Code Smell",
-        "S107:Methods should not have too many parameters",
+        "SST1472:Signatures should not declare too many parameters",
         Justification = "Test exercises a variadic overload.")]
     private static async Task AssertSameReferences10(
         InstanceService01? captured1,
@@ -149,7 +149,7 @@ public partial class BuilderInstanceMixinsTests
     /// <returns>A task representing the asynchronous assertions.</returns>
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Major Code Smell",
-        "S107:Methods should not have too many parameters",
+        "SST1472:Signatures should not declare too many parameters",
         Justification = "Test exercises a variadic overload.")]
     private static async Task AssertSameReferences11(
         InstanceService01? captured1,
@@ -216,7 +216,7 @@ public partial class BuilderInstanceMixinsTests
     /// <returns>A task representing the asynchronous assertions.</returns>
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Major Code Smell",
-        "S107:Methods should not have too many parameters",
+        "SST1472:Signatures should not declare too many parameters",
         Justification = "Test exercises a variadic overload.")]
     private static async Task AssertSameReferences12(
         InstanceService01? captured1,
@@ -288,7 +288,7 @@ public partial class BuilderInstanceMixinsTests
     /// <returns>A task representing the asynchronous assertions.</returns>
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Major Code Smell",
-        "S107:Methods should not have too many parameters",
+        "SST1472:Signatures should not declare too many parameters",
         Justification = "Test exercises a variadic overload.")]
     private static async Task AssertSameReferences13(
         InstanceService01? captured1,
@@ -365,7 +365,7 @@ public partial class BuilderInstanceMixinsTests
     /// <returns>A task representing the asynchronous assertions.</returns>
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Major Code Smell",
-        "S107:Methods should not have too many parameters",
+        "SST1472:Signatures should not declare too many parameters",
         Justification = "Test exercises a variadic overload.")]
     private static async Task AssertSameReferences14(
         InstanceService01? captured1,
@@ -447,7 +447,7 @@ public partial class BuilderInstanceMixinsTests
     /// <returns>A task representing the asynchronous assertions.</returns>
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Major Code Smell",
-        "S107:Methods should not have too many parameters",
+        "SST1472:Signatures should not declare too many parameters",
         Justification = "Test exercises a variadic overload.")]
     private static async Task AssertSameReferences15(
         InstanceService01? captured1,
@@ -534,7 +534,7 @@ public partial class BuilderInstanceMixinsTests
     /// <returns>A task representing the asynchronous assertions.</returns>
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Major Code Smell",
-        "S107:Methods should not have too many parameters",
+        "SST1472:Signatures should not declare too many parameters",
         Justification = "Test exercises a variadic overload.")]
     private static async Task AssertSameReferences16(
         InstanceService01? captured1,

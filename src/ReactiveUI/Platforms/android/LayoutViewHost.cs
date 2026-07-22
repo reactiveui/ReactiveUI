@@ -29,7 +29,7 @@ namespace ReactiveUI;
 /// auto-wireup path for compatibility.
 /// </para>
 /// </summary>
-public abstract class LayoutViewHost : ILayoutViewHost, IEnableLogger
+public class LayoutViewHost : ILayoutViewHost, IEnableLogger
 {
     /// <summary>The backing view instance owned by this host.</summary>
     private View? _view;
@@ -85,6 +85,10 @@ public abstract class LayoutViewHost : ILayoutViewHost, IEnableLogger
     /// The <paramref name="bind"/> callback is invoked only after <see cref="View"/> has been assigned.
     /// </para>
     /// </remarks>
+    [SuppressMessage(
+        "Design",
+        "SST2403:'this' escapes before construction finishes",
+        Justification = "'this' is handed to the caller-supplied bind callback, which runs only after View is assigned; the base constructor never publishes the host to another thread.")]
     protected LayoutViewHost(
         Context context,
         int layoutId,

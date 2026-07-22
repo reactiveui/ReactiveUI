@@ -73,7 +73,7 @@ public class MauiReactiveUIBuilderExtensionsTest
     {
         const IReactiveUIBuilder builder = null!;
 
-        await Assert.That(() => builder.WithMauiScheduler())
+        await Assert.That(static () => builder.WithMauiScheduler())
             .Throws<ArgumentNullException>();
     }
 
@@ -84,7 +84,7 @@ public class MauiReactiveUIBuilderExtensionsTest
     {
         const IReactiveUIBuilder builder = null!;
 
-        await Assert.That(() => builder.WithMaui())
+        await Assert.That(static () => builder.WithMaui())
             .Throws<ArgumentNullException>();
     }
 
@@ -95,7 +95,7 @@ public class MauiReactiveUIBuilderExtensionsTest
     {
         const MauiAppBuilder builder = null!;
 
-        await Assert.That(() => builder.UseReactiveUI(_ => { }))
+        await Assert.That(static () => builder.UseReactiveUI(static _ => { }))
             .Throws<ArgumentNullException>();
     }
 
@@ -106,7 +106,7 @@ public class MauiReactiveUIBuilderExtensionsTest
     {
         const MauiAppBuilder builder = null!;
 
-        await Assert.That(() => builder.UseReactiveUI(Microsoft.Maui.Dispatching.Dispatcher.GetForCurrentThread()!))
+        await Assert.That(static () => builder.UseReactiveUI(Microsoft.Maui.Dispatching.Dispatcher.GetForCurrentThread()!))
             .Throws<ArgumentNullException>();
     }
 

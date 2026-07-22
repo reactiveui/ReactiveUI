@@ -12,7 +12,7 @@ namespace ReactiveUI.Benchmarks;
 internal sealed class NestedBenchmarkViewModel : ReactiveObject
 {
     /// <summary>Gets or sets the child view model observed through the chain.</summary>
-    public BenchmarkViewModel? Child
+    internal BenchmarkViewModel? Child
     {
         get => field;
         set => this.RaiseAndSetIfChanged(ref field, value);

@@ -70,8 +70,8 @@ public class PropertyBindingMixinsTests
             viewModel,
             vm => vm.Count,
             v => v.NameText,
-            count => $"Count: {count}",
-            text => int.TryParse(text?.Replace("Count: ", string.Empty, StringComparison.Ordinal), out var n) ? n : 0);
+            static count => $"Count: {count}",
+            static text => int.TryParse(text?.Replace("Count: ", string.Empty, StringComparison.Ordinal), out var n) ? n : 0);
 
         await Assert.That(view.NameText).IsEqualTo("Count: 42");
 
@@ -192,7 +192,7 @@ public class PropertyBindingMixinsTests
         using var binding = source.BindTo(
             target,
             t => t.Name,
-            viewModelToViewConverterOverride: new FuncBindingTypeConverter<int, string>(i => $"Number: {i}"));
+            viewModelToViewConverterOverride: new FuncBindingTypeConverter<int, string>(static i => $"Number: {i}"));
 
         await Assert.That(target.Name).IsEqualTo("Number: 42");
 
@@ -267,7 +267,7 @@ public class PropertyBindingMixinsTests
             viewModel,
             vm => vm.Count,
             v => v.NameText,
-            count => $"The count is: {count}");
+            static count => $"The count is: {count}");
 
         await Assert.That(view.NameText).IsEqualTo("The count is: 42");
 

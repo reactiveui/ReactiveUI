@@ -32,7 +32,7 @@ public class ReactiveCommandExecuteBenchmarks
     public void Setup()
     {
         _syncCommand = ReactiveCommand.Create<RxVoid, RxVoid>(static parameter => parameter, outputScheduler: Sequencer.Immediate);
-        _taskCommand = ReactiveCommand.CreateFromTask<int, int>(static parameter => Task.FromResult(parameter), outputScheduler: Sequencer.Immediate);
+        _taskCommand = ReactiveCommand.CreateFromTask<int, int>(Task.FromResult, outputScheduler: Sequencer.Immediate);
     }
 
     /// <summary>Disposes both commands.</summary>

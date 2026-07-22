@@ -3,7 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 
 #if REACTIVE_SHIM
@@ -41,7 +40,6 @@ public static class IReactiveObjectExtensions
         /// <param name="propertyName">The name of the property, usually
         /// automatically provided through the CallerMemberName attribute.</param>
         /// <returns>The newly set value, normally discarded.</returns>
-        [SuppressMessage("Design", "CA1045:Do not pass types by reference", Justification = "By default for this operator.")]
         public TRet RaiseAndSetIfChanged<TRet>(
             ref TRet backingField,
             TRet newValue,

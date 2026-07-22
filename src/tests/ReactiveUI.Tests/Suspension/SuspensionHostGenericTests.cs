@@ -3,6 +3,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics.CodeAnalysis;
+
 namespace ReactiveUI.Tests.Suspension;
 
 /// <summary>Tests for the generic <see cref="SuspensionHost{TAppState}"/>.</summary>
@@ -33,12 +35,12 @@ public class SuspensionHostGenericTests
         var gotErrorInvalidate = false;
         var gotErrorPersist = false;
 
-        _ = host.IsLaunchingNew.Subscribe(_ => { }, ex => gotErrorLaunching = true);
-        _ = host.IsResuming.Subscribe(_ => { }, ex => gotErrorResuming = true);
-        _ = host.IsUnpausing.Subscribe(_ => { }, ex => gotErrorUnpausing = true);
-        _ = host.IsContinuing.Subscribe(_ => { }, ex => gotErrorContinuing = true);
-        _ = host.ShouldInvalidateState.Subscribe(_ => { }, ex => gotErrorInvalidate = true);
-        _ = host.ShouldPersistState.Subscribe(_ => { }, ex => gotErrorPersist = true);
+        _ = host.IsLaunchingNew.Subscribe(static _ => { }, ex => gotErrorLaunching = true);
+        _ = host.IsResuming.Subscribe(static _ => { }, ex => gotErrorResuming = true);
+        _ = host.IsUnpausing.Subscribe(static _ => { }, ex => gotErrorUnpausing = true);
+        _ = host.IsContinuing.Subscribe(static _ => { }, ex => gotErrorContinuing = true);
+        _ = host.ShouldInvalidateState.Subscribe(static _ => { }, ex => gotErrorInvalidate = true);
+        _ = host.ShouldPersistState.Subscribe(static _ => { }, ex => gotErrorPersist = true);
 
         await Assert.That(gotErrorLaunching).IsTrue();
         await Assert.That(gotErrorResuming).IsTrue();
@@ -310,7 +312,7 @@ public class SuspensionHostGenericTests
             propertyChanged = true;
         };
 
-        host.CreateNewAppStateTyped = () => new();
+        host.CreateNewAppStateTyped = static () => new();
 
         await Assert.That(propertyChanged).IsTrue();
     }
@@ -417,7 +419,7 @@ public class SuspensionHostGenericTests
     [Test]
     public async Task ISuspensionHost_CreateNewAppState_SetNull_SetsTypedPropertyToNull()
     {
-        using var host = new SuspensionHost<DummyAppState> { CreateNewAppStateTyped = () => new() };
+        using var host = new SuspensionHost<DummyAppState> { CreateNewAppStateTyped = static () => new() };
         var untypedHost = (ISuspensionHost)host;
 
         untypedHost.CreateNewAppState = null;
@@ -432,7 +434,7 @@ public class SuspensionHostGenericTests
     {
         using var host = new SuspensionHost<DummyAppState>();
         var untypedHost = (ISuspensionHost)host;
-        untypedHost.CreateNewAppState = () => new OtherAppState();
+        untypedHost.CreateNewAppState = static () => new OtherAppState();
 
         var factory = untypedHost.CreateNewAppState;
         await Assert.That(() => factory!())
@@ -530,6 +532,12 @@ public class SuspensionHostGenericTests
     private sealed class OtherAppState
     {
         /// <summary>Gets or sets an arbitrary name.</summary>
+        [SuppressMessage(
+            "Design",
+            "SST2324:'Name' is declared 'public' but its containing type is only reachable as 'private'",
+            Justification = "OtherAppState exists only to be a type distinct from DummyAppState for mismatch " +
+                "testing; Name keeps the type from being empty (see SST1436) and its public accessor mirrors " +
+                "DummyAppState.Value's shape.")]
         public string? Name { get; set; }
     }
 }
