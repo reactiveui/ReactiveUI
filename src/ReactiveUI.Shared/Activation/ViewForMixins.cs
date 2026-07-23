@@ -54,7 +54,7 @@ public static class ViewForMixins
         {
             ArgumentExceptionHelper.ThrowIfNull(item);
 
-            return item.WhenActivated(block, null);
+            return item.WhenActivated(block, (IViewFor?)null);
         }
 
         /// <summary>
@@ -78,24 +78,12 @@ public static class ViewForMixins
         {
             ArgumentExceptionHelper.ThrowIfNull(item);
 
-            var activationFetcher = _activationFetcherCache.Get(item.GetType());
-            if (activationFetcher is null)
+            var activationEvents = ResolveActivationEvents(item);
+            if (activationEvents is null)
             {
-                // In design mode there is no activation fetcher; drop the cache and no-op rather than throwing (see #4358).
-                if (item.GetIsDesignMode())
-                {
-                    _activationFetcherCache.InvalidateAll();
-                    return EmptyDisposable.Instance;
-                }
-
-#if NET8_0_OR_GREATER
-                throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, _activationDetectionFailureFormat, item.GetType().FullName));
-#else
-                throw new ArgumentException($"Don't know how to detect when {item.GetType().FullName} is activated/deactivated, you may need to implement IActivationForViewFetcher");
-#endif
+                // No activation fetcher in design mode: no-op rather than throwing (see #4358).
+                return EmptyDisposable.Instance;
             }
-
-            var activationEvents = activationFetcher.GetActivationForView(item);
 
             IDisposable viewModelDisposable = EmptyDisposable.Instance;
             if ((view ?? item) is IViewFor v)
@@ -120,7 +108,7 @@ public static class ViewForMixins
         /// resources.</returns>
         [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
         public IDisposable WhenActivated(Action<Action<IDisposable>> block) =>
-            item.WhenActivated(block, null!);
+            item.WhenActivated(block, (IViewFor)null!);
 
         /// <summary>Activates the specified view and manages the provided disposables for the duration of the activation lifecycle.</summary>
         /// <remarks>This method is typically used to manage subscriptions or other resources that should be tied
@@ -153,7 +141,7 @@ public static class ViewForMixins
         [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
         public IDisposable WhenActivated(
             Action<MultipleDisposable> block) =>
-            item.WhenActivated(block, null);
+            item.WhenActivated(block, (IViewFor?)null);
 
         /// <summary>
         /// Activates the specified view and executes the provided block when the view is activated, managing disposables
@@ -181,7 +169,103 @@ public static class ViewForMixins
         /// <returns>An <see cref="IDisposable"/> that deactivates the view and disposes registered resources when disposed.</returns>
         [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
         public IDisposable WhenActivated() =>
-            item.WhenActivated(static () => (IEnumerable<IDisposable>)[], null);
+            item.WhenActivated(static () => (IEnumerable<IDisposable>)[], (IViewFor?)null);
+
+        /// <summary>
+        /// Registers a block of disposables to be activated and disposed in sync with the view's activation lifecycle,
+        /// forwarding <see cref="IActivatableViewModel"/> activation using a caller-supplied ViewModel-change signal.
+        /// </summary>
+        /// <remarks>
+        /// This is the trim- and AOT-safe counterpart to the reflected <c>WhenActivated(block, IViewFor)</c> overloads:
+        /// they discover the view's ViewModel with an expression/string-based <c>WhenAnyValue</c>, which requires
+        /// unreferenced code. Here the caller passes <paramref name="viewModelChanged"/> directly, so no reflection is
+        /// used and the member carries no <c>[RequiresUnreferencedCode]</c> annotation. Emit the current ViewModel (and
+        /// every subsequent value, e.g. <see langword="null"/> on clear) on <paramref name="viewModelChanged"/> using a
+        /// reflection-free source such as the source-generated <c>WhenAnyValue</c> from <c>ReactiveUI.SourceGenerators</c>
+        /// or a hand-written <see cref="System.ComponentModel.INotifyPropertyChanged"/> subscription.
+        /// </remarks>
+        /// <param name="block">A function that returns the set of <see cref="IDisposable"/> resources to activate when the view is activated.
+        /// The returned disposables are disposed when the view is deactivated.</param>
+        /// <param name="viewModelChanged">An observable that emits the view's ViewModel whenever it changes (including its current value). When an emitted
+        /// value is an <see cref="IActivatableViewModel"/>, its activator is activated for the duration of the view's activation.</param>
+        /// <returns>An <see cref="IDisposable"/> that deactivates the view and disposes the registered resources when disposed.</returns>
+        public IDisposable WhenActivated(
+            Func<IEnumerable<IDisposable>> block,
+            IObservable<object?> viewModelChanged)
+        {
+            ArgumentExceptionHelper.ThrowIfNull(item);
+            ArgumentExceptionHelper.ThrowIfNull(viewModelChanged);
+
+            var activationEvents = ResolveActivationEvents(item);
+            if (activationEvents is null)
+            {
+                // No activation fetcher in design mode: no-op rather than throwing (see #4358).
+                return EmptyDisposable.Instance;
+            }
+
+            var viewModelDisposable = HandleViewModelActivation(viewModelChanged, activationEvents);
+            var viewDisposable = HandleViewActivation(block, activationEvents);
+            return new MultipleDisposable(viewModelDisposable, viewDisposable);
+        }
+
+        /// <summary>
+        /// Registers a block of activation logic to be executed when the view is activated, forwarding
+        /// <see cref="IActivatableViewModel"/> activation using a caller-supplied ViewModel-change signal.
+        /// </summary>
+        /// <remarks>This is the trim- and AOT-safe counterpart to the reflected <c>WhenActivated(Action&lt;Action&lt;IDisposable&gt;&gt;, IViewFor)</c>
+        /// overload; the <paramref name="viewModelChanged"/> observable replaces reflection-based ViewModel discovery. Produce it with a
+        /// reflection-free source such as the source-generated <c>WhenAnyValue</c> or a hand-written
+        /// <see cref="System.ComponentModel.INotifyPropertyChanged"/> subscription.</remarks>
+        /// <param name="block">An action that receives a callback for registering disposables that should be disposed when the view is deactivated.</param>
+        /// <param name="viewModelChanged">An observable that emits the view's ViewModel whenever it changes (including its current value).</param>
+        /// <returns>An <see cref="IDisposable"/> that deactivates the view and disposes the registered resources when disposed.</returns>
+        public IDisposable WhenActivated(
+            Action<Action<IDisposable>> block,
+            IObservable<object?> viewModelChanged) =>
+            item.WhenActivated(
+                () =>
+                {
+                    List<IDisposable> ret = [];
+                    block(ret.Add);
+                    return ret;
+                },
+                viewModelChanged);
+
+        /// <summary>
+        /// Registers a block of activation logic to be executed when the view is activated, forwarding
+        /// <see cref="IActivatableViewModel"/> activation using a caller-supplied ViewModel-change signal.
+        /// </summary>
+        /// <remarks>This is the trim- and AOT-safe counterpart to the reflected <c>WhenActivated(Action&lt;MultipleDisposable&gt;, IViewFor)</c>
+        /// overload; the <paramref name="viewModelChanged"/> observable replaces reflection-based ViewModel discovery. Produce it with a
+        /// reflection-free source such as the source-generated <c>WhenAnyValue</c> or a hand-written
+        /// <see cref="System.ComponentModel.INotifyPropertyChanged"/> subscription.</remarks>
+        /// <param name="block">An action that receives a <see cref="MultipleDisposable"/> to which activation-related disposables can be added.</param>
+        /// <param name="viewModelChanged">An observable that emits the view's ViewModel whenever it changes (including its current value).</param>
+        /// <returns>An <see cref="IDisposable"/> that deactivates the view and disposes the registered resources when disposed.</returns>
+        public IDisposable WhenActivated(
+            Action<MultipleDisposable> block,
+            IObservable<object?> viewModelChanged) =>
+            item.WhenActivated(
+                () =>
+                {
+                    MultipleDisposable d = [];
+                    block(d);
+                    return [d];
+                },
+                viewModelChanged);
+
+        /// <summary>
+        /// Activates the view for its activation lifecycle without registering any activation-scoped disposables,
+        /// forwarding <see cref="IActivatableViewModel"/> activation using a caller-supplied ViewModel-change signal.
+        /// </summary>
+        /// <remarks>This is the trim- and AOT-safe counterpart to the reflected parameterless <c>WhenActivated()</c> overload;
+        /// the <paramref name="viewModelChanged"/> observable replaces reflection-based ViewModel discovery. Produce it with a
+        /// reflection-free source such as the source-generated <c>WhenAnyValue</c> or a hand-written
+        /// <see cref="System.ComponentModel.INotifyPropertyChanged"/> subscription.</remarks>
+        /// <param name="viewModelChanged">An observable that emits the view's ViewModel whenever it changes (including its current value).</param>
+        /// <returns>An <see cref="IDisposable"/> that deactivates the view and disposes registered resources when disposed.</returns>
+        public IDisposable WhenActivated(IObservable<object?> viewModelChanged) =>
+            item.WhenActivated(static () => (IEnumerable<IDisposable>)[], viewModelChanged);
 
         /// <summary>Gets a value indicating whether the view is currently being loaded by a designer surface.</summary>
         /// <returns><see langword="false"/> by default. Platform packages can provide more specific overloads for their view types.</returns>
@@ -285,6 +369,35 @@ public static class ViewForMixins
         return best;
     }
 
+    /// <summary>Resolves the activation event stream for the view via its highest-affinity activation fetcher.</summary>
+    /// <param name="item">The view to resolve activation events for.</param>
+    /// <returns>
+    /// An observable that emits <see langword="true"/> on activation and <see langword="false"/> on deactivation, or
+    /// <see langword="null"/> when the view is in design mode and has no activation fetcher, signalling a no-op (see #4358).
+    /// </returns>
+    /// <exception cref="ArgumentException">Thrown when no registered <see cref="IActivationForViewFetcher"/> can determine activation for the view type and the view is not in design mode.</exception>
+    private static IObservable<bool>? ResolveActivationEvents(IActivatableView item)
+    {
+        var activationFetcher = _activationFetcherCache.Get(item.GetType());
+        if (activationFetcher is null)
+        {
+            // In design mode there is no activation fetcher; drop the cache and signal a no-op rather than throwing (see #4358).
+            if (item.GetIsDesignMode())
+            {
+                _activationFetcherCache.InvalidateAll();
+                return null;
+            }
+
+#if NET8_0_OR_GREATER
+            throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, _activationDetectionFailureFormat, item.GetType().FullName));
+#else
+            throw new ArgumentException($"Don't know how to detect when {item.GetType().FullName} is activated/deactivated, you may need to implement IActivationForViewFetcher");
+#endif
+        }
+
+        return activationFetcher.GetActivationForView(item);
+    }
+
     /// <summary>
     /// Manages the activation and deactivation lifecycle of a view by subscribing to an activation observable and
     /// invoking a resource allocation block when activated.
@@ -319,10 +432,9 @@ public static class ViewForMixins
     }
 
     /// <summary>Manages the activation and deactivation lifecycle of a view's ViewModel in response to an activation observable.</summary>
-    /// <remarks>This method subscribes to changes in the view's ViewModel and manages the activation state of
-    /// any IActivatableViewModel assigned to the view. It is intended to be used internally to coordinate activation
-    /// and deactivation in reactive UI scenarios. The method uses reflection to evaluate expression-based member
-    /// chains, which may be affected by trimming in some deployment scenarios.</remarks>
+    /// <remarks>This bridge discovers the view's ViewModel with an expression/string-based <c>WhenAnyValue</c> — the only
+    /// reflection in the activation path — and forwards to the reflection-free <see cref="HandleViewModelActivation(IObservable{object}, IObservable{bool})"/>.
+    /// Callers that already have a ViewModel-change observable should use that overload to stay trim- and AOT-safe.</remarks>
     /// <param name="view">The view implementing the IViewFor interface whose ViewModel activation lifecycle will be managed. Cannot be
     /// null.</param>
     /// <param name="activation">An observable sequence that signals when the view is activated or deactivated. Emits <see langword="true"/> to
@@ -330,7 +442,19 @@ public static class ViewForMixins
     /// <returns>A MultipleDisposable that manages all subscriptions and resources related to the activation lifecycle.
     /// Disposing this object will clean up all associated subscriptions.</returns>
     [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
-    private static MultipleDisposable HandleViewModelActivation(IViewFor view, IObservable<bool> activation)
+    private static MultipleDisposable HandleViewModelActivation(IViewFor view, IObservable<bool> activation) =>
+        HandleViewModelActivation(view.WhenAnyValue<IViewFor, object?>(nameof(view.ViewModel)), activation);
+
+    /// <summary>Manages the activation and deactivation lifecycle of a view's ViewModel in response to an activation observable, without reflection.</summary>
+    /// <remarks>This method subscribes to a caller-supplied stream of ViewModel values and manages the activation
+    /// state of any <see cref="IActivatableViewModel"/> assigned to the view. Because the ViewModel signal is provided
+    /// directly rather than discovered by reflection, this path is safe under trimming and AOT.</remarks>
+    /// <param name="viewModelChanged">An observable that emits the view's ViewModel whenever it changes (including its current value).</param>
+    /// <param name="activation">An observable sequence that signals when the view is activated or deactivated. Emits <see langword="true"/> to
+    /// indicate activation and <see langword="false"/> for deactivation.</param>
+    /// <returns>A MultipleDisposable that manages all subscriptions and resources related to the activation lifecycle.
+    /// Disposing this object will clean up all associated subscriptions.</returns>
+    private static MultipleDisposable HandleViewModelActivation(IObservable<object?> viewModelChanged, IObservable<bool> activation)
     {
         SwapDisposable viewModelDisposable = new();
         SwapDisposable viewViewModelDisposable = new();
@@ -340,7 +464,7 @@ public static class ViewForMixins
             {
                 if (activated)
                 {
-                    viewViewModelDisposable.Disposable = view.WhenAnyValue<IViewFor, object?>(nameof(view.ViewModel))
+                    viewViewModelDisposable.Disposable = viewModelChanged
                         .Subscribe(new DelegateObserver<object?>(value =>
                         {
                             viewModelDisposable.Disposable = EmptyDisposable.Instance;

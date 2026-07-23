@@ -38,7 +38,7 @@ public static class WpfViewForMixins
         public IDisposable WhenActivated() =>
             item.GetIsDesignMode()
                 ? EmptyDisposable.Instance
-                : ((IActivatableView)item).WhenActivated(static () => (IEnumerable<IDisposable>)[], null);
+                : ((IActivatableView)item).WhenActivated(static () => (IEnumerable<IDisposable>)[], (IViewFor?)null);
 
         /// <summary>Activates the specified WPF view and registers a block of disposables to be disposed when the view is deactivated.</summary>
         /// <param name="block">A function that returns disposables to be disposed when the view is deactivated.</param>

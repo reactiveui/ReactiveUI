@@ -870,10 +870,14 @@ ReactiveUI.Reactive.ViewForMixins.extension(ReactiveUI.IActivatableView!).GetIsD
 ReactiveUI.Reactive.ViewForMixins.extension(ReactiveUI.IActivatableView!).WhenActivated() -> System.IDisposable!
 ReactiveUI.Reactive.ViewForMixins.extension(ReactiveUI.IActivatableView!).WhenActivated(System.Action<ReactiveUI.Primitives.Disposables.MultipleDisposable!>! block) -> System.IDisposable!
 ReactiveUI.Reactive.ViewForMixins.extension(ReactiveUI.IActivatableView!).WhenActivated(System.Action<ReactiveUI.Primitives.Disposables.MultipleDisposable!>! block, ReactiveUI.IViewFor? view) -> System.IDisposable!
+ReactiveUI.Reactive.ViewForMixins.extension(ReactiveUI.IActivatableView!).WhenActivated(System.Action<ReactiveUI.Primitives.Disposables.MultipleDisposable!>! block, System.IObservable<object?>! viewModelChanged) -> System.IDisposable!
 ReactiveUI.Reactive.ViewForMixins.extension(ReactiveUI.IActivatableView!).WhenActivated(System.Action<System.Action<System.IDisposable!>!>! block) -> System.IDisposable!
 ReactiveUI.Reactive.ViewForMixins.extension(ReactiveUI.IActivatableView!).WhenActivated(System.Action<System.Action<System.IDisposable!>!>! block, ReactiveUI.IViewFor! view) -> System.IDisposable!
+ReactiveUI.Reactive.ViewForMixins.extension(ReactiveUI.IActivatableView!).WhenActivated(System.Action<System.Action<System.IDisposable!>!>! block, System.IObservable<object?>! viewModelChanged) -> System.IDisposable!
 ReactiveUI.Reactive.ViewForMixins.extension(ReactiveUI.IActivatableView!).WhenActivated(System.Func<System.Collections.Generic.IEnumerable<System.IDisposable!>!>! block) -> System.IDisposable!
 ReactiveUI.Reactive.ViewForMixins.extension(ReactiveUI.IActivatableView!).WhenActivated(System.Func<System.Collections.Generic.IEnumerable<System.IDisposable!>!>! block, ReactiveUI.IViewFor? view) -> System.IDisposable!
+ReactiveUI.Reactive.ViewForMixins.extension(ReactiveUI.IActivatableView!).WhenActivated(System.Func<System.Collections.Generic.IEnumerable<System.IDisposable!>!>! block, System.IObservable<object?>! viewModelChanged) -> System.IDisposable!
+ReactiveUI.Reactive.ViewForMixins.extension(ReactiveUI.IActivatableView!).WhenActivated(System.IObservable<object?>! viewModelChanged) -> System.IDisposable!
 ReactiveUI.Reactive.ViewForMixins.extension(ReactiveUI.Reactive.IActivatableViewModel!)
 ReactiveUI.Reactive.ViewForMixins.extension(ReactiveUI.Reactive.IActivatableViewModel!).WhenActivated(System.Action<ReactiveUI.Primitives.Disposables.MultipleDisposable!>! block) -> void
 ReactiveUI.Reactive.ViewForMixins.extension(ReactiveUI.Reactive.IActivatableViewModel!).WhenActivated(System.Action<System.Action<System.IDisposable!>!>! block) -> void
@@ -1492,10 +1496,14 @@ static ReactiveUI.Reactive.ViewForMixins.GetIsDesignMode(this ReactiveUI.IActiva
 static ReactiveUI.Reactive.ViewForMixins.WhenActivated(this ReactiveUI.IActivatableView! item) -> System.IDisposable!
 static ReactiveUI.Reactive.ViewForMixins.WhenActivated(this ReactiveUI.IActivatableView! item, System.Action<ReactiveUI.Primitives.Disposables.MultipleDisposable!>! block) -> System.IDisposable!
 static ReactiveUI.Reactive.ViewForMixins.WhenActivated(this ReactiveUI.IActivatableView! item, System.Action<ReactiveUI.Primitives.Disposables.MultipleDisposable!>! block, ReactiveUI.IViewFor? view) -> System.IDisposable!
+static ReactiveUI.Reactive.ViewForMixins.WhenActivated(this ReactiveUI.IActivatableView! item, System.Action<ReactiveUI.Primitives.Disposables.MultipleDisposable!>! block, System.IObservable<object?>! viewModelChanged) -> System.IDisposable!
 static ReactiveUI.Reactive.ViewForMixins.WhenActivated(this ReactiveUI.IActivatableView! item, System.Action<System.Action<System.IDisposable!>!>! block) -> System.IDisposable!
 static ReactiveUI.Reactive.ViewForMixins.WhenActivated(this ReactiveUI.IActivatableView! item, System.Action<System.Action<System.IDisposable!>!>! block, ReactiveUI.IViewFor! view) -> System.IDisposable!
+static ReactiveUI.Reactive.ViewForMixins.WhenActivated(this ReactiveUI.IActivatableView! item, System.Action<System.Action<System.IDisposable!>!>! block, System.IObservable<object?>! viewModelChanged) -> System.IDisposable!
 static ReactiveUI.Reactive.ViewForMixins.WhenActivated(this ReactiveUI.IActivatableView! item, System.Func<System.Collections.Generic.IEnumerable<System.IDisposable!>!>! block) -> System.IDisposable!
 static ReactiveUI.Reactive.ViewForMixins.WhenActivated(this ReactiveUI.IActivatableView! item, System.Func<System.Collections.Generic.IEnumerable<System.IDisposable!>!>! block, ReactiveUI.IViewFor? view) -> System.IDisposable!
+static ReactiveUI.Reactive.ViewForMixins.WhenActivated(this ReactiveUI.IActivatableView! item, System.Func<System.Collections.Generic.IEnumerable<System.IDisposable!>!>! block, System.IObservable<object?>! viewModelChanged) -> System.IDisposable!
+static ReactiveUI.Reactive.ViewForMixins.WhenActivated(this ReactiveUI.IActivatableView! item, System.IObservable<object?>! viewModelChanged) -> System.IDisposable!
 static ReactiveUI.Reactive.ViewForMixins.WhenActivated(this ReactiveUI.Reactive.IActivatableViewModel! item, System.Action<ReactiveUI.Primitives.Disposables.MultipleDisposable!>! block) -> void
 static ReactiveUI.Reactive.ViewForMixins.WhenActivated(this ReactiveUI.Reactive.IActivatableViewModel! item, System.Action<System.Action<System.IDisposable!>!>! block) -> void
 static ReactiveUI.Reactive.ViewForMixins.WhenActivated(this ReactiveUI.Reactive.IActivatableViewModel! item, System.Func<System.Collections.Generic.IEnumerable<System.IDisposable!>!>! block) -> void
