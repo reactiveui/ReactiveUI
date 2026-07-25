@@ -146,10 +146,7 @@ public class ActivationTests
     [Test]
     public async Task ActivationIsSkippedInDesignMode()
     {
-        using var control = new DesignModeTestControl
-        {
-            Site = new DesignModeSite(),
-        };
+        using var control = new DesignModeTestControl { Site = new DesignModeSite() };
 
         _ = control.Handle;
 

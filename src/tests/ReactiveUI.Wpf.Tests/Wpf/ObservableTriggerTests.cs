@@ -42,18 +42,12 @@ public class ObservableTriggerTests
     public async Task Observable_WhenEmits_InvokesActions()
     {
         var button = new Button();
-        var trigger = new ObservableTrigger
-        {
-            SchedulerOverride = Sequencer.Immediate
-        };
+        var trigger = new ObservableTrigger { SchedulerOverride = Sequencer.Immediate };
         var subject = new Signal<object>();
         var actionInvoked = false;
 
         // Create a test action
-        var action = new TestAction
-        {
-            OnInvoke = _ => actionInvoked = true
-        };
+        var action = new TestAction { OnInvoke = _ => actionInvoked = true };
 
         // Attach trigger to button
         var triggers = Interaction.GetTriggers(button);
@@ -123,10 +117,7 @@ public class ObservableTriggerTests
     public async Task Observable_Getter_ReturnsSetValue()
     {
         var button = new Button();
-        var trigger = new ObservableTrigger
-        {
-            SchedulerOverride = Sequencer.Immediate
-        };
+        var trigger = new ObservableTrigger { SchedulerOverride = Sequencer.Immediate };
         var triggers = Interaction.GetTriggers(button);
         triggers.Add(trigger);
 
@@ -145,10 +136,7 @@ public class ObservableTriggerTests
     public async Task Observable_WhenChangedMultipleTimes_DisposesOldSubscription()
     {
         var button = new Button();
-        var trigger = new ObservableTrigger
-        {
-            SchedulerOverride = Sequencer.Immediate
-        };
+        var trigger = new ObservableTrigger { SchedulerOverride = Sequencer.Immediate };
         var triggers = Interaction.GetTriggers(button);
         triggers.Add(trigger);
 
@@ -175,11 +163,7 @@ public class ObservableTriggerTests
     {
         var button = new Button();
         var scheduler = new VirtualTimeScheduler();
-        var trigger = new ObservableTrigger
-        {
-            AutoResubscribeOnError = true,
-            SchedulerOverride = scheduler
-        };
+        var trigger = new ObservableTrigger { AutoResubscribeOnError = true, SchedulerOverride = scheduler };
         var triggers = Interaction.GetTriggers(button);
         triggers.Add(trigger);
 
@@ -212,11 +196,7 @@ public class ObservableTriggerTests
     {
         var button = new Button();
         var scheduler = new VirtualTimeScheduler();
-        var trigger = new ObservableTrigger
-        {
-            AutoResubscribeOnError = false,
-            SchedulerOverride = scheduler
-        };
+        var trigger = new ObservableTrigger { AutoResubscribeOnError = false, SchedulerOverride = scheduler };
         var triggers = Interaction.GetTriggers(button);
         triggers.Add(trigger);
 
@@ -240,17 +220,11 @@ public class ObservableTriggerTests
     public async Task Observable_MultipleEmissions_InvokesActionsMultipleTimes()
     {
         var button = new Button();
-        var trigger = new ObservableTrigger
-        {
-            SchedulerOverride = Sequencer.Immediate
-        };
+        var trigger = new ObservableTrigger { SchedulerOverride = Sequencer.Immediate };
         var subject = new Signal<object>();
         var invokeCount = 0;
 
-        var action = new TestAction
-        {
-            OnInvoke = _ => invokeCount++
-        };
+        var action = new TestAction { OnInvoke = _ => invokeCount++ };
 
         var triggers = Interaction.GetTriggers(button);
         triggers.Add(trigger);

@@ -49,10 +49,7 @@ public class CommandBindingImplementationTests
     [Test]
     public async Task CommandBindNestedCommandWireup()
     {
-        var vm = new CommandBindViewModel
-        {
-            NestedViewModel = new()
-        };
+        var vm = new CommandBindViewModel { NestedViewModel = new() };
 
         var view = new CommandBindView { ViewModel = vm };
 
@@ -157,10 +154,7 @@ public class CommandBindingImplementationTests
     [Test]
     public async Task CommandBindWithDelaySetVmParameterExpression()
     {
-        var view = new ReactiveObjectCommandBindView
-        {
-            ViewModel = new()
-        };
+        var view = new ReactiveObjectCommandBindView { ViewModel = new() };
 
         var received = 0;
         view.ViewModel.Command1 = ReactiveCommand.Create<int>(i => received = i);

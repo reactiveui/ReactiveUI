@@ -155,10 +155,7 @@ public class RoutingStateTests
     [Test]
     public async Task NavigateAndResetCheckNavigationStack()
     {
-        var fixture = new TestScreen
-        {
-            Router = new(Sequencer.Immediate)
-        };
+        var fixture = new TestScreen { Router = new(Sequencer.Immediate) };
         var viewModel = new TestViewModel();
 
         await Assert.That(fixture.Router.NavigationStack).Count().IsLessThanOrEqualTo(0);

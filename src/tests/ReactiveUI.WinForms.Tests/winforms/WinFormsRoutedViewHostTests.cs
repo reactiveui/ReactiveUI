@@ -46,12 +46,7 @@ public class WinFormsRoutedViewHostTests
         var defaultContent = new Control();
         var viewLocator = new FakeViewLocator { LocatorFunc = static _ => new FakeWinformsView() };
         var router = new RoutingState(Sequencer.Immediate);
-        var target = new WinFormsRoutedViewHost
-        {
-            Router = router,
-            ViewLocator = viewLocator,
-            DefaultContent = defaultContent
-        };
+        var target = new WinFormsRoutedViewHost { Router = router, ViewLocator = viewLocator, DefaultContent = defaultContent };
 
         await Assert.That(target.Controls.Contains(defaultContent)).IsTrue();
     }
@@ -76,12 +71,7 @@ public class WinFormsRoutedViewHostTests
     {
         var viewLocator = new FakeViewLocator { LocatorFunc = static _ => new FakeWinformsView() };
         var router = new RoutingState(Sequencer.Immediate);
-        var target = new WinFormsRoutedViewHost
-        {
-            Router = router,
-            ViewLocator = viewLocator,
-            ViewContractObservable = Signal.Emit("MyContract")
-        };
+        var target = new WinFormsRoutedViewHost { Router = router, ViewLocator = viewLocator, ViewContractObservable = Signal.Emit("MyContract") };
         _ = router.Navigate.Execute(new FakeWinformViewModel()).Subscribe();
 
         await Assert.That(target.Controls.OfType<FakeWinformsView>().Count()).IsEqualTo(1);
@@ -138,12 +128,7 @@ public class WinFormsRoutedViewHostTests
         var defaultContent = new Control();
         var viewLocator = new FakeViewLocator { LocatorFunc = static _ => new FakeWinformsView() };
         var router = new RoutingState(Sequencer.Immediate);
-        using var target = new WinFormsRoutedViewHost
-        {
-            Router = router,
-            ViewLocator = viewLocator,
-            DefaultContent = defaultContent,
-        };
+        using var target = new WinFormsRoutedViewHost { Router = router, ViewLocator = viewLocator, DefaultContent = defaultContent };
 
         _ = router.Navigate.Execute(new FakeWinformViewModel()).Subscribe();
 

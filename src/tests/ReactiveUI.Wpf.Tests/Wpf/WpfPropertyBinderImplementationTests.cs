@@ -96,10 +96,7 @@ public class WpfPropertyBinderImplementationTests
                 Dispatcher = Dispatcher.CurrentDispatcher;
                 ready.Set();
                 Dispatcher.Run();
-            })
-            {
-                IsBackground = true,
-            };
+            }) { IsBackground = true };
             thread.SetApartmentState(ApartmentState.STA);
             thread.Start();
             _ = ready.Wait(DispatcherStartTimeoutMs);

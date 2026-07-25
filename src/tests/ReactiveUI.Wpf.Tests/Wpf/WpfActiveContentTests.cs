@@ -86,11 +86,7 @@ public class WpfActiveContentTests
     public async Task ResolveViewBIfViewBIsRegistered()
     {
         var vm = new FakeViewWithContract.MyViewModel();
-        var host = new ViewModelViewHost
-        {
-            ViewModel = vm,
-            ViewContract = FakeViewWithContract.ContractB,
-        };
+        var host = new ViewModelViewHost { ViewModel = vm, ViewContract = FakeViewWithContract.ContractB };
 
         // Simulate activation by raising the Loaded event
         var loaded = new RoutedEventArgs { RoutedEvent = FrameworkElement.LoadedEvent };
@@ -107,12 +103,7 @@ public class WpfActiveContentTests
     public async Task ResolveView0WithFallback()
     {
         var vm = new FakeViewWithContract.MyViewModel();
-        var host = new ViewModelViewHost
-        {
-            ViewModel = vm,
-            ViewContract = FakeViewWithContract.ContractB,
-            ContractFallbackByPass = false,
-        };
+        var host = new ViewModelViewHost { ViewModel = vm, ViewContract = FakeViewWithContract.ContractB, ContractFallbackByPass = false };
 
         // Simulate activation by raising the Loaded event
         var loaded = new RoutedEventArgs { RoutedEvent = FrameworkElement.LoadedEvent };
@@ -129,12 +120,7 @@ public class WpfActiveContentTests
     public async Task ResolveNoneWithFallbackBypass()
     {
         var vm = new FakeViewWithContract.MyViewModel();
-        var host = new ViewModelViewHost
-        {
-            ContractFallbackByPass = true,
-            ViewContract = FakeViewWithContract.ContractB,
-            ViewModel = vm,
-        };
+        var host = new ViewModelViewHost { ContractFallbackByPass = true, ViewContract = FakeViewWithContract.ContractB, ViewModel = vm };
 
         // Simulate activation by raising the Loaded event
         var loaded = new RoutedEventArgs { RoutedEvent = FrameworkElement.LoadedEvent };

@@ -77,10 +77,7 @@ public class TransitioningContentControlTest
     [Test]
     public async Task Transition_SetAndGet_WorksCorrectly()
     {
-        var control = new TransitioningContentControl
-        {
-            Transition = TransitioningContentControl.TransitionType.Fade
-        };
+        var control = new TransitioningContentControl { Transition = TransitioningContentControl.TransitionType.Fade };
 
         await Assert.That(control.Transition).IsEqualTo(TransitioningContentControl.TransitionType.Fade);
 
@@ -94,10 +91,7 @@ public class TransitioningContentControlTest
     [Test]
     public async Task Direction_SetAndGet_WorksCorrectly()
     {
-        var control = new TransitioningContentControl
-        {
-            Direction = TransitioningContentControl.TransitionDirection.Left
-        };
+        var control = new TransitioningContentControl { Direction = TransitioningContentControl.TransitionDirection.Left };
 
         await Assert.That(control.Direction).IsEqualTo(TransitioningContentControl.TransitionDirection.Left);
 
@@ -111,10 +105,7 @@ public class TransitioningContentControlTest
     [Test]
     public async Task Duration_SetAndGet_WorksCorrectly()
     {
-        var control = new TransitioningContentControl
-        {
-            Duration = TimeSpan.FromSeconds(HalfSecond)
-        };
+        var control = new TransitioningContentControl { Duration = TimeSpan.FromSeconds(HalfSecond) };
 
         await Assert.That(control.Duration).IsEqualTo(TimeSpan.FromSeconds(HalfSecond));
 
@@ -257,11 +248,7 @@ public class TransitioningContentControlTest
     [Test]
     public async Task SetFadeTransitionDefaults_WithValidStoryboard_SetsDuration()
     {
-        var control = new TransitioningContentControl
-        {
-            Duration = TimeSpan.FromSeconds(HalfSecond),
-            Transition = TransitioningContentControl.TransitionType.Fade
-        };
+        var control = new TransitioningContentControl { Duration = TimeSpan.FromSeconds(HalfSecond), Transition = TransitioningContentControl.TransitionType.Fade };
 
         var storyboard = new Storyboard();
         var animation1 = new DoubleAnimation();
@@ -386,13 +373,7 @@ public class TransitioningContentControlTest
     public async Task SetBounceTransitionDefaults_WithDirection_SetsCorrectToValue(
         TransitioningContentControl.TransitionDirection direction)
     {
-        var control = new TransitioningContentControl
-        {
-            Transition = TransitioningContentControl.TransitionType.Bounce,
-            Direction = direction,
-            Width = ControlSize,
-            Height = ControlSize
-        };
+        var control = new TransitioningContentControl { Transition = TransitioningContentControl.TransitionType.Bounce, Direction = direction, Width = ControlSize, Height = ControlSize };
 
         control.Measure(new(ControlSize, ControlSize));
         control.Arrange(new(0, 0, ControlSize, ControlSize));
@@ -504,12 +485,7 @@ public class TransitioningContentControlTest
     [Test]
     public async Task GetRenderTargetBitmapFromUiElement_WithRenderedElement_CreatesBitmap()
     {
-        var button = new Button
-        {
-            Width = ButtonWidth,
-            Height = ButtonHeight,
-            Content = "Test"
-        };
+        var button = new Button { Width = ButtonWidth, Height = ButtonHeight, Content = "Test" };
 
         button.Measure(new(ButtonWidth, ButtonHeight));
         button.Arrange(new(0, 0, ButtonWidth, ButtonHeight));
@@ -590,12 +566,7 @@ public class TransitioningContentControlTest
     public async Task SetTransitionDefaultValues_WithTransitionType_DoesNotThrow(
         TransitioningContentControl.TransitionType transitionType)
     {
-        var control = new TransitioningContentControl
-        {
-            Transition = transitionType,
-            Width = ControlSize,
-            Height = ControlSize
-        };
+        var control = new TransitioningContentControl { Transition = transitionType, Width = ControlSize, Height = ControlSize };
 
         control.Measure(new(ControlSize, ControlSize));
         control.Arrange(new(0, 0, ControlSize, ControlSize));
@@ -611,13 +582,7 @@ public class TransitioningContentControlTest
     [Test]
     public async Task OnApplyTemplate_WithoutContainer_ThrowsInvalidOperationException()
     {
-        var control = new TransitioningContentControl
-        {
-            Template = new(typeof(TransitioningContentControl))
-            {
-                VisualTree = new(typeof(Grid)) { Name = "WrongName" },
-            },
-        };
+        var control = new TransitioningContentControl { Template = new(typeof(TransitioningContentControl)) { VisualTree = new(typeof(Grid)) { Name = "WrongName" } } };
 
         await Assert.That(control.ApplyTemplate)
             .Throws<InvalidOperationException>();
@@ -628,13 +593,7 @@ public class TransitioningContentControlTest
     [Test]
     public async Task OnApplyTemplate_WithoutContentPresenter_ThrowsInvalidOperationException()
     {
-        var control = new TransitioningContentControl
-        {
-            Template = new(typeof(TransitioningContentControl))
-            {
-                VisualTree = new(typeof(Grid)) { Name = PartContainerName },
-            },
-        };
+        var control = new TransitioningContentControl { Template = new(typeof(TransitioningContentControl)) { VisualTree = new(typeof(Grid)) { Name = PartContainerName } } };
 
         await Assert.That(control.ApplyTemplate)
             .Throws<InvalidOperationException>();
@@ -675,11 +634,7 @@ public class TransitioningContentControlTest
     [Test]
     public async Task CompletingTransition_Set_TriggersSetTransitionDefaultValues()
     {
-        var control = new TransitioningContentControl
-        {
-            Transition = TransitioningContentControl.TransitionType.Fade,
-            Duration = TimeSpan.FromSeconds(HalfSecond)
-        };
+        var control = new TransitioningContentControl { Transition = TransitioningContentControl.TransitionType.Fade, Duration = TimeSpan.FromSeconds(HalfSecond) };
 
         var storyboard = new Storyboard();
         var animation1 = new DoubleAnimation();
@@ -805,11 +760,7 @@ public class TransitioningContentControlTest
     [Test]
     public async Task SetSlideTransitionDefaults_WithInvalidDirection_Throws()
     {
-        var control = new TransitioningContentControl
-        {
-            Transition = TransitioningContentControl.TransitionType.Slide,
-            Direction = TransitioningContentControl.TransitionDirection.Left,
-        };
+        var control = new TransitioningContentControl { Transition = TransitioningContentControl.TransitionType.Slide, Direction = TransitioningContentControl.TransitionDirection.Left };
 
         var storyboard = new Storyboard();
         storyboard.Children.Add(new DoubleAnimation());
@@ -827,11 +778,7 @@ public class TransitioningContentControlTest
     [Test]
     public async Task SetMoveTransitionDefaults_WithInvalidDirection_Throws()
     {
-        var control = new TransitioningContentControl
-        {
-            Transition = TransitioningContentControl.TransitionType.Move,
-            Direction = TransitioningContentControl.TransitionDirection.Left,
-        };
+        var control = new TransitioningContentControl { Transition = TransitioningContentControl.TransitionType.Move, Direction = TransitioningContentControl.TransitionDirection.Left };
 
         var storyboard = new Storyboard();
         storyboard.Children.Add(new DoubleAnimation());
@@ -847,11 +794,7 @@ public class TransitioningContentControlTest
     [Test]
     public async Task SetBounceTransitionDefaults_WithInvalidDirection_Throws()
     {
-        var control = new TransitioningContentControl
-        {
-            Transition = TransitioningContentControl.TransitionType.Bounce,
-            Direction = TransitioningContentControl.TransitionDirection.Left,
-        };
+        var control = new TransitioningContentControl { Transition = TransitioningContentControl.TransitionType.Bounce, Direction = TransitioningContentControl.TransitionDirection.Left };
 
         var storyboard = new Storyboard();
         storyboard.Children.Add(new DoubleAnimation());
@@ -866,10 +809,7 @@ public class TransitioningContentControlTest
     [Test]
     public async Task SetTransitionDefaultValues_WithInvalidType_Throws()
     {
-        var control = new TransitioningContentControl
-        {
-            Transition = (TransitioningContentControl.TransitionType)InvalidEnumValue,
-        };
+        var control = new TransitioningContentControl { Transition = (TransitioningContentControl.TransitionType)InvalidEnumValue };
 
         await Assert.That(control.SetTransitionDefaultValues).Throws<InvalidOperationException>();
     }
@@ -879,11 +819,7 @@ public class TransitioningContentControlTest
     [Test]
     public async Task CompletingTransition_SetTwice_DecouplesPreviousTransition()
     {
-        var control = new TransitioningContentControl
-        {
-            Transition = TransitioningContentControl.TransitionType.Fade,
-            Duration = TimeSpan.FromSeconds(HalfSecond),
-        };
+        var control = new TransitioningContentControl { Transition = TransitioningContentControl.TransitionType.Fade, Duration = TimeSpan.FromSeconds(HalfSecond) };
 
         var first = new Storyboard();
         first.Children.Add(new DoubleAnimation());
@@ -905,11 +841,7 @@ public class TransitioningContentControlTest
     [Test]
     public async Task CompletingTransition_SetToNull_Decouples()
     {
-        var control = new TransitioningContentControl
-        {
-            Transition = TransitioningContentControl.TransitionType.Fade,
-            Duration = TimeSpan.FromSeconds(HalfSecond),
-        };
+        var control = new TransitioningContentControl { Transition = TransitioningContentControl.TransitionType.Fade, Duration = TimeSpan.FromSeconds(HalfSecond) };
 
         var first = new Storyboard();
         first.Children.Add(new DoubleAnimation());
@@ -1010,10 +942,7 @@ public class TransitioningContentControlTest
     [Test]
     public async Task OnContentChanged_WithoutTemplate_DoesNotThrow()
     {
-        var control = new TransitioningContentControl
-        {
-            Content = new TextBlock { Text = NewContentText },
-        };
+        var control = new TransitioningContentControl { Content = new TextBlock { Text = NewContentText } };
 
         await Assert.That(control.CurrentContentPresentationSite).IsNull();
     }
@@ -1094,12 +1023,7 @@ public class TransitioningContentControlTest
     /// <returns>A realized <see cref="TransitioningContentControl"/>.</returns>
     private static TransitioningContentControl CreateRealizedControl(bool includePreviousImage = true)
     {
-        var control = new TransitioningContentControl
-        {
-            Width = ControlSize,
-            Height = ControlSize,
-            Content = new TextBlock { Text = "initial" },
-        };
+        var control = new TransitioningContentControl { Width = ControlSize, Height = ControlSize, Content = new TextBlock { Text = "initial" } };
 
         var template = new ControlTemplate(typeof(TransitioningContentControl));
         var grid = new FrameworkElementFactory(typeof(Grid)) { Name = PartContainerName };
