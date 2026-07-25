@@ -65,34 +65,15 @@ public
         HorizontalContentAlignment = HorizontalAlignment.Stretch;
         VerticalContentAlignment = VerticalAlignment.Stretch;
 
-        var platform = AppLocator.Current.GetService<IPlatformOperations>();
-        Func<string?> platformGetter = static () => null;
-
-        if (platform is null)
-        {
-            // NB: This used to be an error but WPF design mode can't read
-            // good or do other stuff good.
-            this.Log().Error(
-                "Couldn't find an IPlatformOperations implementation. Please make sure you have installed "
-                + "the latest version of the ReactiveUI packages for your platform. "
-                + "See https://reactiveui.net/docs/getting-started/installation for guidance.");
-        }
-        else
-        {
-            platformGetter = platform.GetOrientation;
-        }
-
-        ViewContractObservable = ModeDetector.InUnitTestRunner()
-            ? Signal.Silent<string?>()
-            : new StartWithObservable<string?>(
-                new FromEventObservable<string?>(onNext =>
-                {
-                    SizeChangedEventHandler handler = (_, _) => onNext(platformGetter());
-                    SizeChanged += handler;
-                    return new ActionDisposable(() => SizeChanged -= handler);
-                }),
-                platformGetter())
-                .DistinctUntilChanged();
+        var platformGetter = ViewContractObservableHelpers.GetPlatformOrientation(this.Log());
+        ViewContractObservable = ViewContractObservableHelpers.Create(
+            platformGetter,
+            new FromEventObservable<string?>(onNext =>
+            {
+                SizeChangedEventHandler handler = (_, _) => onNext(platformGetter());
+                SizeChanged += handler;
+                return new ActionDisposable(() => SizeChanged -= handler);
+            }));
 
         IRoutableViewModel? currentViewModel = null;
         var viewModelAndContract = new StartWithObservable<IRoutableViewModel?>(

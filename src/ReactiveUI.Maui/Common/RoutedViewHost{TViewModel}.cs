@@ -12,7 +12,6 @@ using ReactiveUI.Reactive.Maui.Internal;
 #else
 using ReactiveUI.Maui.Internal;
 #endif
-using ReactiveUI.Primitives;
 using Splat;
 
 #if REACTIVE_SHIM
@@ -60,78 +59,24 @@ public partial class RoutedViewHost<
         HorizontalContentAlignment = HorizontalAlignment.Stretch;
         VerticalContentAlignment = VerticalAlignment.Stretch;
 
-        var platform = AppLocator.Current.GetService<IPlatformOperations>();
-        Func<string?> platformGetter = static () => default;
+        var platformGetter = ViewContractObservableHelpers.GetPlatformOrientation(this.Log());
+        ViewContractObservable = ViewContractObservableHelpers.Create(
+            platformGetter,
+            new FromEventObservable<string?>(onNext =>
+            {
+                SizeChangedEventHandler handler = (_, _) => onNext(platformGetter());
+                SizeChanged += handler;
+                return new ActionDisposable(() => SizeChanged -= handler);
+            }));
 
-        if (platform is null)
-        {
-            // NB: This used to be an error but WPF design mode can't read
-            // good or do other stuff good.
-            this.Log().Error(
-                "Couldn't find an IPlatformOperations implementation. Please make sure you have installed the latest "
-                + "version of the ReactiveUI packages for your platform. See https://reactiveui.net/docs/getting-started/installation for guidance.");
-        }
-        else
-        {
-            platformGetter = platform.GetOrientation;
-        }
-
-        ViewContractObservable = ModeDetector.InUnitTestRunner()
-            ? Signal.Silent<string>()
-
-            // Replaces FromEvent(SizeChanged).StartWith(platformGetter()).DistinctUntilChanged().
-            : new StartWithObservable<string?>(
-                    new FromEventObservable<string?>(onNext =>
-                    {
-                        SizeChangedEventHandler handler = (_, _) => onNext(platformGetter());
-                        SizeChanged += handler;
-                        return new ActionDisposable(() => SizeChanged -= handler);
-                    }),
-                    platformGetter())
-                .DistinctUntilChanged();
-
-        // Observe Router property changes using DependencyProperty (AOT-friendly)
-        var routerChanged = MauiReactiveHelpers.CreatePropertyValueObservable(
+        MauiReactiveHelpers.SubscribeRoutedViewHost(
             this,
-            nameof(Router),
-            RouterProperty,
-            () => Router);
-
-        // Observe ViewContractObservable property changes using DependencyProperty (AOT-friendly)
-        var viewContractObservableChanged = MauiReactiveHelpers.CreatePropertyValueObservable(
-            this,
-            nameof(ViewContractObservable),
-            ViewContractObservableProperty,
-            () => ViewContractObservable);
-
-        // Observe current view model from router. Replaces Where(...).SelectMany(r => r.CurrentViewModel).StartWith(null).
-        var currentViewModel = new StartWithObservable<IRoutableViewModel?>(
-            new KeepSignal<RoutingState?>(routerChanged, static router => router is not null)
-                .SelectMany(static router => router!.CurrentViewModel),
-            null);
-
-        // Flatten the ViewContractObservable observable-of-observable.
-        // Replaces SelectMany(x => x ?? Return(null)).Do(x => _viewContract = x).StartWith(ViewContract).
-        var viewContract = new StartWithObservable<string?>(
-            viewContractObservableChanged
-                .SelectMany(static x => x ?? Signal.Emit<string?>(null))
-                .Do(x => _viewContract = x),
-            ViewContract);
-
-        var viewModelAndContract = currentViewModel
-            .CombineLatest(
-                viewContract,
-                static (viewModel, contract) => (viewModel, contract));
-
-        // Subscribe directly without WhenActivated
-        // NB: The DistinctUntilChanged is useful because most views in
-        // WinRT will end up getting here twice - once for configuring
-        // the RoutedViewHost's ViewModel, and once on load via SizeChanged
-        _ = viewModelAndContract.DistinctUntilChanged()
-            .Subscribe(new DelegateObserver<(IRoutableViewModel? viewModel, string? contract)>(
-                ResolveViewForViewModel,
-                RxState.DefaultExceptionHandler.OnNext))
-            .DisposeWith(_subscriptions);
+            (nameof(Router), RouterProperty, () => Router),
+            (nameof(ViewContractObservable), ViewContractObservableProperty, () => ViewContractObservable),
+            () => ViewContract,
+            contract => _viewContract = contract,
+            ResolveViewForViewModel,
+            _subscriptions);
     }
 
     /// <summary>Gets or sets the <see cref="RoutingState"/> of the view model stack.</summary>
@@ -140,6 +85,12 @@ public partial class RoutedViewHost<
         get => (RoutingState)GetValue(RouterProperty);
         set => SetValue(RouterProperty, value);
     }
+
+    /// <summary>Gets or sets the view locator.</summary>
+    /// <value>
+    /// The view locator.
+    /// </value>
+    public IViewLocator? ViewLocator { get; set; }
 
     /// <summary>Gets or sets the content displayed whenever there is no page currently routed.</summary>
     public object DefaultContent
@@ -168,12 +119,6 @@ public partial class RoutedViewHost<
             ViewContractObservable = Signal.Emit(value);
         }
     }
-
-    /// <summary>Gets or sets the view locator.</summary>
-    /// <value>
-    /// The view locator.
-    /// </value>
-    public IViewLocator? ViewLocator { get; set; }
 
     /// <summary>
     /// Resolves and displays the view for the given view model and contract.

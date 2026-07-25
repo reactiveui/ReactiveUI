@@ -11,7 +11,6 @@ using ReactiveUI.Reactive.Maui.Internal;
 #else
 using ReactiveUI.Maui.Internal;
 #endif
-using ReactiveUI.Primitives;
 using Splat;
 
 #if REACTIVE_SHIM
@@ -60,58 +59,23 @@ public partial class ViewModelViewHost<
         Justification = "The single-threaded UI control hands 'this' to MauiReactiveHelpers to observe its own dependency-property changes; it is never published to another thread.")]
     public ViewModelViewHost()
     {
-        var platform = AppLocator.Current.GetService<IPlatformOperations>();
-        Func<string?> platformGetter = static () => default;
+        var platformGetter = ViewContractObservableHelpers.GetPlatformOrientation(this.Log());
+        ViewContractObservable = ViewContractObservableHelpers.Create(
+            platformGetter,
+            new FromEventObservable<string?>(onNext =>
+            {
+                SizeChangedEventHandler handler = (_, _) => onNext(platformGetter());
+                SizeChanged += handler;
+                return new ActionDisposable(() => SizeChanged -= handler);
+            }));
 
-        if (platform is null)
-        {
-            // NB: This used to be an error but WPF design mode can't read
-            // good or do other stuff good.
-            this.Log().Error(
-                "Couldn't find an IPlatformOperations implementation. Please make sure you have installed the latest "
-                + "version of the ReactiveUI packages for your platform. See https://reactiveui.net/docs/getting-started/installation for guidance.");
-        }
-        else
-        {
-            platformGetter = platform.GetOrientation;
-        }
-
-        ViewContractObservable = ModeDetector.InUnitTestRunner()
-            ? Signal.Silent<string>()
-
-            // Replaces FromEvent(SizeChanged).StartWith(platformGetter()).DistinctUntilChanged().
-            : new StartWithObservable<string?>(
-                    new FromEventObservable<string?>(onNext =>
-                    {
-                        SizeChangedEventHandler handler = (_, _) => onNext(platformGetter());
-                        SizeChanged += handler;
-                        return new ActionDisposable(() => SizeChanged -= handler);
-                    }),
-                    platformGetter())
-                .DistinctUntilChanged();
-
-        // Observe ViewModel property changes without expression trees (AOT-friendly)
-        var viewModelChanged = MauiReactiveHelpers.CreatePropertyValueObservable(
+        MauiReactiveHelpers.SubscribeViewModelViewHost(
             this,
-            nameof(ViewModel),
-            ViewModelProperty,
-            () => ViewModel);
-
-        // Combine contract observable (recording the latest contract) with ViewModel changes.
-        var viewModelAndContract = ViewContractObservable.Do(x => _viewContract = x)
-            .CombineLatest(
-                viewModelChanged,
-                static (contract, vm) => (vm, contract));
-
-        // Subscribe directly without WhenActivated
-        _ = new ObserveOnObservable<string?>(ViewContractObservable, RxSchedulers.MainThreadScheduler)
-            .Subscribe(new DelegateObserver<string?>(x => _viewContract = x ?? string.Empty))
-            .DisposeWith(_subscriptions);
-
-        _ = viewModelAndContract.DistinctUntilChanged()
-            .Subscribe(new DelegateObserver<(TViewModel? ViewModel, string? Contract)>(
-                x => ResolveViewForViewModel(x.ViewModel, x.Contract)))
-            .DisposeWith(_subscriptions);
+            (nameof(ViewModel), ViewModelProperty, () => ViewModel),
+            ViewContractObservable,
+            contract => _viewContract = contract,
+            ResolveViewForViewModel,
+            _subscriptions);
     }
 
     /// <summary>Gets or sets the view contract observable.</summary>

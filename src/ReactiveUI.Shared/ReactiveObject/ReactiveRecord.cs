@@ -37,36 +37,27 @@ public abstract record ReactiveRecord : IReactiveNotifyPropertyChanged<IReactive
     /// <summary>Backing event store for property-changed notifications.</summary>
     private PropertyChangedEventHandler? _propertyChangedHandler;
 
+    /// <summary>Stores the property-changing observable.</summary>
+    private IObservable<IReactivePropertyChangedEventArgs<IReactiveObject>>? _changing;
+
+    /// <summary>Stores the property-changed observable.</summary>
+    private IObservable<IReactivePropertyChangedEventArgs<IReactiveObject>>? _changed;
+
+    /// <summary>Stores the exception observable.</summary>
+    private IObservable<Exception>? _thrownExceptions;
+
     /// <inheritdoc/>
     public event PropertyChangingEventHandler? PropertyChanging
     {
-        add
-        {
-            if (!_propertyChangingEventsSubscribed)
-            {
-                this.SubscribePropertyChangingEvents();
-                _propertyChangingEventsSubscribed = true;
-            }
-
-            _propertyChangingHandler += value;
-        }
-        remove => _propertyChangingHandler -= value;
+        add => AddPropertyChanging(value);
+        remove => RemovePropertyChanging(value);
     }
 
     /// <inheritdoc/>
     public event PropertyChangedEventHandler? PropertyChanged
     {
-        add
-        {
-            if (!_propertyChangedEventsSubscribed)
-            {
-                this.SubscribePropertyChangedEvents();
-                _propertyChangedEventsSubscribed = true;
-            }
-
-            _propertyChangedHandler += value;
-        }
-        remove => _propertyChangedHandler -= value;
+        add => AddPropertyChanged(value);
+        remove => RemovePropertyChanged(value);
     }
 
     /// <inheritdoc />
@@ -76,9 +67,7 @@ public abstract record ReactiveRecord : IReactiveNotifyPropertyChanged<IReactive
     [Browsable(false)]
     [Display(Order = -1, AutoGenerateField = false, AutoGenerateFilter = false)]
 #endif
-    public IObservable<IReactivePropertyChangedEventArgs<IReactiveObject>> Changing =>
-        Volatile.Read(ref field)
-        ?? Interlocked.CompareExchange(ref field, ((IReactiveObject)this).GetChangingObservable(), null) ?? field;
+    public IObservable<IReactivePropertyChangedEventArgs<IReactiveObject>> Changing => GetChanging();
 
     /// <inheritdoc />
     [IgnoreDataMember]
@@ -87,9 +76,7 @@ public abstract record ReactiveRecord : IReactiveNotifyPropertyChanged<IReactive
     [Browsable(false)]
     [Display(Order = -1, AutoGenerateField = false, AutoGenerateFilter = false)]
 #endif
-    public IObservable<IReactivePropertyChangedEventArgs<IReactiveObject>> Changed =>
-        Volatile.Read(ref field)
-        ?? Interlocked.CompareExchange(ref field, ((IReactiveObject)this).GetChangedObservable(), null) ?? field;
+    public IObservable<IReactivePropertyChangedEventArgs<IReactiveObject>> Changed => GetChanged();
 
     /// <inheritdoc/>
     [IgnoreDataMember]
@@ -98,11 +85,7 @@ public abstract record ReactiveRecord : IReactiveNotifyPropertyChanged<IReactive
     [Browsable(false)]
     [Display(Order = -1, AutoGenerateField = false, AutoGenerateFilter = false)]
 #endif
-    public IObservable<Exception> ThrownExceptions => Volatile.Read(ref field)
-                                                      ?? Interlocked.CompareExchange(
-                                                          ref field,
-                                                          this.GetThrownExceptionsObservable(),
-                                                          null) ?? field;
+    public IObservable<Exception> ThrownExceptions => GetThrownExceptions();
 
     /// <inheritdoc/>
     void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args) =>
@@ -122,4 +105,37 @@ public abstract record ReactiveRecord : IReactiveNotifyPropertyChanged<IReactive
     /// <summary>Delays notifications until the return IDisposable is disposed.</summary>
     /// <returns>A disposable which when disposed will send delayed notifications.</returns>
     public IDisposable DelayChangeNotifications() => IReactiveObjectExtensions.DelayChangeNotifications(this);
+
+    /// <summary>Adds a property-changing event handler.</summary>
+    /// <param name="handler">The handler to add.</param>
+    private void AddPropertyChanging(PropertyChangingEventHandler? handler) =>
+        ReactiveNotificationHelpers.AddPropertyChanging(this, ref _propertyChangingEventsSubscribed, ref _propertyChangingHandler, handler);
+
+    /// <summary>Removes a property-changing event handler.</summary>
+    /// <param name="handler">The handler to remove.</param>
+    private void RemovePropertyChanging(PropertyChangingEventHandler? handler) => _propertyChangingHandler -= handler;
+
+    /// <summary>Adds a property-changed event handler.</summary>
+    /// <param name="handler">The handler to add.</param>
+    private void AddPropertyChanged(PropertyChangedEventHandler? handler) =>
+        ReactiveNotificationHelpers.AddPropertyChanged(this, ref _propertyChangedEventsSubscribed, ref _propertyChangedHandler, handler);
+
+    /// <summary>Removes a property-changed event handler.</summary>
+    /// <param name="handler">The handler to remove.</param>
+    private void RemovePropertyChanged(PropertyChangedEventHandler? handler) => _propertyChangedHandler -= handler;
+
+    /// <summary>Gets the property-changing observable.</summary>
+    /// <returns>The property-changing observable.</returns>
+    private IObservable<IReactivePropertyChangedEventArgs<IReactiveObject>> GetChanging() =>
+        ReactiveNotificationHelpers.GetChanging(this, ref _changing);
+
+    /// <summary>Gets the property-changed observable.</summary>
+    /// <returns>The property-changed observable.</returns>
+    private IObservable<IReactivePropertyChangedEventArgs<IReactiveObject>> GetChanged() =>
+        ReactiveNotificationHelpers.GetChanged(this, ref _changed);
+
+    /// <summary>Gets the exception observable.</summary>
+    /// <returns>The exception observable.</returns>
+    private IObservable<Exception> GetThrownExceptions() =>
+        ReactiveNotificationHelpers.GetThrownExceptions(this, ref _thrownExceptions);
 }

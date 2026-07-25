@@ -32,46 +32,37 @@ public class ReactiveObject : IReactiveNotifyPropertyChanged<IReactiveObject>, I
     /// <summary>Tracks whether PropertyChanged event subscriptions have been initialized.</summary>
     private bool _propertyChangedEventsSubscribed;
 
-    /// <summary>Stores this instance's reactive notification state directly, avoiding a table lookup.</summary>
-    [IgnoreDataMember]
-    [SuppressMessage("Design", "SST1424:Make field readonly", Justification = "Mutated in place through the ref returned by GetReactiveStateSlot.")]
-    private object? _reactiveStateSlot;
-
     /// <summary>Backing handler for the PropertyChanging event.</summary>
     private PropertyChangingEventHandler? _propertyChangingHandler;
 
     /// <summary>Backing handler for the PropertyChanged event.</summary>
     private PropertyChangedEventHandler? _propertyChangedHandler;
 
+    /// <summary>Stores the property-changing observable.</summary>
+    private IObservable<IReactivePropertyChangedEventArgs<IReactiveObject>>? _changing;
+
+    /// <summary>Stores the property-changed observable.</summary>
+    private IObservable<IReactivePropertyChangedEventArgs<IReactiveObject>>? _changed;
+
+    /// <summary>Stores the exception observable.</summary>
+    private IObservable<Exception>? _thrownExceptions;
+
+    /// <summary>Stores this instance's extension state directly, avoiding a table lookup.</summary>
+    [IgnoreDataMember]
+    [SuppressMessage("Design", "SST1424:Make field readonly", Justification = "Mutated in place through the ref returned by GetReactiveStateSlot.")]
+    private object? _reactiveStateSlot;
+
     /// <inheritdoc/>
     public event PropertyChangingEventHandler? PropertyChanging
     {
-        add
-        {
-            if (!_propertyChangingEventsSubscribed)
-            {
-                this.SubscribePropertyChangingEvents();
-                _propertyChangingEventsSubscribed = true;
-            }
-
-            _propertyChangingHandler += value;
-        }
+        add => ReactiveNotificationHelpers.AddPropertyChanging(this, ref _propertyChangingEventsSubscribed, ref _propertyChangingHandler, value);
         remove => _propertyChangingHandler -= value;
     }
 
     /// <inheritdoc/>
     public event PropertyChangedEventHandler? PropertyChanged
     {
-        add
-        {
-            if (!_propertyChangedEventsSubscribed)
-            {
-                this.SubscribePropertyChangedEvents();
-                _propertyChangedEventsSubscribed = true;
-            }
-
-            _propertyChangedHandler += value;
-        }
+        add => ReactiveNotificationHelpers.AddPropertyChanged(this, ref _propertyChangedEventsSubscribed, ref _propertyChangedHandler, value);
         remove => _propertyChangedHandler -= value;
     }
 
@@ -83,8 +74,7 @@ public class ReactiveObject : IReactiveNotifyPropertyChanged<IReactiveObject>, I
     [Display(Order = -1, AutoGenerateField = false, AutoGenerateFilter = false)]
 #endif
     public IObservable<IReactivePropertyChangedEventArgs<IReactiveObject>> Changing =>
-        Volatile.Read(ref field)
-        ?? Interlocked.CompareExchange(ref field, ((IReactiveObject)this).GetChangingObservable(), null) ?? field;
+        ReactiveNotificationHelpers.GetChanging(this, ref _changing);
 
     /// <inheritdoc />
     [IgnoreDataMember]
@@ -94,8 +84,7 @@ public class ReactiveObject : IReactiveNotifyPropertyChanged<IReactiveObject>, I
     [Display(Order = -1, AutoGenerateField = false, AutoGenerateFilter = false)]
 #endif
     public IObservable<IReactivePropertyChangedEventArgs<IReactiveObject>> Changed =>
-        Volatile.Read(ref field)
-        ?? Interlocked.CompareExchange(ref field, ((IReactiveObject)this).GetChangedObservable(), null) ?? field;
+        ReactiveNotificationHelpers.GetChanged(this, ref _changed);
 
     /// <inheritdoc/>
     [IgnoreDataMember]
@@ -105,8 +94,7 @@ public class ReactiveObject : IReactiveNotifyPropertyChanged<IReactiveObject>, I
     [Display(Order = -1, AutoGenerateField = false, AutoGenerateFilter = false)]
 #endif
     public IObservable<Exception> ThrownExceptions =>
-        Volatile.Read(ref field)
-        ?? Interlocked.CompareExchange(ref field, this.GetThrownExceptionsObservable(), null) ?? field;
+        ReactiveNotificationHelpers.GetThrownExceptions(this, ref _thrownExceptions);
 
     /// <inheritdoc/>
     void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args) =>

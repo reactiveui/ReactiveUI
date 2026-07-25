@@ -79,30 +79,12 @@ public class CommandBinderImplementation : ICommandBinderImplementation
         ArgumentExceptionHelper.ThrowIfNull(viewModelProperty);
         ArgumentExceptionHelper.ThrowIfNull(controlProperty);
 
-        var viewModelExpression = Reflection.Rewrite(viewModelProperty.Body);
-        var controlExpression = Reflection.Rewrite(controlProperty.Body);
         var parameterExpression = Reflection.Rewrite(withParameter.Body);
 
-        var source = new MapSignal<object, TProp>(Reflection.ViewModelWhenAnyValue(viewModel, view, viewModelExpression), static x => (TProp)x!);
-
         // Observe the parameter through the view's current view model (not the originally supplied one) so the
-        // parameter rebinds when the view model instance is replaced, matching the command source above.
+        // parameter rebinds when the view model instance is replaced, matching the command source.
         var parameter = new MapSignal<object, TParam?>(Reflection.ViewModelWhenAnyValue(viewModel, view, parameterExpression), static x => (TParam?)x);
-
-        var bindingDisposable = BindCommandInternal<TView, TProp, TParam, TControl>(
-            source,
-            view,
-            controlExpression,
-            parameter,
-            toEvent);
-
-        return new ReactiveBinding<TView, TProp>(
-            view,
-            controlExpression,
-            viewModelExpression,
-            source,
-            BindingDirection.OneWay,
-            bindingDisposable);
+        return BindCommand(viewModel, view, viewModelProperty, controlProperty, parameter, toEvent);
     }
 
     /// <summary>
