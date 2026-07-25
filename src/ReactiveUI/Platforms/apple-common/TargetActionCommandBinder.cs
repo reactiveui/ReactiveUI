@@ -113,9 +113,9 @@ public class TargetActionCommandBinder : ICreatesCommandBinding
     [RequiresUnreferencedCode("String/reflection-based event binding may require members removed by trimming.")]
     public IDisposable? BindCommandToObject<
         [DynamicallyAccessedMembers(
-            DynamicallyAccessedMemberTypes.PublicProperties |
-            DynamicallyAccessedMemberTypes.PublicEvents |
-            DynamicallyAccessedMemberTypes.NonPublicEvents)] T>(
+            DynamicallyAccessedMemberTypes.PublicProperties
+            | DynamicallyAccessedMemberTypes.PublicEvents
+            | DynamicallyAccessedMemberTypes.NonPublicEvents)] T>(
         ICommand? command,
         T? target,
         IObservable<object?> commandParameter)
@@ -252,9 +252,9 @@ public class TargetActionCommandBinder : ICreatesCommandBinding
     /// <returns>A disposable that tears down the binding, or <see langword="null"/> when binding is not possible.</returns>
     public IDisposable? BindCommandToObject<
         [DynamicallyAccessedMembers(
-            DynamicallyAccessedMemberTypes.PublicProperties |
-            DynamicallyAccessedMemberTypes.PublicEvents |
-            DynamicallyAccessedMemberTypes.NonPublicEvents)] T, TEventArgs>(
+            DynamicallyAccessedMemberTypes.PublicProperties
+            | DynamicallyAccessedMemberTypes.PublicEvents
+            | DynamicallyAccessedMemberTypes.NonPublicEvents)] T, TEventArgs>(
         ICommand? command,
         T? target,
         IObservable<object?> commandParameter,

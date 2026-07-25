@@ -76,7 +76,6 @@ internal sealed class CommonReactiveSource<TSource, TUIView, TUIViewCell, TSecti
 
         _mainDisposables = [];
         _sectionInfoDisposable = new();
-        _mainDisposables.Add(_sectionInfoDisposable);
 
         _pendingChanges = [];
         _sectionInfo = [];
@@ -113,7 +112,11 @@ internal sealed class CommonReactiveSource<TSource, TUIView, TUIViewCell, TSecti
     private bool IsDebugEnabled => this.Log().Level <= LogLevel.Debug;
 
     /// <summary>Disposes subscriptions and managed resources associated with this instance.</summary>
-    public void Dispose() => _mainDisposables.Dispose();
+    public void Dispose()
+    {
+        _sectionInfoDisposable.Dispose();
+        _mainDisposables.Dispose();
+    }
 
     /// <summary>Returns the number of sections.</summary>
     /// <returns>The number of sections.</returns>
@@ -378,8 +381,7 @@ internal sealed class CommonReactiveSource<TSource, TUIView, TUIViewCell, TSecti
         SwapDisposable applyPendingChangesDisposable)
     {
         var sink = new ReloadAwareSectionSink(this, sectionInfoId, applyPendingChangesDisposable);
-        sectionDisposables.Add(sink);
-        sink.Run(sectionInfo);
+        sink.Run(sectionInfo, sectionDisposables);
     }
 
     /// <summary>Handles a single item-change event received from a section while no reload is in progress.</summary>
@@ -668,7 +670,7 @@ internal sealed class CommonReactiveSource<TSource, TUIView, TUIViewCell, TSecti
     private sealed class ReloadAwareSectionSink(
         CommonReactiveSource<TSource, TUIView, TUIViewCell, TSectionInfo> parent,
         int sectionInfoId,
-        SwapDisposable applyPendingChangesDisposable) : IDisposable
+        SwapDisposable applyPendingChangesDisposable)
     {
         /// <summary>The owning source whose adapter and state the sink drives.</summary>
         private readonly CommonReactiveSource<TSource, TUIView, TUIViewCell, TSectionInfo> _parent = parent;
@@ -679,9 +681,6 @@ internal sealed class CommonReactiveSource<TSource, TUIView, TUIViewCell, TSecti
         /// <summary>Serial disposable that holds the scheduled apply-changes action.</summary>
         private readonly SwapDisposable _applyPendingChangesDisposable = applyPendingChangesDisposable;
 
-        /// <summary>All subscriptions created by this sink.</summary>
-        private readonly MultipleDisposable _subscriptions = [];
-
         /// <summary>The latest observed reload state.</summary>
         private bool _isReloading;
 
@@ -690,25 +689,23 @@ internal sealed class CommonReactiveSource<TSource, TUIView, TUIViewCell, TSecti
 
         /// <summary>Subscribes to the adapter reload state and to each section's collection changes.</summary>
         /// <param name="sectionInfo">The current section info.</param>
-        public void Run(IReadOnlyList<TSectionInfo> sectionInfo)
+        /// <param name="subscriptions">The caller-owned container that holds the subscriptions.</param>
+        public void Run(IReadOnlyList<TSectionInfo> sectionInfo, MultipleDisposable subscriptions)
         {
             // IsReloadingData is a BehaviorSubject, so the current value arrives synchronously on subscription and is
             // in place before any section-change notification is dispatched below.
-            _subscriptions.Add(_parent._adapter.IsReloadingData.Subscribe(new DelegateObserver<bool>(OnReloadingChanged)));
+            subscriptions.Add(_parent._adapter.IsReloadingData.Subscribe(new DelegateObserver<bool>(OnReloadingChanged)));
 
             for (var index = 0; index < sectionInfo.Count; index++)
             {
                 var section = index;
-                _subscriptions.Add(
+                subscriptions.Add(
                     sectionInfo[section].Collection!.ObserveCollectionChanges().Subscribe(
                         new DelegateObserver<CollectionChanged>(
                             change => OnSectionChanged(change, section),
                             ex => _parent.Log().Error(CultureInfo.InvariantCulture, "[#{0}] Error while watching section collection: {1}", _sectionInfoId, ex))));
             }
         }
-
-        /// <inheritdoc/>
-        public void Dispose() => _subscriptions.Dispose();
 
         /// <summary>Records the latest reload state, logging only when it changes.</summary>
         /// <param name="value">The new reload state.</param>

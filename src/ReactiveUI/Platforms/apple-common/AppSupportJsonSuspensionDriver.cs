@@ -200,6 +200,6 @@ public sealed class AppSupportJsonSuspensionDriver : ISuspensionDriver
     /// <summary>Computes the full path to the persisted state file.</summary>
     /// <returns>The absolute file path.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private string GetStatePath()
-        => Path.Combine(_appDirectory.Value, StateFileName);
+    private string GetStatePath() =>
+        Path.Combine(_appDirectory.Value, StateFileName);
 }
