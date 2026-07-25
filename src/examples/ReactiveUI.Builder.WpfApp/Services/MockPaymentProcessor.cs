@@ -76,10 +76,5 @@ public sealed class MockPaymentProcessor : IPaymentProcessor
 
     /// <summary>Gets the current UTC instant.</summary>
     /// <returns>The current UTC instant.</returns>
-    private static DateTimeOffset UtcNow() =>
-#if NET8_0_OR_GREATER
-        TimeProvider.System.GetUtcNow();
-#else
-        DateTimeOffset.UtcNow;
-#endif
+    private static DateTimeOffset UtcNow() => TimeProvider.System.GetUtcNow();
 }

@@ -82,9 +82,9 @@ public static class RxState
             }
 
             _ = RxSchedulers.MainThreadScheduler.Schedule(ex, static (_, capturedException) => throw new UnhandledErrorException(
-                "An object implementing IHandleObservableErrors (often a ReactiveCommand or ObservableAsPropertyHelper) has errored," +
-                " thereby breaking its observable pipeline. To prevent this, ensure the pipeline does not error, or Subscribe to the " +
-                "ThrownExceptions property of the object in question to handle the erroneous case.",
+                "An object implementing IHandleObservableErrors (often a ReactiveCommand or ObservableAsPropertyHelper) has errored,"
+                + " thereby breaking its observable pipeline. To prevent this, ensure the pipeline does not error, or Subscribe to the "
+                + "ThrownExceptions property of the object in question to handle the erroneous case.",
                 capturedException));
         });
     }

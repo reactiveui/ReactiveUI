@@ -557,11 +557,8 @@ public class PropertyBinderImplementationAdvancedTests
             object from,
             Type toType,
             object? conversionHint,
-            [NotNullWhen(true)] out object? result)
-        {
-            result = null;
-            return false;
-        }
+            [NotNullWhen(true)] out object? result) =>
+            TryConvertTyped(from, conversionHint, out result);
     }
 
     /// <summary>A test view used to exercise binding scenarios.</summary>

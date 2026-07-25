@@ -251,7 +251,11 @@ public class BlazorReactiveUIBuilderExtensionsTests
         public IReactiveUIBuilder WithTaskPoolScheduler(ISequencer scheduler) => WithTaskPoolScheduler(scheduler, true);
 
         /// <inheritdoc/>
-        public IReactiveUIBuilder WithTaskPoolScheduler(ISequencer scheduler, bool setRxApp) => this;
+        public IReactiveUIBuilder WithTaskPoolScheduler(ISequencer scheduler, bool setRxApp)
+        {
+            ArgumentNullException.ThrowIfNull(scheduler);
+            return this;
+        }
 
         /// <inheritdoc/>
         public IReactiveUIBuilder WithViewsFromAssembly(System.Reflection.Assembly assembly) =>

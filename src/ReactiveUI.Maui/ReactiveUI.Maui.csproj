@@ -40,7 +40,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.Maui.Controls"/>
-    <PackageReference Include="Microsoft.Maui.Controls.Compatibility"/>
+    <PackageReference Include="Microsoft.Maui.Controls.Compatibility" Condition="$(TargetFramework.StartsWith('net10'))"/>
     <PackageReference Include="ReactiveUI.Primitives.Maui" ExcludeAssets="analyzers" />
   </ItemGroup>
   <ItemGroup>
@@ -55,5 +55,10 @@
     <Compile Remove="Common\ViewModelViewHost{TViewModel}.cs"/>
     <Compile Remove="WinUI\DispatcherQueueScheduler.cs"/>
     <Compile Remove="WinUI\TransitioningContentControl.Empty.cs"/>
+  </ItemGroup>
+  <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) != 'windows'">
+    <Compile Remove="Common\AutoDataTemplateBindingHook.cs"/>
+    <Compile Remove="Common\ReactiveUserControl.cs"/>
+    <Compile Remove="WinUI\DependencyObjectObservableForProperty.cs"/>
   </ItemGroup>
 </Project>

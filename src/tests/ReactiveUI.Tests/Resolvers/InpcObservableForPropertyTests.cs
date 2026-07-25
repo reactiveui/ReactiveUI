@@ -49,8 +49,8 @@ public class InpcObservableForPropertyTests
 
         var changes = new List<IObservedChange<object?, object?>>();
 
-        var propertyName = exp.GetMemberInfo()?.Name ??
-                           throw new InvalidOperationException(PropertyNameNullMessage);
+        var propertyName = exp.GetMemberInfo()?.Name
+                           ?? throw new InvalidOperationException(PropertyNameNullMessage);
         _ = ObservableMixins.WhereNotNull(instance.GetNotificationForProperty(testClass, exp, propertyName)).Subscribe(changes.Add);
 
         const int ExpectedChangeCount = 2;
@@ -80,8 +80,8 @@ public class InpcObservableForPropertyTests
 
         var changes = new List<IObservedChange<object?, object?>>();
 
-        var propertyName = exp.GetMemberInfo()?.Name ??
-                           throw new InvalidOperationException(PropertyNameNullMessage);
+        var propertyName = exp.GetMemberInfo()?.Name
+                           ?? throw new InvalidOperationException(PropertyNameNullMessage);
         _ = ObservableMixins.WhereNotNull(instance.GetNotificationForProperty(testClass, exp, propertyName, true)).Subscribe(changes.Add);
 
         const int ExpectedChangeCount = 2;
@@ -111,8 +111,8 @@ public class InpcObservableForPropertyTests
 
         var changes = new List<IObservedChange<object?, object?>>();
 
-        var propertyName = exp.GetMemberInfo()?.Name ??
-                           throw new InvalidOperationException(PropertyNameNullMessage);
+        var propertyName = exp.GetMemberInfo()?.Name
+                           ?? throw new InvalidOperationException(PropertyNameNullMessage);
         _ = ObservableMixins.WhereNotNull(instance.GetNotificationForProperty(testClass, exp, propertyName)).Subscribe(changes.Add);
 
         const int ExpectedChangeCount = 2;
@@ -145,8 +145,8 @@ public class InpcObservableForPropertyTests
 
         var changes = new List<IObservedChange<object?, object?>>();
 
-        var propertyName = exp.GetMemberInfo()?.Name ??
-                           throw new InvalidOperationException(PropertyNameNullMessage);
+        var propertyName = exp.GetMemberInfo()?.Name
+                           ?? throw new InvalidOperationException(PropertyNameNullMessage);
         _ = ObservableMixins.WhereNotNull(instance.GetNotificationForProperty(testClass, exp, propertyName, true)).Subscribe(changes.Add);
 
         const int ExpectedChangeCount = 2;
@@ -189,8 +189,8 @@ public class InpcObservableForPropertyTests
 
         Expression<Func<TestClassChanging, string?>> expr = x => x.Property1;
         var exp = Reflection.Rewrite(expr.Body);
-        var propertyName = exp.GetMemberInfo()?.Name ??
-                           throw new InvalidOperationException(PropertyNameNullMessage);
+        var propertyName = exp.GetMemberInfo()?.Name
+                           ?? throw new InvalidOperationException(PropertyNameNullMessage);
 
         var changes = new List<IObservedChange<object?, object?>>();
         var subscription = instance.GetNotificationForProperty(testClass, exp, propertyName, true).Subscribe(changes.Add);
@@ -263,7 +263,7 @@ public class InpcObservableForPropertyTests
         /// <summary>Raises the <see cref="PropertyChanged"/> event.</summary>
         /// <param name="propertyName">The name of the property that changed.</param>
         private void OnPropertyChanged([CallerMemberName] string? propertyName = null) =>
-            PropertyChanged?.Invoke(this, new(propertyName));
+            RaiseChanged(propertyName);
     }
 
     /// <summary>A test fixture implementing <see cref="INotifyPropertyChanging"/> to drive changing notifications.</summary>

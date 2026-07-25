@@ -37,6 +37,12 @@ public class ReactiveObject : IReactiveNotifyPropertyChanged<IReactiveObject>, I
     [SuppressMessage("Design", "SST1424:Make field readonly", Justification = "Mutated in place through the ref returned by GetReactiveStateSlot.")]
     private object? _reactiveStateSlot;
 
+    /// <summary>Backing handler for the PropertyChanging event.</summary>
+    private PropertyChangingEventHandler? _propertyChangingHandler;
+
+    /// <summary>Backing handler for the PropertyChanged event.</summary>
+    private PropertyChangedEventHandler? _propertyChangedHandler;
+
     /// <inheritdoc/>
     public event PropertyChangingEventHandler? PropertyChanging
     {
@@ -48,9 +54,9 @@ public class ReactiveObject : IReactiveNotifyPropertyChanged<IReactiveObject>, I
                 _propertyChangingEventsSubscribed = true;
             }
 
-            PropertyChangingHandler += value;
+            _propertyChangingHandler += value;
         }
-        remove => PropertyChangingHandler -= value;
+        remove => _propertyChangingHandler -= value;
     }
 
     /// <inheritdoc/>
@@ -64,24 +70,10 @@ public class ReactiveObject : IReactiveNotifyPropertyChanged<IReactiveObject>, I
                 _propertyChangedEventsSubscribed = true;
             }
 
-            PropertyChangedHandler += value;
+            _propertyChangedHandler += value;
         }
-        remove => PropertyChangedHandler -= value;
+        remove => _propertyChangedHandler -= value;
     }
-
-    /// <summary>Backing handler for the PropertyChanging event.</summary>
-    [SuppressMessage(
-        "Design",
-        "SST2304:Events should use the standard handler signature",
-        Justification = "Backs the INotifyPropertyChanging.PropertyChanging interface event, whose fixed PropertyChangingEventHandler delegate is forwarded through this handler.")]
-    private event PropertyChangingEventHandler? PropertyChangingHandler;
-
-    /// <summary>Backing handler for the PropertyChanged event.</summary>
-    [SuppressMessage(
-        "Design",
-        "SST2304:Events should use the standard handler signature",
-        Justification = "Backs the INotifyPropertyChanged.PropertyChanged interface event, whose fixed PropertyChangedEventHandler delegate is forwarded through this handler.")]
-    private event PropertyChangedEventHandler? PropertyChangedHandler;
 
     /// <inheritdoc />
     [IgnoreDataMember]
@@ -91,8 +83,8 @@ public class ReactiveObject : IReactiveNotifyPropertyChanged<IReactiveObject>, I
     [Display(Order = -1, AutoGenerateField = false, AutoGenerateFilter = false)]
 #endif
     public IObservable<IReactivePropertyChangedEventArgs<IReactiveObject>> Changing =>
-        Volatile.Read(ref field) ??
-        Interlocked.CompareExchange(ref field, ((IReactiveObject)this).GetChangingObservable(), null) ?? field;
+        Volatile.Read(ref field)
+        ?? Interlocked.CompareExchange(ref field, ((IReactiveObject)this).GetChangingObservable(), null) ?? field;
 
     /// <inheritdoc />
     [IgnoreDataMember]
@@ -102,8 +94,8 @@ public class ReactiveObject : IReactiveNotifyPropertyChanged<IReactiveObject>, I
     [Display(Order = -1, AutoGenerateField = false, AutoGenerateFilter = false)]
 #endif
     public IObservable<IReactivePropertyChangedEventArgs<IReactiveObject>> Changed =>
-        Volatile.Read(ref field) ??
-        Interlocked.CompareExchange(ref field, ((IReactiveObject)this).GetChangedObservable(), null) ?? field;
+        Volatile.Read(ref field)
+        ?? Interlocked.CompareExchange(ref field, ((IReactiveObject)this).GetChangedObservable(), null) ?? field;
 
     /// <inheritdoc/>
     [IgnoreDataMember]
@@ -113,16 +105,16 @@ public class ReactiveObject : IReactiveNotifyPropertyChanged<IReactiveObject>, I
     [Display(Order = -1, AutoGenerateField = false, AutoGenerateFilter = false)]
 #endif
     public IObservable<Exception> ThrownExceptions =>
-        Volatile.Read(ref field) ??
-        Interlocked.CompareExchange(ref field, this.GetThrownExceptionsObservable(), null) ?? field;
+        Volatile.Read(ref field)
+        ?? Interlocked.CompareExchange(ref field, this.GetThrownExceptionsObservable(), null) ?? field;
 
     /// <inheritdoc/>
     void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args) =>
-        PropertyChangingHandler?.Invoke(this, args);
+        _propertyChangingHandler?.Invoke(this, args);
 
     /// <inheritdoc/>
     void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args) =>
-        PropertyChangedHandler?.Invoke(this, args);
+        _propertyChangedHandler?.Invoke(this, args);
 
     /// <inheritdoc/>
     public IDisposable SuppressChangeNotifications() => IReactiveObjectExtensions.SuppressChangeNotifications(this);

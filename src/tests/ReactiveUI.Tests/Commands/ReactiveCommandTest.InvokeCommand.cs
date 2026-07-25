@@ -290,16 +290,14 @@ public partial class ReactiveCommandTest
     public async Task InvokeCommand_ReactiveCommandInTarget_SwallowsExceptions()
     {
         var count = 0;
-        var target = new ReactiveCommandHolder
-        {
-            TheCommand = ReactiveCommand.Create<int>(
-                _ =>
-                {
-                    ++count;
-                    throw new InvalidOperationException();
-                },
-                outputScheduler: Sequencer.Immediate)
-        };
+        var command = ReactiveCommand.Create<int>(
+            _ =>
+            {
+                ++count;
+                throw new InvalidOperationException();
+            },
+            outputScheduler: Sequencer.Immediate);
+        var target = new ReactiveCommandHolder { TheCommand = command };
         _ = target.TheCommand.ThrownExceptions.Subscribe();
         var source = new Signal<int>();
         _ = source.InvokeCommand(target, x => x.TheCommand!);

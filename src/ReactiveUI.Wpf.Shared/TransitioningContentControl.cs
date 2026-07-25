@@ -609,8 +609,8 @@ public class TransitioningContentControl : ContentControl
             }
         }
 
-        return transition ??
-               throw new InvalidOperationException($"Transition '{transitionName}' not found in visual state group.");
+        return transition
+               ?? throw new InvalidOperationException($"Transition '{transitionName}' not found in visual state group.");
     }
 
     /// <summary>Sets default values for certain transition types.</summary>

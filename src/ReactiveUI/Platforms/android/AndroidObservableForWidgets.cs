@@ -309,8 +309,8 @@ public sealed class AndroidObservableForWidgets : ICreatesObservableForProperty
         where TEventArgs : EventArgs
     {
         var memberInfo =
-            property.Body.GetMemberInfo() ??
-            throw new ArgumentException("Does not have a valid body member info.", nameof(property));
+            property.Body.GetMemberInfo()
+            ?? throw new ArgumentException("Does not have a valid body member info.", nameof(property));
 
         var propName = memberInfo.Name;
 
@@ -327,8 +327,7 @@ public sealed class AndroidObservableForWidgets : ICreatesObservableForProperty
     /// </summary>
     /// <param name="adapterView">The adapter view to observe.</param>
     /// <param name="expression">The expression surfaced on the emitted change.</param>
-    private sealed class AdapterSelectionObservable(AdapterView adapterView, Expression expression)
-        : IObservable<IObservedChange<object, object?>>
+    private sealed class AdapterSelectionObservable(AdapterView adapterView, Expression expression) : IObservable<IObservedChange<object, object?>>
     {
         /// <inheritdoc/>
         public IDisposable Subscribe(IObserver<IObservedChange<object, object?>> observer)
@@ -367,8 +366,7 @@ public sealed class AndroidObservableForWidgets : ICreatesObservableForProperty
         TView view,
         Expression expression,
         Action<TView, EventHandler<TEventArgs>> addHandler,
-        Action<TView, EventHandler<TEventArgs>> removeHandler)
-        : IObservable<IObservedChange<object, object?>>
+        Action<TView, EventHandler<TEventArgs>> removeHandler) : IObservable<IObservedChange<object, object?>>
         where TView : View
         where TEventArgs : EventArgs
     {

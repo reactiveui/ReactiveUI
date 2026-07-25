@@ -21,18 +21,6 @@ public class ReflectionTest
     /// <summary>The replacement text value used to verify reflective setters.</summary>
     private const string NewValueText = "NewValue";
 
-    /// <summary>Tests that ExpressionToPropertyNames converts deeply nested property access.</summary>
-    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
-    [Test]
-    public async Task ExpressionToPropertyNames_DeeplyNestedProperty_ReturnsFullPath()
-    {
-        Expression<Func<HostTestFixture, string?>> expression = x => x.Child!.IsOnlyOneWord;
-
-        var result = Reflection.ExpressionToPropertyNames(expression.Body);
-
-        await Assert.That(result).IsEqualTo("Child.IsOnlyOneWord");
-    }
-
     /// <summary>Tests that ExpressionToPropertyNames converts nested property access.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
@@ -468,8 +456,8 @@ public class ReflectionTest
         [SuppressMessage(
             "Design",
             "SST2324:public member on non-public type",
-            Justification = "the public method mirrors the public TestEvent event for API symmetry in this " +
-                "reflection-test fixture; the containing test double is an intentionally non-public detail.")]
+            Justification = "the public method mirrors the public TestEvent event for API symmetry in this "
+                + "reflection-test fixture; the containing test double is an intentionally non-public detail.")]
         public void OnTestEvent() => TestEvent?.Invoke(this, EventArgs.Empty);
     }
 

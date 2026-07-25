@@ -212,8 +212,8 @@ public static class OAPHCreationHelperMixins
             TRet initialValue,
             bool deferSubscription,
             ISequencer? scheduler)
-            where TObj : class, IReactiveObject
-            => ToProperty(target, source, property, () => initialValue, deferSubscription, scheduler);
+            where TObj : class, IReactiveObject =>
+            ToProperty(target, source, property, () => initialValue, deferSubscription, scheduler);
 
         /// <summary>
         /// Converts an Observable to an ObservableAsPropertyHelper and
@@ -477,8 +477,8 @@ public static class OAPHCreationHelperMixins
             TRet initialValue,
             bool deferSubscription,
             ISequencer? scheduler)
-            where TObj : class, IReactiveObject
-            => ToProperty(target, source, property, out result, () => initialValue, deferSubscription, scheduler);
+            where TObj : class, IReactiveObject =>
+            ToProperty(target, source, property, out result, () => initialValue, deferSubscription, scheduler);
 
         /// <summary>
         /// Converts an Observable to an ObservableAsPropertyHelper and
@@ -662,8 +662,8 @@ public static class OAPHCreationHelperMixins
             TRet initialValue,
             bool deferSubscription,
             ISequencer? scheduler)
-            where TObj : class, IReactiveObject
-            => ToProperty(target, source, property, () => initialValue, deferSubscription, scheduler);
+            where TObj : class, IReactiveObject =>
+            ToProperty(target, source, property, () => initialValue, deferSubscription, scheduler);
 
         /// <summary>
         /// Converts an Observable to an ObservableAsPropertyHelper and
@@ -1055,8 +1055,8 @@ public static class OAPHCreationHelperMixins
 
             var expression = Reflection.Rewrite(property.Body);
 
-            var parent = expression.GetParent() ??
-                         throw new ArgumentException(
+            var parent = expression.GetParent()
+                         ?? throw new ArgumentException(
                              "The property expression does not have a valid parent.",
                              nameof(property));
             if (parent.NodeType != ExpressionType.Parameter)
@@ -1064,8 +1064,8 @@ public static class OAPHCreationHelperMixins
                 throw new ArgumentException("Property expression must be of the form 'x => x.SomeProperty'");
             }
 
-            var memberInfo = expression.GetMemberInfo() ??
-                             throw new ArgumentException(
+            var memberInfo = expression.GetMemberInfo()
+                             ?? throw new ArgumentException(
                                  "The property expression does not point towards a valid member.",
                                  nameof(property));
             var name = memberInfo.Name;
@@ -1113,8 +1113,8 @@ public static class OAPHCreationHelperMixins
 
             var expression = Reflection.Rewrite(property.Body);
 
-            var parent = expression.GetParent() ??
-                         throw new ArgumentException(
+            var parent = expression.GetParent()
+                         ?? throw new ArgumentException(
                              "The property expression does not have a valid parent.",
                              nameof(property));
             if (parent.NodeType != ExpressionType.Parameter)
@@ -1122,8 +1122,8 @@ public static class OAPHCreationHelperMixins
                 throw new ArgumentException("Property expression must be of the form 'x => x.SomeProperty'");
             }
 
-            var memberInfo = expression.GetMemberInfo() ??
-                             throw new ArgumentException(
+            var memberInfo = expression.GetMemberInfo()
+                             ?? throw new ArgumentException(
                                  "The property expression does not point towards a valid member.",
                                  nameof(property));
             var name = memberInfo.Name;

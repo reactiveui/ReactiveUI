@@ -11,7 +11,7 @@
 @code {
     /// <summary>Gets or sets the chat room this row represents.</summary>
     [Parameter]
-    public ChatRoom Room { get; set; } = default!;
+    public ChatRoom Room { get; set; } = new();
 
     /// <summary>Gets or sets a value indicating whether this row is the selected room.</summary>
     [Parameter]

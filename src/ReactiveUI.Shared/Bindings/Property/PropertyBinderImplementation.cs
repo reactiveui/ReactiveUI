@@ -171,8 +171,8 @@ public partial class PropertyBinderImplementation : IPropertyBinderImplementatio
         var viewToViewModelConverterObj = viewToViewModelConverterOverride ?? GetConverterForTypes(typeof(TViewPropertyType), typeof(TViewModelPropertyType?));
 
         var hasConverters = viewModelToViewConverterObj is not null && viewToViewModelConverterObj is not null;
-        var typesAreAssignable = typeof(TViewPropertyType).IsAssignableFrom(typeof(TViewModelPropertyType)) ||
-                                 typeof(TViewModelPropertyType).IsAssignableFrom(typeof(TViewPropertyType));
+        var typesAreAssignable = typeof(TViewPropertyType).IsAssignableFrom(typeof(TViewModelPropertyType))
+                                 || typeof(TViewModelPropertyType).IsAssignableFrom(typeof(TViewPropertyType));
 
         if (!hasConverters && !typesAreAssignable)
         {
@@ -425,8 +425,8 @@ public partial class PropertyBinderImplementation : IPropertyBinderImplementatio
 
         var viewExpression = Reflection.Rewrite(propertyExpression.Body);
 
-        var shouldBind = target is not IViewFor viewFor ||
-                         _hookEvaluator.EvaluateBindingHooks<object, IViewFor>(
+        var shouldBind = target is not IViewFor viewFor
+                         || _hookEvaluator.EvaluateBindingHooks<object, IViewFor>(
                              null,
                              viewFor,
                              null!,

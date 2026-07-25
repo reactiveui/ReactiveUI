@@ -35,11 +35,11 @@ public interface ISuspensionDriver
     /// trimming or AOT friendly.
     /// </remarks>
     [RequiresUnreferencedCode(
-        "Implementations commonly use reflection-based serialization. " +
-        "Prefer SaveState<T>(T, JsonTypeInfo<T>) for trimming or AOT scenarios.")]
+        "Implementations commonly use reflection-based serialization. "
+        + "Prefer SaveState<T>(T, JsonTypeInfo<T>) for trimming or AOT scenarios.")]
     [RequiresDynamicCode(
-        "Implementations commonly use reflection-based serialization. " +
-        "Prefer SaveState<T>(T, JsonTypeInfo<T>) for trimming or AOT scenarios.")]
+        "Implementations commonly use reflection-based serialization. "
+        + "Prefer SaveState<T>(T, JsonTypeInfo<T>) for trimming or AOT scenarios.")]
     IObservable<RxVoid> SaveState<T>(T state);
 
     /// <summary>Saves application state to persistent storage using source-generated System.Text.Json metadata.</summary>
@@ -74,11 +74,11 @@ public interface ISuspensionDriver
     /// trimming or AOT friendly.
     /// </remarks>
     [RequiresUnreferencedCode(
-        "Implementations commonly use reflection-based serialization. " +
-        "Prefer LoadState<T>(JsonTypeInfo<T>) for trimming or AOT scenarios.")]
+        "Implementations commonly use reflection-based serialization. "
+        + "Prefer LoadState<T>(JsonTypeInfo<T>) for trimming or AOT scenarios.")]
     [RequiresDynamicCode(
-        "Implementations commonly use reflection-based serialization. " +
-        "Prefer LoadState<T>(JsonTypeInfo<T>) for trimming or AOT scenarios.")]
+        "Implementations commonly use reflection-based serialization. "
+        + "Prefer LoadState<T>(JsonTypeInfo<T>) for trimming or AOT scenarios.")]
     IObservable<object?> LoadState();
 
     /// <summary>Invalidates the persisted application state (for example, by deleting it from disk).</summary>

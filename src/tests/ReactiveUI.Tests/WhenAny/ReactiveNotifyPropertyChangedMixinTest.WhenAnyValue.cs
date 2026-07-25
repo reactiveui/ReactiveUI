@@ -67,8 +67,8 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
             var (value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11) =
                 tuple;
 
-            return value1 + value2 + value3 + value4 + value5 + value6 + value7 + value8 + value9 + value10 +
-                   value11;
+            return value1 + value2 + value3 + value4 + value5 + value6 + value7 + value8 + value9 + value10
+                   + value11;
         }).Subscribe(value => result = value);
 
         await Assert.That(result).IsEqualTo("1357911");
@@ -102,8 +102,8 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
             var (value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11,
                 value12) = tuple;
 
-            return value1 + value2 + value3 + value4 + value5 + value6 + value7 + value8 + value9 + value10 +
-                   value11 + value12;
+            return value1 + value2 + value3 + value4 + value5 + value6 + value7 + value8 + value9 + value10
+                   + value11 + value12;
         }).Subscribe(value => result = value);
 
         await Assert.That(result).IsEqualTo("1357911");

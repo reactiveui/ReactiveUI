@@ -153,8 +153,8 @@ internal class ValidationBindingWpf<TView, TViewModel, TVProp, TVMProp> : IReact
         var controlExpression = expressionChain[lastIndex - 1];
         var controlName = controlExpression.GetMemberInfo()?.Name;
 
-        return controlName ??
-               throw new ArgumentException($"Control name not found on {viewType.Name}", nameof(expressionChain));
+        return controlName
+               ?? throw new ArgumentException($"Control name not found on {viewType.Name}", nameof(expressionChain));
     }
 
     /// <summary>Enumerates all dependency properties on a WPF element using reflection.</summary>
@@ -269,13 +269,7 @@ internal class ValidationBindingWpf<TView, TViewModel, TVProp, TVMProp> : IReact
     {
         _ = _control.SetBinding(
             _dependencyProperty,
-            new System.Windows.Data.Binding
-            {
-                Source = _viewModel,
-                Path = new(_viewModelPropertyName),
-                Mode = BindingMode.TwoWay,
-                UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
-            });
+            new System.Windows.Data.Binding { Source = _viewModel, Path = new(_viewModelPropertyName), Mode = BindingMode.TwoWay, UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged });
 
         _inner = new(() => BindingOperations.ClearBinding(_control, _dependencyProperty));
 
@@ -331,8 +325,7 @@ internal class ValidationBindingWpf<TView, TViewModel, TVProp, TVMProp> : IReact
     /// </summary>
     /// <param name="viewModelValues">The view model value stream.</param>
     /// <param name="viewChanges">The view property change stream.</param>
-    private sealed class ChangedObservable(IObservable<object> viewModelValues, IObservable<TVProp?> viewChanges)
-        : IObservable<TVMProp?>
+    private sealed class ChangedObservable(IObservable<object> viewModelValues, IObservable<TVProp?> viewChanges) : IObservable<TVMProp?>
     {
         /// <inheritdoc/>
         public IDisposable Subscribe(IObserver<TVMProp?> observer)

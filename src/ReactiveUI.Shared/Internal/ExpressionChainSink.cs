@@ -24,8 +24,7 @@ namespace ReactiveUI.Internal;
 /// <typeparam name="TValue">The leaf value type.</typeparam>
 /// <param name="parameters">The configuration of the chain to observe.</param>
 [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
-internal sealed class ExpressionChainSink<TSender, TValue>(ExpressionChainParameters<TSender> parameters)
-    : IObservable<IObservedChange<TSender, TValue>>
+internal sealed class ExpressionChainSink<TSender, TValue>(ExpressionChainParameters<TSender> parameters) : IObservable<IObservedChange<TSender, TValue>>
 {
     /// <inheritdoc/>
     public IDisposable Subscribe(IObserver<IObservedChange<TSender, TValue>> observer)

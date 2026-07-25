@@ -56,8 +56,8 @@ public static class DependencyResolverMixins
     /// <exception cref="InvalidOperationException">Thrown if the specified type does not have a public parameterless constructor, or if instantiation fails.</exception>
     /// <remarks>Internal so the missing-parameterless-constructor guard can be exercised directly in tests.</remarks>
     internal static Func<object> TypeFactory(
-        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors |
-                                    DynamicallyAccessedMemberTypes.NonPublicConstructors)]
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors
+                                    | DynamicallyAccessedMemberTypes.NonPublicConstructors)]
         TypeInfo typeInfo)
     {
         ConstructorInfo? parameterlessConstructor = null;
@@ -94,8 +94,8 @@ public static class DependencyResolverMixins
     /// the registration is not associated with a contract.</param>
     private static void RegisterType(
         IMutableDependencyResolver resolver,
-        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors |
-                                    DynamicallyAccessedMemberTypes.NonPublicConstructors)]
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors
+                                    | DynamicallyAccessedMemberTypes.NonPublicConstructors)]
         TypeInfo ti,
         [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)]
         Type serviceType,

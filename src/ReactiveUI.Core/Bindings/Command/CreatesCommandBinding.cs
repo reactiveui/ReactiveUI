@@ -27,9 +27,9 @@ public static class CreatesCommandBinding
     /// <exception cref="Exception">Thrown if a suitable command binder cannot be found for the specified target type.</exception>
     [RequiresUnreferencedCode("String/reflection-based event binding may require members removed by trimming.")]
     public static IDisposable BindCommandToObject<
-        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents |
-                                    DynamicallyAccessedMemberTypes.NonPublicEvents |
-                                    DynamicallyAccessedMemberTypes.PublicProperties)]
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents
+                                    | DynamicallyAccessedMemberTypes.NonPublicEvents
+                                    | DynamicallyAccessedMemberTypes.PublicProperties)]
     TControl>(ICommand? command, TControl? target, IObservable<object?> commandParameter)
         where TControl : class
     {
@@ -61,9 +61,9 @@ public static class CreatesCommandBinding
         "SST2307:A generic method's type parameter appears in no parameter, so no caller can infer it",
         Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
     public static IDisposable BindCommandToObject<
-        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents |
-                                    DynamicallyAccessedMemberTypes.NonPublicEvents |
-                                    DynamicallyAccessedMemberTypes.PublicProperties)]
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents
+                                    | DynamicallyAccessedMemberTypes.NonPublicEvents
+                                    | DynamicallyAccessedMemberTypes.PublicProperties)]
     TControl, TEventArgs>(
         ICommand? command,
         TControl? target,
@@ -83,9 +83,9 @@ public static class CreatesCommandBinding
     /// <returns>An instance of ICreatesCommandBinding that is best suited for the specified target type.</returns>
     /// <exception cref="Exception">Thrown if no suitable command binding provider can be found for the specified target type.</exception>
     private static ICreatesCommandBinding GetBinder<
-        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents |
-                                    DynamicallyAccessedMemberTypes.NonPublicEvents |
-                                    DynamicallyAccessedMemberTypes.PublicProperties)]
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents
+                                    | DynamicallyAccessedMemberTypes.NonPublicEvents
+                                    | DynamicallyAccessedMemberTypes.PublicProperties)]
     T>(bool hasEventTarget)
     {
         var bestScore = 0;

@@ -44,9 +44,9 @@ public class ActivationForViewFetcher : IActivationForViewFetcher
             typeof(FrameworkElement).GetTypeInfo().IsAssignableFrom(typeInfo);
 #endif
 #if IS_MAUI
-            typeof(Page).GetTypeInfo().IsAssignableFrom(typeInfo) ||
-            typeof(View).GetTypeInfo().IsAssignableFrom(typeInfo) ||
-            typeof(Cell).GetTypeInfo().IsAssignableFrom(typeInfo);
+            typeof(Page).GetTypeInfo().IsAssignableFrom(typeInfo)
+            || typeof(View).GetTypeInfo().IsAssignableFrom(typeInfo)
+            || typeof(Cell).GetTypeInfo().IsAssignableFrom(typeInfo);
 #endif
         return isActivatableView ? BindingAffinity.ExactType : 0;
     }
@@ -56,17 +56,16 @@ public class ActivationForViewFetcher : IActivationForViewFetcher
     {
         // ?? is right-associative, so casting the terminal operand unifies the differently-typed concrete sinks the
         // helpers return under IObservable<bool>.
-        var activation =
-            GetActivationFor(view as ICanActivate) ??
+        var activation = GetActivationFor(view as ICanActivate)
 #if IS_WINUI
-            GetActivationFor(view as FrameworkElement) ??
+            ?? GetActivationFor(view as FrameworkElement)
 #endif
 #if IS_MAUI
-            GetActivationFor(view as Page) ??
-            GetActivationFor(view as View) ??
-            GetActivationFor(view as Cell) ??
+            ?? GetActivationFor(view as Page)
+            ?? GetActivationFor(view as View)
+            ?? GetActivationFor(view as Cell)
 #endif
-            (IObservable<bool>)Signal.Silent<bool>();
+            ?? (IObservable<bool>)Signal.Silent<bool>();
 
         return activation.DistinctUntilChanged();
     }

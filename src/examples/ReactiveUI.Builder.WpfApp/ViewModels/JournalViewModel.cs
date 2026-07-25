@@ -61,7 +61,7 @@ public sealed class JournalViewModel : ReactiveObject, IRoutableViewModel
         DateOnly.FromDateTime(TimeProvider.System.GetUtcNow().UtcDateTime);
 #else
     private static DateTime UtcToday() =>
-        DateTimeOffset.UtcNow.UtcDateTime.Date;
+        TimeProvider.System.GetUtcNow().UtcDateTime.Date;
 #endif
 
     /// <summary>Sums today's approved transactions without LINQ allocations.</summary>

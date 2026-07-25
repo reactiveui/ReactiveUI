@@ -224,8 +224,8 @@ public sealed class ExpressionRewriter : ExpressionVisitor
     /// <returns>The resolved indexer property.</returns>
     /// <exception cref="InvalidOperationException">Thrown when no indexer property can be found.</exception>
     private static PropertyInfo GetItemProperty(
-        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties |
-                                    DynamicallyAccessedMemberTypes.NonPublicProperties)]
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties
+                                    | DynamicallyAccessedMemberTypes.NonPublicProperties)]
         Type type)
     {
         var property = type.GetRuntimeProperty("Item");
@@ -237,13 +237,13 @@ public sealed class ExpressionRewriter : ExpressionVisitor
     /// <returns>The resolved length property.</returns>
     /// <exception cref="InvalidOperationException">Thrown when no length property can be found.</exception>
     private static PropertyInfo GetLengthProperty(
-        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties |
-                                    DynamicallyAccessedMemberTypes.NonPublicProperties)]
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties
+                                    | DynamicallyAccessedMemberTypes.NonPublicProperties)]
         Type type)
     {
         var property = type.GetRuntimeProperty("Length");
-        return property ??
-               throw new InvalidOperationException("Could not find valid information for the array length operator.");
+        return property
+               ?? throw new InvalidOperationException("Could not find valid information for the array length operator.");
     }
 
     /// <summary>Determines whether all expressions in the provided collection are constant expressions.</summary>

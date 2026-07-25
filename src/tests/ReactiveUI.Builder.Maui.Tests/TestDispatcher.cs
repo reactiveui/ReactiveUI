@@ -21,11 +21,7 @@ internal sealed class TestDispatcher : IDispatcher
     }
 
     /// <inheritdoc/>
-    public bool DispatchDelayed(TimeSpan delay, Action action)
-    {
-        action();
-        return true;
-    }
+    public bool DispatchDelayed(TimeSpan delay, Action action) => Dispatch(action);
 
     /// <inheritdoc/>
     public IDispatcherTimer CreateTimer() =>

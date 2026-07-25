@@ -12,14 +12,10 @@ using Targets = System.AttributeTargets;
 [ExcludeFromCodeCoverage]
 [DebuggerNonUserCode]
 [AttributeUsage(
-    validOn: Targets.Method |
-             Targets.Property,
+    validOn: Targets.Method
+             | Targets.Property,
     Inherited = false,
     AllowMultiple = true)]
-[SuppressMessage(
-    "Design",
-    "CA1019:Define accessors for attribute arguments",
-    Justification = "Faithful BCL polyfill.")]
 [SuppressMessage(
     "Design",
     "SST2312:Types should be declared in a named namespace",

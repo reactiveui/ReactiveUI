@@ -147,8 +147,7 @@ public static class ObservedChangedMixins
     /// <typeparam name="TValue">The observed value type.</typeparam>
     /// <param name="source">The source stream of observed changes.</param>
     [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
-    private sealed class ValueObservable<TSender, TValue>(IObservable<IObservedChange<TSender, TValue>> source)
-        : IObservable<TValue>
+    private sealed class ValueObservable<TSender, TValue>(IObservable<IObservedChange<TSender, TValue>> source) : IObservable<TValue>
     {
         /// <inheritdoc/>
         public IDisposable Subscribe(IObserver<TValue> observer)

@@ -38,8 +38,8 @@ public class RoutedViewHost<
     [RequiresUnreferencedCode(
         "This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
     [RequiresDynamicCode(
-        "If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, or generic constraints), " +
-        "trimming can't validate that the requirements of those annotations are met.")]
+        "If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, or generic constraints), "
+        + "trimming can't validate that the requirements of those annotations are met.")]
     protected override IObservable<Page> PagesForViewModel(IRoutableViewModel? vm)
     {
         if (vm is null)
@@ -74,8 +74,8 @@ public class RoutedViewHost<
     [RequiresUnreferencedCode(
         "This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
     [RequiresDynamicCode(
-        "If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, or generic constraints), " +
-        "trimming can't validate that the requirements of those annotations are met.")]
+        "If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, or generic constraints), "
+        + "trimming can't validate that the requirements of those annotations are met.")]
     protected override Page PageForViewModel(IRoutableViewModel vm)
     {
         ArgumentNullException.ThrowIfNull(vm);

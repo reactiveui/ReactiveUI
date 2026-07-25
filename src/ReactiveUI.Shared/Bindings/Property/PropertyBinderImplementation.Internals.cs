@@ -68,8 +68,8 @@ public partial class PropertyBinderImplementation
         var memberInfo = viewExpression.GetMemberInfo();
 
         var setter = Reflection.GetValueSetterOrThrow(memberInfo);
-        var getter = Reflection.GetValueFetcherOrThrow(memberInfo) ??
-                     throw new InvalidOperationException("getter was not found.");
+        var getter = Reflection.GetValueFetcherOrThrow(memberInfo)
+                     ?? throw new InvalidOperationException("getter was not found.");
 
         var setObservableWithEmit =
             _expressionCompiler.IsDirectMemberAccess(viewExpression)
@@ -252,8 +252,7 @@ public partial class PropertyBinderImplementation
     /// <param name="source">The change-signal source.</param>
     /// <param name="owner">The binder providing the scheduling hook.</param>
     /// <param name="view">The view participating in the binding.</param>
-    private sealed class ScheduledChangeObservable<TView>(IObservable<bool> source, PropertyBinderImplementation owner, TView view)
-        : IObservable<bool>
+    private sealed class ScheduledChangeObservable<TView>(IObservable<bool> source, PropertyBinderImplementation owner, TView view) : IObservable<bool>
         where TView : class
     {
         /// <inheritdoc/>

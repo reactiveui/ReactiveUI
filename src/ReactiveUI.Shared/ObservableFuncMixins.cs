@@ -93,8 +93,7 @@ public static class ObservableFuncMixins
         /// <param name="source">The source stream of observed changes.</param>
         /// <param name="downstream">The observer receiving the projected values.</param>
         [RequiresUnreferencedCode("Dynamic observation uses reflection over members that may be trimmed.")]
-        private sealed class Sink(IObservable<IObservedChange<TSource, TResult?>> source, IObserver<TResult?> downstream)
-            : IObserver<IObservedChange<TSource, TResult?>>, IDisposable
+        private sealed class Sink(IObservable<IObservedChange<TSource, TResult?>> source, IObserver<TResult?> downstream) : IObserver<IObservedChange<TSource, TResult?>>, IDisposable
         {
             /// <summary>The current source subscription; reassigned on each retry.</summary>
             private readonly SwapDisposable _subscription = new();

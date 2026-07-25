@@ -47,8 +47,8 @@ public class PropertyBindingExpressionCompilerTests
         Expression<Func<TestView, string?>> expr = v => v.SomeStringProperty;
         var rewritten = Reflection.Rewrite(expr.Body);
         var memberInfo = rewritten.GetMemberInfo();
-        var getter = Reflection.GetValueFetcherOrThrow(memberInfo) ??
-                     throw new InvalidOperationException(GetterNotFoundMessage);
+        var getter = Reflection.GetValueFetcherOrThrow(memberInfo)
+                     ?? throw new InvalidOperationException(GetterNotFoundMessage);
         var setter = Reflection.GetValueSetterOrThrow(memberInfo);
 
         // Act
@@ -73,8 +73,8 @@ public class PropertyBindingExpressionCompilerTests
         Expression<Func<TestView, string?>> expr = v => v.SomeStringProperty;
         var rewritten = Reflection.Rewrite(expr.Body);
         var memberInfo = rewritten.GetMemberInfo();
-        var getter = Reflection.GetValueFetcherOrThrow(memberInfo) ??
-                     throw new InvalidOperationException(GetterNotFoundMessage);
+        var getter = Reflection.GetValueFetcherOrThrow(memberInfo)
+                     ?? throw new InvalidOperationException(GetterNotFoundMessage);
         var setter = Reflection.GetValueSetterOrThrow(memberInfo);
 
         // Act
@@ -98,8 +98,8 @@ public class PropertyBindingExpressionCompilerTests
         Expression<Func<TestView, string?>> expr = v => v.SomeStringProperty;
         var rewritten = Reflection.Rewrite(expr.Body);
         var memberInfo = rewritten.GetMemberInfo();
-        var getter = Reflection.GetValueFetcherOrThrow(memberInfo) ??
-                     throw new InvalidOperationException(GetterNotFoundMessage);
+        var getter = Reflection.GetValueFetcherOrThrow(memberInfo)
+                     ?? throw new InvalidOperationException(GetterNotFoundMessage);
         var setter = Reflection.GetValueSetterOrThrow(memberInfo);
 
         // Act
@@ -126,8 +126,8 @@ public class PropertyBindingExpressionCompilerTests
         Expression<Func<TestView, string?>> expr = v => v.SomeStringProperty;
         var rewritten = Reflection.Rewrite(expr.Body);
         var memberInfo = rewritten.GetMemberInfo();
-        var getter = Reflection.GetValueFetcherOrThrow(memberInfo) ??
-                     throw new InvalidOperationException(GetterNotFoundMessage);
+        var getter = Reflection.GetValueFetcherOrThrow(memberInfo)
+                     ?? throw new InvalidOperationException(GetterNotFoundMessage);
         var setter = Reflection.GetValueSetterOrThrow(memberInfo);
 
         // Act
@@ -272,8 +272,8 @@ public class PropertyBindingExpressionCompilerTests
         Expression<Func<TestView, string?>> expr = v => v.SomeStringProperty;
         var rewritten = Reflection.Rewrite(expr.Body);
         var memberInfo = rewritten.GetMemberInfo();
-        var getter = Reflection.GetValueFetcherOrThrow(memberInfo) ??
-                     throw new InvalidOperationException(GetterNotFoundMessage);
+        var getter = Reflection.GetValueFetcherOrThrow(memberInfo)
+                     ?? throw new InvalidOperationException(GetterNotFoundMessage);
         var setter = Reflection.GetValueSetterOrThrow(memberInfo);
 
         // Act
@@ -313,8 +313,8 @@ public class PropertyBindingExpressionCompilerTests
         Expression<Func<TestView, string?>> expr = v => v.SomeStringProperty;
         var rewritten = Reflection.Rewrite(expr.Body);
         var memberInfo = rewritten.GetMemberInfo();
-        var getter = Reflection.GetValueFetcherOrThrow(memberInfo) ??
-                     throw new InvalidOperationException(GetterNotFoundMessage);
+        var getter = Reflection.GetValueFetcherOrThrow(memberInfo)
+                     ?? throw new InvalidOperationException(GetterNotFoundMessage);
         var setter = Reflection.GetValueSetterOrThrow(memberInfo);
 
         // Act
@@ -352,8 +352,8 @@ public class PropertyBindingExpressionCompilerTests
         Expression<Func<TestView, string?>> expr = v => v.SomeStringProperty;
         var rewritten = Reflection.Rewrite(expr.Body);
         var memberInfo = rewritten.GetMemberInfo();
-        var getter = Reflection.GetValueFetcherOrThrow(memberInfo) ??
-                     throw new InvalidOperationException(GetterNotFoundMessage);
+        var getter = Reflection.GetValueFetcherOrThrow(memberInfo)
+                     ?? throw new InvalidOperationException(GetterNotFoundMessage);
         var setter = Reflection.GetValueSetterOrThrow(memberInfo);
 
         // Act
@@ -397,8 +397,8 @@ public class PropertyBindingExpressionCompilerTests
         var rewritten = Reflection.Rewrite(expr.Body);
         var chain = compiler.GetExpressionChainArray(rewritten.GetParent())!;
         var memberInfo = rewritten.GetMemberInfo();
-        var getter = Reflection.GetValueFetcherOrThrow(memberInfo) ??
-                     throw new InvalidOperationException(GetterNotFoundMessage);
+        var getter = Reflection.GetValueFetcherOrThrow(memberInfo)
+                     ?? throw new InvalidOperationException(GetterNotFoundMessage);
         var setter = Reflection.GetValueSetterOrThrow(memberInfo);
 
         // Act
@@ -462,9 +462,9 @@ public class PropertyBindingExpressionCompilerTests
         [SuppressMessage(
             "Design",
             "SST2324:'SomeIntProperty' is declared 'public' but its containing type is only reachable as 'private'",
-            Justification = "mirrors the shape of the sibling TestView fixtures used across the property-binding " +
-                "compiler tests; this file's scenarios do not currently exercise it, but the public accessor keeps " +
-                "parity with those fixtures.")]
+            Justification = "mirrors the shape of the sibling TestView fixtures used across the property-binding "
+                + "compiler tests; this file's scenarios do not currently exercise it, but the public accessor keeps "
+                + "parity with those fixtures.")]
         public int SomeIntProperty
         {
             get;

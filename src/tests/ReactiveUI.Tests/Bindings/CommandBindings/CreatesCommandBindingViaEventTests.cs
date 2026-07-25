@@ -202,26 +202,6 @@ public class CreatesCommandBindingViaEventTests
         await Assert.That(affinity).IsEqualTo(BindingAffinity.Explicit);
     }
 
-    /// <summary>Verifies that the affinity check returns 3 for a target exposing a Click event.</summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-    [Test]
-    public async Task GetAffinityForObject_WithClickEvent_Returns3()
-    {
-        var binder = new CreatesCommandBindingViaEvent();
-        var affinity = binder.GetAffinityForObject<ClickableControl>(false);
-        await Assert.That(affinity).IsEqualTo(BindingAffinity.DefaultEvent);
-    }
-
-    /// <summary>Verifies that the affinity check returns 5 when an event target is requested.</summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-    [Test]
-    public async Task GetAffinityForObject_WithEventTarget_Returns5()
-    {
-        var binder = new CreatesCommandBindingViaEvent();
-        var affinity = binder.GetAffinityForObject<ClickableControl>(true);
-        await Assert.That(affinity).IsEqualTo(BindingAffinity.Explicit);
-    }
-
     /// <summary>Verifies that the affinity check returns 3 for a target exposing a MouseUp event.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]

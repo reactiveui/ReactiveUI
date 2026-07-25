@@ -46,8 +46,7 @@ public class CanActivateViewFetcher : IActivationForViewFetcher
     /// </summary>
     /// <param name="activated">Emits when the view is activated.</param>
     /// <param name="deactivated">Emits when the view is deactivated.</param>
-    private sealed class ActivationStateObservable(IObservable<RxVoid> activated, IObservable<RxVoid> deactivated)
-        : IObservable<bool>
+    private sealed class ActivationStateObservable(IObservable<RxVoid> activated, IObservable<RxVoid> deactivated) : IObservable<bool>
     {
         /// <inheritdoc/>
         public IDisposable Subscribe(IObserver<bool> observer)

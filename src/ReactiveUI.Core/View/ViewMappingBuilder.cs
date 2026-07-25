@@ -121,8 +121,8 @@ public sealed class ViewMappingBuilder
         where TView : class, IViewFor<TViewModel>
     {
         _ = _locator.Map<TViewModel, TView>(
-            static () => AppLocator.Current.GetService<TView>() ??
-                  throw new InvalidOperationException($"View {nameof(TView)} not registered in service locator"),
+            static () => AppLocator.Current.GetService<TView>()
+                  ?? throw new InvalidOperationException($"View {nameof(TView)} not registered in service locator"),
             contract);
         return this;
     }

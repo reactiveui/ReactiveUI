@@ -24,8 +24,8 @@ public class TableContentSetMethodBindingConverter : ISetMethodBindingConverter
         }
 
         var implementsControlEnumerable = Array.Exists(fromType.GetInterfaces(), static x =>
-            x.IsGenericType && x.GetGenericTypeDefinition() == typeof(IEnumerable<>) &&
-            x.GetGenericArguments()[0].IsSubclassOf(typeof(Control)));
+            x.IsGenericType && x.GetGenericTypeDefinition() == typeof(IEnumerable<>)
+            && x.GetGenericArguments()[0].IsSubclassOf(typeof(Control)));
 
         return implementsControlEnumerable ? ControlCollectionAffinity : 0;
     }

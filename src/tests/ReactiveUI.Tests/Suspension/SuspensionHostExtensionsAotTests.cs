@@ -344,15 +344,13 @@ public partial class SuspensionHostExtensionsAotTests
 
         var createdState = new TestAppState { Value = CreatedStateValueForLaunchBeforeSetup };
         var createNewAppStateCallCount = 0;
-        using var host = new SuspensionHost<TestAppState>
+        TestAppState CreateNewAppState()
         {
-            CreateNewAppStateTyped = () =>
-            {
-                createNewAppStateCallCount++;
-                return createdState;
-            },
-            ShouldInvalidateState = Signal.Silent<RxVoid>()
-        };
+            createNewAppStateCallCount++;
+            return createdState;
+        }
+
+        using var host = new SuspensionHost<TestAppState> { CreateNewAppStateTyped = CreateNewAppState, ShouldInvalidateState = Signal.Silent<RxVoid>() };
 
         var launchSubject = new Signal<RxVoid>();
         var resumeSubject = new Signal<RxVoid>();
@@ -444,19 +442,20 @@ public partial class SuspensionHostExtensionsAotTests
         /// <inheritdoc/>
         [RequiresUnreferencedCode("Reflection-based serialization")]
         [RequiresDynamicCode("Reflection-based serialization")]
-        public IObservable<RxVoid> SaveState<TState>(TState state)
-        {
-            SaveStateCallCount++;
-            if (state is T typedState)
-            {
-                LastSavedState = typedState;
-            }
-
-            return Signal.Emit(RxVoid.Default, Sequencer.Immediate);
-        }
+        public IObservable<RxVoid> SaveState<TState>(TState state) => SaveStateCore(state);
 
         /// <inheritdoc/>
         public IObservable<RxVoid> SaveState<TState>(TState state, JsonTypeInfo<TState> typeInfo)
+        {
+            _ = typeInfo;
+            return SaveStateCore(state);
+        }
+
+        /// <summary>Records and completes a save request.</summary>
+        /// <typeparam name="TState">The state type.</typeparam>
+        /// <param name="state">The state to save.</param>
+        /// <returns>A completion signal.</returns>
+        private IObservable<RxVoid> SaveStateCore<TState>(TState state)
         {
             SaveStateCallCount++;
             if (state is T typedState)

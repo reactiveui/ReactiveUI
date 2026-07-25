@@ -12,15 +12,15 @@ namespace System.Diagnostics.CodeAnalysis;
 [ExcludeFromCodeCoverage]
 [DebuggerNonUserCode]
 [AttributeUsage(
-    validOn: Targets.Class |
-             Targets.Field |
-             Targets.GenericParameter |
-             Targets.Interface |
-             Targets.Method |
-             Targets.Parameter |
-             Targets.Property |
-             Targets.ReturnValue |
-             Targets.Struct,
+    validOn: Targets.Class
+             | Targets.Field
+             | Targets.GenericParameter
+             | Targets.Interface
+             | Targets.Method
+             | Targets.Parameter
+             | Targets.Property
+             | Targets.ReturnValue
+             | Targets.Struct,
     Inherited = false)]
 [SuppressMessage(
     "Design",

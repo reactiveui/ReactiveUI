@@ -31,13 +31,7 @@ public partial class MainWindow : IViewFor<AppBootstrapper>
         Content = new RoutedViewHost
         {
             Router = screen.Router,
-            DefaultContent = new TextBlock
-            {
-                Text = "Loading…",
-                Foreground = Brushes.Gray,
-                HorizontalAlignment = HorizontalAlignment.Center,
-                VerticalAlignment = VerticalAlignment.Center,
-            },
+            DefaultContent = new TextBlock { Text = "Loading…", Foreground = Brushes.Gray, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center, },
         };
     }
 

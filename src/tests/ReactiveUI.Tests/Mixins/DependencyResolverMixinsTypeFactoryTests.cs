@@ -49,8 +49,8 @@ public class DependencyResolverMixinsTypeFactoryTests
         [SuppressMessage(
             "Design",
             "SST2324:public member on non-public type",
-            Justification = "the public surface mirrors the sibling test fixture's shape for readability; " +
-                "the containing test double is an intentionally non-public detail.")]
+            Justification = "the public surface mirrors the sibling test fixture's shape for readability; "
+                + "the containing test double is an intentionally non-public detail.")]
         public int Value { get; } = value;
     }
 }

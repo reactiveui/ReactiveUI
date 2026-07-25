@@ -36,8 +36,8 @@ public static partial class AutoPersistHelperMixins
         public IDisposable AutoPersistCollection<TDontCare>(
             Func<TItem, IObservable<RxVoid>> doPersist,
             IObservable<TDontCare> manualSaveSignal,
-            AutoPersistMetadata metadata)
-            => @this.AutoPersistCollection(doPersist, manualSaveSignal, metadata, interval: null);
+            AutoPersistMetadata metadata) =>
+            @this.AutoPersistCollection(doPersist, manualSaveSignal, metadata, interval: null);
 
         /// <summary>
         /// Apply AutoPersistence to all objects in a collection using explicit persistence metadata.
@@ -106,8 +106,8 @@ public static partial class AutoPersistHelperMixins
         public IDisposable AutoPersistCollection<TDontCare>(
             Func<TItem, IObservable<RxVoid>> doPersist,
             IObservable<TDontCare> manualSaveSignal,
-            Func<TItem, AutoPersistMetadata> metadataProvider)
-            => @this.AutoPersistCollection(doPersist, manualSaveSignal, metadataProvider, interval: null);
+            Func<TItem, AutoPersistMetadata> metadataProvider) =>
+            @this.AutoPersistCollection(doPersist, manualSaveSignal, metadataProvider, interval: null);
 
         /// <summary>
         /// Apply AutoPersistence to all objects in a collection using a metadata provider.
@@ -173,8 +173,8 @@ public static partial class AutoPersistHelperMixins
         [RequiresDynamicCode("AutoPersist may reflect over the runtime type; prefer the AutoPersistMetadata overloads for trimming/AOT.")]
         public IDisposable AutoPersistCollection<TDontCare>(
             Func<TItem, IObservable<RxVoid>> doPersist,
-            IObservable<TDontCare> manualSaveSignal)
-            => @this.AutoPersistCollection(doPersist, manualSaveSignal, interval: null);
+            IObservable<TDontCare> manualSaveSignal) =>
+            @this.AutoPersistCollection(doPersist, manualSaveSignal, interval: null);
 
         /// <summary>
         /// Apply AutoPersistence to all objects in a collection. Items that are
@@ -191,13 +191,13 @@ public static partial class AutoPersistHelperMixins
         /// </param>
         /// <returns>A disposable to disable automatic persistence.</returns>
         [RequiresUnreferencedCode(
-            "AutoPersistCollection may reflect over runtime item types via AutoPersist when generic type parameters do not match item runtime types. " +
-            "In trimmed/AOT builds, required property/attribute metadata may be removed unless explicitly preserved. " +
-            "Prefer the overloads that accept AutoPersistMetadata or a metadata provider to avoid runtime reflection.")]
+            "AutoPersistCollection may reflect over runtime item types via AutoPersist when generic type parameters do not match item runtime types. "
+            + "In trimmed/AOT builds, required property/attribute metadata may be removed unless explicitly preserved. "
+            + "Prefer the overloads that accept AutoPersistMetadata or a metadata provider to avoid runtime reflection.")]
         [RequiresDynamicCode(
-            "AutoPersistCollection may reflect over runtime item types via AutoPersist when generic type parameters do not match item runtime types. " +
-            "In trimmed/AOT builds, required property/attribute metadata may be removed unless explicitly preserved. " +
-            "Prefer the overloads that accept AutoPersistMetadata or a metadata provider to avoid runtime reflection.")]
+            "AutoPersistCollection may reflect over runtime item types via AutoPersist when generic type parameters do not match item runtime types. "
+            + "In trimmed/AOT builds, required property/attribute metadata may be removed unless explicitly preserved. "
+            + "Prefer the overloads that accept AutoPersistMetadata or a metadata provider to avoid runtime reflection.")]
         public IDisposable AutoPersistCollection<TDontCare>(
             Func<TItem, IObservable<RxVoid>> doPersist,
             IObservable<TDontCare> manualSaveSignal,
@@ -276,8 +276,8 @@ public static partial class AutoPersistHelperMixins
         "SST2307:Generic method type parameters should be inferable from the parameters",
         Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
     public static Func<TItem, AutoPersistMetadata> CreateMetadataProvider<
-        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties |
-                                    DynamicallyAccessedMemberTypes.NonPublicProperties)]
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties
+                                    | DynamicallyAccessedMemberTypes.NonPublicProperties)]
     TItem>()
         where TItem : IReactiveObject
     {
@@ -300,11 +300,11 @@ public static partial class AutoPersistHelperMixins
         "SST2307:Generic method type parameters should be inferable from the parameters",
         Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
     public static AutoPersistMetadata CreateMetadata<
-        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties |
-                                    DynamicallyAccessedMemberTypes.NonPublicProperties)]
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties
+                                    | DynamicallyAccessedMemberTypes.NonPublicProperties)]
     T>()
-        where T : IReactiveObject
-        => PersistMetadataHolder<T>.Metadata.Public;
+        where T : IReactiveObject =>
+        PersistMetadataHolder<T>.Metadata.Public;
 
     /// <summary>Disposes and removes the tracked auto-persist subscription for an item that left the collection.</summary>
     /// <typeparam name="TItem">The item type.</typeparam>
@@ -379,13 +379,13 @@ public static partial class AutoPersistHelperMixins
     /// (properties and related attribute metadata) for <paramref name="runtimeType"/>.
     /// </remarks>
     [RequiresUnreferencedCode(
-        "AutoPersist reflects over the runtime type. In trimmed/AOT builds, required property/attribute metadata may be removed " +
-        "unless explicitly preserved. Prefer CreateMetadata<T>() and the overloads that accept AutoPersistMetadata.")]
+        "AutoPersist reflects over the runtime type. In trimmed/AOT builds, required property/attribute metadata may be removed "
+        + "unless explicitly preserved. Prefer CreateMetadata<T>() and the overloads that accept AutoPersistMetadata.")]
     [RequiresDynamicCode(
-        "AutoPersist reflects over the runtime type. In trimmed/AOT builds, required property/attribute metadata may be removed " +
-        "unless explicitly preserved. Prefer CreateMetadata<T>() and the overloads that accept AutoPersistMetadata.")]
-    private static PersistMetadata GetMetadataForUnknownRuntimeType(Type runtimeType)
-        => PersistMetadataByType.GetValue(runtimeType, PersistMetadata.Create);
+        "AutoPersist reflects over the runtime type. In trimmed/AOT builds, required property/attribute metadata may be removed "
+        + "unless explicitly preserved. Prefer CreateMetadata<T>() and the overloads that accept AutoPersistMetadata.")]
+    private static PersistMetadata GetMetadataForUnknownRuntimeType(Type runtimeType) =>
+        PersistMetadataByType.GetValue(runtimeType, PersistMetadata.Create);
 
     /// <summary>Public-facing persistence metadata for AutoPersist.</summary>
     /// <remarks>
@@ -422,8 +422,8 @@ public static partial class AutoPersistHelperMixins
     /// </typeparam>
     [SuppressMessage("Design", "SST1431:Reference a type parameter, or move the member off the generic type", Justification = "Deliberate per-closed-generic reflection cache.")]
     private static class PersistMetadataHolder<
-        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties |
-                                    DynamicallyAccessedMemberTypes.NonPublicProperties)]
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties
+                                    | DynamicallyAccessedMemberTypes.NonPublicProperties)]
     T>
         where T : IReactiveObject
     {

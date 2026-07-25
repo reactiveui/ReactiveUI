@@ -270,16 +270,6 @@ public class SuspensionHostExtensionsTests
         await Assert.That(() => fixture.ObserveAppState<DummyAppState>().Subscribe()).ThrowsNothing();
     }
 
-    /// <summary>Verifies that observing AppState does not throw <see cref="InvalidCastException" />.</summary>
-    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
-    [Test]
-    public async Task ObserveAppStateDoesNotThrowInvalidCastException()
-    {
-        var fixture = new SuspensionHost();
-
-        await Assert.That(() => fixture.ObserveAppState<DummyAppState>().Subscribe()).ThrowsNothing();
-    }
-
     /// <summary>Verifies that ObserveAppState emits values when AppState changes.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
@@ -336,7 +326,7 @@ public class SuspensionHostExtensionsTests
         {
             CreateNewAppState = static () => new DummyAppState(),
             ShouldPersistState = Signal.Silent<IDisposable>(),
-            ShouldInvalidateState = Signal.Silent<RxVoid>()
+            ShouldInvalidateState = Signal.Silent<RxVoid>(),
         };
 
         var driver = new TestSuspensionDriver();
@@ -358,12 +348,7 @@ public class SuspensionHostExtensionsTests
     [Test]
     public async Task SetupDefaultSuspendResume_ShouldInvalidateState_CallsDriverInvalidateState()
     {
-        using var host = new SuspensionHost
-        {
-            IsLaunchingNew = Signal.Silent<RxVoid>(),
-            IsResuming = Signal.Silent<RxVoid>(),
-            ShouldPersistState = Signal.Silent<IDisposable>()
-        };
+        using var host = new SuspensionHost { IsLaunchingNew = Signal.Silent<RxVoid>(), IsResuming = Signal.Silent<RxVoid>(), ShouldPersistState = Signal.Silent<IDisposable>() };
 
         var driver = new TestSuspensionDriver();
         var invalidateSubject = new Signal<RxVoid>();
@@ -382,13 +367,7 @@ public class SuspensionHostExtensionsTests
     public async Task SetupDefaultSuspendResume_ShouldPersistState_CallsDriverSaveState()
     {
         var appState = new DummyAppState();
-        using var host = new SuspensionHost
-        {
-            AppState = appState,
-            IsLaunchingNew = Signal.Silent<RxVoid>(),
-            IsResuming = Signal.Silent<RxVoid>(),
-            ShouldInvalidateState = Signal.Silent<RxVoid>()
-        };
+        using var host = new SuspensionHost { AppState = appState, IsLaunchingNew = Signal.Silent<RxVoid>(), IsResuming = Signal.Silent<RxVoid>(), ShouldInvalidateState = Signal.Silent<RxVoid>() };
 
         var driver = new TestSuspensionDriver();
         var persistSubject = new Signal<IDisposable>();
@@ -524,15 +503,20 @@ public class SuspensionHostExtensionsTests
             "Implementations commonly use reflection-based serialization. Prefer SaveState<T>(T, JsonTypeInfo<T>) for trimming or AOT scenarios.")]
         [RequiresDynamicCode(
             "Implementations commonly use reflection-based serialization. Prefer SaveState<T>(T, JsonTypeInfo<T>) for trimming or AOT scenarios.")]
-        public IObservable<RxVoid> SaveState<T>(T state)
-        {
-            SaveStateCallCount++;
-            LastSavedState = state;
-            return Signal.Emit(RxVoid.Default, Sequencer.Immediate);
-        }
+        public IObservable<RxVoid> SaveState<T>(T state) => SaveStateCore(state);
 
         /// <inheritdoc/>
         public IObservable<RxVoid> SaveState<T>(T state, JsonTypeInfo<T> typeInfo)
+        {
+            _ = typeInfo;
+            return SaveStateCore(state);
+        }
+
+        /// <summary>Records and completes a save request.</summary>
+        /// <typeparam name="T">The state type.</typeparam>
+        /// <param name="state">The state to save.</param>
+        /// <returns>A completion signal.</returns>
+        private IObservable<RxVoid> SaveStateCore<T>(T state)
         {
             SaveStateCallCount++;
             LastSavedState = state;

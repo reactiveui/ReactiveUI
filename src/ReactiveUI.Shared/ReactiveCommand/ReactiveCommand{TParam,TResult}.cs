@@ -472,8 +472,7 @@ public class ReactiveCommand<TParam, TResult> : ReactiveCommandBase<TParam, TRes
     /// </summary>
     /// <param name="owner">The owning command.</param>
     /// <param name="downstream">The observer subscribed to this execution.</param>
-    private sealed class Execution(ReactiveCommand<TParam, TResult> owner, IObserver<TResult> downstream)
-        : IObserver<(IObservable<TResult> Result, Action Cancel)>, IDisposable
+    private sealed class Execution(ReactiveCommand<TParam, TResult> owner, IObserver<TResult> downstream) : IObserver<(IObservable<TResult> Result, Action Cancel)>, IDisposable
     {
         /// <summary>Subscription to the execution-source observable (the result/cancel tuple producer).</summary>
         private IDisposable? _outer;

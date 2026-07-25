@@ -42,8 +42,8 @@ internal static class MauiReactiveHelpers
         {
             void Handler(object? _, PropertyChangedEventArgs e)
             {
-                if (!string.IsNullOrEmpty(e.PropertyName) &&
-                    !string.Equals(e.PropertyName, propertyName, StringComparison.Ordinal))
+                if (!string.IsNullOrEmpty(e.PropertyName)
+                    && !string.Equals(e.PropertyName, propertyName, StringComparison.Ordinal))
                 {
                     return;
                 }
@@ -86,8 +86,8 @@ internal static class MauiReactiveHelpers
 
             void Handler(object? _, PropertyChangedEventArgs e)
             {
-                if (!string.IsNullOrEmpty(e.PropertyName) &&
-                    !string.Equals(e.PropertyName, propertyName, StringComparison.Ordinal))
+                if (!string.IsNullOrEmpty(e.PropertyName)
+                    && !string.Equals(e.PropertyName, propertyName, StringComparison.Ordinal))
                 {
                     return;
                 }

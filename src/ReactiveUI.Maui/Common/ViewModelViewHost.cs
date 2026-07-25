@@ -66,8 +66,8 @@ public partial class ViewModelViewHost : TransitioningContentControl, IViewFor, 
             // NB: This used to be an error but WPF design mode can't read
             // good or do other stuff good.
             this.Log().Error(
-                "Couldn't find an IPlatformOperations implementation. Please make sure you have installed the latest " +
-                "version of the ReactiveUI packages for your platform. See https://reactiveui.net/docs/getting-started/installation for guidance.");
+                "Couldn't find an IPlatformOperations implementation. Please make sure you have installed the latest "
+                + "version of the ReactiveUI packages for your platform. See https://reactiveui.net/docs/getting-started/installation for guidance.");
         }
         else
         {
@@ -158,8 +158,8 @@ public partial class ViewModelViewHost : TransitioningContentControl, IViewFor, 
     /// <param name="viewModel">ViewModel.</param>
     /// <param name="contract">Contract used by ViewLocator.</param>
     [RequiresUnreferencedCode("This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
-    [RequiresDynamicCode("If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, " +
-        "or generic constraints), trimming can't validate that the requirements of those annotations are met.")]
+    [RequiresDynamicCode("If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, "
+        + "or generic constraints), trimming can't validate that the requirements of those annotations are met.")]
     protected virtual void ResolveViewForViewModel(object? viewModel, string? contract)
     {
         if (viewModel is null)

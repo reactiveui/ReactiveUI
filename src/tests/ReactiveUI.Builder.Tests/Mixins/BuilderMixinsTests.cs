@@ -644,7 +644,7 @@ public class BuilderMixinsTests
         }
 
         /// <inheritdoc/>
-        public IAppBuilder WithCoreServices() => this;
+        public IAppBuilder WithCoreServices() => UseCurrentSplatLocator();
 
         /// <inheritdoc/>
         public IAppBuilder WithCustomRegistration(Action<IMutableDependencyResolver> configureAction)

@@ -13,7 +13,7 @@ namespace ReactiveUI.Benchmarks;
 /// </summary>
 [MemoryDiagnoser]
 [MarkdownExporterAttribute.GitHub]
-public class ActivationBenchmarks
+public class ActivationBenchmarks : IDisposable
 {
     /// <summary>The number of activate / deactivate cycles per benchmark invocation.</summary>
     private const int CycleCount = 10_000;
@@ -25,6 +25,17 @@ public class ActivationBenchmarks
     [GlobalSetup]
     public void Setup() => _viewModel = new();
 
+    /// <summary>Disposes the activatable view model.</summary>
+    [GlobalCleanup]
+    public void Cleanup() => Dispose();
+
+    /// <summary>Disposes the activatable view model.</summary>
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
     /// <summary>Measures repeated activate + deactivate cycles.</summary>
     [Benchmark]
     public void ActivateDeactivate()
@@ -33,5 +44,17 @@ public class ActivationBenchmarks
         {
             using var activation = _viewModel.Activator.Activate();
         }
+    }
+
+    /// <summary>Disposes resources owned by the benchmark.</summary>
+    /// <param name="disposing">Whether managed resources should be disposed.</param>
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!disposing)
+        {
+            return;
+        }
+
+        _viewModel.Dispose();
     }
 }

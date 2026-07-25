@@ -535,9 +535,9 @@ public class SuspensionHostGenericTests
         [SuppressMessage(
             "Design",
             "SST2324:'Name' is declared 'public' but its containing type is only reachable as 'private'",
-            Justification = "OtherAppState exists only to be a type distinct from DummyAppState for mismatch " +
-                "testing; Name keeps the type from being empty (see SST1436) and its public accessor mirrors " +
-                "DummyAppState.Value's shape.")]
+            Justification = "OtherAppState exists only to be a type distinct from DummyAppState for mismatch "
+                + "testing; Name keeps the type from being empty (see SST1436) and its public accessor mirrors "
+                + "DummyAppState.Value's shape.")]
         public string? Name { get; set; }
     }
 }

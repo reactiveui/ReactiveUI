@@ -78,10 +78,6 @@ public static partial class BuilderMixins
         /// ]]>
         /// </code>
         /// </example>
-        [SuppressMessage(
-            "Design",
-            "SST2326:Interface instances should not be narrowed to concrete types",
-            Justification = "DefaultViewLocator exposes view-registration APIs not present on IViewLocator; reaching them requires the concrete type.")]
         public IReactiveUIBuilder RegisterViews(
             Action<ViewMappingBuilder> configure)
         {
@@ -90,8 +86,8 @@ public static partial class BuilderMixins
 
             var viewLocator = (AppLocator.Current.GetService<IViewLocator>() as DefaultViewLocator)
                               ?? throw new InvalidOperationException(
-                                  "DefaultViewLocator must be registered before calling RegisterViews. " +
-                                  "Ensure you've called WithPlatformModule() or manually registered DefaultViewLocator.");
+                                  "DefaultViewLocator must be registered before calling RegisterViews. "
+                                  + "Ensure you've called WithPlatformModule() or manually registered DefaultViewLocator.");
 
             ViewMappingBuilder mappingBuilder = new(viewLocator);
             configure(mappingBuilder);
@@ -125,10 +121,6 @@ public static partial class BuilderMixins
         /// ]]>
         /// </code>
         /// </example>
-        [SuppressMessage(
-            "Design",
-            "SST2326:Interface instances should not be narrowed to concrete types",
-            Justification = "DefaultViewLocator exposes view-registration APIs not present on IViewLocator; reaching them requires the concrete type.")]
         public IReactiveUIBuilder WithViewModule<TModule>()
             where TModule : IViewModule, new()
         {
@@ -136,8 +128,8 @@ public static partial class BuilderMixins
 
             var viewLocator = (AppLocator.Current.GetService<IViewLocator>() as DefaultViewLocator)
                               ?? throw new InvalidOperationException(
-                                  "DefaultViewLocator must be registered before calling WithViewModule. " +
-                                  "Ensure you've called WithPlatformModule() or manually registered DefaultViewLocator.");
+                                  "DefaultViewLocator must be registered before calling WithViewModule. "
+                                  + "Ensure you've called WithPlatformModule() or manually registered DefaultViewLocator.");
 
             TModule module = new();
             module.RegisterViews(viewLocator);

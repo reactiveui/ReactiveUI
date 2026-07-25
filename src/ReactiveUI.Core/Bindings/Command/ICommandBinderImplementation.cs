@@ -44,9 +44,9 @@ public interface ICommandBinderImplementation : IEnableLogger
         TView,
         TViewModel,
         TProp,
-        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents |
-                                    DynamicallyAccessedMemberTypes.NonPublicEvents |
-                                    DynamicallyAccessedMemberTypes.PublicProperties)]
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents
+                                    | DynamicallyAccessedMemberTypes.NonPublicEvents
+                                    | DynamicallyAccessedMemberTypes.PublicProperties)]
     TControl,
         TParam>(
         TViewModel? viewModel,
@@ -88,9 +88,9 @@ public interface ICommandBinderImplementation : IEnableLogger
         TView,
         TViewModel,
         TProp,
-        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents |
-                                    DynamicallyAccessedMemberTypes.NonPublicEvents |
-                                    DynamicallyAccessedMemberTypes.PublicProperties)]
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents
+                                    | DynamicallyAccessedMemberTypes.NonPublicEvents
+                                    | DynamicallyAccessedMemberTypes.PublicProperties)]
     TControl,
         TParam>(
         TViewModel? viewModel,
@@ -134,9 +134,9 @@ public interface ICommandBinderImplementation : IEnableLogger
         TView,
         TViewModel,
         TProp,
-        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents |
-                                    DynamicallyAccessedMemberTypes.NonPublicEvents |
-                                    DynamicallyAccessedMemberTypes.PublicProperties)]
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents
+                                    | DynamicallyAccessedMemberTypes.NonPublicEvents
+                                    | DynamicallyAccessedMemberTypes.PublicProperties)]
     TControl,
         TParam>(
         TViewModel? viewModel,
@@ -178,9 +178,9 @@ public interface ICommandBinderImplementation : IEnableLogger
         TView,
         TViewModel,
         TProp,
-        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents |
-                                    DynamicallyAccessedMemberTypes.NonPublicEvents |
-                                    DynamicallyAccessedMemberTypes.PublicProperties)]
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents
+                                    | DynamicallyAccessedMemberTypes.NonPublicEvents
+                                    | DynamicallyAccessedMemberTypes.PublicProperties)]
     TControl,
         TParam>(
         TViewModel? viewModel,

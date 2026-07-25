@@ -145,8 +145,7 @@ public class ReactiveActivity : Activity, IReactiveObject, IReactiveNotifyProper
     /// Completes a task with the first activity result matching a request code, then unsubscribes — replacing
     /// <c>ActivityResult.Where(matching).Select(...).FirstAsync().ToTask()</c>.
     /// </summary>
-    private sealed class ActivityResultAwaiter
-        : IObserver<(int requestCode, Result resultCode, Intent? intent)>, IDisposable
+    private sealed class ActivityResultAwaiter : IObserver<(int requestCode, Result resultCode, Intent? intent)>, IDisposable
     {
         /// <summary>The request code this awaiter is waiting for.</summary>
         private readonly int _requestCode;

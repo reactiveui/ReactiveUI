@@ -52,11 +52,7 @@ public static class ReactivePropertyMixins
             var display = propertyInfo.GetCustomAttribute<DisplayAttribute>();
             ValidationAttribute[] attrs = [.. propertyInfo.GetCustomAttributes<ValidationAttribute>()];
 
-            ValidationContext context = new(self, null, null)
-            {
-                DisplayName = display?.GetName() ?? propertyInfo.Name,
-                MemberName = nameof(ReactiveProperty<>.Value)
-            };
+            ValidationContext context = new(self, null, null) { DisplayName = display?.GetName() ?? propertyInfo.Name, MemberName = nameof(ReactiveProperty<>.Value) };
 
             if (attrs.Length != 0)
             {

@@ -56,13 +56,13 @@ public static class RxAppBuilder
             if (_hasBeenInitialized == 0)
             {
                 throw new InvalidOperationException(
-                    "ReactiveUI has not been initialized. You must initialize ReactiveUI using the builder pattern. " +
-                    "See https://www.reactiveui.net/docs/handbook/rxappbuilder.html for migration guidance.\n\n" +
-                    "Example:\n" +
-                    "RxAppBuilder.CreateReactiveUIBuilder()\n" +
-                    "    .WithCoreServices()\n" +
-                    "    .WithPlatformServices()\n" +
-                    "    .BuildApp();");
+                    "ReactiveUI has not been initialized. You must initialize ReactiveUI using the builder pattern. "
+                    + "See https://www.reactiveui.net/docs/handbook/rxappbuilder.html for migration guidance.\n\n"
+                    + "Example:\n"
+                    + "RxAppBuilder.CreateReactiveUIBuilder()\n"
+                    + "    .WithCoreServices()\n"
+                    + "    .WithPlatformServices()\n"
+                    + "    .BuildApp();");
             }
         }
     }

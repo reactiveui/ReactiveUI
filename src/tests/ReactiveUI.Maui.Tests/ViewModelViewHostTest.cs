@@ -299,7 +299,7 @@ public class ViewModelViewHostTest
 
         /// <inheritdoc/>
         public IViewFor<T>? ResolveView<T>(string? contract)
-            where T : class => _view as IViewFor<T>;
+            where T : class => ResolveView<T>();
 
         /// <inheritdoc/>
         public IViewFor<T>? ResolveView<T>()
@@ -309,16 +309,16 @@ public class ViewModelViewHostTest
         [RequiresUnreferencedCode(
             "This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
         [RequiresDynamicCode(
-            "If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, " +
-            "or generic constraints), trimming can't validate that the requirements of those annotations are met.")]
+            "If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, "
+            + "or generic constraints), trimming can't validate that the requirements of those annotations are met.")]
         public IViewFor? ResolveView(object? instance, string? contract) => _view;
 
         /// <inheritdoc/>
         [RequiresUnreferencedCode(
             "This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
         [RequiresDynamicCode(
-            "If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, " +
-            "or generic constraints), trimming can't validate that the requirements of those annotations are met.")]
+            "If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, "
+            + "or generic constraints), trimming can't validate that the requirements of those annotations are met.")]
         public IViewFor? ResolveView(object? instance) => _view;
     }
 
@@ -344,16 +344,16 @@ public class ViewModelViewHostTest
         [RequiresUnreferencedCode(
             "This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
         [RequiresDynamicCode(
-            "If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, " +
-            "or generic constraints), trimming can't validate that the requirements of those annotations are met.")]
+            "If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, "
+            + "or generic constraints), trimming can't validate that the requirements of those annotations are met.")]
         public IViewFor? ResolveView(object? instance, string? contract) => null;
 
         /// <inheritdoc/>
         [RequiresUnreferencedCode(
             "This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
         [RequiresDynamicCode(
-            "If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, " +
-            "or generic constraints), trimming can't validate that the requirements of those annotations are met.")]
+            "If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, "
+            + "or generic constraints), trimming can't validate that the requirements of those annotations are met.")]
         public IViewFor? ResolveView(object? instance) => null;
     }
 
@@ -379,7 +379,7 @@ public class ViewModelViewHostTest
 
         /// <inheritdoc/>
         public IViewFor<T>? ResolveView<T>(string? contract)
-            where T : class => _view as IViewFor<T>;
+            where T : class => ResolveView<T>();
 
         /// <inheritdoc/>
         public IViewFor<T>? ResolveView<T>()
@@ -389,16 +389,16 @@ public class ViewModelViewHostTest
         [RequiresUnreferencedCode(
             "This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
         [RequiresDynamicCode(
-            "If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, " +
-            "or generic constraints), trimming can't validate that the requirements of those annotations are met.")]
+            "If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, "
+            + "or generic constraints), trimming can't validate that the requirements of those annotations are met.")]
         public IViewFor? ResolveView(object? instance, string? contract) => _view;
 
         /// <inheritdoc/>
         [RequiresUnreferencedCode(
             "This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
         [RequiresDynamicCode(
-            "If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, " +
-            "or generic constraints), trimming can't validate that the requirements of those annotations are met.")]
+            "If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, "
+            + "or generic constraints), trimming can't validate that the requirements of those annotations are met.")]
         public IViewFor? ResolveView(object? instance) => _view;
     }
 }

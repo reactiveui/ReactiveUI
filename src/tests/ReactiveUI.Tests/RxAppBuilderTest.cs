@@ -74,13 +74,13 @@ public class RxAppBuilderTest
         public IEnumerable<object> GetServices(Type? serviceType) => [];
 
         /// <inheritdoc/>
-        public IEnumerable<object> GetServices(Type? serviceType, string? contract) => [];
+        public IEnumerable<object> GetServices(Type? serviceType, string? contract) => GetServices(serviceType);
 
         /// <inheritdoc/>
-        public IEnumerable<T> GetServices<T>() => [];
+        public IEnumerable<T> GetServices<T>() => GetServices<T>(null);
 
         /// <inheritdoc/>
-        public IEnumerable<T> GetServices<T>(string? contract) => [];
+        public IEnumerable<T> GetServices<T>(string? contract) => (IEnumerable<T>)[];
 
         /// <inheritdoc/>
         public bool HasRegistration(Type? serviceType) => false;

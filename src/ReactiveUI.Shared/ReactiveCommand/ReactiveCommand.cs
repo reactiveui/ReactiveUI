@@ -118,7 +118,7 @@ public static class ReactiveCommand
     /// <returns>The ReactiveCommand instance.</returns>
     /// <exception cref="ArgumentNullException">execute.</exception>
     public static ReactiveCommand<RxVoid, TResult> Create<TResult>(Func<TResult> execute) =>
-        Create(execute, null, null);
+        Create((Func<TResult>)execute, null, null);
 
     /// <summary>Creates a parameterless reactive command with synchronous execution logic that returns a value of type TResult.</summary>
     /// <typeparam name="TResult">The type of value returned by command executions.</typeparam>
@@ -129,7 +129,7 @@ public static class ReactiveCommand
     public static ReactiveCommand<RxVoid, TResult> Create<TResult>(
         Func<TResult> execute,
         IObservable<bool>? canExecute) =>
-        Create(execute, canExecute, null);
+        Create((Func<TResult>)execute, canExecute, null);
 
     /// <summary>Creates a parameterless reactive command with synchronous execution logic that returns a value of type TResult.</summary>
     /// <typeparam name="TResult">The type of value returned by command executions.</typeparam>
@@ -140,7 +140,7 @@ public static class ReactiveCommand
     public static ReactiveCommand<RxVoid, TResult> Create<TResult>(
         Func<TResult> execute,
         ISequencer? outputScheduler) =>
-        Create(execute, null, outputScheduler);
+        Create((Func<TResult>)execute, null, outputScheduler);
 
     /// <summary>Creates a parameterless <see cref="ReactiveCommand{TParam, TResult}" /> with synchronous execution logic that returns a value of type <typeparamref name="TResult" />.</summary>
     /// <typeparam name="TResult">The type of value returned by command executions.</typeparam>
@@ -170,7 +170,7 @@ public static class ReactiveCommand
     /// <returns>The ReactiveCommand instance.</returns>
     /// <exception cref="ArgumentNullException">execute.</exception>
     public static ReactiveCommand<TParam, RxVoid> Create<TParam>(Action<TParam> execute) =>
-        Create(execute, null, null);
+        Create((Action<TParam>)execute, null, null);
 
     /// <summary>Creates a reactive command with synchronous execution logic that takes a parameter of type TParam.</summary>
     /// <typeparam name="TParam">The type of the parameter passed through to command execution.</typeparam>
@@ -181,7 +181,7 @@ public static class ReactiveCommand
     public static ReactiveCommand<TParam, RxVoid> Create<TParam>(
         Action<TParam> execute,
         IObservable<bool>? canExecute) =>
-        Create(execute, canExecute, null);
+        Create((Action<TParam>)execute, canExecute, null);
 
     /// <summary>Creates a reactive command with synchronous execution logic that takes a parameter of type TParam.</summary>
     /// <typeparam name="TParam">The type of the parameter passed through to command execution.</typeparam>
@@ -192,7 +192,7 @@ public static class ReactiveCommand
     public static ReactiveCommand<TParam, RxVoid> Create<TParam>(
         Action<TParam> execute,
         ISequencer? outputScheduler) =>
-        Create(execute, null, outputScheduler);
+        Create((Action<TParam>)execute, null, outputScheduler);
 
     /// <summary>Creates a <see cref="ReactiveCommand{TParam, TResult}" /> with synchronous execution logic that takes a parameter of type <typeparamref name="TParam" />.</summary>
     /// <typeparam name="TParam">The type of the parameter passed through to command execution.</typeparam>
@@ -231,7 +231,7 @@ public static class ReactiveCommand
     /// <returns>The ReactiveCommand instance.</returns>
     /// <exception cref="ArgumentNullException">execute.</exception>
     public static ReactiveCommand<TParam, TResult> Create<TParam, TResult>(Func<TParam, TResult> execute) =>
-        Create(execute, null, null);
+        Create((Func<TParam, TResult>)execute, null, null);
 
     /// <summary>
     /// Creates a reactive command with synchronous execution logic that takes a parameter of type TParam and returns a value of type TResult.
@@ -245,7 +245,7 @@ public static class ReactiveCommand
     public static ReactiveCommand<TParam, TResult> Create<TParam, TResult>(
         Func<TParam, TResult> execute,
         IObservable<bool>? canExecute) =>
-        Create(execute, canExecute, null);
+        Create((Func<TParam, TResult>)execute, canExecute, null);
 
     /// <summary>
     /// Creates a reactive command with synchronous execution logic that takes a parameter of type TParam and returns a value of type TResult.
@@ -259,7 +259,7 @@ public static class ReactiveCommand
     public static ReactiveCommand<TParam, TResult> Create<TParam, TResult>(
         Func<TParam, TResult> execute,
         ISequencer? outputScheduler) =>
-        Create(execute, null, outputScheduler);
+        Create((Func<TParam, TResult>)execute, null, outputScheduler);
 
     /// <summary>Creates a synchronous <see cref="ReactiveCommand{TParam, TResult}" /> from <typeparamref name="TParam" /> to <typeparamref name="TResult" />.</summary>
     /// <typeparam name="TParam">The type of the parameter passed through to command execution.</typeparam>
@@ -362,7 +362,7 @@ public static class ReactiveCommand
     /// <returns>The ReactiveCommand instance.</returns>
     /// <exception cref="ArgumentNullException">execute.</exception>
     public static ReactiveCommand<RxVoid, TResult> CreateRunInBackground<TResult>(Func<TResult> execute) =>
-        CreateRunInBackground(execute, null, null, null);
+        CreateRunInBackground((Func<TResult>)execute, null, null, null);
 
     /// <summary>
     /// Creates a parameterless reactive command with asynchronous background execution logic that returns a value of type TResult.
@@ -375,7 +375,7 @@ public static class ReactiveCommand
     public static ReactiveCommand<RxVoid, TResult> CreateRunInBackground<TResult>(
         Func<TResult> execute,
         IObservable<bool>? canExecute) =>
-        CreateRunInBackground(execute, canExecute, null, null);
+        CreateRunInBackground((Func<TResult>)execute, canExecute, null, null);
 
     /// <summary>
     /// Creates a parameterless reactive command with asynchronous background execution logic that returns a value of type TResult.
@@ -390,7 +390,7 @@ public static class ReactiveCommand
         Func<TResult> execute,
         IObservable<bool>? canExecute,
         ISequencer? backgroundScheduler) =>
-        CreateRunInBackground(execute, canExecute, backgroundScheduler, null);
+        CreateRunInBackground((Func<TResult>)execute, canExecute, backgroundScheduler, null);
 
     /// <summary>
     /// Creates a parameterless reactive command with asynchronous background execution logic that returns a value of type TResult.
@@ -405,7 +405,7 @@ public static class ReactiveCommand
         Func<TResult> execute,
         ISequencer? backgroundScheduler,
         ISequencer? outputScheduler) =>
-        CreateRunInBackground(execute, null, backgroundScheduler, outputScheduler);
+        CreateRunInBackground((Func<TResult>)execute, null, backgroundScheduler, outputScheduler);
 
     /// <summary>Creates a parameterless <see cref="ReactiveCommand{TParam, TResult}" /> with asynchronous execution logic that returns a value of type <typeparamref name="TResult" />.</summary>
     /// <typeparam name="TResult">The type of value returned by command executions.</typeparam>
@@ -437,7 +437,7 @@ public static class ReactiveCommand
     /// <returns>The ReactiveCommand instance.</returns>
     /// <exception cref="ArgumentNullException">execute.</exception>
     public static ReactiveCommand<TParam, RxVoid> CreateRunInBackground<TParam>(Action<TParam> execute) =>
-        CreateRunInBackground(execute, null, null, null);
+        CreateRunInBackground((Action<TParam>)execute, null, null, null);
 
     /// <summary>Creates a reactive command with asynchronous background execution logic that takes a parameter of type TParam.</summary>
     /// <typeparam name="TParam">The type of the parameter passed through to command execution.</typeparam>
@@ -448,7 +448,7 @@ public static class ReactiveCommand
     public static ReactiveCommand<TParam, RxVoid> CreateRunInBackground<TParam>(
         Action<TParam> execute,
         IObservable<bool>? canExecute) =>
-        CreateRunInBackground(execute, canExecute, null, null);
+        CreateRunInBackground((Action<TParam>)execute, canExecute, null, null);
 
     /// <summary>Creates a reactive command with asynchronous background execution logic that takes a parameter of type TParam.</summary>
     /// <typeparam name="TParam">The type of the parameter passed through to command execution.</typeparam>
@@ -461,7 +461,7 @@ public static class ReactiveCommand
         Action<TParam> execute,
         IObservable<bool>? canExecute,
         ISequencer? backgroundScheduler) =>
-        CreateRunInBackground(execute, canExecute, backgroundScheduler, null);
+        CreateRunInBackground((Action<TParam>)execute, canExecute, backgroundScheduler, null);
 
     /// <summary>Creates a reactive command with asynchronous background execution logic that takes a parameter of type TParam.</summary>
     /// <typeparam name="TParam">The type of the parameter passed through to command execution.</typeparam>
@@ -474,7 +474,7 @@ public static class ReactiveCommand
         Action<TParam> execute,
         ISequencer? backgroundScheduler,
         ISequencer? outputScheduler) =>
-        CreateRunInBackground(execute, null, backgroundScheduler, outputScheduler);
+        CreateRunInBackground((Action<TParam>)execute, null, backgroundScheduler, outputScheduler);
 
     /// <summary>Creates a <see cref="ReactiveCommand{TParam, TResult}" /> with asynchronous execution logic that takes a parameter of type <typeparamref name="TParam" />.</summary>
     /// <typeparam name="TParam">The type of the parameter passed through to command execution.</typeparam>
@@ -516,7 +516,7 @@ public static class ReactiveCommand
     /// <returns>The ReactiveCommand instance.</returns>
     /// <exception cref="ArgumentNullException">execute.</exception>
     public static ReactiveCommand<TParam, TResult> CreateRunInBackground<TParam, TResult>(Func<TParam, TResult> execute) =>
-        CreateRunInBackground(execute, null, null, null);
+        CreateRunInBackground((Func<TParam, TResult>)execute, null, null, null);
 
     /// <summary>
     /// Creates a reactive command with asynchronous background execution logic that takes a parameter of type TParam and returns a value of type TResult.
@@ -530,7 +530,7 @@ public static class ReactiveCommand
     public static ReactiveCommand<TParam, TResult> CreateRunInBackground<TParam, TResult>(
         Func<TParam, TResult> execute,
         IObservable<bool>? canExecute) =>
-        CreateRunInBackground(execute, canExecute, null, null);
+        CreateRunInBackground((Func<TParam, TResult>)execute, canExecute, null, null);
 
     /// <summary>
     /// Creates a reactive command with asynchronous background execution logic that takes a parameter of type TParam and returns a value of type TResult.
@@ -546,7 +546,7 @@ public static class ReactiveCommand
         Func<TParam, TResult> execute,
         IObservable<bool>? canExecute,
         ISequencer? backgroundScheduler) =>
-        CreateRunInBackground(execute, canExecute, backgroundScheduler, null);
+        CreateRunInBackground((Func<TParam, TResult>)execute, canExecute, backgroundScheduler, null);
 
     /// <summary>
     /// Creates a reactive command with asynchronous background execution logic that takes a parameter of type TParam and returns a value of type TResult.
@@ -562,7 +562,7 @@ public static class ReactiveCommand
         Func<TParam, TResult> execute,
         ISequencer? backgroundScheduler,
         ISequencer? outputScheduler) =>
-        CreateRunInBackground(execute, null, backgroundScheduler, outputScheduler);
+        CreateRunInBackground((Func<TParam, TResult>)execute, null, backgroundScheduler, outputScheduler);
 
     /// <summary>Creates an asynchronous <see cref="ReactiveCommand{TParam, TResult}" /> from <typeparamref name="TParam" /> to <typeparamref name="TResult" />.</summary>
     /// <typeparam name="TParam">The type of the parameter passed through to command execution.</typeparam>
@@ -715,7 +715,7 @@ public static class ReactiveCommand
     /// <returns>The ReactiveCommand instance.</returns>
     public static ReactiveCommand<TParam, TResult> CreateFromObservable<TParam, TResult>(
         Func<TParam, IObservable<TResult>> execute) =>
-        CreateFromObservable(execute, null, null);
+        CreateFromObservable((Func<TParam, IObservable<TResult>>)execute, null, null);
 
     /// <summary>Creates a reactive command with asynchronous observable execution logic that takes a parameter of type TParam.</summary>
     /// <typeparam name="TParam">The type of the parameter passed through to command execution.</typeparam>
@@ -726,7 +726,7 @@ public static class ReactiveCommand
     public static ReactiveCommand<TParam, TResult> CreateFromObservable<TParam, TResult>(
         Func<TParam, IObservable<TResult>> execute,
         IObservable<bool>? canExecute) =>
-        CreateFromObservable(execute, canExecute, null);
+        CreateFromObservable((Func<TParam, IObservable<TResult>>)execute, canExecute, null);
 
     /// <summary>Creates a reactive command with asynchronous observable execution logic that takes a parameter of type TParam.</summary>
     /// <typeparam name="TParam">The type of the parameter passed through to command execution.</typeparam>
@@ -738,7 +738,7 @@ public static class ReactiveCommand
     public static ReactiveCommand<TParam, TResult> CreateFromObservable<TParam, TResult>(
         Func<TParam, IObservable<TResult>> execute,
         ISequencer? outputScheduler) =>
-        CreateFromObservable(execute, null, outputScheduler);
+        CreateFromObservable((Func<TParam, IObservable<TResult>>)execute, null, outputScheduler);
 
     /// <summary>Creates a <see cref="ReactiveCommand{TParam, TResult}"/> with asynchronous execution logic that takes a parameter of type <typeparamref name="TParam"/>.</summary>
     /// <param name="execute">
@@ -833,7 +833,7 @@ public static class ReactiveCommand
     /// <returns>The ReactiveCommand instance.</returns>
     public static ReactiveCommand<RxVoid, TResult> CreateFromTask<TResult>(
         Func<CancellationToken, Task<TResult>> execute) =>
-        CreateFromTask(execute, null, null);
+        CreateFromTask((Func<CancellationToken, Task<TResult>>)execute, null, null);
 
     /// <summary>Creates a parameterless, cancellable reactive command with asynchronous task-based execution logic returning TResult.</summary>
     /// <typeparam name="TResult">The type of the command's result.</typeparam>
@@ -843,7 +843,7 @@ public static class ReactiveCommand
     public static ReactiveCommand<RxVoid, TResult> CreateFromTask<TResult>(
         Func<CancellationToken, Task<TResult>> execute,
         IObservable<bool>? canExecute) =>
-        CreateFromTask(execute, canExecute, null);
+        CreateFromTask((Func<CancellationToken, Task<TResult>>)execute, canExecute, null);
 
     /// <summary>Creates a parameterless, cancellable reactive command with asynchronous task-based execution logic returning TResult.</summary>
     /// <typeparam name="TResult">The type of the command's result.</typeparam>
@@ -854,7 +854,7 @@ public static class ReactiveCommand
     public static ReactiveCommand<RxVoid, TResult> CreateFromTask<TResult>(
         Func<CancellationToken, Task<TResult>> execute,
         ISequencer? outputScheduler) =>
-        CreateFromTask(execute, null, outputScheduler);
+        CreateFromTask((Func<CancellationToken, Task<TResult>>)execute, null, outputScheduler);
 
     /// <summary>Creates a parameterless, cancellable <see cref="ReactiveCommand{TParam, TResult}"/> with asynchronous execution logic.</summary>
     /// <param name="execute">
@@ -889,7 +889,7 @@ public static class ReactiveCommand
     /// <param name="execute">Provides a Task representing the command's asynchronous execution logic.</param>
     /// <returns>The ReactiveCommand instance.</returns>
     public static ReactiveCommand<RxVoid, RxVoid> CreateFromTask(Func<Task> execute) =>
-        CreateFromTask(execute, null, null);
+        CreateFromTask((Func<Task>)execute, null, null);
 
     /// <summary>Creates a parameterless reactive command with asynchronous task-based execution logic.</summary>
     /// <param name="execute">Provides a Task representing the command's asynchronous execution logic.</param>
@@ -898,7 +898,7 @@ public static class ReactiveCommand
     public static ReactiveCommand<RxVoid, RxVoid> CreateFromTask(
         Func<Task> execute,
         IObservable<bool>? canExecute) =>
-        CreateFromTask(execute, canExecute, null);
+        CreateFromTask((Func<Task>)execute, canExecute, null);
 
     /// <summary>Creates a parameterless reactive command with asynchronous task-based execution logic.</summary>
     /// <param name="execute">Provides a Task representing the command's asynchronous execution logic.</param>
@@ -908,7 +908,7 @@ public static class ReactiveCommand
     public static ReactiveCommand<RxVoid, RxVoid> CreateFromTask(
         Func<Task> execute,
         ISequencer? outputScheduler) =>
-        CreateFromTask(execute, null, outputScheduler);
+        CreateFromTask((Func<Task>)execute, null, outputScheduler);
 
     /// <summary>Creates a parameterless <see cref="ReactiveCommand{TParam, TResult}"/> with asynchronous execution logic.</summary>
     /// <param name="execute">
@@ -937,7 +937,7 @@ public static class ReactiveCommand
     /// <param name="execute">Provides a Task representing the command's asynchronous execution logic.</param>
     /// <returns>The ReactiveCommand instance.</returns>
     public static ReactiveCommand<RxVoid, RxVoid> CreateFromTask(Func<CancellationToken, Task> execute) =>
-        CreateFromTask(execute, null, null);
+        CreateFromTask((Func<CancellationToken, Task>)execute, null, null);
 
     /// <summary>Creates a parameterless, cancellable reactive command with asynchronous task-based execution logic.</summary>
     /// <param name="execute">Provides a Task representing the command's asynchronous execution logic.</param>
@@ -946,7 +946,7 @@ public static class ReactiveCommand
     public static ReactiveCommand<RxVoid, RxVoid> CreateFromTask(
         Func<CancellationToken, Task> execute,
         IObservable<bool>? canExecute) =>
-        CreateFromTask(execute, canExecute, null);
+        CreateFromTask((Func<CancellationToken, Task>)execute, canExecute, null);
 
     /// <summary>Creates a parameterless, cancellable reactive command with asynchronous task-based execution logic.</summary>
     /// <param name="execute">Provides a Task representing the command's asynchronous execution logic.</param>
@@ -956,7 +956,7 @@ public static class ReactiveCommand
     public static ReactiveCommand<RxVoid, RxVoid> CreateFromTask(
         Func<CancellationToken, Task> execute,
         ISequencer? outputScheduler) =>
-        CreateFromTask(execute, null, outputScheduler);
+        CreateFromTask((Func<CancellationToken, Task>)execute, null, outputScheduler);
 
     /// <summary>Creates a parameterless, cancellable <see cref="ReactiveCommand{TParam, TResult}"/> with asynchronous execution logic.</summary>
     /// <param name="execute">
@@ -993,7 +993,7 @@ public static class ReactiveCommand
     /// <returns>The ReactiveCommand instance.</returns>
     public static ReactiveCommand<TParam, TResult> CreateFromTask<TParam, TResult>(
         Func<TParam, Task<TResult>> execute) =>
-        CreateFromTask(execute, null, null);
+        CreateFromTask((Func<TParam, Task<TResult>>)execute, null, null);
 
     /// <summary>
     /// Creates a reactive command with asynchronous task-based execution logic that takes a parameter of type TParam and returns TResult.
@@ -1006,7 +1006,7 @@ public static class ReactiveCommand
     public static ReactiveCommand<TParam, TResult> CreateFromTask<TParam, TResult>(
         Func<TParam, Task<TResult>> execute,
         IObservable<bool>? canExecute) =>
-        CreateFromTask(execute, canExecute, null);
+        CreateFromTask((Func<TParam, Task<TResult>>)execute, canExecute, null);
 
     /// <summary>
     /// Creates a reactive command with asynchronous task-based execution logic that takes a parameter of type TParam and returns TResult.
@@ -1020,7 +1020,7 @@ public static class ReactiveCommand
     public static ReactiveCommand<TParam, TResult> CreateFromTask<TParam, TResult>(
         Func<TParam, Task<TResult>> execute,
         ISequencer? outputScheduler) =>
-        CreateFromTask(execute, null, outputScheduler);
+        CreateFromTask((Func<TParam, Task<TResult>>)execute, null, outputScheduler);
 
     /// <summary>Creates a <see cref="ReactiveCommand{TParam, TResult}"/> with asynchronous execution logic that takes a parameter of type <typeparamref name="TParam"/>.</summary>
     /// <param name="execute">
@@ -1063,7 +1063,7 @@ public static class ReactiveCommand
     /// <returns>The ReactiveCommand instance.</returns>
     public static ReactiveCommand<TParam, TResult> CreateFromTask<TParam, TResult>(
         Func<TParam, CancellationToken, Task<TResult>> execute) =>
-        CreateFromTask(execute, null, null);
+        CreateFromTask((Func<TParam, CancellationToken, Task<TResult>>)execute, null, null);
 
     /// <summary>
     /// Creates a reactive command with asynchronous, cancellable task-based execution logic that takes TParam and returns TResult.
@@ -1076,7 +1076,7 @@ public static class ReactiveCommand
     public static ReactiveCommand<TParam, TResult> CreateFromTask<TParam, TResult>(
         Func<TParam, CancellationToken, Task<TResult>> execute,
         IObservable<bool>? canExecute) =>
-        CreateFromTask(execute, canExecute, null);
+        CreateFromTask((Func<TParam, CancellationToken, Task<TResult>>)execute, canExecute, null);
 
     /// <summary>
     /// Creates a reactive command with asynchronous, cancellable task-based execution logic that takes TParam and returns TResult.
@@ -1090,7 +1090,7 @@ public static class ReactiveCommand
     public static ReactiveCommand<TParam, TResult> CreateFromTask<TParam, TResult>(
         Func<TParam, CancellationToken, Task<TResult>> execute,
         ISequencer? outputScheduler) =>
-        CreateFromTask(execute, null, outputScheduler);
+        CreateFromTask((Func<TParam, CancellationToken, Task<TResult>>)execute, null, outputScheduler);
 
     /// <summary>Creates a <see cref="ReactiveCommand{TParam, TResult}"/> with asynchronous, cancellable execution logic that takes a parameter of type <typeparamref name="TParam"/>.</summary>
     /// <param name="execute">
@@ -1130,7 +1130,7 @@ public static class ReactiveCommand
     /// <returns>The ReactiveCommand instance.</returns>
     public static ReactiveCommand<TParam, RxVoid> CreateFromTask<TParam>(
         Func<TParam, Task> execute) =>
-        CreateFromTask(execute, null, null);
+        CreateFromTask((Func<TParam, Task>)execute, null, null);
 
     /// <summary>Creates a reactive command with asynchronous task-based execution logic that takes a parameter of type TParam.</summary>
     /// <typeparam name="TParam">The type of the parameter passed through to command execution.</typeparam>
@@ -1140,7 +1140,7 @@ public static class ReactiveCommand
     public static ReactiveCommand<TParam, RxVoid> CreateFromTask<TParam>(
         Func<TParam, Task> execute,
         IObservable<bool>? canExecute) =>
-        CreateFromTask(execute, canExecute, null);
+        CreateFromTask((Func<TParam, Task>)execute, canExecute, null);
 
     /// <summary>Creates a reactive command with asynchronous task-based execution logic that takes a parameter of type TParam.</summary>
     /// <typeparam name="TParam">The type of the parameter passed through to command execution.</typeparam>
@@ -1151,7 +1151,7 @@ public static class ReactiveCommand
     public static ReactiveCommand<TParam, RxVoid> CreateFromTask<TParam>(
         Func<TParam, Task> execute,
         ISequencer? outputScheduler) =>
-        CreateFromTask(execute, null, outputScheduler);
+        CreateFromTask((Func<TParam, Task>)execute, null, outputScheduler);
 
     /// <summary>Creates a <see cref="ReactiveCommand{TParam, TResult}"/> with asynchronous execution logic that takes a parameter of type <typeparamref name="TParam"/>.</summary>
     /// <param name="execute">
@@ -1190,7 +1190,7 @@ public static class ReactiveCommand
     /// <returns>The ReactiveCommand instance.</returns>
     public static ReactiveCommand<TParam, RxVoid> CreateFromTask<TParam>(
         Func<TParam, CancellationToken, Task> execute) =>
-        CreateFromTask(execute, null, null);
+        CreateFromTask((Func<TParam, CancellationToken, Task>)execute, null, null);
 
     /// <summary>
     /// Creates a reactive command with asynchronous, cancellable task-based execution logic that takes a parameter of type TParam.
@@ -1202,7 +1202,7 @@ public static class ReactiveCommand
     public static ReactiveCommand<TParam, RxVoid> CreateFromTask<TParam>(
         Func<TParam, CancellationToken, Task> execute,
         IObservable<bool>? canExecute) =>
-        CreateFromTask(execute, canExecute, null);
+        CreateFromTask((Func<TParam, CancellationToken, Task>)execute, canExecute, null);
 
     /// <summary>
     /// Creates a reactive command with asynchronous, cancellable task-based execution logic that takes a parameter of type TParam.
@@ -1215,7 +1215,7 @@ public static class ReactiveCommand
     public static ReactiveCommand<TParam, RxVoid> CreateFromTask<TParam>(
         Func<TParam, CancellationToken, Task> execute,
         ISequencer? outputScheduler) =>
-        CreateFromTask(execute, null, outputScheduler);
+        CreateFromTask((Func<TParam, CancellationToken, Task>)execute, null, outputScheduler);
 
     /// <summary>Creates a <see cref="ReactiveCommand{TParam, TResult}"/> with asynchronous, cancellable execution logic that takes a parameter of type <typeparamref name="TParam"/>.</summary>
     /// <param name="execute">
@@ -1261,7 +1261,7 @@ public static class ReactiveCommand
         IObservable<bool>? canExecute = null,
         ISequencer? outputScheduler = null)
     {
-        ArgumentExceptionHelper.ThrowIfNull(execute);
+        ArgumentExceptionHelper.ThrowIfNull((Func<IObservable<(IObservable<TResult> Result, Action Cancel)>>)execute);
 
         return new(
             _ => execute(),
@@ -1293,7 +1293,7 @@ public static class ReactiveCommand
         IObservable<bool>? canExecute = null,
         ISequencer? outputScheduler = null)
     {
-        ArgumentExceptionHelper.ThrowIfNull(execute);
+        ArgumentExceptionHelper.ThrowIfNull((Func<TParam, IObservable<(IObservable<TResult> Result, Action Cancel)>>)execute);
 
         return new(
             execute,
