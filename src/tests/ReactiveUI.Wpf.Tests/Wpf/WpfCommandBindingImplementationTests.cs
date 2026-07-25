@@ -25,21 +25,30 @@ namespace ReactiveUI.Tests.Wpf;
 [TestExecutor<WpfTestExecutor>]
 public class WpfCommandBindingImplementationTests
 {
-    /// <summary>The null-input command-binding cases exercised by the parameterized test.</summary>
-    private enum NullBindingCase
-    {
-        ExplicitEventNullTarget,
-        DefaultEventNullTarget,
-        NullEventName,
-        ExplicitEventNullCommand,
-        DefaultEventNullCommand
-    }
-
     /// <summary>The expected accumulated value after the command is invoked a second time.</summary>
     private const int ExpectedSecondInvocation = 2;
 
     /// <summary>The name of the mouse up routed event used for explicit event wiring.</summary>
     private const string MouseUpEventName = "MouseUp";
+
+    /// <summary>The null-input command-binding cases exercised by the parameterized test.</summary>
+    public enum NullBindingCase
+    {
+        /// <summary>An explicit-event binding with no target.</summary>
+        ExplicitEventNullTarget,
+
+        /// <summary>A default-event binding with no target.</summary>
+        DefaultEventNullTarget,
+
+        /// <summary>An explicit-event binding with no event name.</summary>
+        NullEventName,
+
+        /// <summary>An explicit-event binding with no command.</summary>
+        ExplicitEventNullCommand,
+
+        /// <summary>A default-event binding with no command.</summary>
+        DefaultEventNullCommand
+    }
 
     /// <summary>Commands the bind to explicit event wireup.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
@@ -91,7 +100,7 @@ public class WpfCommandBindingImplementationTests
                 target,
                 parameter,
                 nameof(System.Windows.Controls.Button.Click)),
-            NullBindingCase.DefaultEventNullCommand => CreatesCommandBinding.BindCommandToObject<System.Windows.Controls.Button>(null, target, parameter),
+            NullBindingCase.DefaultEventNullCommand => CreatesCommandBinding.BindCommandToObject(null, target, parameter),
             _ => throw new ArgumentOutOfRangeException(nameof(bindingCase), bindingCase, null)
         };
 
