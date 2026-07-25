@@ -234,8 +234,8 @@ public class ReactiveObjectTests
     public async Task ReactiveObjectShouldntSerializeAnythingExtra()
     {
         var fixture = new TestFixture { IsNotNullString = FooText, IsOnlyOneWord = BazText };
-        var json = JsonHelper.Serialize(fixture) ??
-                   throw new InvalidOperationException("JSON string should not be null");
+        var json = JsonHelper.Serialize(fixture)
+                   ?? throw new InvalidOperationException("JSON string should not be null");
 
         using (Assert.Multiple())
         {

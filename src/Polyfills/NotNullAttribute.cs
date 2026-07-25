@@ -13,9 +13,9 @@ namespace System.Diagnostics.CodeAnalysis;
 [ExcludeFromCodeCoverage]
 [DebuggerNonUserCode]
 [AttributeUsage(
-    validOn: AttributeTargets.Field |
-             AttributeTargets.Parameter |
-             AttributeTargets.Property |
-             AttributeTargets.ReturnValue)]
+    validOn: AttributeTargets.Field
+             | AttributeTargets.Parameter
+             | AttributeTargets.Property
+             | AttributeTargets.ReturnValue)]
 internal sealed class NotNullAttribute : Attribute;
 #endif

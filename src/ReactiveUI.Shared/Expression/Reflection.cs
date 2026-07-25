@@ -87,8 +87,8 @@ public static partial class Reflection
             switch (exp.NodeType)
             {
                 case ExpressionType.Index when
-                    exp is IndexExpression indexExpression &&
-                    indexExpression.Indexer is not null:
+                    exp is IndexExpression indexExpression
+                    && indexExpression.Indexer is not null:
                     {
                         _ = sb.Append(indexExpression.Indexer.Name).Append('[');
 
@@ -171,8 +171,8 @@ public static partial class Reflection
         ArgumentExceptionHelper.ThrowIfNull(member);
 
         var ret = GetValueFetcherForProperty(member);
-        return ret ??
-               throw new ArgumentException($"Type '{member.DeclaringType}' must have a property '{member.Name}'");
+        return ret
+               ?? throw new ArgumentException($"Type '{member.DeclaringType}' must have a property '{member.Name}'");
     }
 
     /// <summary>Converts a <see cref="MemberInfo"/> into a delegate which sets the value for the member. Supports fields and properties.</summary>
@@ -217,8 +217,8 @@ public static partial class Reflection
         ArgumentExceptionHelper.ThrowIfNull(member);
 
         var ret = GetValueSetterForProperty(member);
-        return ret ??
-               throw new ArgumentException($"Type '{member.DeclaringType}' must have a property '{member.Name}'");
+        return ret
+               ?? throw new ArgumentException($"Type '{member.DeclaringType}' must have a property '{member.Name}'");
     }
 
     /// <summary>Based on a list of expressions, attempts to get the value of the last property in the chain.</summary>
@@ -474,8 +474,8 @@ public static partial class Reflection
             throw new InvalidOperationException($"Couldn't find {type.FullName}.{eventName}");
         }
 
-        var invoke = eventInfo.EventHandlerType.GetMethod("Invoke") ??
-                     throw new MissingMethodException(eventInfo.EventHandlerType.FullName, "Invoke");
+        var invoke = eventInfo.EventHandlerType.GetMethod("Invoke")
+                     ?? throw new MissingMethodException(eventInfo.EventHandlerType.FullName, "Invoke");
         var parameters = invoke.GetParameters();
         return parameters[1].ParameterType;
     }
@@ -490,8 +490,8 @@ public static partial class Reflection
     /// </remarks>
     public static void ThrowIfMethodsNotOverloaded(
         string callingTypeName,
-        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicMethods |
-                                    DynamicallyAccessedMemberTypes.NonPublicMethods)]
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicMethods
+                                    | DynamicallyAccessedMemberTypes.NonPublicMethods)]
         Type targetType,
         params string[] methodsToCheck)
     {

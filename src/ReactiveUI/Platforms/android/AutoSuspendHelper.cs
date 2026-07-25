@@ -202,8 +202,7 @@ public class AutoSuspendHelper : IEnableLogger, IDisposable
         Signal<Bundle?> onCreate,
         Signal<RxVoid> onRestart,
         Signal<RxVoid> onPause,
-        Signal<Bundle?> onSaveInstanceState)
-        : Java.Lang.Object, Application.IActivityLifecycleCallbacks
+        Signal<Bundle?> onSaveInstanceState) : Java.Lang.Object, Application.IActivityLifecycleCallbacks
     {
         /// <inheritdoc/>
         public void OnActivityCreated(Activity? activity, Bundle? savedInstanceState) =>

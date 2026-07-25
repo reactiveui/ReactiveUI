@@ -17,8 +17,7 @@ namespace ReactiveUI;
 /// This is a UICollectionView that is both an UICollectionView and has ReactiveObject powers
 /// (i.e. you can call RaiseAndSetIfChanged).
 /// </summary>
-public class ReactiveCollectionView
-    : UICollectionView, IReactiveNotifyPropertyChanged<ReactiveCollectionView>, IHandleObservableErrors, IReactiveObject, ICanActivate, ICanForceManualActivation
+public class ReactiveCollectionView : UICollectionView, IReactiveNotifyPropertyChanged<ReactiveCollectionView>, IHandleObservableErrors, IReactiveObject, ICanActivate, ICanForceManualActivation
 {
     /// <summary>The subject used to signal view activation.</summary>
     private readonly Signal<RxVoid> _activated = new();

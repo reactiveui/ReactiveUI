@@ -1,11 +1,11 @@
-# Auto-detect text files and normalise line endings to LF in the repository.
-* text=auto
+# Auto-detect text files and use LF in both the repository and working tree.
+* text=auto eol=lf
 
 # Source code
 *.cs       text diff=csharp
 *.xaml     text
 *.slnx     text
-*.sln      text eol=crlf
+*.sln      text eol=lf
 *.csproj   text
 *.props    text
 *.targets  text
@@ -17,8 +17,8 @@
 *.txt      text
 *.sh       text eol=lf
 *.ps1      text
-*.cmd      text eol=crlf
-*.bat      text eol=crlf
+*.cmd      text eol=lf
+*.bat      text eol=lf
 *.config   text
 *.editorconfig text
 

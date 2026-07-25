@@ -40,8 +40,8 @@ public class NewGameViewModel : ReactiveObject
             x => x.Players.Count,
             x => x.NewPlayerName,
             (count, newPlayerName) =>
-                count < MaxPlayers && !string.IsNullOrWhiteSpace(newPlayerName) &&
-                !Players.Contains(newPlayerName));
+                count < MaxPlayers && !string.IsNullOrWhiteSpace(newPlayerName)
+                && !Players.Contains(newPlayerName));
         AddPlayer = ReactiveCommand.Create(
             () =>
             {

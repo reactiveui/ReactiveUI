@@ -27,18 +27,18 @@ public sealed class UIKitCommandBinders : FlexibleCommandBinder
 
     /// <summary>Cached <see cref="PropertyInfo"/> for <see cref="UIControl.Enabled"/>.</summary>
     private static readonly PropertyInfo UIControlEnabledProperty =
-        typeof(UIControl).GetRuntimeProperty(EnabledPropertyName) ??
-        throw new InvalidOperationException("There is no Enabled property on UIControl which is needed for binding.");
+        typeof(UIControl).GetRuntimeProperty(EnabledPropertyName)
+        ?? throw new InvalidOperationException("There is no Enabled property on UIControl which is needed for binding.");
 
     /// <summary>Cached <see cref="PropertyInfo"/> for <see cref="UIControl.Enabled"/>.</summary>
     private static readonly PropertyInfo UIRefreshControlEnabledProperty =
-        typeof(UIRefreshControl).GetRuntimeProperty(EnabledPropertyName) ??
-        throw new InvalidOperationException("There is no Enabled property on UIRefreshControl which is needed for binding.");
+        typeof(UIRefreshControl).GetRuntimeProperty(EnabledPropertyName)
+        ?? throw new InvalidOperationException("There is no Enabled property on UIRefreshControl which is needed for binding.");
 
     /// <summary>Cached <see cref="PropertyInfo"/> for <see cref="UIBarButtonItem.Enabled"/>.</summary>
     private static readonly PropertyInfo UIBarButtonItemEnabledProperty =
-        typeof(UIBarButtonItem).GetRuntimeProperty(EnabledPropertyName) ??
-        throw new InvalidOperationException("There is no Enabled property on UIBarButtonItem which is needed for binding.");
+        typeof(UIBarButtonItem).GetRuntimeProperty(EnabledPropertyName)
+        ?? throw new InvalidOperationException("There is no Enabled property on UIBarButtonItem which is needed for binding.");
 
     /// <summary>Initializes a new instance of the <see cref="UIKitCommandBinders"/> class.</summary>
     public UIKitCommandBinders()

@@ -60,8 +60,8 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
     {
         // Resolve the Router before wiring the subscriptions: SubscribeToNavigationStackChanges hooks
         // Router.NavigationStack directly, so Router must already be set or it would dereference null.
-        var screen = AppLocator.Current.GetService<IScreen>() ??
-                     throw new InvalidOperationException("You *must* register an IScreen class representing your App's main Screen");
+        var screen = AppLocator.Current.GetService<IScreen>()
+                     ?? throw new InvalidOperationException("You *must* register an IScreen class representing your App's main Screen");
         Router = screen.Router;
 
         // Subscribe directly without WhenActivated
@@ -102,8 +102,8 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
     [RequiresUnreferencedCode(
         "This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
     [RequiresDynamicCode(
-        "If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, or generic constraints), " +
-        "trimming can't validate that the requirements of those annotations are met.")]
+        "If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, or generic constraints), "
+        + "trimming can't validate that the requirements of those annotations are met.")]
     protected virtual IObservable<Page> PagesForViewModel(IRoutableViewModel? vm)
     {
         if (vm is null)
@@ -137,8 +137,8 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
     [RequiresUnreferencedCode(
         "This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
     [RequiresDynamicCode(
-        "If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, or generic constraints), " +
-        "trimming can't validate that the requirements of those annotations are met.")]
+        "If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, or generic constraints), "
+        + "trimming can't validate that the requirements of those annotations are met.")]
     protected virtual Page PageForViewModel(IRoutableViewModel vm)
     {
         ArgumentNullException.ThrowIfNull(vm);
@@ -194,8 +194,8 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
     [RequiresUnreferencedCode(
         "This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
     [RequiresDynamicCode(
-        "If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, or generic constraints), " +
-        "trimming can't validate that the requirements of those annotations are met.")]
+        "If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, or generic constraints), "
+        + "trimming can't validate that the requirements of those annotations are met.")]
     protected async Task SyncNavigationStacksAsync()
     {
         if (Navigation.NavigationStack.Count == Router.NavigationStack.Count
@@ -238,8 +238,8 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
     [RequiresUnreferencedCode(
         "This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
     [RequiresDynamicCode(
-        "If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, or generic constraints), " +
-        "trimming can't validate that the requirements of those annotations are met.")]
+        "If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, or generic constraints), "
+        + "trimming can't validate that the requirements of those annotations are met.")]
     private async Task PerformInitialNavigationSyncAsync()
     {
         try
@@ -256,8 +256,8 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
     [RequiresUnreferencedCode(
         "This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
     [RequiresDynamicCode(
-        "If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, or generic constraints), " +
-        "trimming can't validate that the requirements of those annotations are met.")]
+        "If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, or generic constraints), "
+        + "trimming can't validate that the requirements of those annotations are met.")]
     private void SubscribeToNavigationStackChanges() =>
         new FromEventObservable<RxVoid>(onNext =>
             {
@@ -281,8 +281,8 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
     [RequiresUnreferencedCode(
         "This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
     [RequiresDynamicCode(
-        "If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, or generic constraints), " +
-        "trimming can't validate that the requirements of those annotations are met.")]
+        "If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, or generic constraints), "
+        + "trimming can't validate that the requirements of those annotations are met.")]
     private void SubscribeToNavigateBack() =>
         Router?
             .NavigateBack
@@ -294,8 +294,8 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
     [RequiresUnreferencedCode(
         "This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
     [RequiresDynamicCode(
-        "If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, or generic arguments), " +
-        "trimming can't validate that the requirements of those annotations are met.")]
+        "If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, or generic arguments), "
+        + "trimming can't validate that the requirements of those annotations are met.")]
     private async Task OnNavigateBackAsync()
     {
         try
@@ -317,8 +317,8 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
     [RequiresUnreferencedCode(
         "This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
     [RequiresDynamicCode(
-        "If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, or generic constraints), " +
-        "trimming can't validate that the requirements of those annotations are met.")]
+        "If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, or generic constraints), "
+        + "trimming can't validate that the requirements of those annotations are met.")]
     private void SubscribeToNavigate() =>
         Router?
             .Navigate
@@ -332,8 +332,8 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
     [RequiresUnreferencedCode(
         "This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
     [RequiresDynamicCode(
-        "If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, or generic arguments), " +
-        "trimming can't validate that the requirements of those annotations are met.")]
+        "If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, or generic arguments), "
+        + "trimming can't validate that the requirements of those annotations are met.")]
     private void OnNavigateRequested()
     {
         if (!StacksAreDifferent())
@@ -354,8 +354,8 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
     [RequiresUnreferencedCode(
         "This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
     [RequiresDynamicCode(
-        "If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, or generic arguments), " +
-        "trimming can't validate that the requirements of those annotations are met.")]
+        "If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, or generic arguments), "
+        + "trimming can't validate that the requirements of those annotations are met.")]
     private Page? ResolveCurrentPage()
     {
         Page? page = null;
@@ -373,8 +373,8 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
     [RequiresUnreferencedCode(
         "This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
     [RequiresDynamicCode(
-        "If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, or generic arguments), " +
-        "trimming can't validate that the requirements of those annotations are met.")]
+        "If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, or generic arguments), "
+        + "trimming can't validate that the requirements of those annotations are met.")]
     private async Task OnNavigateAsync()
     {
         var page = ResolveCurrentPage();

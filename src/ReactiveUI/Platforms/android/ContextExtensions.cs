@@ -57,8 +57,7 @@ public static class ContextExtensions
             Justification = "'TBinder' is the binder contract the caller names explicitly to identify and cast the bound service; there is no argument it could be inferred from.")]
         public IObservable<TBinder?> ServiceBound<TBinder>(
             Intent intent)
-            where TBinder : class, IBinder
-            =>
+            where TBinder : class, IBinder =>
             context.ServiceBound<TBinder>(intent, Bind.None);
 
         /// <summary>Binds the service using the supplied <paramref name="flags"/> and exposes a strongly-typed <typeparamref name="TBinder"/> as an observable sequence.</summary>
@@ -76,8 +75,7 @@ public static class ContextExtensions
         public IObservable<TBinder?> ServiceBound<TBinder>(
             Intent intent,
             Bind flags)
-            where TBinder : class, IBinder
-            =>
+            where TBinder : class, IBinder =>
             new ServiceBoundObservable<TBinder>(context, intent, flags);
     }
 
@@ -89,8 +87,7 @@ public static class ContextExtensions
     /// <param name="context">The context used to bind the service on subscription and unbind it on dispose.</param>
     /// <param name="intent">The intent identifying the service to bind.</param>
     /// <param name="flags">The bind flags.</param>
-    private sealed class ServiceBoundObservable<TBinder>(Context context, Intent intent, Bind flags)
-        : IObservable<TBinder?>
+    private sealed class ServiceBoundObservable<TBinder>(Context context, Intent intent, Bind flags) : IObservable<TBinder?>
         where TBinder : class, IBinder
     {
         /// <inheritdoc/>
@@ -119,8 +116,7 @@ public static class ContextExtensions
     /// <typeparam name="TBinder">The type of binder delivered through this service connection.</typeparam>
     /// <param name="context">The context held by the connection and used to unbind the service when disposed.</param>
     /// <param name="observer">The observer that receives the service binder notifications.</param>
-    private sealed class ServiceConnection<TBinder>(Context context, IObserver<TBinder?> observer)
-        : Java.Lang.Object, IServiceConnection
+    private sealed class ServiceConnection<TBinder>(Context context, IObserver<TBinder?> observer) : Java.Lang.Object, IServiceConnection
         where TBinder : class, IBinder
     {
         /// <summary>The Context used to bind and unbind the service.</summary>

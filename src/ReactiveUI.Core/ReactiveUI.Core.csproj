@@ -39,6 +39,15 @@
     <Compile Include="..\Shared\ArgumentValidation.cs" Link="Shared\ArgumentValidation.cs"/>
     <Compile Include="..\Shared\DelegateObserver.cs" Link="Shared\DelegateObserver.cs"/>
     <Compile Include="..\Shared\Platform\EventPatternObservable.cs" Link="Shared\Platform\EventPatternObservable.cs"/>
+    <Compile Remove="EventHandlers\LocalizableAttribute.cs" Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) != 'android'"/>
+    <Compile Remove="Bindings\Converter\DateOnlyToStringTypeConverter.cs" Condition="$(TargetFramework.StartsWith('net4'))"/>
+    <Compile Remove="Bindings\Converter\NullableDateOnlyToStringTypeConverter.cs" Condition="$(TargetFramework.StartsWith('net4'))"/>
+    <Compile Remove="Bindings\Converter\NullableTimeOnlyToStringTypeConverter.cs" Condition="$(TargetFramework.StartsWith('net4'))"/>
+    <Compile Remove="Bindings\Converter\StringToDateOnlyTypeConverter.cs" Condition="$(TargetFramework.StartsWith('net4'))"/>
+    <Compile Remove="Bindings\Converter\StringToNullableDateOnlyTypeConverter.cs" Condition="$(TargetFramework.StartsWith('net4'))"/>
+    <Compile Remove="Bindings\Converter\StringToNullableTimeOnlyTypeConverter.cs" Condition="$(TargetFramework.StartsWith('net4'))"/>
+    <Compile Remove="Bindings\Converter\StringToTimeOnlyTypeConverter.cs" Condition="$(TargetFramework.StartsWith('net4'))"/>
+    <Compile Remove="Bindings\Converter\TimeOnlyToStringTypeConverter.cs" Condition="$(TargetFramework.StartsWith('net4'))"/>
   </ItemGroup>
 
   <ItemGroup>

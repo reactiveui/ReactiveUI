@@ -16,8 +16,7 @@ namespace ReactiveUI.AndroidX;
 /// allocation-light replacement for <c>Where(...).Select(...).FirstAsync().ToTask()</c>: it is its own observer,
 /// settles exactly once, and unsubscribes on completion. Shared by the AppCompat and Fragment reactive activities.
 /// </summary>
-internal sealed class ActivityResultAwaiter
-    : IObserver<(int requestCode, Result result, Intent? intent)>, IDisposable
+internal sealed class ActivityResultAwaiter : IObserver<(int requestCode, Result result, Intent? intent)>, IDisposable
 {
     /// <summary>The request code this awaiter is waiting for.</summary>
     private readonly int _requestCode;

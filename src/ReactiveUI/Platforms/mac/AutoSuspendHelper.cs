@@ -155,11 +155,7 @@ public class AutoSuspendHelper<[DynamicallyAccessedMembers(DynamicallyAccessedMe
     /// <remarks>
     /// Initiates a quick save when the app is hidden, mirroring the behavior of <see cref="DidResignActive"/>.
     /// </remarks>
-    public void DidHide(NSNotification notification)
-    {
-        ThrowIfDisposed();
-        _shouldPersistState.OnNext(Scope.Empty);
-    }
+    public void DidHide(NSNotification notification) => DidResignActive(notification);
 
     /// <inheritdoc />
     public void Dispose()

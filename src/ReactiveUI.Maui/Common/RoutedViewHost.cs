@@ -66,8 +66,8 @@ public partial class RoutedViewHost : TransitioningContentControl, IActivatableV
             // NB: This used to be an error but WPF design mode can't read
             // good or do other stuff good.
             this.Log().Error(
-                "Couldn't find an IPlatformOperations implementation. Please make sure you have installed the latest " +
-                "version of the ReactiveUI packages for your platform. See https://reactiveui.net/docs/getting-started/installation for guidance.");
+                "Couldn't find an IPlatformOperations implementation. Please make sure you have installed the latest "
+                + "version of the ReactiveUI packages for your platform. See https://reactiveui.net/docs/getting-started/installation for guidance.");
         }
         else
         {
@@ -176,8 +176,8 @@ public partial class RoutedViewHost : TransitioningContentControl, IActivatableV
     /// <summary>Resolves and hosts the view for the supplied view model/contract pair.</summary>
     /// <param name="x">The view model and contract to resolve a view for.</param>
     [RequiresUnreferencedCode("This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
-    [RequiresDynamicCode("If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, " +
-        "or generic constraints), trimming can't validate that the requirements of those annotations are met.")]
+    [RequiresDynamicCode("If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, "
+        + "or generic constraints), trimming can't validate that the requirements of those annotations are met.")]
     private void ResolveViewForViewModel((IRoutableViewModel? viewModel, string? contract) x)
     {
         if (x.viewModel is null)

@@ -30,19 +30,13 @@ public class ViewModelViewHostTests
     [Test]
     public async Task ViewModelViewHostDefaultContentNotNull()
     {
-        var uc = new ViewModelViewHost
-        {
-            DefaultContent = new System.Windows.Controls.Label()
-        };
+        var uc = new ViewModelViewHost { DefaultContent = new System.Windows.Controls.Label() };
 
         var activation = new ActivationForViewFetcher();
         var controlActivated = activation.GetActivationForView(uc).Collect();
 
         // Simulate activation by raising the Loaded event
-        var loaded = new RoutedEventArgs
-        {
-            RoutedEvent = FrameworkElement.LoadedEvent
-        };
+        var loaded = new RoutedEventArgs { RoutedEvent = FrameworkElement.LoadedEvent };
         uc.RaiseEvent(loaded);
 
         await _expectedActivated.AssertAreEqual(controlActivated);
@@ -57,20 +51,13 @@ public class ViewModelViewHostTests
     {
         var viewModel = new TestViewModel();
 
-        var uc = new ViewModelViewHost
-        {
-            DefaultContent = new System.Windows.Controls.Label(),
-            ViewModel = viewModel
-        };
+        var uc = new ViewModelViewHost { DefaultContent = new System.Windows.Controls.Label(), ViewModel = viewModel };
 
         var activation = new ActivationForViewFetcher();
         var controlActivated = activation.GetActivationForView(uc).Collect();
 
         // Simulate activation by raising the Loaded event
-        var loaded = new RoutedEventArgs
-        {
-            RoutedEvent = FrameworkElement.LoadedEvent
-        };
+        var loaded = new RoutedEventArgs { RoutedEvent = FrameworkElement.LoadedEvent };
         uc.RaiseEvent(loaded);
 
         await _expectedActivated.AssertAreEqual(controlActivated);

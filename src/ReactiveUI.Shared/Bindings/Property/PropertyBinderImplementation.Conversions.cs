@@ -178,20 +178,20 @@ public partial class PropertyBinderImplementation
         OutFunc<TViewPropertyType, TViewModelPropertyType?> viewToViewModelConverter)
         where TView : class, IViewFor
     {
-        if (!viewModelChainGetter.TryGetValue(view.ViewModel, out var viewModelValue) ||
-            !viewChainGetter.TryGetValue(view, out var viewValue))
+        if (!viewModelChainGetter.TryGetValue(view.ViewModel, out var viewModelValue)
+            || !viewChainGetter.TryGetValue(view, out var viewValue))
         {
             return (false, null, false);
         }
 
         if (isViewModelChange)
         {
-            return !viewModelToViewConverter(viewModelValue, out var viewModelAsView) ||
-                EqualityComparer<TViewPropertyType>.Default.Equals(viewValue, viewModelAsView) ? (false, null, false) : (true, viewModelAsView, true);
+            return !viewModelToViewConverter(viewModelValue, out var viewModelAsView)
+                || EqualityComparer<TViewPropertyType>.Default.Equals(viewValue, viewModelAsView) ? (false, null, false) : (true, viewModelAsView, true);
         }
 
-        return !viewToViewModelConverter(viewValue, out var viewAsViewModel) ||
-            EqualityComparer<TViewModelPropertyType?>.Default.Equals(viewModelValue, viewAsViewModel) ? (false, null, false) : (true, viewAsViewModel, false);
+        return !viewToViewModelConverter(viewValue, out var viewAsViewModel)
+            || EqualityComparer<TViewModelPropertyType?>.Default.Equals(viewModelValue, viewAsViewModel) ? (false, null, false) : (true, viewAsViewModel, false);
     }
 
     /// <summary>Builds the merged observable that signals when either the view model or the view side changed.</summary>

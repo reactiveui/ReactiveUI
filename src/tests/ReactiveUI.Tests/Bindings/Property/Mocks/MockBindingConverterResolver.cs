@@ -15,8 +15,8 @@ namespace ReactiveUI.Tests.Bindings.Property.Mocks;
 [SuppressMessage(
     "Design",
     "SST2324:public member on non-public type",
-    Justification = "the public API is exercised directly by tests; the containing mock type is an " +
-        "intentionally non-public implementation detail of the test project.")]
+    Justification = "the public API is exercised directly by tests; the containing mock type is an "
+        + "intentionally non-public implementation detail of the test project.")]
 internal sealed class MockBindingConverterResolver : IBindingConverterResolver
 {
     /// <summary>The registered type converters keyed by source and target type.</summary>

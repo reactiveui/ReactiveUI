@@ -35,8 +35,7 @@ namespace ReactiveUI.Blazor;
 /// </para>
 /// </remarks>
 [SuppressMessage("Usage", "BL0007:Component parameters should be auto properties", Justification = "Needed for design of the properties")]
-public class ReactiveOwningComponentBase<T>
-    : OwningComponentBase<T>, IViewFor<T>, INotifyPropertyChanged, ICanActivate
+public class ReactiveOwningComponentBase<T> : OwningComponentBase<T>, IViewFor<T>, INotifyPropertyChanged, ICanActivate
     where T : class, INotifyPropertyChanged
 {
     /// <summary>Encapsulates reactive state and lifecycle management for this component.</summary>

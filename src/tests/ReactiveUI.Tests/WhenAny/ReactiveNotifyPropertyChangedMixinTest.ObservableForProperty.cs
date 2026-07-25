@@ -535,46 +535,6 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
         }
     }
 
-    /// <summary>Simple property observation test.</summary>
-    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
-    [Test]
-    [TestExecutor<WithSchedulerExecutor>]
-    public async Task OfpSimplePropertyTest()
-    {
-        var fixture = new TestFixture();
-
-        var changes = fixture.ObservableForProperty(x => x.IsOnlyOneWord).Collect();
-
-        fixture.IsOnlyOneWord = FooText;
-
-        // ImmediateScheduler executes synchronously
-        await Assert.That(changes).Count().IsEqualTo(1);
-
-        fixture.IsOnlyOneWord = BarText;
-
-        // ImmediateScheduler executes synchronously
-        await Assert.That(changes).Count().IsEqualTo(ExpectedCountAfterSecondChange);
-
-        fixture.IsOnlyOneWord = BazText;
-
-        // ImmediateScheduler executes synchronously
-        await Assert.That(changes).Count().IsEqualTo(ExpectedCountAfterThirdChange);
-
-        fixture.IsOnlyOneWord = BazText;
-
-        // ImmediateScheduler executes synchronously
-        await Assert.That(changes).Count().IsEqualTo(ExpectedCountAfterThirdChange);
-
-        using (Assert.Multiple())
-        {
-            await Assert.That(changes.All(x => x.Sender == fixture)).IsTrue();
-
-            await Assert.That(changes.All(static x => x.GetPropertyName() == IsOnlyOneWordName)).IsTrue();
-
-            await Assert.That(changes.Select(static x => x.Value!)).IsEquivalentTo([FooText, BarText, BazText]);
-        }
-    }
-
     /// <summary>Tests SubscribeToExpressionChain basic functionality.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]

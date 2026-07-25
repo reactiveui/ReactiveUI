@@ -71,8 +71,8 @@ public static class ReactiveNotifyPropertyChangedMixins
     {
         var prefix = $"Could not find a ICreatesObservableForProperty for {senderType} property {propertyName}.";
         const string advice =
-            " This should never happen, your service locator is probably broken. Please make sure you have installed " +
-            "the latest version of the ReactiveUI packages for your platform. See https://reactiveui.net/docs/getting-started/installation for guidance.";
+            " This should never happen, your service locator is probably broken. Please make sure you have installed "
+            + "the latest version of the ReactiveUI packages for your platform. See https://reactiveui.net/docs/getting-started/installation for guidance.";
         return prefix + advice;
     }
 
@@ -156,8 +156,8 @@ public static class ReactiveNotifyPropertyChangedMixins
         [RequiresUnreferencedCode(
             "Creating Expressions requires unreferenced code because the members being referenced by the Expression may be trimmed.")]
         public IObservable<IObservedChange<TSender, TValue>> ObservableForProperty<TValue>(
-            string propertyName)
-            => ObservableForProperty<TSender, TValue>(
+            string propertyName) =>
+            ObservableForProperty<TSender, TValue>(
                 item,
                 propertyName,
                 beforeChange: false,
@@ -173,8 +173,8 @@ public static class ReactiveNotifyPropertyChangedMixins
             "Creating Expressions requires unreferenced code because the members being referenced by the Expression may be trimmed.")]
         public IObservable<IObservedChange<TSender, TValue>> ObservableForProperty<TValue>(
             string propertyName,
-            bool beforeChange)
-            => ObservableForProperty<TSender, TValue>(
+            bool beforeChange) =>
+            ObservableForProperty<TSender, TValue>(
                 item,
                 propertyName,
                 beforeChange: beforeChange,
@@ -194,8 +194,8 @@ public static class ReactiveNotifyPropertyChangedMixins
         public IObservable<IObservedChange<TSender, TValue>> ObservableForProperty<TValue>(
             string propertyName,
             bool beforeChange,
-            bool skipInitial)
-            => ObservableForProperty<TSender, TValue>(
+            bool skipInitial) =>
+            ObservableForProperty<TSender, TValue>(
                 item,
                 propertyName,
                 beforeChange: beforeChange,
@@ -329,8 +329,8 @@ public static class ReactiveNotifyPropertyChangedMixins
         /// <exception cref="InvalidCastException">If we cannot cast from the target value from the specified last property.</exception>
         [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
         public IObservable<IObservedChange<TSender, TValue>> SubscribeToExpressionChain<TValue>(
-            Expression? expression)
-            => SubscribeToExpressionChain<TSender, TValue>(item, expression, false, true, false, true);
+            Expression? expression) =>
+            SubscribeToExpressionChain<TSender, TValue>(item, expression, false, true, false, true);
 
         /// <summary>
         /// Creates a observable which will subscribe to the each property and sub property
@@ -347,8 +347,8 @@ public static class ReactiveNotifyPropertyChangedMixins
         [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
         public IObservable<IObservedChange<TSender, TValue>> SubscribeToExpressionChain<TValue>(
             Expression? expression,
-            bool beforeChange)
-            => SubscribeToExpressionChain<TSender, TValue>(item, expression, beforeChange, true, false, true);
+            bool beforeChange) =>
+            SubscribeToExpressionChain<TSender, TValue>(item, expression, beforeChange, true, false, true);
 
         /// <summary>
         /// Creates a observable which will subscribe to the each property and sub property
@@ -367,8 +367,8 @@ public static class ReactiveNotifyPropertyChangedMixins
         public IObservable<IObservedChange<TSender, TValue>> SubscribeToExpressionChain<TValue>(
             Expression? expression,
             bool beforeChange,
-            bool skipInitial)
-            => SubscribeToExpressionChain<TSender, TValue>(item, expression, beforeChange, skipInitial, false, true);
+            bool skipInitial) =>
+            SubscribeToExpressionChain<TSender, TValue>(item, expression, beforeChange, skipInitial, false, true);
 
         /// <summary>
         /// Creates a observable which will subscribe to the each property and sub property
@@ -389,8 +389,8 @@ public static class ReactiveNotifyPropertyChangedMixins
             Expression? expression,
             bool beforeChange,
             bool skipInitial,
-            bool suppressWarnings)
-            => SubscribeToExpressionChain<TSender, TValue>(
+            bool suppressWarnings) =>
+            SubscribeToExpressionChain<TSender, TValue>(
                 item,
                 expression,
                 beforeChange,

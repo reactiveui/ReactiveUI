@@ -32,8 +32,8 @@ public static class CommandBinderMixins
     /// <remarks>This static constructor ensures that the command binding implementation is set up before any
     /// static members of the CommandBinderMixins class are accessed. It attempts to retrieve an ICommandBinderImplementation
     /// from the application's service locator; if none is available, a default implementation is used.</remarks>
-    static CommandBinderMixins() => _binderImplementation = AppLocator.Current.GetService<ICommandBinderImplementation>() ??
-                                                      new CommandBinderImplementation();
+    static CommandBinderMixins() => _binderImplementation = AppLocator.Current.GetService<ICommandBinderImplementation>()
+                                                      ?? new CommandBinderImplementation();
 
     /// <summary>Provides command binding extension members for views implementing <see cref="IViewFor"/>.</summary>
     /// <typeparam name="TView">The type of the view implementing the IViewFor interface.</typeparam>
@@ -55,9 +55,9 @@ public static class CommandBinderMixins
         public IReactiveBinding<TView, TProp> BindCommand<
             TViewModel,
             TProp,
-            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents |
-                                        DynamicallyAccessedMemberTypes.NonPublicEvents |
-                                        DynamicallyAccessedMemberTypes.PublicProperties)]
+            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents
+                                        | DynamicallyAccessedMemberTypes.NonPublicEvents
+                                        | DynamicallyAccessedMemberTypes.PublicProperties)]
         TControl,
             TParam>(
             TViewModel? viewModel,
@@ -100,9 +100,9 @@ public static class CommandBinderMixins
         public IReactiveBinding<TView, TProp> BindCommand<
             TViewModel,
             TProp,
-            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents |
-                                        DynamicallyAccessedMemberTypes.NonPublicEvents |
-                                        DynamicallyAccessedMemberTypes.PublicProperties)]
+            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents
+                                        | DynamicallyAccessedMemberTypes.NonPublicEvents
+                                        | DynamicallyAccessedMemberTypes.PublicProperties)]
         TControl,
             TParam>(
             TViewModel? viewModel,
@@ -134,9 +134,9 @@ public static class CommandBinderMixins
         public IReactiveBinding<TView, TProp> BindCommand<
             TViewModel,
             TProp,
-            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents |
-                                        DynamicallyAccessedMemberTypes.NonPublicEvents |
-                                        DynamicallyAccessedMemberTypes.PublicProperties)]
+            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents
+                                        | DynamicallyAccessedMemberTypes.NonPublicEvents
+                                        | DynamicallyAccessedMemberTypes.PublicProperties)]
         TControl>(
             TViewModel? viewModel,
             Expression<Func<TViewModel, TProp?>> propertyName,
@@ -168,9 +168,9 @@ public static class CommandBinderMixins
         public IReactiveBinding<TView, TProp> BindCommand<
             TViewModel,
             TProp,
-            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents |
-                                        DynamicallyAccessedMemberTypes.NonPublicEvents |
-                                        DynamicallyAccessedMemberTypes.PublicProperties)]
+            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents
+                                        | DynamicallyAccessedMemberTypes.NonPublicEvents
+                                        | DynamicallyAccessedMemberTypes.PublicProperties)]
         TControl>(
             TViewModel? viewModel,
             Expression<Func<TViewModel, TProp?>> propertyName,
@@ -201,9 +201,9 @@ public static class CommandBinderMixins
         public IReactiveBinding<TView, TProp> BindCommand<
             TViewModel,
             TProp,
-            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents |
-                                        DynamicallyAccessedMemberTypes.NonPublicEvents |
-                                        DynamicallyAccessedMemberTypes.PublicProperties)]
+            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents
+                                        | DynamicallyAccessedMemberTypes.NonPublicEvents
+                                        | DynamicallyAccessedMemberTypes.PublicProperties)]
         TControl,
             TParam>(
             TViewModel? viewModel,
@@ -246,9 +246,9 @@ public static class CommandBinderMixins
         public IReactiveBinding<TView, TProp> BindCommand<
             TViewModel,
             TProp,
-            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents |
-                                        DynamicallyAccessedMemberTypes.NonPublicEvents |
-                                        DynamicallyAccessedMemberTypes.PublicProperties)]
+            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents
+                                        | DynamicallyAccessedMemberTypes.NonPublicEvents
+                                        | DynamicallyAccessedMemberTypes.PublicProperties)]
         TControl,
             TParam>(
             TViewModel? viewModel,

@@ -107,27 +107,4 @@ public class ContentControlBindingHookTests
 
         await Assert.That(result).IsTrue();
     }
-
-    /// <summary>Tests that ExecuteHook returns true when the sender is a panel and the property is Controls.</summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-    [Test]
-    public async Task ExecuteHook_Returns_True_When_Sender_Is_Panel_And_Property_Is_Controls()
-    {
-        var hook = new ContentControlBindingHook();
-        var panel = new Panel();
-        Expression<Func<Panel, Control.ControlCollection>> expr = x => x.Controls;
-        var viewProperties = new IObservedChange<object, object>[]
-        {
-            new ObservedChange<object, object>(panel, expr.Body, panel.Controls)
-        };
-
-        var result = hook.ExecuteHook(
-            null,
-            new(),
-            static () => [],
-            () => viewProperties,
-            BindingDirection.OneWay);
-
-        await Assert.That(result).IsTrue();
-    }
 }

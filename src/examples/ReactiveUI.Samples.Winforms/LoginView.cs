@@ -19,13 +19,7 @@ public sealed class LoginView : UserControl, IViewFor<LoginViewModel>
     private readonly TextBox _username = new() { PlaceholderText = "Username", Width = 240, Name = "Username" };
 
     /// <summary>The text box bound to the view model's password.</summary>
-    private readonly TextBox _password = new()
-    {
-        PlaceholderText = "Password",
-        Width = 240,
-        UseSystemPasswordChar = true,
-        Name = "Password"
-    };
+    private readonly TextBox _password = new() { PlaceholderText = "Password", Width = 240, UseSystemPasswordChar = true, Name = "Password" };
 
     /// <summary>The button bound to the view model's login command.</summary>
     private readonly Button _login = new() { Text = "Login", Width = 115, Name = "Login" };
@@ -40,13 +34,7 @@ public sealed class LoginView : UserControl, IViewFor<LoginViewModel>
         Justification = "Single-threaded sample view; WhenActivated captures this for activation-scoped binding after construction.")]
     public LoginView()
     {
-        var layout = new FlowLayoutPanel
-        {
-            Dock = DockStyle.Fill,
-            FlowDirection = FlowDirection.TopDown,
-            Padding = new(LayoutPadding),
-            WrapContents = false
-        };
+        var layout = new FlowLayoutPanel { Dock = DockStyle.Fill, FlowDirection = FlowDirection.TopDown, Padding = new(LayoutPadding), WrapContents = false };
 
         layout.Controls.AddRange(_username, _password);
 

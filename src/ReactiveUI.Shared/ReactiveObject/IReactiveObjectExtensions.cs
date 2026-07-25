@@ -251,8 +251,7 @@ public static class IReactiveObjectExtensions
     /// <summary>Re-types the change-argument stream from the non-generic <see cref="IReactiveObject"/> form to the caller's <typeparamref name="TSender"/>.</summary>
     /// <typeparam name="TSender">The reactive object type observed.</typeparam>
     /// <param name="source">The source change-argument stream.</param>
-    private sealed class ChangeArgsCastObservable<TSender>(IObservable<IReactivePropertyChangedEventArgs<IReactiveObject>> source)
-        : IObservable<IReactivePropertyChangedEventArgs<TSender>>
+    private sealed class ChangeArgsCastObservable<TSender>(IObservable<IReactivePropertyChangedEventArgs<IReactiveObject>> source) : IObservable<IReactivePropertyChangedEventArgs<TSender>>
         where TSender : IReactiveObject
     {
         /// <inheritdoc/>
@@ -264,8 +263,7 @@ public static class IReactiveObjectExtensions
 
         /// <summary>Re-types each change-argument value to the caller's sender type.</summary>
         /// <param name="downstream">The observer receiving re-typed change arguments.</param>
-        private sealed class Sink(IObserver<IReactivePropertyChangedEventArgs<TSender>> downstream)
-            : IObserver<IReactivePropertyChangedEventArgs<IReactiveObject>>
+        private sealed class Sink(IObserver<IReactivePropertyChangedEventArgs<TSender>> downstream) : IObserver<IReactivePropertyChangedEventArgs<IReactiveObject>>
         {
             /// <inheritdoc/>
             public void OnNext(IReactivePropertyChangedEventArgs<IReactiveObject> value) =>

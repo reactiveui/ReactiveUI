@@ -45,10 +45,7 @@ public class AutoSuspendHelperTest
             _ = new Application();
         }
 
-        var helper = new AutoSuspendHelper(Application.Current!)
-        {
-            IdleTimeout = TimeSpan.FromSeconds(CustomIdleTimeoutSeconds)
-        };
+        var helper = new AutoSuspendHelper(Application.Current!) { IdleTimeout = TimeSpan.FromSeconds(CustomIdleTimeoutSeconds) };
 
         await Assert.That(helper.IdleTimeout).IsEqualTo(TimeSpan.FromSeconds(CustomIdleTimeoutSeconds));
     }

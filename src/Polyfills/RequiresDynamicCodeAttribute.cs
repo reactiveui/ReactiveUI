@@ -14,9 +14,9 @@ namespace System.Diagnostics.CodeAnalysis;
 [ExcludeFromCodeCoverage]
 [DebuggerNonUserCode]
 [AttributeUsage(
-    validOn: Targets.Method |
-             Targets.Constructor |
-             Targets.Class,
+    validOn: Targets.Method
+             | Targets.Constructor
+             | Targets.Class,
     Inherited = false)]
 [SuppressMessage(
     "Design",

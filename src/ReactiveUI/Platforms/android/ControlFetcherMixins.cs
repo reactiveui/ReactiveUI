@@ -382,11 +382,11 @@ public static partial class ControlFetcherMixins
             ResolveStrategy.ExplicitOptIn =>
                 member.GetCustomAttribute<WireUpResourceAttribute>(true) is not null,
             ResolveStrategy.ExplicitOptOut =>
-                typeof(View).IsAssignableFrom(member.PropertyType) &&
-                member.GetCustomAttribute<IgnoreResourceAttribute>(true) is null,
+                typeof(View).IsAssignableFrom(member.PropertyType)
+                && member.GetCustomAttribute<IgnoreResourceAttribute>(true) is null,
             _ =>
-                member.PropertyType.IsSubclassOf(typeof(View)) ||
-                member.GetCustomAttribute<WireUpResourceAttribute>(true) is not null,
+                member.PropertyType.IsSubclassOf(typeof(View))
+                || member.GetCustomAttribute<WireUpResourceAttribute>(true) is not null,
         };
 
     /// <summary>Resolves a control on an <see cref="Activity"/> by resource name, caching the result per activity.</summary>

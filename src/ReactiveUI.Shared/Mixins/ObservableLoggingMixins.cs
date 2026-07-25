@@ -29,8 +29,7 @@ public static class ObservableLoggingMixins
         /// <returns>An observable sequence that logs each notification using the provided logger.</returns>
         public IObservable<T> Log<TObj>(
             TObj logObject)
-            where TObj : IEnableLogger
-            =>
+            where TObj : IEnableLogger =>
             Log(@this, logObject, null, null);
 
         /// <summary>Returns an observable sequence that logs each notification using the specified logger object and message.</summary>
@@ -41,8 +40,7 @@ public static class ObservableLoggingMixins
         public IObservable<T> Log<TObj>(
             TObj logObject,
             string? message)
-            where TObj : IEnableLogger
-            =>
+            where TObj : IEnableLogger =>
             Log(@this, logObject, message, null);
 
         /// <summary>Returns an observable sequence that logs each notification using the specified logger object.</summary>
@@ -192,8 +190,7 @@ public static class ObservableLoggingMixins
         /// <param name="onError">Invoked with the error before it is forwarded.</param>
         /// <param name="onCompleted">Invoked on completion before it is forwarded.</param>
         /// <param name="downstream">The observer that receives the forwarded notifications.</param>
-        private sealed class Sink(Action<T> onNext, Action<Exception> onError, Action onCompleted, IObserver<T> downstream)
-            : IObserver<T>
+        private sealed class Sink(Action<T> onNext, Action<Exception> onError, Action onCompleted, IObserver<T> downstream) : IObserver<T>
         {
             /// <inheritdoc/>
             public void OnNext(T value)
@@ -271,8 +268,7 @@ public static class ObservableLoggingMixins
         /// <summary>Forwards the source, switching to the handler's continuation on a matching exception.</summary>
         /// <param name="handler">Produces the continuation observable for a caught exception.</param>
         /// <param name="downstream">The observer that receives the forwarded notifications.</param>
-        private sealed class Sink(Func<TException, IObservable<T>> handler, IObserver<T> downstream)
-            : IObserver<T>, IDisposable
+        private sealed class Sink(Func<TException, IObservable<T>> handler, IObserver<T> downstream) : IObserver<T>, IDisposable
         {
             /// <summary>The source subscription; disposed when switching to the continuation.</summary>
             private readonly OnceDisposable _source = new();

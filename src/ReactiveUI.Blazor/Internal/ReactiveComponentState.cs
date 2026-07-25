@@ -3,8 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Diagnostics.CodeAnalysis;
-
 #if REACTIVE_SHIM
 namespace ReactiveUI.Reactive.Blazor.Internal;
 #else
@@ -68,10 +66,6 @@ internal sealed class ReactiveComponentState : IDisposable
     /// Use this to register subscriptions that should live for the entire component lifetime.
     /// All subscriptions added here will be disposed when the component is disposed.
     /// </remarks>
-    [SuppressMessage(
-        "Style",
-        "RCS1085:Use auto-implemented property",
-        Justification = "Explicit field backing provides clarity and follows established pattern in this class.")]
     internal MultipleDisposable LifetimeDisposables => _lifetimeDisposables;
 
     /// <summary>Gets or sets the disposable for first-render-only subscriptions.</summary>
@@ -85,10 +79,6 @@ internal sealed class ReactiveComponentState : IDisposable
     /// auto-property so it can dispose the previous subscription on assignment.
     /// </para>
     /// </remarks>
-    [SuppressMessage(
-        "Style",
-        "RCS1085:Use auto-implemented property",
-        Justification = "Intentional wrapper for SerialDisposable.Disposable property to ensure proper disposal semantics.")]
     internal IDisposable? FirstRenderSubscriptions
     {
         get => _firstRenderSubscriptions;

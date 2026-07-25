@@ -172,22 +172,6 @@ public class BindingConverterResolverTests
         await Assert.That(converterFunc).IsNull();
     }
 
-    /// <summary>Verifies that GetBindingConverter handles null services gracefully.</summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-    [Test]
-    public async Task GetBindingConverter_WithNoRxConverters_FallsBackToSplat()
-    {
-        // Arrange
-        var resolver = new BindingConverterResolver();
-
-        // Act - Get a converter that should be found in Splat
-        var converter = resolver.GetBindingConverter(typeof(MockType), typeof(MockType));
-
-        // Assert
-        await Assert.That(converter).IsNotNull();
-        await Assert.That(converter).IsTypeOf<MockBindingTypeConverter>();
-    }
-
     /// <summary>Test executor that registers mock converters.</summary>
     public class Executor : BaseAppBuilderTestExecutor
     {

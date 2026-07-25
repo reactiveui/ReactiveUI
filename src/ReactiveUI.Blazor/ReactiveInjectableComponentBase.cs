@@ -32,8 +32,7 @@ namespace ReactiveUI.Blazor;
 /// The <see cref="ViewModel"/> is provided via DI using <see cref="InjectAttribute"/>.
 /// </para>
 /// </remarks>
-public class ReactiveInjectableComponentBase<T>
-    : ComponentBase, IViewFor<T>, INotifyPropertyChanged, IDisposable, ICanActivate
+public class ReactiveInjectableComponentBase<T> : ComponentBase, IViewFor<T>, INotifyPropertyChanged, IDisposable, ICanActivate
     where T : class, INotifyPropertyChanged
 {
     /// <summary>Encapsulates reactive state and lifecycle management for this component.</summary>

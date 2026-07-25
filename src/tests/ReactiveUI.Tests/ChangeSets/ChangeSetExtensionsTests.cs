@@ -122,6 +122,6 @@ public class ChangeSetExtensionsTests
         public IEnumerator<string> GetEnumerator() => _items.GetEnumerator();
 
         /// <inheritdoc/>
-        IEnumerator IEnumerable.GetEnumerator() => _items.GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }
 }

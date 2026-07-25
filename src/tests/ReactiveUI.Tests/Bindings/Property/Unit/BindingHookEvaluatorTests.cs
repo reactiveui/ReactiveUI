@@ -247,8 +247,8 @@ public class BindingHookEvaluatorTests
             var viewModelProperties = getCurrentViewModelProperties();
 
             // Reject if the property name is "RejectMe"
-            return viewModelProperties is null || viewModelProperties.Length == 0 ||
-                   viewModelProperties[^1].Expression?.GetMemberInfo()?.Name != "RejectMe";
+            return viewModelProperties is null || viewModelProperties.Length == 0
+                   || viewModelProperties[^1].Expression?.GetMemberInfo()?.Name != "RejectMe";
         }
     }
 

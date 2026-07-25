@@ -17,9 +17,9 @@ namespace ReactiveUI.Maui;
 /// <seealso cref="MultiPage{T}" />
 /// <seealso cref="IViewFor{TViewModel}" />
 public abstract class ReactiveMultiPage<
-    [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor |
-                                DynamicallyAccessedMemberTypes.PublicMethods |
-                                DynamicallyAccessedMemberTypes.PublicProperties)]
+    [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor
+                                | DynamicallyAccessedMemberTypes.PublicMethods
+                                | DynamicallyAccessedMemberTypes.PublicProperties)]
 TPage,
     [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)] TViewModel> :
     MultiPage<TPage>, IViewFor<TViewModel>

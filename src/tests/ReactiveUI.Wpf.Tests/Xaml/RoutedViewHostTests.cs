@@ -30,19 +30,13 @@ public class RoutedViewHostTests
     [Test]
     public async Task RoutedViewHostDefaultContentNotNull()
     {
-        var uc = new RoutedViewHost
-        {
-            DefaultContent = new System.Windows.Controls.Label()
-        };
+        var uc = new RoutedViewHost { DefaultContent = new System.Windows.Controls.Label() };
 
         var activation = new ActivationForViewFetcher();
         var controlActivated = activation.GetActivationForView(uc).Collect();
 
         // Simulate activation by raising the Loaded event
-        var loaded = new RoutedEventArgs
-        {
-            RoutedEvent = FrameworkElement.LoadedEvent
-        };
+        var loaded = new RoutedEventArgs { RoutedEvent = FrameworkElement.LoadedEvent };
         uc.RaiseEvent(loaded);
 
         await _expectedActivated.AssertAreEqual(controlActivated);
@@ -59,20 +53,13 @@ public class RoutedViewHostTests
         var router = new RoutingState(Sequencer.Immediate);
         var viewModel = new TestViewModel();
 
-        var uc = new RoutedViewHost
-        {
-            DefaultContent = new System.Windows.Controls.Label(),
-            Router = router
-        };
+        var uc = new RoutedViewHost { DefaultContent = new System.Windows.Controls.Label(), Router = router };
 
         var activation = new ActivationForViewFetcher();
         var controlActivated = activation.GetActivationForView(uc).Collect();
 
         // Simulate activation by raising the Loaded event
-        var loaded = new RoutedEventArgs
-        {
-            RoutedEvent = FrameworkElement.LoadedEvent
-        };
+        var loaded = new RoutedEventArgs { RoutedEvent = FrameworkElement.LoadedEvent };
         uc.RaiseEvent(loaded);
 
         await _expectedActivated.AssertAreEqual(controlActivated);
@@ -94,11 +81,7 @@ public class RoutedViewHostTests
         var router = new RoutingState(Sequencer.Immediate);
         var viewModel = new TestViewModel();
 
-        var uc = new RoutedViewHost
-        {
-            DefaultContent = new System.Windows.Controls.Label(),
-            Router = router
-        };
+        var uc = new RoutedViewHost { DefaultContent = new System.Windows.Controls.Label(), Router = router };
 
         var activation = new ActivationForViewFetcher();
         var controlActivated = activation.GetActivationForView(uc).Collect();
@@ -107,10 +90,7 @@ public class RoutedViewHostTests
         _ = router.Navigate.Execute(viewModel).Subscribe();
 
         // Activate by raising the Loaded event
-        var loaded = new RoutedEventArgs
-        {
-            RoutedEvent = FrameworkElement.LoadedEvent
-        };
+        var loaded = new RoutedEventArgs { RoutedEvent = FrameworkElement.LoadedEvent };
         uc.RaiseEvent(loaded);
 
         await _expectedActivated.AssertAreEqual(controlActivated);

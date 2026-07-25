@@ -17,8 +17,8 @@ public static class WinUIReactiveUIBuilderExtensions
     /// <summary>The lazily-initialized sequencer that marshals work onto the current WinUI dispatcher queue.</summary>
     private static readonly Lazy<ISequencer> LazyWinUIMainThreadScheduler = new(static () =>
     {
-        var dispatcherQueue = DispatcherQueue.GetForCurrentThread() ??
-                              throw new InvalidOperationException("There is no current dispatcher thread");
+        var dispatcherQueue = DispatcherQueue.GetForCurrentThread()
+                              ?? throw new InvalidOperationException("There is no current dispatcher thread");
         return new DispatcherQueueSequencer(dispatcherQueue);
     });
 

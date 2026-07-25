@@ -36,8 +36,8 @@ public sealed class CreatesCommandBindingViaCommandParameter : ICreatesCommandBi
     /// Otherwise, it returns 5 if the target type exposes the required public instance properties; otherwise it returns 0.
     /// </remarks>
     public int GetAffinityForObject<
-        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents |
-                                    DynamicallyAccessedMemberTypes.PublicProperties)]
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents
+                                    | DynamicallyAccessedMemberTypes.PublicProperties)]
     T>(bool hasEventTarget)
     {
         if (hasEventTarget)
@@ -66,9 +66,9 @@ public sealed class CreatesCommandBindingViaCommandParameter : ICreatesCommandBi
     /// </remarks>
     [RequiresUnreferencedCode("String/reflection-based event binding may require members removed by trimming.")]
     public IDisposable? BindCommandToObject<
-        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties |
-                                    DynamicallyAccessedMemberTypes.PublicEvents |
-                                    DynamicallyAccessedMemberTypes.NonPublicEvents)]
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties
+                                    | DynamicallyAccessedMemberTypes.PublicEvents
+                                    | DynamicallyAccessedMemberTypes.NonPublicEvents)]
     T>(
         ICommand? command,
         T? target,
@@ -120,9 +120,9 @@ public sealed class CreatesCommandBindingViaCommandParameter : ICreatesCommandBi
     /// should be used. This method therefore returns <see cref="EmptyDisposable"/>.
     /// </remarks>
     public IDisposable? BindCommandToObject<
-        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties |
-                                    DynamicallyAccessedMemberTypes.PublicEvents |
-                                    DynamicallyAccessedMemberTypes.NonPublicEvents)]
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties
+                                    | DynamicallyAccessedMemberTypes.PublicEvents
+                                    | DynamicallyAccessedMemberTypes.NonPublicEvents)]
     T, TEventArgs>(
         ICommand? command,
         T? target,
@@ -196,15 +196,15 @@ public sealed class CreatesCommandBindingViaCommandParameter : ICreatesCommandBi
                 var p = properties[i];
                 var name = p.Name;
 
-                if (command is null &&
-                    string.Equals(name, CommandPropertyName, StringComparison.Ordinal))
+                if (command is null
+                    && string.Equals(name, CommandPropertyName, StringComparison.Ordinal))
                 {
                     command = p;
                     continue;
                 }
 
-                if (commandParameter is null &&
-                    string.Equals(name, CommandParameterPropertyName, StringComparison.Ordinal))
+                if (commandParameter is null
+                    && string.Equals(name, CommandParameterPropertyName, StringComparison.Ordinal))
                 {
                     commandParameter = p;
                 }

@@ -33,10 +33,7 @@ public class FollowObservableStateBehaviorTests
     public async Task StateObservable_WhenChanged_TransitionsVisualState()
     {
         var button = new Button();
-        var behavior = new FollowObservableStateBehavior
-        {
-            SchedulerOverride = Sequencer.Immediate
-        };
+        var behavior = new FollowObservableStateBehavior { SchedulerOverride = Sequencer.Immediate };
         var stateSubject = new Signal<string>();
 
         // Attach behavior to button
@@ -108,10 +105,7 @@ public class FollowObservableStateBehaviorTests
     public async Task StateObservable_WhenChangedMultipleTimes_DisposesOldSubscription()
     {
         var button = new Button();
-        var behavior = new FollowObservableStateBehavior
-        {
-            SchedulerOverride = Sequencer.Immediate
-        };
+        var behavior = new FollowObservableStateBehavior { SchedulerOverride = Sequencer.Immediate };
         var behaviors = Interaction.GetBehaviors(button);
         behaviors.Add(behavior);
 
@@ -141,11 +135,7 @@ public class FollowObservableStateBehaviorTests
     {
         var button = new Button();
         var scheduler = new VirtualTimeScheduler();
-        var behavior = new FollowObservableStateBehavior
-        {
-            AutoResubscribeOnError = true,
-            SchedulerOverride = scheduler
-        };
+        var behavior = new FollowObservableStateBehavior { AutoResubscribeOnError = true, SchedulerOverride = scheduler };
         var behaviors = Interaction.GetBehaviors(button);
         behaviors.Add(behavior);
 
@@ -178,11 +168,7 @@ public class FollowObservableStateBehaviorTests
     {
         var button = new Button();
         var scheduler = new VirtualTimeScheduler();
-        var behavior = new FollowObservableStateBehavior
-        {
-            AutoResubscribeOnError = false,
-            SchedulerOverride = scheduler
-        };
+        var behavior = new FollowObservableStateBehavior { AutoResubscribeOnError = false, SchedulerOverride = scheduler };
         var behaviors = Interaction.GetBehaviors(button);
         behaviors.Add(behavior);
 
@@ -206,10 +192,7 @@ public class FollowObservableStateBehaviorTests
     public async Task OnDetaching_DisposesWatcher()
     {
         var button = new Button();
-        var behavior = new FollowObservableStateBehavior
-        {
-            SchedulerOverride = Sequencer.Immediate
-        };
+        var behavior = new FollowObservableStateBehavior { SchedulerOverride = Sequencer.Immediate };
         var behaviors = Interaction.GetBehaviors(button);
         behaviors.Add(behavior);
 
@@ -231,11 +214,7 @@ public class FollowObservableStateBehaviorTests
     {
         var button = new Button();
         var targetButton = new Button();
-        var behavior = new FollowObservableStateBehavior
-        {
-            TargetObject = targetButton,
-            SchedulerOverride = Sequencer.Immediate
-        };
+        var behavior = new FollowObservableStateBehavior { TargetObject = targetButton, SchedulerOverride = Sequencer.Immediate };
         var behaviors = Interaction.GetBehaviors(button);
         behaviors.Add(behavior);
 
@@ -255,10 +234,7 @@ public class FollowObservableStateBehaviorTests
     public async Task StateObservable_Getter_ReturnsSetValue()
     {
         var button = new Button();
-        var behavior = new FollowObservableStateBehavior
-        {
-            SchedulerOverride = Sequencer.Immediate
-        };
+        var behavior = new FollowObservableStateBehavior { SchedulerOverride = Sequencer.Immediate };
         var behaviors = Interaction.GetBehaviors(button);
         behaviors.Add(behavior);
 
@@ -278,10 +254,7 @@ public class FollowObservableStateBehaviorTests
     {
         var button = new Button();
         var targetButton = new Button();
-        var behavior = new FollowObservableStateBehavior
-        {
-            TargetObject = targetButton
-        };
+        var behavior = new FollowObservableStateBehavior { TargetObject = targetButton };
         var behaviors = Interaction.GetBehaviors(button);
         behaviors.Add(behavior);
 

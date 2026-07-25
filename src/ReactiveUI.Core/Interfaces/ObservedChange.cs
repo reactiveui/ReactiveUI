@@ -17,8 +17,7 @@ namespace ReactiveUI;
 /// <param name="expression">Expression describing the member.</param>
 /// <param name="value">The value.</param>
 [System.Diagnostics.DebuggerDisplay("Value = {Value}, Sender = {Sender}")]
-public class ObservedChange<TSender, TValue>(TSender sender, Expression? expression, TValue value)
-    : IObservedChange<TSender, TValue>
+public class ObservedChange<TSender, TValue>(TSender sender, Expression? expression, TValue value) : IObservedChange<TSender, TValue>
 {
     /// <inheritdoc/>
     public TSender Sender { get; } = sender;

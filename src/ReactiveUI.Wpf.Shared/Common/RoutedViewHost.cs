@@ -73,9 +73,9 @@ public
             // NB: This used to be an error but WPF design mode can't read
             // good or do other stuff good.
             this.Log().Error(
-                "Couldn't find an IPlatformOperations implementation. Please make sure you have installed " +
-                "the latest version of the ReactiveUI packages for your platform. " +
-                "See https://reactiveui.net/docs/getting-started/installation for guidance.");
+                "Couldn't find an IPlatformOperations implementation. Please make sure you have installed "
+                + "the latest version of the ReactiveUI packages for your platform. "
+                + "See https://reactiveui.net/docs/getting-started/installation for guidance.");
         }
         else
         {
@@ -162,8 +162,8 @@ public
         }
 
         var viewLocator = ViewLocator ?? ReactiveUI.ViewLocator.Current;
-        var view = (viewLocator.ResolveView(x.viewModel, x.contract) ?? viewLocator.ResolveView(x.viewModel)) ??
-                   throw new InvalidOperationException($"Couldn't find view for '{x.viewModel}'.");
+        var view = (viewLocator.ResolveView(x.viewModel, x.contract) ?? viewLocator.ResolveView(x.viewModel))
+                   ?? throw new InvalidOperationException($"Couldn't find view for '{x.viewModel}'.");
         view.ViewModel = x.viewModel;
         Content = view;
     }

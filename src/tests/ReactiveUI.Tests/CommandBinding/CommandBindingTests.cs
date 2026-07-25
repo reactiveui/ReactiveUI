@@ -100,8 +100,8 @@ public class CommandBindingTests
         [SuppressMessage(
             "Design",
             "SST2324:public member on non-public type",
-            Justification = "the public surface is required for reflection/string-based event binding; the " +
-                "containing test double is an intentionally non-public detail.")]
+            Justification = "the public surface is required for reflection/string-based event binding; the "
+                + "containing test double is an intentionally non-public detail.")]
         public event EventHandler? Click;
 
         /// <summary>Raises the <see cref="Click" /> event.</summary>
@@ -112,8 +112,8 @@ public class CommandBindingTests
     [SuppressMessage(
         "Design",
         "SST1452:unused type parameter",
-        Justification = "type parameters are mandated by the implemented interface signatures; the no-op " +
-            "test double does not reference them.")]
+        Justification = "type parameters are mandated by the implemented interface signatures; the no-op "
+            + "test double does not reference them.")]
     private sealed class FakeCustomBinder : ICreatesCommandBinding
     {
         /// <summary>The high affinity returned for <see cref="FakeCustomControl" />.</summary>
@@ -141,11 +141,8 @@ public class CommandBindingTests
             T? target,
             IObservable<object?> commandParameter,
             string eventName)
-            where T : class
-        {
-            BindCalled = true;
-            return Scope.Empty;
-        }
+            where T : class =>
+            BindCommandToObject(command, target, commandParameter);
 
         /// <inheritdoc />
         public IDisposable? BindCommandToObject<T, TEventArgs>(
@@ -155,11 +152,8 @@ public class CommandBindingTests
             Action<EventHandler<TEventArgs>> addHandler,
             Action<EventHandler<TEventArgs>> removeHandler)
             where T : class
-            where TEventArgs : EventArgs
-        {
-            BindCalled = true;
-            return Scope.Empty;
-        }
+            where TEventArgs : EventArgs =>
+            BindCommandToObject<T, TEventArgs>(command, target, commandParameter, string.Empty);
 
         /// <inheritdoc />
         public int GetAffinityForObject<T>(bool hasEventTarget) =>
@@ -201,8 +195,8 @@ public class CommandBindingTests
     [SuppressMessage(
         "Usage",
         "SST2315:type owns a disposable but is not IDisposable",
-        Justification = "test fixture; the owned disposable lives for the test-process lifetime and is " +
-            "released at process exit.")]
+        Justification = "test fixture; the owned disposable lives for the test-process lifetime and is "
+            + "released at process exit.")]
     private sealed class FakeViewModel : ReactiveObject
     {
         /// <summary>Gets the command under test.</summary>

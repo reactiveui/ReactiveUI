@@ -28,8 +28,7 @@ namespace ReactiveUI;
 /// </summary>
 /// <typeparam name="TViewModel">The type of the view model. Must have a public parameterless constructor.</typeparam>
 public partial class ViewModelViewHost<
-    [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)] TViewModel>
-    : TransitioningContentControl, IViewFor<TViewModel>, IEnableLogger
+    [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)] TViewModel> : TransitioningContentControl, IViewFor<TViewModel>, IEnableLogger
     where TViewModel : class
 {
     /// <summary>The default content dependency property.</summary>
@@ -69,8 +68,8 @@ public partial class ViewModelViewHost<
             // NB: This used to be an error but WPF design mode can't read
             // good or do other stuff good.
             this.Log().Error(
-                "Couldn't find an IPlatformOperations implementation. Please make sure you have installed the latest " +
-                "version of the ReactiveUI packages for your platform. See https://reactiveui.net/docs/getting-started/installation for guidance.");
+                "Couldn't find an IPlatformOperations implementation. Please make sure you have installed the latest "
+                + "version of the ReactiveUI packages for your platform. See https://reactiveui.net/docs/getting-started/installation for guidance.");
         }
         else
         {

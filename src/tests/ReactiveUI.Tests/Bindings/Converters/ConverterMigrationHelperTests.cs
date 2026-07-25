@@ -323,26 +323,26 @@ public class ConverterMigrationHelperTests
         public object? GetService(Type? serviceType) => _services.FirstOrDefault();
 
         /// <inheritdoc/>
-        public object? GetService(Type? serviceType, string? contract) => _services.FirstOrDefault();
+        public object? GetService(Type? serviceType, string? contract) => GetService(serviceType);
 
         /// <inheritdoc/>
         public T? GetService<T>() => _services.OfType<T>().FirstOrDefault();
 
         /// <inheritdoc/>
-        public T? GetService<T>(string? contract) => _services.OfType<T>().FirstOrDefault();
+        public T? GetService<T>(string? contract) => GetService<T>();
 
         /// <inheritdoc/>
         public IEnumerable<object> GetServices(Type? serviceType) => _services.Where(static s => s is not null);
 
         /// <inheritdoc/>
         public IEnumerable<object> GetServices(Type? serviceType, string? contract) =>
-            _services.Where(static s => s is not null);
+            GetServices(serviceType);
 
         /// <inheritdoc/>
         public IEnumerable<T> GetServices<T>() => _services.OfType<T>();
 
         /// <inheritdoc/>
-        public IEnumerable<T> GetServices<T>(string? contract) => _services.OfType<T>();
+        public IEnumerable<T> GetServices<T>(string? contract) => GetServices<T>();
     }
 
     /// <summary>Test typed converter for testing purposes.</summary>

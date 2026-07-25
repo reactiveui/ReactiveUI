@@ -30,7 +30,7 @@ public sealed class BooleanToVisibilityTypeConverterTest
     [Test]
     public async Task GetAffinityForObjects_ReturnsCorrectAffinityForVisibilityToBool()
     {
-        var converter = new BooleanToVisibilityTypeConverter();
+        var converter = new VisibilityToBooleanTypeConverter();
 
         var affinity = converter.GetAffinityForObjects();
 
@@ -118,10 +118,10 @@ public sealed class BooleanToVisibilityTypeConverterTest
     {
         var converter = new BooleanToVisibilityTypeConverter();
 
-        var success = converter.TryConvertTyped(false, null, out var result);
+        var success = converter.TryConvertTyped("not a boolean", null, out var result);
 
-        await Assert.That(success).IsTrue();
-        await Assert.That(result).IsEqualTo(Visibility.Collapsed);
+        await Assert.That(success).IsFalse();
+        await Assert.That(result).IsNull();
     }
 
     /// <summary>Tests that TryConvert with Inverse hint on Visibility to bool.</summary>

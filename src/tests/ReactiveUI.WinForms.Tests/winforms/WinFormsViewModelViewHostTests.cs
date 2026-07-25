@@ -32,12 +32,7 @@ public class WinFormsViewModelViewHostTests
     public async Task SettingViewModelShouldAddTheViewtoItsControls()
     {
         var viewLocator = new FakeViewLocator { LocatorFunc = static _ => new FakeWinformsView() };
-        var target = new WinFormsViewModelViewHost
-        {
-            ViewLocator = viewLocator,
-
-            ViewModel = new FakeWinformViewModel()
-        };
+        var target = new WinFormsViewModelViewHost { ViewLocator = viewLocator, ViewModel = new FakeWinformViewModel() };
 
         using (Assert.Multiple())
         {
@@ -52,13 +47,7 @@ public class WinFormsViewModelViewHostTests
     public async Task ShouldDisposePreviousView()
     {
         var viewLocator = new FakeViewLocator { LocatorFunc = static _ => new FakeWinformsView() };
-        var target = new WinFormsViewModelViewHost
-        {
-            CacheViews = false,
-            ViewLocator = viewLocator,
-
-            ViewModel = new FakeWinformViewModel()
-        };
+        var target = new WinFormsViewModelViewHost { CacheViews = false, ViewLocator = viewLocator, ViewModel = new FakeWinformViewModel() };
 
         var currentView = target.CurrentView;
         var isDisposed = false;
@@ -93,13 +82,7 @@ public class WinFormsViewModelViewHostTests
     {
         var viewLocator = new FakeViewLocator { LocatorFunc = static _ => new FakeWinformsView() };
         var defaultContent = new Control();
-        var target = new WinFormsViewModelViewHost
-        {
-            DefaultContent = defaultContent,
-            ViewLocator = viewLocator,
-            CacheViews = true,
-            ViewModel = new FakeWinformViewModel()
-        };
+        var target = new WinFormsViewModelViewHost { DefaultContent = defaultContent, ViewLocator = viewLocator, CacheViews = true, ViewModel = new FakeWinformViewModel() };
         var cachedView = target.Content;
         target.ViewModel = new FakeWinformViewModel();
         await Assert.That(ReferenceEquals(cachedView, target.Content)).IsTrue();
@@ -112,13 +95,7 @@ public class WinFormsViewModelViewHostTests
     {
         var viewLocator = new FakeViewLocator { LocatorFunc = static _ => new FakeWinformsView() };
         var defaultContent = new Control();
-        var target = new WinFormsViewModelViewHost
-        {
-            DefaultContent = defaultContent,
-            ViewLocator = viewLocator,
-            CacheViews = false,
-            ViewModel = new FakeWinformViewModel()
-        };
+        var target = new WinFormsViewModelViewHost { DefaultContent = defaultContent, ViewLocator = viewLocator, CacheViews = false, ViewModel = new FakeWinformViewModel() };
         var cachedView = target.CurrentView;
         target.ViewModel = new FakeWinformViewModel();
         await Assert.That(ReferenceEquals(cachedView, target.CurrentView)).IsFalse();
@@ -155,11 +132,7 @@ public class WinFormsViewModelViewHostTests
     public async Task Dispose_TearsDownCleanly()
     {
         var viewLocator = new FakeViewLocator { LocatorFunc = static _ => new FakeWinformsView() };
-        var target = new WinFormsViewModelViewHost
-        {
-            ViewLocator = viewLocator,
-            ViewModel = new FakeWinformViewModel(),
-        };
+        var target = new WinFormsViewModelViewHost { ViewLocator = viewLocator, ViewModel = new FakeWinformViewModel() };
 
         target.Dispose();
 
@@ -173,11 +146,7 @@ public class WinFormsViewModelViewHostTests
     {
         var viewLocator = new FakeViewLocator { LocatorFunc = static _ => new FakeWinformsView() };
         var defaultContent = new Control();
-        using var target = new WinFormsViewModelViewHost
-        {
-            ViewLocator = viewLocator,
-            DefaultContent = defaultContent,
-        };
+        using var target = new WinFormsViewModelViewHost { ViewLocator = viewLocator, DefaultContent = defaultContent };
 
         // ViewModel stays null, so the view-model/contract combine resolves to the default content.
         target.ViewModel = new FakeWinformViewModel();
@@ -192,12 +161,7 @@ public class WinFormsViewModelViewHostTests
     public async Task UnresolvableViewModel_LeavesContentUnchanged()
     {
         var viewLocator = new FakeViewLocator { LocatorFunc = static _ => null! };
-        using var target = new WinFormsViewModelViewHost
-        {
-            CacheViews = false,
-            ViewLocator = viewLocator,
-            ViewModel = new FakeWinformViewModel(),
-        };
+        using var target = new WinFormsViewModelViewHost { CacheViews = false, ViewLocator = viewLocator, ViewModel = new FakeWinformViewModel() };
 
         await Assert.That(target.CurrentView).IsNull();
     }

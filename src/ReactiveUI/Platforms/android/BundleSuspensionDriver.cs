@@ -27,11 +27,11 @@ public sealed class BundleSuspensionDriver : ISuspensionDriver
 
     /// <inheritdoc />
     [RequiresUnreferencedCode(
-        "Implementations commonly use reflection-based serialization. " +
-        "Prefer LoadState<T>(JsonTypeInfo<T>) for trimming or AOT scenarios.")]
+        "Implementations commonly use reflection-based serialization. "
+        + "Prefer LoadState<T>(JsonTypeInfo<T>) for trimming or AOT scenarios.")]
     [RequiresDynamicCode(
-        "Implementations commonly use reflection-based serialization. " +
-        "Prefer LoadState<T>(JsonTypeInfo<T>) for trimming or AOT scenarios.")]
+        "Implementations commonly use reflection-based serialization. "
+        + "Prefer LoadState<T>(JsonTypeInfo<T>) for trimming or AOT scenarios.")]
     public IObservable<object?> LoadState()
     {
         try
@@ -89,11 +89,11 @@ public sealed class BundleSuspensionDriver : ISuspensionDriver
 
     /// <inheritdoc />
     [RequiresUnreferencedCode(
-        "Implementations commonly use reflection-based serialization. " +
-        "Prefer SaveState<T>(T, JsonTypeInfo<T>) for trimming or AOT scenarios.")]
+        "Implementations commonly use reflection-based serialization. "
+        + "Prefer SaveState<T>(T, JsonTypeInfo<T>) for trimming or AOT scenarios.")]
     [RequiresDynamicCode(
-        "Implementations commonly use reflection-based serialization. " +
-        "Prefer SaveState<T>(T, JsonTypeInfo<T>) for trimming or AOT scenarios.")]
+        "Implementations commonly use reflection-based serialization. "
+        + "Prefer SaveState<T>(T, JsonTypeInfo<T>) for trimming or AOT scenarios.")]
     public IObservable<RxVoid> SaveState<T>(T state)
     {
         try

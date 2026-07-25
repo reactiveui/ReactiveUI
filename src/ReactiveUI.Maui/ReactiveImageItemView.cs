@@ -87,26 +87,11 @@ TViewModel> : ReactiveContentView<TViewModel>
     /// <summary>Initializes a new instance of the <see cref="ReactiveImageItemView{TViewModel}"/> class.</summary>
     public ReactiveImageItemView()
     {
-        _image = new()
-        {
-            WidthRequest = ImageSize,
-            HeightRequest = ImageSize,
-            VerticalOptions = LayoutOptions.Center,
-            HorizontalOptions = LayoutOptions.Start
-        };
+        _image = new() { WidthRequest = ImageSize, HeightRequest = ImageSize, VerticalOptions = LayoutOptions.Center, HorizontalOptions = LayoutOptions.Start };
 
-        _textLabel = new()
-        {
-            FontSize = PrimaryFontSize,
-            VerticalOptions = LayoutOptions.Center
-        };
+        _textLabel = new() { FontSize = PrimaryFontSize, VerticalOptions = LayoutOptions.Center };
 
-        _detailLabel = new()
-        {
-            FontSize = DetailFontSize,
-            VerticalOptions = LayoutOptions.Center,
-            Opacity = DetailOpacity
-        };
+        _detailLabel = new() { FontSize = DetailFontSize, VerticalOptions = LayoutOptions.Center, Opacity = DetailOpacity };
 
         _image.Source = ImageSource;
         _textLabel.Text = Text;

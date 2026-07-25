@@ -155,8 +155,7 @@ public static class RoutableViewModelMixins
         /// <param name="downstream">The observer receiving the focus signal.</param>
         /// <param name="router">The router whose current view model is inspected.</param>
         /// <param name="item">The view model being watched.</param>
-        private sealed class Sink(IObserver<RxVoid> downstream, RoutingState router, IRoutableViewModel item)
-            : IObserver<IReactiveChangeSet<IRoutableViewModel>>, IDisposable
+        private sealed class Sink(IObserver<RxVoid> downstream, RoutingState router, IRoutableViewModel item) : IObserver<IReactiveChangeSet<IRoutableViewModel>>, IDisposable
         {
             /// <summary>The subscription to the navigation-stack change stream.</summary>
             private IDisposable? _subscription;
@@ -251,8 +250,7 @@ public static class RoutableViewModelMixins
         /// <param name="downstream">The observer receiving the lost-focus signal.</param>
         /// <param name="router">The router whose current view model is inspected.</param>
         /// <param name="item">The view model being watched.</param>
-        private sealed class Sink(IObserver<RxVoid> downstream, RoutingState router, IRoutableViewModel item)
-            : IObserver<IReactiveChangeSet<IRoutableViewModel>>, IDisposable
+        private sealed class Sink(IObserver<RxVoid> downstream, RoutingState router, IRoutableViewModel item) : IObserver<IReactiveChangeSet<IRoutableViewModel>>, IDisposable
         {
             /// <summary>The subscription to the navigation-stack change stream.</summary>
             private IDisposable? _subscription;

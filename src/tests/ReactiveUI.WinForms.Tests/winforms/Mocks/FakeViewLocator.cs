@@ -27,8 +27,8 @@ internal sealed class FakeViewLocator : IViewLocator
     [RequiresUnreferencedCode(
         "This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
     [RequiresDynamicCode(
-        "If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, " +
-        "or generic constraints), trimming can't validate that the requirements of those annotations are met.")]
+        "If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, "
+        + "or generic constraints), trimming can't validate that the requirements of those annotations are met.")]
     public IViewFor? ResolveView(object? instance, string? contract)
     {
         if (instance is null)
@@ -49,7 +49,7 @@ internal sealed class FakeViewLocator : IViewLocator
     [RequiresUnreferencedCode(
         "This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
     [RequiresDynamicCode(
-        "If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, " +
-        "or generic constraints), trimming can't validate that the requirements of those annotations are met.")]
+        "If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, "
+        + "or generic constraints), trimming can't validate that the requirements of those annotations are met.")]
     public IViewFor? ResolveView(object? instance) => ResolveView(instance, null);
 }

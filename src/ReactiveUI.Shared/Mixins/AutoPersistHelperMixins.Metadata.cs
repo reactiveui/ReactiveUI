@@ -32,8 +32,8 @@ public static partial class AutoPersistHelperMixins
         /// <returns>A disposable to disable automatic persistence.</returns>
         public IDisposable AutoPersist(
             Func<T, IObservable<RxVoid>> doPersist,
-            AutoPersistMetadata metadata)
-            => @this.AutoPersist(doPersist, metadata, interval: null);
+            AutoPersistMetadata metadata) =>
+            @this.AutoPersist(doPersist, metadata, interval: null);
 
         /// <summary>AutoPersist overload that performs no runtime reflection and is suitable for trimming/AOT scenarios.</summary>
         /// <param name="doPersist">The asynchronous method to call to save the object to disk.</param>
@@ -44,8 +44,8 @@ public static partial class AutoPersistHelperMixins
         public IDisposable AutoPersist(
             Func<T, IObservable<RxVoid>> doPersist,
             AutoPersistMetadata metadata,
-            TimeSpan? interval)
-            => @this.AutoPersist(doPersist, Signal.Silent<RxVoid>(), metadata, interval);
+            TimeSpan? interval) =>
+            @this.AutoPersist(doPersist, Signal.Silent<RxVoid>(), metadata, interval);
 
         /// <summary>AutoPersist overload that uses explicit metadata and a manual save signal, performing no runtime reflection.</summary>
         /// <typeparam name="TDontCare">The save signal type.</typeparam>
@@ -56,8 +56,8 @@ public static partial class AutoPersistHelperMixins
         public IDisposable AutoPersist<TDontCare>(
             Func<T, IObservable<RxVoid>> doPersist,
             IObservable<TDontCare> manualSaveSignal,
-            AutoPersistMetadata metadata)
-            => @this.AutoPersist(doPersist, manualSaveSignal, metadata, interval: null);
+            AutoPersistMetadata metadata) =>
+            @this.AutoPersist(doPersist, manualSaveSignal, metadata, interval: null);
 
         /// <summary>AutoPersist overload that performs no runtime reflection and is suitable for trimming/AOT scenarios.</summary>
         /// <typeparam name="TDontCare">The save signal type.</typeparam>

@@ -15,8 +15,7 @@ namespace ReactiveUI;
 /// <param name="sender">The sender.</param>
 /// <param name="propertyName">Name of the property.</param>
 [System.Diagnostics.DebuggerDisplay("PropertyName = {PropertyName}, Sender = {Sender}")]
-public class ReactivePropertyChangingEventArgs<TSender>(TSender sender, string? propertyName)
-    : PropertyChangingEventArgs(propertyName), IReactivePropertyChangedEventArgs<TSender>
+public class ReactivePropertyChangingEventArgs<TSender>(TSender sender, string? propertyName) : PropertyChangingEventArgs(propertyName), IReactivePropertyChangedEventArgs<TSender>
 {
     /// <summary>Gets the sender which triggered the Reactive property changed event.</summary>
     /// <inheritdoc/>

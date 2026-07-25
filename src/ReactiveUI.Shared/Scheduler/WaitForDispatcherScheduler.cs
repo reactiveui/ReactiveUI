@@ -45,14 +45,14 @@ public class WaitForDispatcherScheduler : ISequencer
         TState state,
         TimeSpan dueTime,
         Func<ISequencer, TState, IDisposable> action) =>
-        AttemptToCreateScheduler().Schedule(state, dueTime, action);
+        ScheduleRelative(state, dueTime, action);
 
     /// <inheritdoc/>
     public IDisposable Schedule<TState>(
         TState state,
         DateTimeOffset dueTime,
         Func<ISequencer, TState, IDisposable> action) =>
-        AttemptToCreateScheduler().Schedule(state, dueTime, action);
+        ScheduleAbsolute(state, dueTime, action);
 #else
     /// <inheritdoc/>
     public long Timestamp => AttemptToCreateScheduler().Timestamp;
@@ -74,7 +74,7 @@ public class WaitForDispatcherScheduler : ISequencer
     /// <param name="action">The action to run.</param>
     /// <returns>A disposable that cancels the scheduled work.</returns>
     public IDisposable Schedule<TState>(TState state, TimeSpan dueTime, Func<ISequencer, TState, IDisposable> action) =>
-        AttemptToCreateScheduler().Schedule(state, dueTime, action);
+        ScheduleRelative(state, dueTime, action);
 
     /// <summary>Schedules <paramref name="action"/> at <paramref name="dueTime"/> on the underlying scheduler,
     /// falling back to the current-thread scheduler when the dispatcher is not yet available.</summary>
@@ -84,7 +84,7 @@ public class WaitForDispatcherScheduler : ISequencer
     /// <param name="action">The action to run.</param>
     /// <returns>A disposable that cancels the scheduled work.</returns>
     public IDisposable Schedule<TState>(TState state, DateTimeOffset dueTime, Func<ISequencer, TState, IDisposable> action) =>
-        AttemptToCreateScheduler().Schedule(state, dueTime, action);
+        ScheduleAbsolute(state, dueTime, action);
 
     /// <inheritdoc/>
     public void Schedule(IWorkItem item) => AttemptToCreateScheduler().Schedule(item);
@@ -92,6 +92,33 @@ public class WaitForDispatcherScheduler : ISequencer
     /// <inheritdoc/>
     public void Schedule(IWorkItem item, long dueTimestamp) => AttemptToCreateScheduler().Schedule(item, dueTimestamp);
 #endif
+
+    /// <summary>Schedules against a delay measured from the scheduler's current time.</summary>
+    /// <typeparam name="TState">The work item's state type.</typeparam>
+    /// <param name="state">The state supplied to the action.</param>
+    /// <param name="dueTime">The delay before execution.</param>
+    /// <param name="action">The scheduled work.</param>
+    /// <returns>A disposable that cancels the scheduled work.</returns>
+    private IDisposable ScheduleRelative<TState>(
+        TState state,
+        TimeSpan dueTime,
+        Func<ISequencer, TState, IDisposable> action) =>
+        AttemptToCreateScheduler().Schedule(state, dueTime, action);
+
+    /// <summary>Schedules against an absolute point on the scheduler's timeline.</summary>
+    /// <typeparam name="TState">The work item's state type.</typeparam>
+    /// <param name="state">The state supplied to the action.</param>
+    /// <param name="dueTime">The absolute execution time.</param>
+    /// <param name="action">The scheduled work.</param>
+    /// <returns>A disposable that cancels the scheduled work.</returns>
+    private IDisposable ScheduleAbsolute<TState>(
+        TState state,
+        DateTimeOffset dueTime,
+        Func<ISequencer, TState, IDisposable> action)
+    {
+        var scheduler = AttemptToCreateScheduler();
+        return scheduler.Schedule(state, dueTime, action);
+    }
 
     /// <summary>
     /// Attempts to create and return an instance of the scheduler. If the scheduler cannot be created, returns a

@@ -16,8 +16,8 @@ public class FakeCollectionViewModel : ReactiveObject
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Design",
         "SST2403:'this' escapes 'FakeCollectionViewModel' before construction finishes",
-        Justification = "canonical ObservableAsPropertyHelper initialization requires 'this' in the constructor; " +
-            "the single-threaded fixture never exposes the half-built instance.")]
+        Justification = "canonical ObservableAsPropertyHelper initialization requires 'this' in the constructor; "
+            + "the single-threaded fixture never exposes the half-built instance.")]
     public FakeCollectionViewModel(FakeCollectionModel model)
     {
         Model = model;

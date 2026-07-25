@@ -45,9 +45,9 @@ internal static class CommandBinderImplementationMixins
             TView,
             TViewModel,
             TProp,
-            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents |
-                                        DynamicallyAccessedMemberTypes.NonPublicEvents |
-                                        DynamicallyAccessedMemberTypes.PublicProperties)]
+            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents
+                                        | DynamicallyAccessedMemberTypes.NonPublicEvents
+                                        | DynamicallyAccessedMemberTypes.PublicProperties)]
         TControl>(
             TViewModel? viewModel,
             TView view,

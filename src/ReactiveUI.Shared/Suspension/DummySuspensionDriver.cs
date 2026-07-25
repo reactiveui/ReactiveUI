@@ -22,31 +22,31 @@ public sealed class DummySuspensionDriver : ISuspensionDriver
 {
     /// <inheritdoc />
     [RequiresUnreferencedCode(
-        "Implementations commonly use reflection-based serialization. " +
-        "Prefer LoadState<T>(JsonTypeInfo<T>) for trimming or AOT scenarios.")]
+        "Implementations commonly use reflection-based serialization. "
+        + "Prefer LoadState<T>(JsonTypeInfo<T>) for trimming or AOT scenarios.")]
     [RequiresDynamicCode(
-        "Implementations commonly use reflection-based serialization. " +
-        "Prefer LoadState<T>(JsonTypeInfo<T>) for trimming or AOT scenarios.")]
-    public IObservable<object?> LoadState()
-        => new ReturnSignal<object?>(null, Sequencer.Immediate);
+        "Implementations commonly use reflection-based serialization. "
+        + "Prefer LoadState<T>(JsonTypeInfo<T>) for trimming or AOT scenarios.")]
+    public IObservable<object?> LoadState() =>
+        new ReturnSignal<object?>(null, Sequencer.Immediate);
 
     /// <inheritdoc />
     public IObservable<T?> LoadState<T>(JsonTypeInfo<T> typeInfo) => new ReturnSignal<T?>(default, Sequencer.Immediate);
 
     /// <inheritdoc />
     [RequiresUnreferencedCode(
-        "Implementations commonly use reflection-based serialization. " +
-        "Prefer SaveState<T>(T, JsonTypeInfo<T>) for trimming or AOT scenarios.")]
+        "Implementations commonly use reflection-based serialization. "
+        + "Prefer SaveState<T>(T, JsonTypeInfo<T>) for trimming or AOT scenarios.")]
     [RequiresDynamicCode(
-        "Implementations commonly use reflection-based serialization. " +
-        "Prefer SaveState<T>(T, JsonTypeInfo<T>) for trimming or AOT scenarios.")]
-    public IObservable<RxVoid> SaveState<T>(T state)
-        => ImmutableReturnRxVoidSignal.Instance;
+        "Implementations commonly use reflection-based serialization. "
+        + "Prefer SaveState<T>(T, JsonTypeInfo<T>) for trimming or AOT scenarios.")]
+    public IObservable<RxVoid> SaveState<T>(T state) =>
+        ImmutableReturnRxVoidSignal.Instance;
 
     /// <inheritdoc />
     public IObservable<RxVoid> SaveState<T>(T state, JsonTypeInfo<T> typeInfo) => ImmutableReturnRxVoidSignal.Instance;
 
     /// <inheritdoc />
-    public IObservable<RxVoid> InvalidateState()
-        => ImmutableReturnRxVoidSignal.Instance;
+    public IObservable<RxVoid> InvalidateState() =>
+        ImmutableReturnRxVoidSignal.Instance;
 }

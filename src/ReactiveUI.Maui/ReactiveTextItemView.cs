@@ -71,29 +71,14 @@ TViewModel> : ReactiveContentView<TViewModel>
     /// <summary>Initializes a new instance of the <see cref="ReactiveTextItemView{TViewModel}"/> class.</summary>
     public ReactiveTextItemView()
     {
-        _textLabel = new()
-        {
-            FontSize = PrimaryFontSize,
-            VerticalOptions = LayoutOptions.Center
-        };
+        _textLabel = new() { FontSize = PrimaryFontSize, VerticalOptions = LayoutOptions.Center };
 
-        _detailLabel = new()
-        {
-            FontSize = DetailFontSize,
-            VerticalOptions = LayoutOptions.Center,
-            Opacity = DetailOpacity
-        };
+        _detailLabel = new() { FontSize = DetailFontSize, VerticalOptions = LayoutOptions.Center, Opacity = DetailOpacity };
 
         _textLabel.Text = Text;
         _detailLabel.Text = Detail;
 
-        Content = new StackLayout
-        {
-            Orientation = StackOrientation.Vertical,
-            VerticalOptions = LayoutOptions.Center,
-            Padding = ContentPadding,
-            Children = { _textLabel, _detailLabel }
-        };
+        Content = new StackLayout { Orientation = StackOrientation.Vertical, VerticalOptions = LayoutOptions.Center, Padding = ContentPadding, Children = { _textLabel, _detailLabel } };
     }
 
     /// <summary>Gets or sets the primary text to display.</summary>

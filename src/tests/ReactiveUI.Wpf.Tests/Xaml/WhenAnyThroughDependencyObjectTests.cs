@@ -27,15 +27,7 @@ public class WhenAnyThroughDependencyObjectTests
     [Test]
     public async Task WhenAnyThroughAViewShouldntGiveNullValues()
     {
-        var vm = new HostTestFixture
-        {
-            Child = new()
-            {
-                IsNotNullString = "Foo",
-                IsOnlyOneWord = "Baz",
-                PocoProperty = "Bamf"
-            },
-        };
+        var vm = new HostTestFixture { Child = new() { IsNotNullString = "Foo", IsOnlyOneWord = "Baz", PocoProperty = "Bamf" } };
 
         var fixture = new HostTestView();
 

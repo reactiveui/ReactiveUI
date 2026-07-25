@@ -31,6 +31,25 @@ public class WpfCommandBindingImplementationTests
     /// <summary>The name of the mouse up routed event used for explicit event wiring.</summary>
     private const string MouseUpEventName = "MouseUp";
 
+    /// <summary>The null-input command-binding cases exercised by the parameterized test.</summary>
+    public enum NullBindingCase
+    {
+        /// <summary>An explicit-event binding with no target.</summary>
+        ExplicitEventNullTarget,
+
+        /// <summary>A default-event binding with no target.</summary>
+        DefaultEventNullTarget,
+
+        /// <summary>An explicit-event binding with no event name.</summary>
+        NullEventName,
+
+        /// <summary>An explicit-event binding with no command.</summary>
+        ExplicitEventNullCommand,
+
+        /// <summary>A default-event binding with no command.</summary>
+        DefaultEventNullCommand
+    }
+
     /// <summary>Commands the bind to explicit event wireup.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
@@ -52,79 +71,47 @@ public class WpfCommandBindingImplementationTests
         await Assert.That(invokeCount).IsEqualTo(1);
     }
 
-    /// <summary>Binds the command to object target is null.</summary>
+    /// <summary>Verifies command binding handles null targets, event names, and commands according to its contract.</summary>
+    /// <param name="bindingCase">The null-input case to exercise.</param>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public async Task BindCommandToObjectWithEventTargetIsNull()
+    [Arguments(NullBindingCase.ExplicitEventNullTarget)]
+    [Arguments(NullBindingCase.DefaultEventNullTarget)]
+    [Arguments(NullBindingCase.NullEventName)]
+    [Arguments(NullBindingCase.ExplicitEventNullCommand)]
+    [Arguments(NullBindingCase.DefaultEventNullCommand)]
+    public async Task BindCommandToObject_NullInput_HandlesAsDocumented(NullBindingCase bindingCase)
     {
-        var vm = new CommandBindingViewModel();
-        _ = new CommandBindingView { ViewModel = vm };
+        var command = ReactiveCommand.Create(static () => { }, outputScheduler: Sequencer.Immediate);
+        var target = new System.Windows.Controls.Button();
+        var parameter = Signal.Emit<object?>(null);
 
-        var invokeCount = 0;
-        _ = vm.Command2.Subscribe(_ => invokeCount++);
+        IDisposable Bind() => bindingCase switch
+        {
+            NullBindingCase.ExplicitEventNullTarget => CreatesCommandBinding.BindCommandToObject<System.Windows.Controls.Button, RoutedEventArgs>(
+                command,
+                null,
+                parameter,
+                nameof(System.Windows.Controls.Button.Click)),
+            NullBindingCase.DefaultEventNullTarget => CreatesCommandBinding.BindCommandToObject<System.Windows.Controls.Button>(command, null, parameter),
+            NullBindingCase.NullEventName => CreatesCommandBinding.BindCommandToObject<System.Windows.Controls.Button, RoutedEventArgs>(command, target, parameter, null!),
+            NullBindingCase.ExplicitEventNullCommand => CreatesCommandBinding.BindCommandToObject<System.Windows.Controls.Button, RoutedEventArgs>(
+                null,
+                target,
+                parameter,
+                nameof(System.Windows.Controls.Button.Click)),
+            NullBindingCase.DefaultEventNullCommand => CreatesCommandBinding.BindCommandToObject(null, target, parameter),
+            _ => throw new ArgumentOutOfRangeException(nameof(bindingCase), bindingCase, null)
+        };
 
-        // Test that binding with null target throws
-        await Assert.That(invokeCount).IsEqualTo(0);
-    }
+        if (bindingCase is NullBindingCase.ExplicitEventNullTarget or NullBindingCase.DefaultEventNullTarget or NullBindingCase.NullEventName)
+        {
+            _ = Assert.Throws<ArgumentNullException>(() => Bind());
+            return;
+        }
 
-    /// <summary>Binds the command to object target is null.</summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-    [Test]
-    public async Task BindCommandToObjectTargetIsNull()
-    {
-        var vm = new CommandBindingViewModel();
-        _ = new CommandBindingView { ViewModel = vm };
-
-        var invokeCount = 0;
-        _ = vm.Command2.Subscribe(_ => invokeCount++);
-
-        // Test that binding with null target throws when target is required
-        await Assert.That(invokeCount).IsEqualTo(0);
-    }
-
-    /// <summary>Binds the command to object target is null.</summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-    [Test]
-    public async Task BindCommandToObjectEventIsNull()
-    {
-        var vm = new CommandBindingViewModel();
-        _ = new CommandBindingView { ViewModel = vm };
-
-        var invokeCount = 0;
-        _ = vm.Command2.Subscribe(_ => invokeCount++);
-
-        // Test that binding with non-existent event name throws
-        await Assert.That(invokeCount).IsEqualTo(0);
-    }
-
-    /// <summary>Binds the command to object command is null.</summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-    [Test]
-    public async Task BindCommandToObjectWithEventCommandIsArgumentNull()
-    {
-        var vm = new CommandBindingViewModel();
-        _ = new CommandBindingView { ViewModel = vm };
-
-        var invokeCount = 0;
-        _ = vm.Command2.Subscribe(_ => invokeCount++);
-
-        // Test that binding with null command throws appropriate exception
-        await Assert.That(invokeCount).IsEqualTo(0);
-    }
-
-    /// <summary>Binds the command to object command is null.</summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-    [Test]
-    public async Task BindCommandToObjectCommandIsArgumentNull()
-    {
-        var vm = new CommandBindingViewModel();
-        _ = new CommandBindingView { ViewModel = vm };
-
-        var invokeCount = 0;
-        _ = vm.Command2.Subscribe(_ => invokeCount++);
-
-        // Test that binding with null command throws exception
-        await Assert.That(invokeCount).IsEqualTo(0);
+        using var binding = Bind();
+        await Assert.That(binding).IsNotNull();
     }
 
     /// <summary>Commands the bind view model to view with observable.</summary>
@@ -227,9 +214,9 @@ public class WpfCommandBindingImplementationTests
         var view = new FakeXamlCommandBindingView { ViewModel = vm };
 
         await Assert.That(testLogger.Messages.Exists(t =>
-                t.message.Contains(nameof(POCOObservableForProperty), StringComparison.Ordinal) &&
-                t.message.Contains(view.NameOfButtonDeclaredInXaml, StringComparison.Ordinal) &&
-                t.logLevel == LogLevel.Warn)).IsFalse();
+                t.message.Contains(nameof(POCOObservableForProperty), StringComparison.Ordinal)
+                && t.message.Contains(view.NameOfButtonDeclaredInXaml, StringComparison.Ordinal)
+                && t.logLevel == LogLevel.Warn)).IsFalse();
     }
 
     /// <summary>Verifies that an overwritten view model is garbage collected after a command binding.</summary>

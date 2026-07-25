@@ -113,10 +113,7 @@ public class ChatRoomViewModel : ReactiveObject, IRoutableViewModel
     {
         var msg = new ChatMessage { Sender = _user, Text = MessageText, Timestamp = TimeProvider.System.GetUtcNow() };
         _room.Messages.Add(msg);
-        var networkMessage = new ChatNetworkMessage(_room.Id, _room.Name, msg.Sender, msg.Text, msg.Timestamp)
-        {
-            InstanceId = _senderInstanceId
-        };
+        var networkMessage = new ChatNetworkMessage(_room.Id, _room.Name, msg.Sender, msg.Text, msg.Timestamp) { InstanceId = _senderInstanceId };
 
         MessageBus.Current.SendMessage(networkMessage, RoomName);
         Trace.TraceInformation($"[Room:{_room.Name}] TX '{msg.Text}' from {_user}/{Services.AppInstance.Id}");

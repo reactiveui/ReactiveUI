@@ -244,7 +244,7 @@ public class InteractionBinderImplementationTests
             static input =>
             {
                 input.SetOutput(true);
-                return Signal.Emit(RxVoid.Default);
+                return Task.CompletedTask;
             });
 
         vm.InteractionViewModel = new();

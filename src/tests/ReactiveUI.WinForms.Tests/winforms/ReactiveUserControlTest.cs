@@ -54,10 +54,7 @@ public class ReactiveUserControlTest
     [Test]
     public async Task ViewModel_CanBeSetToNull()
     {
-        var control = new ReactiveUserControl<TestViewModel>
-        {
-            ViewModel = new(),
-        };
+        var control = new ReactiveUserControl<TestViewModel> { ViewModel = new() };
         control.ViewModel = null;
 
         await Assert.That(control.ViewModel).IsNull();

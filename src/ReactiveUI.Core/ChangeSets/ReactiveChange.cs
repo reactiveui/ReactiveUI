@@ -57,11 +57,11 @@ public readonly struct ReactiveChange<T> : IEquatable<ReactiveChange<T>>
 
     /// <inheritdoc/>
     public bool Equals(ReactiveChange<T> other) =>
-        Reason == other.Reason &&
-        EqualityComparer<T>.Default.Equals(Current, other.Current) &&
-        EqualityComparer<T?>.Default.Equals(Previous, other.Previous) &&
-        CurrentIndex == other.CurrentIndex &&
-        PreviousIndex == other.PreviousIndex;
+        Reason == other.Reason
+        && EqualityComparer<T>.Default.Equals(Current, other.Current)
+        && EqualityComparer<T?>.Default.Equals(Previous, other.Previous)
+        && CurrentIndex == other.CurrentIndex
+        && PreviousIndex == other.PreviousIndex;
 
     /// <inheritdoc/>
     public override bool Equals(object? obj) => obj is ReactiveChange<T> other && Equals(other);

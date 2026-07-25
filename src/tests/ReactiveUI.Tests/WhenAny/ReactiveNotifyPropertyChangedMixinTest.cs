@@ -249,8 +249,8 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
         foreach (var x in results)
         {
             var names = x.output.Select(static y =>
-                y.GetMemberInfo()?.Name ??
-                throw new InvalidOperationException("propertyName should not be null.")).ToArray();
+                y.GetMemberInfo()?.Name
+                ?? throw new InvalidOperationException("propertyName should not be null.")).ToArray();
 
             await Assert.That(names).IsEquivalentTo(data[x.input], CollectionOrdering.Matching);
         }

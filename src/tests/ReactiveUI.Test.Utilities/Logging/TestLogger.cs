@@ -40,11 +40,11 @@ public class TestLogger : ILogger
         Messages.Add((message, typeof(TestLogger), logLevel));
 
     /// <inheritdoc />
-    public void Write(string message, LogLevel logLevel) => Messages.Add((message, typeof(TestLogger), logLevel));
+    public void Write(string message, LogLevel logLevel) => Write(message, typeof(TestLogger), logLevel);
 
     /// <inheritdoc />
     public void Write(Exception exception, string message, LogLevel logLevel) =>
-        Messages.Add((message, typeof(TestLogger), logLevel));
+        Write(message, logLevel);
 
     /// <inheritdoc />
     public void Write([Localizable(false)] string message, [Localizable(false)] Type type, LogLevel logLevel) =>

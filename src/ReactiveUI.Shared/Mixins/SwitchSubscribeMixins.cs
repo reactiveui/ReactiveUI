@@ -345,8 +345,7 @@ public static class SwitchSubscribeMixins
         /// <summary>Subscribes to the source, switching the active inner subscription on each non-null value.</summary>
         /// <param name="selector">Projects each non-null source value to an inner observable.</param>
         /// <param name="downstream">The observer that receives the forwarded inner notifications.</param>
-        private sealed class Sink(Func<TSource, IObservable<TResult>> selector, IObserver<TResult> downstream)
-            : IObserver<TSource?>, IDisposable
+        private sealed class Sink(Func<TSource, IObservable<TResult>> selector, IObserver<TResult> downstream) : IObserver<TSource?>, IDisposable
         {
             /// <summary>Guards the switching state so outer and inner notifications stay consistent.</summary>
 #if NET9_0_OR_GREATER

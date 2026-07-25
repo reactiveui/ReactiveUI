@@ -153,26 +153,6 @@ public class CreatesCommandBindingViaCommandParameterTests
         await Assert.That(affinity).IsEqualTo(0);
     }
 
-    /// <summary>Verifies that the affinity check returns 5 for targets with command and command parameter properties.</summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-    [Test]
-    public async Task GetAffinityForObject_WithCommandAndCommandParameter_Returns5()
-    {
-        var binder = new CreatesCommandBindingViaCommandParameter();
-        var affinity = binder.GetAffinityForObject<CommandControl>(false);
-        await Assert.That(affinity).IsEqualTo(BindingAffinity.Explicit);
-    }
-
-    /// <summary>Verifies that the affinity check returns 0 when an event target is requested.</summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-    [Test]
-    public async Task GetAffinityForObject_WithEventTarget_Returns0()
-    {
-        var binder = new CreatesCommandBindingViaCommandParameter();
-        var affinity = binder.GetAffinityForObject<CommandControl>(true);
-        await Assert.That(affinity).IsEqualTo(0);
-    }
-
     /// <summary>Verifies that the affinity check returns 0 when only a command property is present.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]

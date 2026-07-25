@@ -85,8 +85,8 @@ public class INPCObservableForProperty : ICreatesObservableForProperty
     /// <param name="observedName">The observed property name.</param>
     /// <returns><see langword="true"/> if the notification applies to the observed property.</returns>
     private static bool Matches(string? notifiedName, string observedName) =>
-        string.IsNullOrEmpty(notifiedName) ||
-        string.Equals(notifiedName, observedName, StringComparison.InvariantCulture);
+        string.IsNullOrEmpty(notifiedName)
+        || string.Equals(notifiedName, observedName, StringComparison.InvariantCulture);
 
     /// <summary>
     /// A single-layer observable over <see cref="INotifyPropertyChanged.PropertyChanged"/>: each subscription attaches

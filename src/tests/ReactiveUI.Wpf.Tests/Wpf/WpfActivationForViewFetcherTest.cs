@@ -139,10 +139,7 @@ public class WpfActivationForViewFetcherTest
                     (Action<IDisposable> _) => activationCount++,
                     view));
 
-            view.RaiseEvent(new()
-            {
-                RoutedEvent = FrameworkElement.LoadedEvent
-            });
+            view.RaiseEvent(new() { RoutedEvent = FrameworkElement.LoadedEvent });
 
             await Assert.That(activationCount).IsEqualTo(WhenActivatedOverloadCount);
             disposables.Dispose();
@@ -162,19 +159,13 @@ public class WpfActivationForViewFetcherTest
         var obs = activation.GetActivationForView(uc);
         var activated = obs.Collect();
 
-        var loaded = new RoutedEventArgs
-        {
-            RoutedEvent = FrameworkElement.LoadedEvent
-        };
+        var loaded = new RoutedEventArgs { RoutedEvent = FrameworkElement.LoadedEvent };
 
         uc.RaiseEvent(loaded);
 
         await _expectedActivated.AssertAreEqual(activated);
 
-        var unloaded = new RoutedEventArgs
-        {
-            RoutedEvent = FrameworkElement.UnloadedEvent
-        };
+        var unloaded = new RoutedEventArgs { RoutedEvent = FrameworkElement.UnloadedEvent };
 
         uc.RaiseEvent(unloaded);
 
@@ -186,19 +177,13 @@ public class WpfActivationForViewFetcherTest
     [Test]
     public async Task IsHitTestVisibleActivatesFrameworkElement()
     {
-        var uc = new WpfTestUserControl
-        {
-            IsHitTestVisible = false
-        };
+        var uc = new WpfTestUserControl { IsHitTestVisible = false };
         var activation = new ActivationForViewFetcher();
 
         var obs = activation.GetActivationForView(uc);
         var activated = obs.Collect();
 
-        var loaded = new RoutedEventArgs
-        {
-            RoutedEvent = FrameworkElement.LoadedEvent
-        };
+        var loaded = new RoutedEventArgs { RoutedEvent = FrameworkElement.LoadedEvent };
 
         uc.RaiseEvent(loaded);
 
@@ -210,10 +195,7 @@ public class WpfActivationForViewFetcherTest
         // IsHitTestVisible true, we don't want the event to repeat unnecessarily.
         await _expectedActivated.AssertAreEqual(activated);
 
-        var unloaded = new RoutedEventArgs
-        {
-            RoutedEvent = FrameworkElement.UnloadedEvent
-        };
+        var unloaded = new RoutedEventArgs { RoutedEvent = FrameworkElement.UnloadedEvent };
 
         uc.RaiseEvent(unloaded);
 
@@ -232,10 +214,7 @@ public class WpfActivationForViewFetcherTest
         var obs = activation.GetActivationForView(uc);
         var activated = obs.Collect();
 
-        var loaded = new RoutedEventArgs
-        {
-            RoutedEvent = FrameworkElement.LoadedEvent
-        };
+        var loaded = new RoutedEventArgs { RoutedEvent = FrameworkElement.LoadedEvent };
 
         uc.RaiseEvent(loaded);
 
@@ -257,10 +236,7 @@ public class WpfActivationForViewFetcherTest
         var obs = activation.GetActivationForView(uc);
         var activated = obs.Collect();
 
-        var loaded = new RoutedEventArgs
-        {
-            RoutedEvent = FrameworkElement.LoadedEvent
-        };
+        var loaded = new RoutedEventArgs { RoutedEvent = FrameworkElement.LoadedEvent };
 
         uc.RaiseEvent(loaded);
 
@@ -276,10 +252,7 @@ public class WpfActivationForViewFetcherTest
 
         await _expectedActivatedDeactivatedActivated.AssertAreEqual(activated);
 
-        var unloaded = new RoutedEventArgs
-        {
-            RoutedEvent = FrameworkElement.UnloadedEvent
-        };
+        var unloaded = new RoutedEventArgs { RoutedEvent = FrameworkElement.UnloadedEvent };
 
         uc.RaiseEvent(unloaded);
 

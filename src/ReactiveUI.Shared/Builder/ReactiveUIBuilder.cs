@@ -377,7 +377,7 @@ public sealed partial class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, 
     /// </example>
     public IReactiveUIBuilder WithConverter(IBindingTypeConverter converter)
     {
-        ArgumentExceptionHelper.ThrowIfNull(converter);
+        ArgumentExceptionHelper.ThrowIfNull((IBindingTypeConverter)converter);
         ConverterService.TypedConverters.Register(converter);
         return this;
     }
@@ -415,7 +415,7 @@ public sealed partial class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, 
     /// </example>
     public IReactiveUIBuilder WithConverter(Func<IBindingTypeConverter> factory)
     {
-        ArgumentExceptionHelper.ThrowIfNull(factory);
+        ArgumentExceptionHelper.ThrowIfNull((Func<IBindingTypeConverter>)factory);
         ConverterService.TypedConverters.Register(factory());
         return this;
     }

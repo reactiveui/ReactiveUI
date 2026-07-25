@@ -26,12 +26,12 @@ public class AutoDataTemplateBindingHook : IPropertyBindingHook
     /// <summary>Gets the default item template.</summary>
     public static Lazy<DataTemplate> DefaultItemTemplate { get; } = new(static () =>
     {
-        const string template = "<DataTemplate xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation' " +
-                 "xmlns:xaml='clr-namespace:ReactiveUI'>" +
-             "<xaml:ViewModelViewHost ViewModel=\"{Binding Mode=OneWay}\" " +
-             "VerticalContentAlignment=\"Stretch\" HorizontalContentAlignment=\"Stretch\" " +
-             "IsTabStop=\"False\" />" +
-         "</DataTemplate>";
+        const string template = "<DataTemplate xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation' "
+                 + "xmlns:xaml='clr-namespace:ReactiveUI'>"
+             + "<xaml:ViewModelViewHost ViewModel=\"{Binding Mode=OneWay}\" "
+             + "VerticalContentAlignment=\"Stretch\" HorizontalContentAlignment=\"Stretch\" "
+             + "IsTabStop=\"False\" />"
+         + "</DataTemplate>";
 
         return (DataTemplate)XamlReader.Load(template);
     });

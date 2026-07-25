@@ -387,7 +387,7 @@ public partial class AutoPersistHelperTest
 
         await Assert.ThrowsAsync<ArgumentNullException>(async () =>
         {
-            _ = fixture.AutoPersist(static _ => ImmutableReturnRxVoidSignal.Instance, null!, TimeSpan.FromSeconds(1));
+            _ = fixture.AutoPersist(static _ => ImmutableReturnRxVoidSignal.Instance, (IObservable<RxVoid>)null!, TimeSpan.FromSeconds(1));
             await Task.CompletedTask;
         });
     }
@@ -401,7 +401,7 @@ public partial class AutoPersistHelperTest
 
         await Assert.ThrowsAsync<ArgumentNullException>(async () =>
         {
-            _ = fixture.AutoPersist(static _ => ImmutableReturnRxVoidSignal.Instance, null!, TimeSpan.FromSeconds(1));
+            _ = fixture.AutoPersist(static _ => ImmutableReturnRxVoidSignal.Instance, (AutoPersistHelperMixins.AutoPersistMetadata)null!, TimeSpan.FromSeconds(1));
             await Task.CompletedTask;
         });
     }
@@ -532,8 +532,8 @@ public partial class AutoPersistHelperTest
         [SuppressMessage(
             "Design",
             "SST2324:Public member on a non-public type",
-            Justification = "the public surface is required for interface/reflection binding; the containing " +
-                "test double is an intentionally non-public detail.")]
+            Justification = "the public surface is required for interface/reflection binding; the containing "
+                + "test double is an intentionally non-public detail.")]
         public string? Property
         {
             get;
@@ -550,8 +550,8 @@ public partial class AutoPersistHelperTest
         [SuppressMessage(
             "Design",
             "SST2324:Public member on a non-public type",
-            Justification = "the public surface is required for interface/reflection binding; the containing " +
-                "test double is an intentionally non-public detail.")]
+            Justification = "the public surface is required for interface/reflection binding; the containing "
+                + "test double is an intentionally non-public detail.")]
         public string? BaseValue
         {
             get;

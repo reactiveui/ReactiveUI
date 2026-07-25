@@ -60,9 +60,9 @@ public class CommandBinderImplementation : ICommandBinderImplementation
         TView,
         TViewModel,
         TProp,
-        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents |
-                                    DynamicallyAccessedMemberTypes.NonPublicEvents |
-                                    DynamicallyAccessedMemberTypes.PublicProperties)]
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents
+                                    | DynamicallyAccessedMemberTypes.NonPublicEvents
+                                    | DynamicallyAccessedMemberTypes.PublicProperties)]
     TControl,
         TParam>(
         TViewModel? viewModel,
@@ -130,9 +130,9 @@ public class CommandBinderImplementation : ICommandBinderImplementation
         TView,
         TViewModel,
         TProp,
-        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents |
-                                    DynamicallyAccessedMemberTypes.NonPublicEvents |
-                                    DynamicallyAccessedMemberTypes.PublicProperties)]
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents
+                                    | DynamicallyAccessedMemberTypes.NonPublicEvents
+                                    | DynamicallyAccessedMemberTypes.PublicProperties)]
     TControl,
         TParam>(
         TViewModel? viewModel,
@@ -176,9 +176,9 @@ public class CommandBinderImplementation : ICommandBinderImplementation
         TView,
         TViewModel,
         TProp,
-        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents |
-                                    DynamicallyAccessedMemberTypes.NonPublicEvents |
-                                    DynamicallyAccessedMemberTypes.PublicProperties)]
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents
+                                    | DynamicallyAccessedMemberTypes.NonPublicEvents
+                                    | DynamicallyAccessedMemberTypes.PublicProperties)]
     TControl,
         TParam>(
         TViewModel? viewModel,
@@ -242,9 +242,9 @@ public class CommandBinderImplementation : ICommandBinderImplementation
         TView,
         TViewModel,
         TProp,
-        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents |
-                                    DynamicallyAccessedMemberTypes.NonPublicEvents |
-                                    DynamicallyAccessedMemberTypes.PublicProperties)]
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents
+                                    | DynamicallyAccessedMemberTypes.NonPublicEvents
+                                    | DynamicallyAccessedMemberTypes.PublicProperties)]
     TControl,
         TParam>(
         TViewModel? viewModel,
@@ -256,7 +256,7 @@ public class CommandBinderImplementation : ICommandBinderImplementation
         where TViewModel : class
         where TProp : ICommand
         where TControl : class =>
-        BindCommand(viewModel, view, viewModelProperty, controlProperty, withParameter, null);
+        BindCommand(viewModel, view, viewModelProperty, controlProperty, (IObservable<TParam?>)withParameter, null);
 
     /// <summary>
     /// Binds an observable command to a control property or event on a view, updating the binding when the command or
@@ -282,9 +282,9 @@ public class CommandBinderImplementation : ICommandBinderImplementation
         TView,
         TProp,
         TParam,
-        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents |
-                                    DynamicallyAccessedMemberTypes.NonPublicEvents |
-                                    DynamicallyAccessedMemberTypes.PublicProperties)]
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents
+                                    | DynamicallyAccessedMemberTypes.NonPublicEvents
+                                    | DynamicallyAccessedMemberTypes.PublicProperties)]
     TControl>(
         IObservable<TProp> source,
         TView view,

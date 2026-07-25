@@ -87,12 +87,7 @@ public partial class SuspensionHostExtensionsAotTests
     [Test]
     public async Task SetupDefaultSuspendResume_Typed_ShouldInvalidateState_CallsDriverInvalidateState()
     {
-        using var host = new SuspensionHost<TestAppState>
-        {
-            IsLaunchingNew = Signal.Silent<RxVoid>(),
-            IsResuming = Signal.Silent<RxVoid>(),
-            ShouldPersistState = Signal.Silent<IDisposable>()
-        };
+        using var host = new SuspensionHost<TestAppState> { IsLaunchingNew = Signal.Silent<RxVoid>(), IsResuming = Signal.Silent<RxVoid>(), ShouldPersistState = Signal.Silent<IDisposable>() };
 
         var driver = new TestSuspensionDriver<TestAppState>();
         var invalidateSubject = new Signal<RxVoid>();

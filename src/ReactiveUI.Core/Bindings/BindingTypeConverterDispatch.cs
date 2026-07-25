@@ -108,8 +108,8 @@ public static class BindingTypeConverterDispatch
         var runtimeType = from.GetType();
         var converterFromType = converter.FromType;
 
-        if (converterFromType != runtimeType &&
-            Nullable.GetUnderlyingType(converterFromType) != runtimeType)
+        if (converterFromType != runtimeType
+            && Nullable.GetUnderlyingType(converterFromType) != runtimeType)
         {
             result = null;
             return false;

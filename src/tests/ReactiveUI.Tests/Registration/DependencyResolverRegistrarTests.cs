@@ -191,8 +191,8 @@ public class DependencyResolverRegistrarTests
     [SuppressMessage(
         "Design",
         "SST1452:Type parameter is never used",
-        Justification = "type parameters are mandated by the implemented interface signatures; the no-op test " +
-            "double does not reference them.")]
+        Justification = "type parameters are mandated by the implemented interface signatures; the no-op test "
+            + "double does not reference them.")]
     private sealed class MockDependencyResolver : IMutableDependencyResolver, IDisposable
     {
         /// <summary>Gets the recorded calls to RegisterConstant.</summary>
@@ -209,13 +209,13 @@ public class DependencyResolverRegistrarTests
             RegisterCalls.Add((factory, contract));
 
         /// <inheritdoc />
-        public void Register(Func<object?> factory, Type? serviceType) => RegisterCalls.Add((factory, null));
+        public void Register(Func<object?> factory, Type? serviceType) => Register(factory, serviceType, null);
 
         /// <inheritdoc />
-        public void Register<T>(Func<T?> factory) => RegisterCalls.Add((factory, null));
+        public void Register<T>(Func<T?> factory) => RegisterCalls.Add(((object)factory, null));
 
         /// <inheritdoc />
-        public void Register<T>(Func<T?> factory, string? contract) => RegisterCalls.Add((factory, contract));
+        public void Register<T>(Func<T?> factory, string? contract) => RegisterCalls.Add(((object)factory, contract));
 
         /// <inheritdoc />
         public void Register<TService, TImplementation>()
@@ -379,8 +379,8 @@ public class DependencyResolverRegistrarTests
         [SuppressMessage(
             "Design",
             "SST2324:Public member on a non-public type",
-            Justification = "the public surface is required for interface/reflection binding; the containing " +
-                "test double is an intentionally non-public detail.")]
+            Justification = "the public surface is required for interface/reflection binding; the containing "
+                + "test double is an intentionally non-public detail.")]
         public object? GetService(Type? serviceType, string? contract) => null;
 
         /// <summary>Gets the registered services for the given type and contract; this stub always returns an empty sequence.</summary>
@@ -390,8 +390,8 @@ public class DependencyResolverRegistrarTests
         [SuppressMessage(
             "Design",
             "SST2324:Public member on a non-public type",
-            Justification = "the public surface is required for interface/reflection binding; the containing " +
-                "test double is an intentionally non-public detail.")]
+            Justification = "the public surface is required for interface/reflection binding; the containing "
+                + "test double is an intentionally non-public detail.")]
         public IEnumerable<object> GetServices(Type? serviceType, string? contract) => [];
 
         /// <inheritdoc />

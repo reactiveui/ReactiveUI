@@ -51,8 +51,7 @@ public static class UsbManagerExtensions
     /// <param name="manager">The USB manager system service.</param>
     /// <param name="context">The context to request the permission from.</param>
     /// <param name="device">The USB device to request permission for.</param>
-    private sealed class DevicePermissionObservable(UsbManager manager, Context context, UsbDevice device)
-        : IObservable<bool>
+    private sealed class DevicePermissionObservable(UsbManager manager, Context context, UsbDevice device) : IObservable<bool>
     {
         /// <summary>Subscribes the given observer to the USB device permission result.</summary>
         /// <param name="observer">The observer to receive the granted result.</param>
@@ -78,8 +77,7 @@ public static class UsbManagerExtensions
     /// <param name="manager">The USB manager system service.</param>
     /// <param name="context">The context to request the permission from.</param>
     /// <param name="accessory">The USB accessory to request permission for.</param>
-    private sealed class AccessoryPermissionObservable(UsbManager manager, Context context, UsbAccessory accessory)
-        : IObservable<bool>
+    private sealed class AccessoryPermissionObservable(UsbManager manager, Context context, UsbAccessory accessory) : IObservable<bool>
     {
         /// <summary>Subscribes the given observer to the USB accessory permission result.</summary>
         /// <param name="observer">The observer to receive the granted result.</param>
@@ -101,8 +99,7 @@ public static class UsbManagerExtensions
     /// <summary>Private implementation of BroadcastReceiver to handle device permission requests.</summary>
     /// <param name="observer">The observer to receive the permission result.</param>
     /// <param name="device">The UsbDevice the permission result applies to.</param>
-    private sealed class UsbDevicePermissionReceiver(IObserver<bool> observer, UsbDevice device)
-        : BroadcastReceiver
+    private sealed class UsbDevicePermissionReceiver(IObserver<bool> observer, UsbDevice device) : BroadcastReceiver
     {
         /// <summary>Handles the broadcast for a USB device permission result.</summary>
         /// <param name="context">The context in which the receiver is running.</param>
@@ -130,8 +127,7 @@ public static class UsbManagerExtensions
     /// <summary>Private implementation of BroadcastReceiver to handle accessory permission requests.</summary>
     /// <param name="observer">The observer to receive the permission result.</param>
     /// <param name="accessory">The UsbAccessory the permission result applies to.</param>
-    private sealed class UsbAccessoryPermissionReceiver(IObserver<bool> observer, UsbAccessory accessory)
-        : BroadcastReceiver
+    private sealed class UsbAccessoryPermissionReceiver(IObserver<bool> observer, UsbAccessory accessory) : BroadcastReceiver
     {
         /// <summary>Handles the broadcast for a USB accessory permission result.</summary>
         /// <param name="context">The context in which the receiver is running.</param>

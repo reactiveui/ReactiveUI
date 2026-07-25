@@ -581,8 +581,8 @@ public partial class ReactiveCommandTest
     [SuppressMessage(
         "Performance",
         "PSH1211:pass the value directly instead of calling ToString",
-        Justification = "ToString() converts the int parameter to the string result type required by " +
-            "CreateFromObservable<int, string>; removing it would change the observable's element type.")]
+        Justification = "ToString() converts the int parameter to the string result type required by "
+            + "CreateFromObservable<int, string>; removing it would change the observable's element type.")]
     public async Task CreateFromObservable_WithParam_PassesParameterToObservable()
     {
         var command = ReactiveCommand.CreateFromObservable<int, string>(

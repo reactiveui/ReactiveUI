@@ -34,10 +34,6 @@ public static class SuspensionHostExtensions
     private static ISuspensionDriver? _suspensionDriver;
 
     /// <summary>Gets or sets the ensure load app state function. Internal for testing purposes only.</summary>
-    [SuppressMessage(
-        "Roslynator",
-        "RCS1085:Use auto-implemented property",
-        Justification = "Need explicit backing field for Interlocked.Exchange")]
     internal static Func<IObservable<RxVoid>>? EnsureLoadAppStateFunc
     {
         get => Volatile.Read(ref _ensureLoadAppStateFunc);
@@ -45,10 +41,6 @@ public static class SuspensionHostExtensions
     }
 
     /// <summary>Gets or sets the suspension driver. Internal for testing purposes only.</summary>
-    [SuppressMessage(
-        "Roslynator",
-        "RCS1085:Use auto-implemented property",
-        Justification = "Need explicit backing field for Interlocked.Exchange")]
     internal static ISuspensionDriver? SuspensionDriver
     {
         get => _suspensionDriver;
@@ -67,11 +59,11 @@ public static class SuspensionHostExtensions
         /// yet been materialized, ensuring late subscribers still receive persisted data.
         /// </remarks>
         [RequiresUnreferencedCode(
-            "This overload may invoke ISuspensionDriver.LoadState(), which is commonly reflection-based. " +
-            "Prefer GetAppState<TAppState>(ISuspensionHost<TAppState>) used with SetupDefaultSuspendResume<TAppState>(..., JsonTypeInfo<TAppState>, ...) for trimming/AOT scenarios.")]
+            "This overload may invoke ISuspensionDriver.LoadState(), which is commonly reflection-based. "
+            + "Prefer GetAppState<TAppState>(ISuspensionHost<TAppState>) used with SetupDefaultSuspendResume<TAppState>(..., JsonTypeInfo<TAppState>, ...) for trimming/AOT scenarios.")]
         [RequiresDynamicCode(
-            "This overload may invoke ISuspensionDriver.LoadState(), which is commonly reflection-based. " +
-            "Prefer GetAppState<TAppState>(ISuspensionHost<TAppState>) used with SetupDefaultSuspendResume<TAppState>(..., JsonTypeInfo<TAppState>, ...) for trimming/AOT scenarios.")]
+            "This overload may invoke ISuspensionDriver.LoadState(), which is commonly reflection-based. "
+            + "Prefer GetAppState<TAppState>(ISuspensionHost<TAppState>) used with SetupDefaultSuspendResume<TAppState>(..., JsonTypeInfo<TAppState>, ...) for trimming/AOT scenarios.")]
         [SuppressMessage(
             "Design",
             "SST2307:Generic method type parameters should be inferable from the parameters",
@@ -93,11 +85,11 @@ public static class SuspensionHostExtensions
         /// react to hot reloads or state restoration.
         /// </remarks>
         [RequiresUnreferencedCode(
-            "This overload uses WhenAny, which can require unreferenced/dynamic code in trimming/AOT scenarios. " +
-            "Prefer ObserveAppState<TAppState>(ISuspensionHost<TAppState>) for trimming/AOT scenarios.")]
+            "This overload uses WhenAny, which can require unreferenced/dynamic code in trimming/AOT scenarios. "
+            + "Prefer ObserveAppState<TAppState>(ISuspensionHost<TAppState>) for trimming/AOT scenarios.")]
         [RequiresDynamicCode(
-            "This overload uses WhenAny, which can require unreferenced/dynamic code in trimming/AOT scenarios. " +
-            "Prefer ObserveAppState<TAppState>(ISuspensionHost<TAppState>) for trimming/AOT scenarios.")]
+            "This overload uses WhenAny, which can require unreferenced/dynamic code in trimming/AOT scenarios. "
+            + "Prefer ObserveAppState<TAppState>(ISuspensionHost<TAppState>) for trimming/AOT scenarios.")]
         [SuppressMessage(
             "Design",
             "SST2307:Generic method type parameters should be inferable from the parameters",
@@ -115,11 +107,11 @@ public static class SuspensionHostExtensions
         /// <summary>Setup our suspension driver for a class derived off ISuspensionHost interface using a resolved driver.</summary>
         /// <returns>A disposable which will stop responding to Suspend and Resume requests.</returns>
         [RequiresUnreferencedCode(
-            "This overload may invoke ISuspensionDriver.LoadState()/SaveState<T>(T), which are commonly reflection-based. " +
-            "Prefer SetupDefaultSuspendResume<TAppState>(..., JsonTypeInfo<TAppState>, ...) for trimming/AOT scenarios.")]
+            "This overload may invoke ISuspensionDriver.LoadState()/SaveState<T>(T), which are commonly reflection-based. "
+            + "Prefer SetupDefaultSuspendResume<TAppState>(..., JsonTypeInfo<TAppState>, ...) for trimming/AOT scenarios.")]
         [RequiresDynamicCode(
-            "This overload may invoke ISuspensionDriver.LoadState()/SaveState<T>(T), which are commonly reflection-based. " +
-            "Prefer SetupDefaultSuspendResume<TAppState>(..., JsonTypeInfo<TAppState>, ...) for trimming/AOT scenarios.")]
+            "This overload may invoke ISuspensionDriver.LoadState()/SaveState<T>(T), which are commonly reflection-based. "
+            + "Prefer SetupDefaultSuspendResume<TAppState>(..., JsonTypeInfo<TAppState>, ...) for trimming/AOT scenarios.")]
         public IDisposable SetupDefaultSuspendResume() =>
             item.SetupDefaultSuspendResume(null);
 
@@ -145,11 +137,11 @@ public static class SuspensionHostExtensions
         /// </code>
         /// </example>
         [RequiresUnreferencedCode(
-            "This overload may invoke ISuspensionDriver.LoadState()/SaveState<T>(T), which are commonly reflection-based. " +
-            "Prefer SetupDefaultSuspendResume<TAppState>(..., JsonTypeInfo<TAppState>, ...) for trimming/AOT scenarios.")]
+            "This overload may invoke ISuspensionDriver.LoadState()/SaveState<T>(T), which are commonly reflection-based. "
+            + "Prefer SetupDefaultSuspendResume<TAppState>(..., JsonTypeInfo<TAppState>, ...) for trimming/AOT scenarios.")]
         [RequiresDynamicCode(
-            "This overload may invoke ISuspensionDriver.LoadState()/SaveState<T>(T), which are commonly reflection-based. " +
-            "Prefer SetupDefaultSuspendResume<TAppState>(..., JsonTypeInfo<TAppState>, ...) for trimming/AOT scenarios.")]
+            "This overload may invoke ISuspensionDriver.LoadState()/SaveState<T>(T), which are commonly reflection-based. "
+            + "Prefer SetupDefaultSuspendResume<TAppState>(..., JsonTypeInfo<TAppState>, ...) for trimming/AOT scenarios.")]
         public IDisposable SetupDefaultSuspendResume(ISuspensionDriver? driver)
         {
             ArgumentExceptionHelper.ThrowIfNull(item);
@@ -292,11 +284,11 @@ public static class SuspensionHostExtensions
     /// <param name="driver">The suspension driver.</param>
     /// <returns>A completed observable.</returns>
     [RequiresUnreferencedCode(
-        "This overload may invoke ISuspensionDriver.LoadState(), which is commonly reflection-based. " +
-        "Prefer EnsureLoadAppState<TAppState>(ISuspensionHost<TAppState>, ISuspensionDriver?, JsonTypeInfo<TAppState>) for trimming/AOT scenarios.")]
+        "This overload may invoke ISuspensionDriver.LoadState(), which is commonly reflection-based. "
+        + "Prefer EnsureLoadAppState<TAppState>(ISuspensionHost<TAppState>, ISuspensionDriver?, JsonTypeInfo<TAppState>) for trimming/AOT scenarios.")]
     [RequiresDynamicCode(
-        "This overload may invoke ISuspensionDriver.LoadState(), which is commonly reflection-based. " +
-        "Prefer EnsureLoadAppState<TAppState>(ISuspensionHost<TAppState>, ISuspensionDriver?, JsonTypeInfo<TAppState>) for trimming/AOT scenarios.")]
+        "This overload may invoke ISuspensionDriver.LoadState(), which is commonly reflection-based. "
+        + "Prefer EnsureLoadAppState<TAppState>(ISuspensionHost<TAppState>, ISuspensionDriver?, JsonTypeInfo<TAppState>) for trimming/AOT scenarios.")]
     private static IObservable<RxVoid> EnsureLoadAppState(ISuspensionHost item, ISuspensionDriver? driver = null)
     {
         if (item.AppState is not null)

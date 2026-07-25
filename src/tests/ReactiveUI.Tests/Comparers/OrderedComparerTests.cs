@@ -71,14 +71,7 @@ public class OrderedComparerTests
         var carol = new Employee { Name = "Carol", Age = TiedAge, Salary = TiedSalary };
         var xavier = new Employee { Name = "Xavier", Age = TiedAge, Salary = TiedSalary };
 
-        var employees = new List<Employee>
-        {
-            adam,
-            alice,
-            bob,
-            carol,
-            xavier
-        };
+        var employees = new List<Employee> { adam, alice, bob, carol, xavier };
 
         employees.Sort(OrderedComparer<Employee>.OrderBy(static x => x.Name));
         await Assert.That(employees.SequenceEqual([adam, alice, bob, carol, xavier])).IsTrue();

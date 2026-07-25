@@ -29,8 +29,7 @@ namespace ReactiveUI;
 /// </summary>
 /// <typeparam name="TViewModel">The type of the view model. Must have a public parameterless constructor and implement IRoutableViewModel.</typeparam>
 public partial class RoutedViewHost<
-    [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)] TViewModel>
-    : TransitioningContentControl, IActivatableView, IEnableLogger
+    [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)] TViewModel> : TransitioningContentControl, IActivatableView, IEnableLogger
     where TViewModel : class, IRoutableViewModel
 {
     /// <summary>The router dependency property.</summary>
@@ -69,8 +68,8 @@ public partial class RoutedViewHost<
             // NB: This used to be an error but WPF design mode can't read
             // good or do other stuff good.
             this.Log().Error(
-                "Couldn't find an IPlatformOperations implementation. Please make sure you have installed the latest " +
-                "version of the ReactiveUI packages for your platform. See https://reactiveui.net/docs/getting-started/installation for guidance.");
+                "Couldn't find an IPlatformOperations implementation. Please make sure you have installed the latest "
+                + "version of the ReactiveUI packages for your platform. See https://reactiveui.net/docs/getting-started/installation for guidance.");
         }
         else
         {

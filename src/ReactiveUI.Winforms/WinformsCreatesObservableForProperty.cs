@@ -82,8 +82,8 @@ public class WinformsCreatesObservableForProperty : ICreatesObservableForPropert
     {
         ArgumentExceptionHelper.ThrowIfNull(sender);
 
-        var ei = EventInfoCache.Get((sender.GetType(), propertyName)) ??
-                 throw new InvalidOperationException("Could not find a valid event for expression.");
+        var ei = EventInfoCache.Get((sender.GetType(), propertyName))
+                 ?? throw new InvalidOperationException("Could not find a valid event for expression.");
 
         return new FromEventObservable<IObservedChange<object, object?>>(onNext =>
         {

@@ -47,8 +47,8 @@ public sealed class CreatesWinformsCommandBinding : ICreatesCommandBinding
 
     /// <inheritdoc/>
     public int GetAffinityForObject<
-        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents |
-                                    DynamicallyAccessedMemberTypes.PublicProperties)]
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents
+                                    | DynamicallyAccessedMemberTypes.PublicProperties)]
     T>(bool hasEventTarget)
     {
         var isWinformControl = typeof(Control).IsAssignableFrom(typeof(T));
@@ -85,9 +85,9 @@ public sealed class CreatesWinformsCommandBinding : ICreatesCommandBinding
     /// <returns>A disposable that unbinds the command, or null if no default event was found.</returns>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="target"/> is <see langword="null"/>.</exception>
     public IDisposable? BindCommandToObject<
-        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties |
-                                    DynamicallyAccessedMemberTypes.PublicEvents |
-                                    DynamicallyAccessedMemberTypes.NonPublicEvents)]
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties
+                                    | DynamicallyAccessedMemberTypes.PublicEvents
+                                    | DynamicallyAccessedMemberTypes.NonPublicEvents)]
     T>(ICommand? command, T? target, IObservable<object?> commandParameter)
         where T : class
     {
@@ -215,9 +215,9 @@ public sealed class CreatesWinformsCommandBinding : ICreatesCommandBinding
     /// <returns>A disposable that unbinds the command.</returns>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="target"/>, <paramref name="addHandler"/>, or <paramref name="removeHandler"/> is <see langword="null"/>.</exception>
     public IDisposable? BindCommandToObject<
-        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties |
-                                    DynamicallyAccessedMemberTypes.PublicEvents |
-                                    DynamicallyAccessedMemberTypes.NonPublicEvents)]
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties
+                                    | DynamicallyAccessedMemberTypes.PublicEvents
+                                    | DynamicallyAccessedMemberTypes.NonPublicEvents)]
     T, TEventArgs>(
         ICommand? command,
         T? target,
@@ -254,9 +254,9 @@ public sealed class CreatesWinformsCommandBinding : ICreatesCommandBinding
     /// <returns>A disposable that unbinds the command.</returns>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="target"/>, <paramref name="addHandler"/>, or <paramref name="removeHandler"/> is <see langword="null"/>.</exception>
     public IDisposable? BindCommandToObject<
-        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties |
-                                    DynamicallyAccessedMemberTypes.PublicEvents |
-                                    DynamicallyAccessedMemberTypes.NonPublicEvents)]
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties
+                                    | DynamicallyAccessedMemberTypes.PublicEvents
+                                    | DynamicallyAccessedMemberTypes.NonPublicEvents)]
     T>(
         ICommand? command,
         T? target,

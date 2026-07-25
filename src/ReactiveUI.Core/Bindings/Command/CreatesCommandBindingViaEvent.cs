@@ -28,8 +28,8 @@ public sealed class CreatesCommandBindingViaEvent : ICreatesCommandBinding
     /// <inheritdoc/>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public int GetAffinityForObject<
-        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents |
-                                    DynamicallyAccessedMemberTypes.PublicProperties)]
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents
+                                    | DynamicallyAccessedMemberTypes.PublicProperties)]
     T>(bool hasEventTarget)
     {
         if (hasEventTarget)
@@ -52,9 +52,9 @@ public sealed class CreatesCommandBindingViaEvent : ICreatesCommandBinding
     /// </exception>
     [RequiresUnreferencedCode("String/reflection-based event binding may require members removed by trimming.")]
     public IDisposable? BindCommandToObject<
-        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties |
-                                    DynamicallyAccessedMemberTypes.PublicEvents |
-                                    DynamicallyAccessedMemberTypes.NonPublicEvents)]
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties
+                                    | DynamicallyAccessedMemberTypes.PublicEvents
+                                    | DynamicallyAccessedMemberTypes.NonPublicEvents)]
     T>(
         ICommand? command,
         T? target,
@@ -149,9 +149,9 @@ public sealed class CreatesCommandBindingViaEvent : ICreatesCommandBinding
     /// Thrown when <paramref name="target"/>, <paramref name="addHandler"/>, or <paramref name="removeHandler"/> is <see langword="null"/>.
     /// </exception>
     public IDisposable BindCommandToObject<
-        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties |
-                                    DynamicallyAccessedMemberTypes.PublicEvents |
-                                    DynamicallyAccessedMemberTypes.NonPublicEvents)]
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties
+                                    | DynamicallyAccessedMemberTypes.PublicEvents
+                                    | DynamicallyAccessedMemberTypes.NonPublicEvents)]
     T, TEventArgs>(
         ICommand? command,
         T? target,

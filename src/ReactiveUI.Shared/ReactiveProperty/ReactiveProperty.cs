@@ -192,8 +192,8 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
     /// Uses RxSchedulers.TaskpoolScheduler as the default scheduler.
     /// </summary>
     /// <returns>A new ReactiveProperty instance.</returns>
-    public static ReactiveProperty<T> Create()
-        => new(default, RxSchedulers.TaskpoolScheduler, false, false);
+    public static ReactiveProperty<T> Create() =>
+        new(default, RxSchedulers.TaskpoolScheduler, false, false);
 
     /// <summary>
     /// Creates a new instance of ReactiveProperty with an initial value without requiring RequiresUnreferencedCode attributes.
@@ -201,8 +201,8 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
     /// </summary>
     /// <param name="initialValue">The initial value.</param>
     /// <returns>A new ReactiveProperty instance.</returns>
-    public static ReactiveProperty<T> Create(T? initialValue)
-        => new(initialValue, RxSchedulers.TaskpoolScheduler, false, false);
+    public static ReactiveProperty<T> Create(T? initialValue) =>
+        new(initialValue, RxSchedulers.TaskpoolScheduler, false, false);
 
     /// <summary>
     /// Creates a new instance of ReactiveProperty with configuration options without requiring RequiresUnreferencedCode attributes.
@@ -289,7 +289,7 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
     /// <returns>The current ReactiveProperty instance with the validation rule applied.</returns>
     public ReactiveProperty<T> AddValidationError(
         Func<IObservable<T?>, IObservable<string?>> validator) =>
-        AddValidationError(validator, false);
+        AddValidationError((Func<IObservable<T?>, IObservable<string?>>)validator, false);
 
     /// <summary>Adds a validation rule to the property using the specified validator function.</summary>
     /// <remarks>Multiple validation rules can be added by calling this method multiple times. Validation
@@ -310,7 +310,7 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
     /// <returns>The current ReactiveProperty instance with the specified validation logic applied.</returns>
     public ReactiveProperty<T> AddValidationError(
         Func<T?, Task<IEnumerable?>> validator) =>
-        AddValidationError(validator, false);
+        AddValidationError((Func<T?, Task<IEnumerable?>>)validator, false);
 
     /// <summary>Adds asynchronous validation logic to the reactive property using the specified validator function.</summary>
     /// <remarks>This method enables chaining of multiple validation rules on a ReactiveProperty.
@@ -330,7 +330,7 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
     /// <param name="validator">A function that asynchronously validates the property's value and returns an error message or null.</param>
     /// <returns>The current ReactiveProperty instance with the validation rule applied.</returns>
     public ReactiveProperty<T> AddValidationError(Func<T?, Task<string?>> validator) =>
-        AddValidationError(validator, false);
+        AddValidationError((Func<T?, Task<string?>>)validator, false);
 
     /// <summary>Adds an asynchronous validation rule to the property using the specified validator function.</summary>
     /// <remarks>The validator function is invoked whenever the property's value changes. If multiple
@@ -346,7 +346,7 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
     /// <param name="validator">A function that takes the current value and returns a collection of validation errors.</param>
     /// <returns>The current ReactiveProperty instance with the validation rule applied.</returns>
     public ReactiveProperty<T> AddValidationError(Func<T?, IEnumerable?> validator) =>
-        AddValidationError(validator, false);
+        AddValidationError((Func<T?, IEnumerable?>)validator, false);
 
     /// <summary>Adds a validation rule to the reactive property using the specified validator function.</summary>
     /// <remarks>If multiple validation rules are added, all validators are evaluated and their errors are
@@ -362,7 +362,7 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
     /// <param name="validator">A function that returns a validation error message or null if the value is valid.</param>
     /// <returns>The current ReactiveProperty instance with the validation rule applied.</returns>
     public ReactiveProperty<T> AddValidationError(Func<T?, string?> validator) =>
-        AddValidationError(validator, false);
+        AddValidationError((Func<T?, string?>)validator, false);
 
     /// <summary>Adds a validation rule to the property using the specified validator function.</summary>
     /// <remarks>If multiple validation rules are added, all validators are evaluated and their error messages
@@ -683,10 +683,6 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
             /// the remaining sequences, then both are copied once into a pre-sized result (strings first).
             /// </summary>
             /// <returns>The aggregated errors, or <see langword="null"/> when every validator reported null.</returns>
-            [SuppressMessage(
-                "Design",
-                "SST2326:Interface instances should not be narrowed to concrete types",
-                Justification = "A string is an IEnumerable of chars; the test distinguishes a scalar string from the collection validators so it is emitted as one value rather than flattened.")]
             private object?[]? BuildAggregate()
             {
                 if (Array.TrueForAll(_latest, static x => x is null))

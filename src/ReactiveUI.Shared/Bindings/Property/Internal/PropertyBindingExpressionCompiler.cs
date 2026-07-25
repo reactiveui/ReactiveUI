@@ -84,8 +84,8 @@ internal class PropertyBindingExpressionCompiler : IPropertyBindingExpressionCom
 
         for (var i = 0; i < hostExpressionChain.Length; i++)
         {
-            if (hostExpressionChain[i] is MemberExpression member &&
-                string.Equals(member.Member.Name, nameof(IViewFor.ViewModel), StringComparison.Ordinal))
+            if (hostExpressionChain[i] is MemberExpression member
+                && string.Equals(member.Member.Name, nameof(IViewFor.ViewModel), StringComparison.Ordinal))
             {
                 return false;
             }
@@ -152,8 +152,8 @@ internal class PropertyBindingExpressionCompiler : IPropertyBindingExpressionCom
         var setThenGet = CreateSetThenGet(viewExpression, getter, setter, getSetConverter);
         var arguments = viewExpression.GetArgumentsArray();
 
-        var hostExpression = viewExpression.GetParent() ??
-                             throw new InvalidOperationException("Host expression was not found.");
+        var hostExpression = viewExpression.GetParent()
+                             ?? throw new InvalidOperationException("Host expression was not found.");
         var hostChanges = new SynchronizeObservable<object?>(target.WhenAnyDynamic(hostExpression, static x => x.Value));
         var propertyDefaultValue = CreateDefaultValueForType(viewExpression.Type);
         var shouldReplayOnHostChanges = ShouldReplayOnHostChanges(hostExpressionChain);
