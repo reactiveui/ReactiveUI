@@ -2,6 +2,8 @@
   <PropertyGroup>
     <TargetFrameworks>$(ReactiveUITestingTargets)</TargetFrameworks>
     <OutputType>Exe</OutputType>
+    <IsTestProject>true</IsTestProject>
+    <IsPackable>false</IsPackable>
     <FodyTargetFramework>netstandard2.0</FodyTargetFramework>
     <FodyTargetFramework Condition=" $(TargetFramework.StartsWith('net4')) ">$(TargetFramework)</FodyTargetFramework>
   </PropertyGroup>

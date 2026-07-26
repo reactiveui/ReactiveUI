@@ -30,6 +30,9 @@
     <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj"/>
   </ItemGroup>
   <ItemGroup>
+    <InternalsVisibleTo Include="ReactiveUI.WinUI.Tests"/>
+  </ItemGroup>
+  <ItemGroup>
     <Compile Include="..\ReactiveUI.Maui\Internal\**\*.cs" LinkBase="internal"/>
     <Compile Include="..\ReactiveUI.Maui\Common\**\*.cs" LinkBase="common"/>
     <Compile Include="..\ReactiveUI.Maui\WinUI\**\*.cs"/>
