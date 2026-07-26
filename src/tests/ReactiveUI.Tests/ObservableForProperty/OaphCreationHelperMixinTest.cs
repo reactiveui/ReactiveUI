@@ -220,6 +220,39 @@ public class OaphCreationHelperMixinTest
             .Throws<ArgumentNullException>();
     }
 
+    /// <summary>Tests that a static expression is rejected because it has no object parent.</summary>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task ToProperty_WithStaticExpression_ThrowsOnMissingParent()
+    {
+        var source = new TestReactiveObject();
+
+        await Assert.That(() => Signal.Emit(TestText).ToProperty(source, static _ => TestReactiveObject.StaticProperty))
+            .Throws<ArgumentException>();
+    }
+
+    /// <summary>Tests that a nested property expression is rejected because its parent is not the lambda parameter.</summary>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task ToProperty_WithNestedExpression_ThrowsOnNonParameterParent()
+    {
+        var source = new TestReactiveObject();
+
+        await Assert.That(() => Signal.Emit(TestText).ToProperty(source, static value => value.Nested.TestProperty))
+            .Throws<ArgumentException>();
+    }
+
+    /// <summary>Tests that an array index expression is rejected because it has no member metadata.</summary>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task ToProperty_WithArrayIndexExpression_ThrowsOnMissingMember()
+    {
+        var source = new TestReactiveObject();
+
+        await Assert.That(() => Signal.Emit(TestText).ToProperty(source, static value => value.Values[0]))
+            .Throws<ArgumentException>();
+    }
+
     /// <summary>Tests that ToProperty with Expression and initial value creates a helper with initial value.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
@@ -415,6 +448,15 @@ public class OaphCreationHelperMixinTest
     /// <summary>Test reactive object for testing.</summary>
     private sealed class TestReactiveObject : ReactiveObject
     {
+        /// <summary>Gets a static value used to create a parentless expression.</summary>
+        public static string StaticProperty => TestText;
+
+        /// <summary>Gets a nested object used to create a non-direct expression.</summary>
+        public TestReactiveObject Nested => this;
+
+        /// <summary>Gets values used to create an array index expression.</summary>
+        public string[] Values { get; } = [TestText];
+
         /// <summary>Gets or sets the test property.</summary>
         public string? TestProperty
         {

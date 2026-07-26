@@ -66,15 +66,8 @@ public static class CommandBinderMixins
             IObservable<TParam?> withParameter)
             where TViewModel : class
             where TProp : ICommand
-            where TControl : class
-        {
-            ArgumentExceptionHelper.ThrowIfNull(view);
-            ArgumentExceptionHelper.ThrowIfNull(propertyName);
-            ArgumentExceptionHelper.ThrowIfNull(controlName);
-            ArgumentExceptionHelper.ThrowIfNull(withParameter);
-
-            return _binderImplementation.BindCommand(viewModel, view, propertyName, controlName, withParameter);
-        }
+            where TControl : class =>
+            BindCommand(view, viewModel, propertyName, controlName, withParameter, null);
 
         /// <summary>
         /// Binds a command from the view model to a control on the view, enabling the control to execute the command with a
@@ -114,10 +107,7 @@ public static class CommandBinderMixins
             where TProp : ICommand
             where TControl : class
         {
-            ArgumentExceptionHelper.ThrowIfNull(view);
-            ArgumentExceptionHelper.ThrowIfNull(propertyName);
-            ArgumentExceptionHelper.ThrowIfNull(controlName);
-            ArgumentExceptionHelper.ThrowIfNull(withParameter);
+            ValidateBindingArguments(view, propertyName, controlName, withParameter);
 
             return _binderImplementation.BindCommand(viewModel, view, propertyName, controlName, withParameter, toEvent);
         }
@@ -180,9 +170,7 @@ public static class CommandBinderMixins
             where TProp : ICommand
             where TControl : class
         {
-            ArgumentExceptionHelper.ThrowIfNull(view);
-            ArgumentExceptionHelper.ThrowIfNull(propertyName);
-            ArgumentExceptionHelper.ThrowIfNull(controlName);
+            ValidateBindingArguments(view, propertyName, controlName);
 
             return _binderImplementation.BindCommand(viewModel, view, propertyName, controlName, Signal.None<object?>(), toEvent);
         }
@@ -212,15 +200,8 @@ public static class CommandBinderMixins
             Expression<Func<TViewModel, TParam?>> withParameter)
             where TViewModel : class
             where TProp : ICommand
-            where TControl : class
-        {
-            ArgumentExceptionHelper.ThrowIfNull(view);
-            ArgumentExceptionHelper.ThrowIfNull(propertyName);
-            ArgumentExceptionHelper.ThrowIfNull(controlName);
-            ArgumentExceptionHelper.ThrowIfNull(withParameter);
-
-            return _binderImplementation.BindCommand(viewModel, view, propertyName, controlName, withParameter);
-        }
+            where TControl : class =>
+            BindCommand(view, viewModel, propertyName, controlName, withParameter, null);
 
         /// <summary>
         /// Binds a command from the view model to a control on the view, enabling the control to execute the command with a
@@ -260,12 +241,31 @@ public static class CommandBinderMixins
             where TProp : ICommand
             where TControl : class
         {
-            ArgumentExceptionHelper.ThrowIfNull(view);
-            ArgumentExceptionHelper.ThrowIfNull(propertyName);
-            ArgumentExceptionHelper.ThrowIfNull(controlName);
-            ArgumentExceptionHelper.ThrowIfNull(withParameter);
+            ValidateBindingArguments(view, propertyName, controlName, withParameter);
 
             return _binderImplementation.BindCommand(viewModel, view, propertyName, controlName, withParameter, toEvent);
         }
+    }
+
+    /// <summary>Validates the arguments shared by command-binding overloads.</summary>
+    /// <param name="view">The view being bound.</param>
+    /// <param name="propertyName">The command property expression.</param>
+    /// <param name="controlName">The control expression.</param>
+    private static void ValidateBindingArguments(object? view, object? propertyName, object? controlName)
+    {
+        ArgumentExceptionHelper.ThrowIfNull(view);
+        ArgumentExceptionHelper.ThrowIfNull(propertyName);
+        ArgumentExceptionHelper.ThrowIfNull(controlName);
+    }
+
+    /// <summary>Validates the arguments shared by parameterized command-binding overloads.</summary>
+    /// <param name="view">The view being bound.</param>
+    /// <param name="propertyName">The command property expression.</param>
+    /// <param name="controlName">The control expression.</param>
+    /// <param name="withParameter">The command parameter source.</param>
+    private static void ValidateBindingArguments(object? view, object? propertyName, object? controlName, object? withParameter)
+    {
+        ValidateBindingArguments(view, propertyName, controlName);
+        ArgumentExceptionHelper.ThrowIfNull(withParameter);
     }
 }

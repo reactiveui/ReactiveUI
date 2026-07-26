@@ -44,5 +44,6 @@
     <Compile Include="..\Shared\DelegateObserver.cs" Link="Shared\DelegateObserver.cs"/>
     <Compile Include="..\Shared\Platform\FromEventObservable.cs" Link="Shared\Platform\FromEventObservable.cs"/>
     <Compile Include="..\Shared\Platform\ObserveOnObservable.cs" Link="Shared\Platform\ObserveOnObservable.cs"/>
+    <Compile Include="..\Shared\ViewContractObservableHelpers.cs" Link="Shared\ViewContractObservableHelpers.cs"/>
   </ItemGroup>
 </Project>

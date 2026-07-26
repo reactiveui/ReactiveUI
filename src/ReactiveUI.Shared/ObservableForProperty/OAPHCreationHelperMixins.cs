@@ -1053,26 +1053,7 @@ public static class OAPHCreationHelperMixins
             ArgumentExceptionHelper.ThrowIfNull(observable);
             ArgumentExceptionHelper.ThrowIfNull(property);
 
-            var expression = Reflection.Rewrite(property.Body);
-
-            var parent = expression.GetParent()
-                         ?? throw new ArgumentException(
-                             "The property expression does not have a valid parent.",
-                             nameof(property));
-            if (parent.NodeType != ExpressionType.Parameter)
-            {
-                throw new ArgumentException("Property expression must be of the form 'x => x.SomeProperty'");
-            }
-
-            var memberInfo = expression.GetMemberInfo()
-                             ?? throw new ArgumentException(
-                                 "The property expression does not point towards a valid member.",
-                                 nameof(property));
-            var name = memberInfo.Name;
-            if (expression is IndexExpression)
-            {
-                name += "[]";
-            }
+            var name = GetPropertyName(property);
 
             return new(
                 observable,
@@ -1111,26 +1092,7 @@ public static class OAPHCreationHelperMixins
             ArgumentExceptionHelper.ThrowIfNull(observable);
             ArgumentExceptionHelper.ThrowIfNull(property);
 
-            var expression = Reflection.Rewrite(property.Body);
-
-            var parent = expression.GetParent()
-                         ?? throw new ArgumentException(
-                             "The property expression does not have a valid parent.",
-                             nameof(property));
-            if (parent.NodeType != ExpressionType.Parameter)
-            {
-                throw new ArgumentException("Property expression must be of the form 'x => x.SomeProperty'");
-            }
-
-            var memberInfo = expression.GetMemberInfo()
-                             ?? throw new ArgumentException(
-                                 "The property expression does not point towards a valid member.",
-                                 nameof(property));
-            var name = memberInfo.Name;
-            if (expression is IndexExpression)
-            {
-                name += "[]";
-            }
+            var name = GetPropertyName(property);
 
             return new(
                 observable,
@@ -1210,5 +1172,27 @@ public static class OAPHCreationHelperMixins
                 deferSubscription,
                 scheduler);
         }
+    }
+
+    /// <summary>Gets the property name represented by a valid property expression.</summary>
+    /// <typeparam name="TObj">The object declaring the property.</typeparam>
+    /// <typeparam name="TRet">The property value type.</typeparam>
+    /// <param name="property">The property expression.</param>
+    /// <returns>The property name used by change notifications.</returns>
+    private static string GetPropertyName<TObj, TRet>(Expression<Func<TObj, TRet>> property)
+    {
+        var expression = Reflection.Rewrite(property.Body);
+        var parent = expression.GetParent();
+        ArgumentExceptionHelper.ThrowIfNull(parent);
+
+        if (parent.NodeType != ExpressionType.Parameter)
+        {
+            throw new ArgumentException("Property expression must be of the form 'x => x.SomeProperty'");
+        }
+
+        var memberInfo = expression.GetMemberInfo();
+        ArgumentExceptionHelper.ThrowIfNull(memberInfo);
+
+        return expression is IndexExpression ? $"{memberInfo.Name}[]" : memberInfo.Name;
     }
 }
