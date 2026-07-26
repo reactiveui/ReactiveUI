@@ -5,7 +5,6 @@
 
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.UI.Xaml;
-using ReactiveUI.Internal;
 #if REACTIVE_SHIM
 using ReactiveUI.Reactive.Maui.Internal;
 #else
@@ -59,30 +58,12 @@ public partial class ViewModelViewHost<
         Justification = "The single-threaded UI control hands 'this' to MauiReactiveHelpers to observe its own dependency-property changes; it is never published to another thread.")]
     public ViewModelViewHost()
     {
-        var platformGetter = ViewContractObservableHelpers.GetPlatformOrientation(this.Log());
-        ViewContractObservable = ViewContractObservableHelpers.Create(
-            platformGetter,
-            new FromEventObservable<string?>(onNext =>
-            {
-                SizeChangedEventHandler handler = (_, _) => onNext(platformGetter());
-                SizeChanged += handler;
-                return new ActionDisposable(() => SizeChanged -= handler);
-            }));
-
-        MauiReactiveHelpers.SubscribeViewModelViewHost(
-            this,
+        MauiReactiveHelpers.InitializeViewModelViewHost(
+            (this, this.Log(), observable => ViewContractObservable = observable),
             (nameof(ViewModel), ViewModelProperty, () => ViewModel),
-            ViewContractObservable,
             contract => _viewContract = contract,
             ResolveViewForViewModel,
             _subscriptions);
-    }
-
-    /// <summary>Gets or sets the view contract observable.</summary>
-    public IObservable<string?> ViewContractObservable
-    {
-        get => (IObservable<string>)GetValue(ViewContractObservableProperty);
-        set => SetValue(ViewContractObservableProperty, value);
     }
 
     /// <summary>Gets or sets the content displayed by default when no content is set.</summary>
@@ -97,6 +78,13 @@ public partial class ViewModelViewHost<
     {
         get => (TViewModel?)GetValue(ViewModelProperty);
         set => SetValue(ViewModelProperty, value);
+    }
+
+    /// <summary>Gets or sets the view contract observable.</summary>
+    public IObservable<string?> ViewContractObservable
+    {
+        get => (IObservable<string>)GetValue(ViewContractObservableProperty);
+        set => SetValue(ViewContractObservableProperty, value);
     }
 
     /// <summary>Gets or sets the ViewModel to display (non-generic interface implementation).</summary>

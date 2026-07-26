@@ -66,12 +66,8 @@ public static class CommandBinderMixins
             IObservable<TParam?> withParameter)
             where TViewModel : class
             where TProp : ICommand
-            where TControl : class
-        {
-            ValidateBindingArguments(view, propertyName, controlName, withParameter);
-
-            return _binderImplementation.BindCommand(viewModel, view, propertyName, controlName, withParameter);
-        }
+            where TControl : class =>
+            BindCommand(view, viewModel, propertyName, controlName, withParameter, null);
 
         /// <summary>
         /// Binds a command from the view model to a control on the view, enabling the control to execute the command with a
@@ -204,12 +200,8 @@ public static class CommandBinderMixins
             Expression<Func<TViewModel, TParam?>> withParameter)
             where TViewModel : class
             where TProp : ICommand
-            where TControl : class
-        {
-            ValidateBindingArguments(view, propertyName, controlName, withParameter);
-
-            return _binderImplementation.BindCommand(viewModel, view, propertyName, controlName, withParameter);
-        }
+            where TControl : class =>
+            BindCommand(view, viewModel, propertyName, controlName, withParameter, null);
 
         /// <summary>
         /// Binds a command from the view model to a control on the view, enabling the control to execute the command with a

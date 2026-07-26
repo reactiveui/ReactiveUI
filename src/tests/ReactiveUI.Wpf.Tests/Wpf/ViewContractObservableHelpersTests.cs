@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using ReactiveUI.Tests.Utilities.Logging;
 using Splat;
 using TUnit.Core.Executors;
 using TUnit.Core.Interfaces;
@@ -48,6 +49,37 @@ public class ViewContractObservableHelpersTests
         await Assert.That(values).IsEquivalentTo(ExpectedRuntimeContracts);
     }
 
+    /// <summary>Verifies that the registered platform orientation callback is returned.</summary>
+    /// <returns>A task representing the asynchronous test.</returns>
+    [Test]
+    [TestExecutor<LoggingRegistrationExecutor>]
+    public async Task GetPlatformOrientation_RegisteredPlatform_ReturnsPlatformCallback()
+    {
+        AppLocator.CurrentMutable.RegisterConstant<IPlatformOperations>(new FixedPlatformOperations());
+
+        var getOrientation = ViewContractObservableHelpers.GetPlatformOrientation(new LoggerHost().Log());
+
+        await Assert.That(getOrientation()).IsEqualTo(Landscape);
+    }
+
+    /// <summary>Verifies that a missing platform is logged and represented by a null orientation callback.</summary>
+    /// <returns>A task representing the asynchronous test.</returns>
+    [Test]
+    [TestExecutor<LoggingRegistrationExecutor>]
+    public async Task GetPlatformOrientation_MissingPlatform_LogsErrorAndReturnsNullCallback()
+    {
+        var logger = TestContext.Current?.GetTestLogger()
+                     ?? throw new InvalidOperationException("The logging executor did not provide a test logger.");
+
+        var getOrientation = ViewContractObservableHelpers.GetPlatformOrientation(new LoggerHost().Log());
+
+        using (Assert.Multiple())
+        {
+            await Assert.That(getOrientation()).IsNull();
+            await Assert.That(logger.Messages.Exists(static message => message.logLevel == LogLevel.Error)).IsTrue();
+        }
+    }
+
     /// <summary>Runs a test with runtime mode enabled and restores test mode afterward.</summary>
     public sealed class RuntimeModeTestExecutor : ITestExecutor
     {
@@ -73,4 +105,14 @@ public class ViewContractObservableHelpersTests
         /// <inheritdoc/>
         public bool? InUnitTestRunner() => isTestMode;
     }
+
+    /// <summary>Returns a fixed platform orientation.</summary>
+    private sealed class FixedPlatformOperations : IPlatformOperations
+    {
+        /// <inheritdoc/>
+        public string GetOrientation() => Landscape;
+    }
+
+    /// <summary>Provides a logging category for helper tests.</summary>
+    private sealed class LoggerHost : IEnableLogger;
 }

@@ -6,7 +6,6 @@
 #if WINUI_TARGET
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.UI.Xaml;
-using ReactiveUI.Internal;
 #if REACTIVE_SHIM
 using ReactiveUI.Reactive.Maui.Internal;
 #else
@@ -57,18 +56,8 @@ public partial class RoutedViewHost : TransitioningContentControl, IActivatableV
         HorizontalContentAlignment = HorizontalAlignment.Stretch;
         VerticalContentAlignment = VerticalAlignment.Stretch;
 
-        var platformGetter = ViewContractObservableHelpers.GetPlatformOrientation(this.Log());
-        ViewContractObservable = ViewContractObservableHelpers.Create(
-            platformGetter,
-            new FromEventObservable<string?>(onNext =>
-            {
-                SizeChangedEventHandler handler = (_, _) => onNext(platformGetter());
-                SizeChanged += handler;
-                return new ActionDisposable(() => SizeChanged -= handler);
-            }));
-
-        MauiReactiveHelpers.SubscribeRoutedViewHost(
-            this,
+        MauiReactiveHelpers.InitializeRoutedViewHost(
+            (this, this.Log(), observable => ViewContractObservable = observable),
             (nameof(Router), RouterProperty, () => Router),
             (nameof(ViewContractObservable), ViewContractObservableProperty, () => ViewContractObservable),
             () => ViewContract,

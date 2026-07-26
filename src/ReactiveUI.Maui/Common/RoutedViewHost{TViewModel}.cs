@@ -6,7 +6,6 @@
 #if WINUI_TARGET
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.UI.Xaml;
-using ReactiveUI.Internal;
 #if REACTIVE_SHIM
 using ReactiveUI.Reactive.Maui.Internal;
 #else
@@ -59,18 +58,8 @@ public partial class RoutedViewHost<
         HorizontalContentAlignment = HorizontalAlignment.Stretch;
         VerticalContentAlignment = VerticalAlignment.Stretch;
 
-        var platformGetter = ViewContractObservableHelpers.GetPlatformOrientation(this.Log());
-        ViewContractObservable = ViewContractObservableHelpers.Create(
-            platformGetter,
-            new FromEventObservable<string?>(onNext =>
-            {
-                SizeChangedEventHandler handler = (_, _) => onNext(platformGetter());
-                SizeChanged += handler;
-                return new ActionDisposable(() => SizeChanged -= handler);
-            }));
-
-        MauiReactiveHelpers.SubscribeRoutedViewHost(
-            this,
+        MauiReactiveHelpers.InitializeRoutedViewHost(
+            (this, this.Log(), observable => ViewContractObservable = observable),
             (nameof(Router), RouterProperty, () => Router),
             (nameof(ViewContractObservable), ViewContractObservableProperty, () => ViewContractObservable),
             () => ViewContract,
@@ -79,18 +68,18 @@ public partial class RoutedViewHost<
             _subscriptions);
     }
 
+    /// <summary>Gets or sets the view locator.</summary>
+    /// <value>
+    /// The view locator.
+    /// </value>
+    public IViewLocator? ViewLocator { get; set; }
+
     /// <summary>Gets or sets the <see cref="RoutingState"/> of the view model stack.</summary>
     public RoutingState Router
     {
         get => (RoutingState)GetValue(RouterProperty);
         set => SetValue(RouterProperty, value);
     }
-
-    /// <summary>Gets or sets the view locator.</summary>
-    /// <value>
-    /// The view locator.
-    /// </value>
-    public IViewLocator? ViewLocator { get; set; }
 
     /// <summary>Gets or sets the content displayed whenever there is no page currently routed.</summary>
     public object DefaultContent

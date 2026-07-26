@@ -25,6 +25,22 @@ namespace ReactiveUI.Tests.CommandBinding;
 [TestExecutor<CommandBindingExecutorTests>]
 public class CommandBindingTests
 {
+    /// <summary>The event used by the fake control command bindings.</summary>
+    private const string ClickEvent = "Click";
+
+    /// <summary>The command-parameter source shapes exposed by the binding mixins.</summary>
+    public enum ParameterSource
+    {
+        /// <summary>No command parameter.</summary>
+        None,
+
+        /// <summary>An observable command parameter.</summary>
+        Observable,
+
+        /// <summary>A view-model expression command parameter.</summary>
+        Expression
+    }
+
     /// <summary>Verifies that the command binder binds a command to a control event so the command executes when the event is raised.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
@@ -40,7 +56,7 @@ public class CommandBindingTests
             vm => vm.Command,
             v => v.Control,
             Signal.Emit((object?)null),
-            "Click");
+            ClickEvent);
 
         await Assert.That(disp).IsNotNull();
 
@@ -71,6 +87,43 @@ public class CommandBindingTests
 
         await Assert.That(disp).IsNotNull();
         await Assert.That(FakeCustomBinder.BindCalled).IsTrue();
+    }
+
+    /// <summary>Verifies that each parameter-source extension overload creates an executable binding.</summary>
+    /// <param name="parameterSource">The command-parameter source shape to bind.</param>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
+    [Test]
+    [Arguments(ParameterSource.None)]
+    [Arguments(ParameterSource.Observable)]
+    [Arguments(ParameterSource.Expression)]
+    public async Task BindCommand_ParameterSource_CreatesExecutableBinding(ParameterSource parameterSource)
+    {
+        var viewModel = new FakeViewModel();
+        var view = new FakeView { ViewModel = viewModel };
+        var executed = false;
+        _ = viewModel.Command.Subscribe(_ => executed = true);
+
+        using var binding = parameterSource switch
+        {
+            ParameterSource.None => view.BindCommand(viewModel, model => model.Command, target => target.Control, ClickEvent),
+            ParameterSource.Observable => view.BindCommand(
+                viewModel,
+                model => model.Command,
+                target => target.Control,
+                Signal.Emit<RxVoid?>(default),
+                ClickEvent),
+            ParameterSource.Expression => view.BindCommand(
+                viewModel,
+                model => model.Command,
+                target => target.Control,
+                model => model.Parameter,
+                ClickEvent),
+            _ => throw new ArgumentOutOfRangeException(nameof(parameterSource), parameterSource, null)
+        };
+
+        view.Control.RaiseClick();
+
+        await Assert.That(executed).IsTrue();
     }
 
     /// <summary>Provides test execution support for command binding scenarios using the ReactiveUI framework.</summary>
@@ -201,5 +254,8 @@ public class CommandBindingTests
     {
         /// <summary>Gets the command under test.</summary>
         public ReactiveCommand<RxVoid, RxVoid> Command { get; } = ReactiveCommand.Create(static () => { });
+
+        /// <summary>Gets the expression-backed command parameter.</summary>
+        public RxVoid Parameter => default;
     }
 }

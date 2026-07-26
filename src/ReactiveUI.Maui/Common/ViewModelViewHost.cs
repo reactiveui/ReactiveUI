@@ -5,7 +5,6 @@
 
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.UI.Xaml;
-using ReactiveUI.Internal;
 #if REACTIVE_SHIM
 using ReactiveUI.Reactive.Maui.Internal;
 #else
@@ -57,20 +56,9 @@ public partial class ViewModelViewHost : TransitioningContentControl, IViewFor, 
         Justification = "The single-threaded UI control hands 'this' to MauiReactiveHelpers to observe its own dependency-property changes; it is never published to another thread.")]
     public ViewModelViewHost()
     {
-        var platformGetter = ViewContractObservableHelpers.GetPlatformOrientation(this.Log());
-        ViewContractObservable = ViewContractObservableHelpers.Create(
-            platformGetter,
-            new FromEventObservable<string?>(onNext =>
-            {
-                SizeChangedEventHandler handler = (_, _) => onNext(platformGetter());
-                SizeChanged += handler;
-                return new ActionDisposable(() => SizeChanged -= handler);
-            }));
-
-        MauiReactiveHelpers.SubscribeViewModelViewHost(
-            this,
+        MauiReactiveHelpers.InitializeViewModelViewHost(
+            (this, this.Log(), observable => ViewContractObservable = observable),
             (nameof(ViewModel), ViewModelProperty, () => ViewModel),
-            ViewContractObservable,
             contract => _viewContract = contract,
             ResolveViewForViewModel,
             _subscriptions);
