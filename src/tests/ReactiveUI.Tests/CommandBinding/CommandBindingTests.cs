@@ -110,14 +110,12 @@ public class CommandBindingTests
                 viewModel,
                 model => model.Command,
                 target => target.Control,
-                Signal.Emit<RxVoid?>(default),
-                ClickEvent),
+                Signal.Emit<RxVoid?>(default)),
             ParameterSource.Expression => view.BindCommand(
                 viewModel,
                 model => model.Command,
                 target => target.Control,
-                model => model.Parameter,
-                ClickEvent),
+                model => model.Parameter),
             _ => throw new ArgumentOutOfRangeException(nameof(parameterSource), parameterSource, null)
         };
 

@@ -1182,19 +1182,17 @@ public static class OAPHCreationHelperMixins
     private static string GetPropertyName<TObj, TRet>(Expression<Func<TObj, TRet>> property)
     {
         var expression = Reflection.Rewrite(property.Body);
-        var parent = expression.GetParent()
-                     ?? throw new ArgumentException(
-                         "The property expression does not have a valid parent.",
-                         nameof(property));
+        var parent = expression.GetParent();
+        ArgumentExceptionHelper.ThrowIfNull(parent);
+
         if (parent.NodeType != ExpressionType.Parameter)
         {
             throw new ArgumentException("Property expression must be of the form 'x => x.SomeProperty'");
         }
 
-        var memberInfo = expression.GetMemberInfo()
-                         ?? throw new ArgumentException(
-                             "The property expression does not point towards a valid member.",
-                             nameof(property));
+        var memberInfo = expression.GetMemberInfo();
+        ArgumentExceptionHelper.ThrowIfNull(memberInfo);
+
         return expression is IndexExpression ? $"{memberInfo.Name}[]" : memberInfo.Name;
     }
 }
