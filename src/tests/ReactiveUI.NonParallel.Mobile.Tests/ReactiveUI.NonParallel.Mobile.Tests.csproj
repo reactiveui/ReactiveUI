@@ -9,6 +9,8 @@
     <!-- Target mobile platforms - Android and iOS (net9 mobile EOL 12 May 2026) -->
     <TargetFrameworks>net10.0-android;net10.0-ios</TargetFrameworks>
     <OutputType>Exe</OutputType>
+    <IsTestProject>true</IsTestProject>
+    <IsPackable>false</IsPackable>
     <NoWarn>$(NoWarn);CS1591</NoWarn>
   </PropertyGroup>
 

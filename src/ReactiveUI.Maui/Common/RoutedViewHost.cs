@@ -11,8 +11,6 @@ using ReactiveUI.Reactive.Maui.Internal;
 #else
 using ReactiveUI.Maui.Internal;
 #endif
-using Splat;
-
 #if REACTIVE_SHIM
 namespace ReactiveUI.Reactive;
 #else
@@ -26,7 +24,7 @@ namespace ReactiveUI;
 /// </summary>
 [RequiresUnreferencedCode("This class uses reflection to determine view model types at runtime through ViewLocator, which may be incompatible with trimming.")]
 [RequiresDynamicCode("ViewLocator.ResolveView uses reflection which is incompatible with AOT compilation.")]
-public partial class RoutedViewHost : TransitioningContentControl, IActivatableView, IEnableLogger
+public partial class RoutedViewHost : TransitioningContentControl, IActivatableView, IMauiRoutedViewHost
 {
     /// <summary>The router dependency property.</summary>
     public static readonly DependencyProperty RouterProperty =
@@ -56,14 +54,7 @@ public partial class RoutedViewHost : TransitioningContentControl, IActivatableV
         HorizontalContentAlignment = HorizontalAlignment.Stretch;
         VerticalContentAlignment = VerticalAlignment.Stretch;
 
-        MauiReactiveHelpers.InitializeRoutedViewHost(
-            (this, this.Log(), observable => ViewContractObservable = observable),
-            (nameof(Router), RouterProperty, () => Router),
-            (nameof(ViewContractObservable), ViewContractObservableProperty, () => ViewContractObservable),
-            () => ViewContract,
-            contract => _viewContract = contract,
-            ResolveViewForViewModel,
-            _subscriptions);
+        MauiReactiveHelpers.InitializeRoutedViewHost(this, RouterProperty, ViewContractObservableProperty, _subscriptions, ResolveViewForViewModel);
     }
 
     /// <summary>Gets or sets the <see cref="RoutingState"/> of the view model stack.</summary>
@@ -107,23 +98,26 @@ public partial class RoutedViewHost : TransitioningContentControl, IActivatableV
     /// </value>
     public IViewLocator? ViewLocator { get; set; }
 
+    /// <inheritdoc/>
+    void IMauiRoutedViewHost.SetObservedViewContract(string? contract) => _viewContract = contract;
+
     /// <summary>Resolves and hosts the view for the supplied view model/contract pair.</summary>
-    /// <param name="x">The view model and contract to resolve a view for.</param>
+    /// <param name="route">The view model and contract to resolve a view for.</param>
     [RequiresUnreferencedCode("This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
     [RequiresDynamicCode("If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, "
         + "or generic constraints), trimming can't validate that the requirements of those annotations are met.")]
-    private void ResolveViewForViewModel((IRoutableViewModel? viewModel, string? contract) x)
+    private void ResolveViewForViewModel((IRoutableViewModel? viewModel, string? contract) route)
     {
-        if (x.viewModel is null)
+        if (route.viewModel is null)
         {
             Content = DefaultContent;
             return;
         }
 
         var viewLocator = ViewLocator ?? ReactiveUI.ViewLocator.Current;
-        var view = (viewLocator.ResolveView(x.viewModel, x.contract) ?? viewLocator.ResolveView(x.viewModel))
-            ?? throw new InvalidOperationException($"Couldn't find view for '{x.viewModel}'.");
-        view.ViewModel = x.viewModel;
+        var view = (viewLocator.ResolveView(route.viewModel, route.contract) ?? viewLocator.ResolveView(route.viewModel))
+            ?? throw new InvalidOperationException($"Couldn't find view for '{route.viewModel}'.");
+        view.ViewModel = route.viewModel;
         Content = view;
     }
 }

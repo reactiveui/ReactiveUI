@@ -11,8 +11,6 @@ using ReactiveUI.Reactive.Maui.Internal;
 #else
 using ReactiveUI.Maui.Internal;
 #endif
-using Splat;
-
 #if REACTIVE_SHIM
 namespace ReactiveUI.Reactive;
 #else
@@ -27,7 +25,7 @@ namespace ReactiveUI;
 /// </summary>
 /// <typeparam name="TViewModel">The type of the view model. Must have a public parameterless constructor and implement IRoutableViewModel.</typeparam>
 public partial class RoutedViewHost<
-    [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)] TViewModel> : TransitioningContentControl, IActivatableView, IEnableLogger
+    [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)] TViewModel> : TransitioningContentControl, IActivatableView, IMauiRoutedViewHost
     where TViewModel : class, IRoutableViewModel
 {
     /// <summary>The router dependency property.</summary>
@@ -58,14 +56,7 @@ public partial class RoutedViewHost<
         HorizontalContentAlignment = HorizontalAlignment.Stretch;
         VerticalContentAlignment = VerticalAlignment.Stretch;
 
-        MauiReactiveHelpers.InitializeRoutedViewHost(
-            (this, this.Log(), observable => ViewContractObservable = observable),
-            (nameof(Router), RouterProperty, () => Router),
-            (nameof(ViewContractObservable), ViewContractObservableProperty, () => ViewContractObservable),
-            () => ViewContract,
-            contract => _viewContract = contract,
-            ResolveViewForViewModel,
-            _subscriptions);
+        MauiReactiveHelpers.InitializeRoutedViewHost(this, RouterProperty, ViewContractObservableProperty, _subscriptions, ResolveViewForViewModel);
     }
 
     /// <summary>Gets or sets the view locator.</summary>
@@ -109,14 +100,17 @@ public partial class RoutedViewHost<
         }
     }
 
+    /// <inheritdoc/>
+    void IMauiRoutedViewHost.SetObservedViewContract(string? contract) => _viewContract = contract;
+
     /// <summary>
     /// Resolves and displays the view for the given view model and contract.
     /// This method uses the generic ViewLocator.ResolveView{TViewModel} which is AOT-safe.
     /// </summary>
-    /// <param name="x">Tuple containing the view model and contract.</param>
-    private void ResolveViewForViewModel((IRoutableViewModel? viewModel, string? contract) x)
+    /// <param name="route">Tuple containing the view model and contract.</param>
+    private void ResolveViewForViewModel((IRoutableViewModel? viewModel, string? contract) route)
     {
-        if (x.viewModel is null)
+        if (route.viewModel is null)
         {
             Content = DefaultContent;
             return;
@@ -125,9 +119,9 @@ public partial class RoutedViewHost<
         var viewLocator = ViewLocator ?? ReactiveUI.ViewLocator.Current;
 
         // Use the generic ResolveView<TViewModel> method - this is AOT-safe!
-        var view = viewLocator.ResolveView<TViewModel>(x.contract) ?? viewLocator.ResolveView<TViewModel>()
+        var view = viewLocator.ResolveView<TViewModel>(route.contract) ?? viewLocator.ResolveView<TViewModel>()
             ?? throw new InvalidOperationException($"Couldn't find view for '{nameof(TViewModel)}'.");
-        view.ViewModel = x.viewModel as TViewModel;
+        view.ViewModel = route.viewModel as TViewModel;
         Content = view;
     }
 }

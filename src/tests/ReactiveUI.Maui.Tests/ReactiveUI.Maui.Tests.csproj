@@ -3,6 +3,7 @@
     <TargetFrameworks>$(ReactiveUIMauiTestTargets)</TargetFrameworks>
     <OutputType>Exe</OutputType>
     <UseMaui>true</UseMaui>
+    <IsTestProject>true</IsTestProject>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
   <ItemGroup>

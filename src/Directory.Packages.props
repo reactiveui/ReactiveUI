@@ -6,7 +6,7 @@
 
   <PropertyGroup Label="Shared Version Variables">
     <SplatVersion>20.2.0</SplatVersion>
-    <PrimitivesVersion>7.0.0</PrimitivesVersion>
+    <PrimitivesVersion>7.1.0</PrimitivesVersion>
     <TUnitVersion>1.61.38</TUnitVersion>
     <!-- StyleSharp.Analyzers, PerformanceSharp.Analyzers and SecuritySharp.Analyzers ship from the
          same release pipeline and always share a version. -->

@@ -141,29 +141,27 @@ internal static class MauiReactiveHelpers
     }
 
     /// <summary>Initializes a WinUI routed host and its view-contract subscriptions.</summary>
-    /// <param name="host">The host, logger, and view-contract setter.</param>
-    /// <param name="router">The router property metadata and accessor.</param>
-    /// <param name="viewContractObservable">The view-contract observable property metadata and accessor.</param>
-    /// <param name="getViewContract">Gets the current view contract.</param>
-    /// <param name="setViewContract">Stores the latest view contract.</param>
-    /// <param name="resolveView">Resolves a routed view model and contract.</param>
+    /// <typeparam name="THost">The routed-host type.</typeparam>
+    /// <param name="host">The host to initialize.</param>
+    /// <param name="routerProperty">The host's router dependency property.</param>
+    /// <param name="viewContractObservableProperty">The host's view-contract observable dependency property.</param>
     /// <param name="subscriptions">Collects the host subscription.</param>
-    internal static void InitializeRoutedViewHost(
-        (FrameworkElement Source, IFullLogger Logger, Action<IObservable<string?>> SetViewContractObservable) host,
-        (string Name, DependencyProperty Property, Func<RoutingState> GetValue) router,
-        (string Name, DependencyProperty Property, Func<IObservable<string?>> GetValue) viewContractObservable,
-        Func<string?> getViewContract,
-        Action<string?> setViewContract,
-        Action<(IRoutableViewModel? viewModel, string? contract)> resolveView,
-        MultipleDisposable subscriptions)
+    /// <param name="resolveView">Resolves a routed view model and contract.</param>
+    internal static void InitializeRoutedViewHost<THost>(
+        THost host,
+        DependencyProperty routerProperty,
+        DependencyProperty viewContractObservableProperty,
+        MultipleDisposable subscriptions,
+        Action<(IRoutableViewModel? viewModel, string? contract)> resolveView)
+        where THost : FrameworkElement, IMauiRoutedViewHost
     {
-        host.SetViewContractObservable(CreateViewContractObservable(host.Source, host.Logger));
+        host.ViewContractObservable = CreateViewContractObservable(host, host.Log());
         SubscribeRoutedViewHost(
-            host.Source,
-            router,
-            viewContractObservable,
-            getViewContract,
-            setViewContract,
+            host,
+            (nameof(host.Router), routerProperty, () => host.Router),
+            (nameof(host.ViewContractObservable), viewContractObservableProperty, () => host.ViewContractObservable),
+            () => host.ViewContract,
+            host.SetObservedViewContract,
             resolveView,
             subscriptions);
     }

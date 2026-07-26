@@ -2,6 +2,7 @@
   <PropertyGroup>
     <TargetFrameworks>$(ReactiveUITestingTargets)</TargetFrameworks>
     <OutputType>Exe</OutputType>
+    <IsTestProject>true</IsTestProject>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
   <ItemGroup>
