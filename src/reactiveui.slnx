@@ -48,7 +48,6 @@
         <Project Path="tests/ReactiveUI.Tests.Reactive/ReactiveUI.Tests.Reactive.csproj" />
         <Project Path="tests/ReactiveUI.WinForms.Tests/ReactiveUI.WinForms.Tests.csproj" />
         <Project Path="tests/ReactiveUI.WinForms.Tests.Reactive/ReactiveUI.WinForms.Tests.Reactive.csproj" />
-        <Project Path="tests/ReactiveUI.WinUI.Tests/ReactiveUI.WinUI.Tests.csproj" />
         <Project Path="tests/ReactiveUI.Wpf.Tests/ReactiveUI.Wpf.Tests.csproj" />
         <Project Path="tests/ReactiveUI.Wpf.Tests.Reactive/ReactiveUI.Wpf.Tests.Reactive.csproj" />
     </Folder>
