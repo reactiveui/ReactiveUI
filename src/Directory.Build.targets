@@ -7,6 +7,14 @@
     <EnableVSTestReferences>false</EnableVSTestReferences>
   </PropertyGroup>
 
+  <!-- net11 platform packages (Maui.Core, AspNetCore.Components, Microsoft.Extensions.*) only ship as
+       preview while .NET 11 is in preview, so a stable pack of a net11-targeting package trips NU5104.
+       NU5104 is a pack-time (outer-build) check; this lives in .targets so $(TargetFrameworks) is set.
+       Scoped to packages that actually ship a net11 leg, so non-net11 packages still reject preview deps. -->
+  <PropertyGroup Condition="$(TargetFrameworks.Contains('net11.0'))">
+    <NoWarn>$(NoWarn);NU5104</NoWarn>
+  </PropertyGroup>
+
   <!-- WPF markup-compile (PresentationBuildTasks) spawns a temporary '<name>_hash_wpftmp' project to resolve
        XAML-referenced types. It inherits OutputType=Exe from the Microsoft.Testing.Platform test project but does
        NOT include the MTP-generated entry point, so csc fails the temp pass with CS5001 ("no static Main"). The
