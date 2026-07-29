@@ -16,7 +16,7 @@ platforms that is inspired by functional reactive programming, which is a paradi
 to [abstract mutable state away from your user interfaces and express the idea around a feature in one readable place](https://www.youtube.com/watch?v=3HwEytvngXk)
 and improve the testability of your application.
 
-[🔨 Get Started](https://reactiveui.net/docs/getting-started/) [🛍 Install Packages](https://reactiveui.net/docs/getting-started/installation/) [🎞 Watch Videos](https://reactiveui.net/docs/resources/videos) [🎓 View Samples](https://reactiveui.net/docs/resources/samples/) [🎤 Discuss ReactiveUI](https://reactiveui.net/slack)
+[🔨 Get Started](https://reactiveui.net/documentation/getting-started/) [🛍 Install Packages](https://reactiveui.net/documentation/getting-started/installation/) [🎞 Watch Videos](https://reactiveui.net/documentation/resources/videos) [🎓 View Samples](https://reactiveui.net/documentation/resources/samples/) [🎤 Discuss ReactiveUI](https://reactiveui.net/slack)
 
 ## Documentation
 
@@ -31,7 +31,7 @@ Kent Boogart.
 
 Install the following packages to start building your own ReactiveUI app. <b>Note:</b> some of the platform-specific
 packages are required. This means your app won't perform as expected until you install the packages properly. See
-the <a href="https://reactiveui.net/docs/getting-started/installation/">Installation</a> docs page for more info.
+the <a href="https://reactiveui.net/documentation/getting-started/installation/">Installation</a> docs page for more info.
 
 | Platform      | ReactiveUI Package                   | NuGet                        |
 |---------------|--------------------------------------|------------------------------|
@@ -96,11 +96,11 @@ adding a direct reference to `ReactiveUI.Primitives` (without excluding the anal
 
 [CoreBadge]: https://img.shields.io/nuget/v/ReactiveUI.svg
 
-[CoreDoc]: https://reactiveui.net/docs/getting-started/installation/
+[CoreDoc]: https://reactiveui.net/documentation/getting-started/installation/
 
 [SG]: https://www.nuget.org/packages/ReactiveUI.SourceGenerators/
 
-[SGDoc]: https://reactiveui.net/docs/handbook/view-models/boilerplate-code
+[SGDoc]: https://reactiveui.net/documentation/handbook/view-models/boilerplate-code
 
 [SGBadge]: https://img.shields.io/nuget/v/ReactiveUI.SourceGenerators.svg
 
@@ -108,19 +108,19 @@ adding a direct reference to `ReactiveUI.Primitives` (without excluding the anal
 
 [TestBadge]: https://img.shields.io/nuget/v/ReactiveUI.Testing.svg
 
-[TestDoc]: https://reactiveui.net/docs/handbook/testing/
+[TestDoc]: https://reactiveui.net/documentation/handbook/testing/
 
 [Wpf]: https://www.nuget.org/packages/ReactiveUI.WPF/
 
 [WpfBadge]: https://img.shields.io/nuget/v/ReactiveUI.WPF.svg
 
-[WpfDoc]: https://reactiveui.net/docs/getting-started/installation/windows-presentation-foundation
+[WpfDoc]: https://reactiveui.net/documentation/getting-started/installation/windows-presentation-foundation
 
 [WinUi]: https://www.nuget.org/packages/ReactiveUI.WinUI/
 
 [WinUiBadge]: https://img.shields.io/nuget/v/ReactiveUI.WinUI.svg
 
-[WinUiDoc]: https://reactiveui.net/docs/getting-started/installation/universal-windows-platform
+[WinUiDoc]: https://reactiveui.net/documentation/getting-started/installation/universal-windows-platform
 
 [Maui]: https://www.nuget.org/packages/ReactiveUI.Maui/
 
@@ -134,45 +134,45 @@ adding a direct reference to `ReactiveUI.Primitives` (without excluding the anal
 
 [WinBadge]: https://img.shields.io/nuget/v/ReactiveUI.WinForms.svg
 
-[WinDoc]: https://reactiveui.net/docs/getting-started/installation/windows-forms
+[WinDoc]: https://reactiveui.net/documentation/getting-started/installation/windows-forms
 
 [DroX]: https://www.nuget.org/packages/ReactiveUI.AndroidX/
 
 [DroXBadge]: https://img.shields.io/nuget/v/ReactiveUI.AndroidX.svg
 
-[DroDoc]: https://reactiveui.net/docs/getting-started/installation/
+[DroDoc]: https://reactiveui.net/documentation/getting-started/installation/
 
 [Uno]: https://www.nuget.org/packages/ReactiveUI.Uno/
 
 [UnoBadge]: https://img.shields.io/nuget/v/ReactiveUI.Uno.svg
 
-[UnoDoc]: https://reactiveui.net/docs/getting-started/installation/uno-platform
+[UnoDoc]: https://reactiveui.net/documentation/getting-started/installation/uno-platform
 
 [UnoWinUi]: https://www.nuget.org/packages/ReactiveUI.Uno.WinUI/
 
 [UnoWinUiBadge]: https://img.shields.io/nuget/v/ReactiveUI.Uno.WinUI.svg
 
-[UnoWinUiDoc]: https://reactiveui.net/docs/getting-started/installation/uno-platform
+[UnoWinUiDoc]: https://reactiveui.net/documentation/getting-started/installation/uno-platform
 
 [Blaz]: https://www.nuget.org/packages/ReactiveUI.Blazor/
 
 [BlazBadge]: https://img.shields.io/nuget/v/ReactiveUI.Blazor.svg
 
-[BlazDoc]: https://www.reactiveui.net/docs/getting-started/installation/blazor
+[BlazDoc]: https://reactiveui.net/documentation/getting-started/installation/blazor
 
 [Ava]: https://www.nuget.org/packages/ReactiveUI.Avalonia/
 
 [AvaBadge]: https://img.shields.io/nuget/v/ReactiveUI.Avalonia.svg
 
-[AvaDoc]: https://reactiveui.net/docs/getting-started/installation/avalonia
+[AvaDoc]: https://reactiveui.net/documentation/getting-started/installation/avalonia
 
-[EventsDocs]: https://reactiveui.net/docs/handbook/events/
+[EventsDocs]: https://reactiveui.net/documentation/handbook/events/
 
 [ValCore]: https://www.nuget.org/packages/ReactiveUI.Validation/
 
 [ValBadge]: https://img.shields.io/nuget/v/ReactiveUI.Validation.svg
 
-[ValDocs]: https://reactiveui.net/docs/handbook/user-input-validation/
+[ValDocs]: https://reactiveui.net/documentation/handbook/user-input-validation/
 
 [Ext]: https://www.nuget.org/packages/ReactiveUI.Extensions/
 
