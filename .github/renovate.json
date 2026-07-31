@@ -1,4 +1,56 @@
 {
     "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-    "extends": ["local>reactiveui/.github:renovate"]
+    "extends": [
+        "local>reactiveui/.github:renovate"
+    ],
+    "packageRules": [
+        {
+            "description": "Analyzer packages all gate the build through the same warnings-as-errors pass, so landing them separately just means several red CI runs in a row. Move them in one PR.",
+            "matchManagers": [
+                "nuget"
+            ],
+            "groupName": "analyzers",
+            "matchPackageNames": [
+                "/^Roslynator\\./",
+                "/^SonarAnalyzer\\./",
+                "/Sharp\\.Analyzers$/",
+                "/^Microsoft\\.CodeAnalysis\\.(Public|Banned)ApiAnalyzers$/"
+            ]
+        },
+        {
+            "description": "The shared preset blocks major bumps for Microsoft.CodeAnalysis.* to hold the compiler API at its current band. The public/banned API analyzers ship on their own line and are not part of that toolchain, so allow their majors.",
+            "matchManagers": [
+                "nuget"
+            ],
+            "matchPackageNames": [
+                "/^Microsoft\\.CodeAnalysis\\.(Public|Banned)ApiAnalyzers$/"
+            ],
+            "matchUpdateTypes": [
+                "major"
+            ],
+            "enabled": true
+        },
+        {
+            "description": "Packaging, versioning and symbol tooling. These affect how the package is produced, never the shipped API, so they are safe to move as one.",
+            "matchManagers": [
+                "nuget"
+            ],
+            "groupName": "build tooling",
+            "matchPackageNames": [
+                "/^MinVer$/",
+                "/^Microsoft\\.SourceLink\\./"
+            ]
+        },
+        {
+            "description": "Test and benchmark helpers that sit outside the framework cohorts the shared preset already groups.",
+            "matchManagers": [
+                "nuget"
+            ],
+            "groupName": "test tooling",
+            "matchPackageNames": [
+                "/^BenchmarkDotNet(\\.|$)/",
+                "/^Mocks\\.Maui$/"
+            ]
+        }
+    ]
 }
