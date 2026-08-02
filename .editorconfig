@@ -2008,11 +2008,10 @@ dotnet_diagnostic.SES1710.severity = error # Antiforgery validation is disabled 
 
 
 ###################
-# Microsoft.CodeAnalysis.PublicApiAnalyzers (RS)
+# Public API surface tracking (PAS)
 ###################
-# Public API surface tracking
-dotnet_diagnostic.RS0016.severity = error # public symbol missing from the PublicAPI baseline
-dotnet_diagnostic.RS0017.severity = error # PublicAPI baseline entry no longer in source
+# PAS0001/PAS0002/PAS0003/PAS0005 are errors by default and need no entry here.
+dotnet_diagnostic.PAS0004.severity = warning # no public API baseline for this target framework
 
 ###################
 # Microsoft.NET.ILLink.Analyzers (IL)

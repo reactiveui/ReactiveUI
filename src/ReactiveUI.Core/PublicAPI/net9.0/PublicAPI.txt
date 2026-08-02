@@ -1,0 +1,1157 @@
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.AOT.Tests")]
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.Avalonia")]
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.Builder.Tests")]
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.Maui.Tests")]
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.NonParallel.Tests")]
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.Reactive.Tests")]
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.Test.Utilities")]
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.TestGuiMocks")]
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.Tests")]
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.Uno")]
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.Uno.WinUI")]
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.WinForms.Tests")]
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.Wpf.Tests")]
+namespace ReactiveUI
+{
+    public static class BindingAffinity
+    {
+        public static readonly int DefaultEvent;
+        public static readonly int DefaultInternalTypeConverter;
+        public static readonly int ExactType;
+        public static readonly int Explicit;
+    }
+    [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Uses RxConverters and Splat which may require dynamic type resolution")]
+    public class BindingConverterResolver : ReactiveUI.IBindingConverterResolver
+    {
+        public BindingConverterResolver() { }
+        public object? GetBindingConverter(System.Type fromType, System.Type toType) { }
+        public System.Func<object?, object?, object?[]?, object?>? GetSetMethodConverter(System.Type? fromType, System.Type? toType) { }
+    }
+    public enum BindingDirection
+    {
+        OneWay = 0,
+        TwoWay = 1,
+        AsyncOneWay = 2,
+    }
+    public sealed class BindingFallbackConverterRegistry
+    {
+        public BindingFallbackConverterRegistry() { }
+        public System.Collections.Generic.IEnumerable<ReactiveUI.IBindingFallbackConverter> GetAllConverters() { }
+        public void Register(ReactiveUI.IBindingFallbackConverter converter) { }
+        public ReactiveUI.IBindingFallbackConverter? TryGetConverter(System.Type fromType, System.Type toType) { }
+    }
+    public abstract class BindingTypeConverter<TFrom, TTo> : ReactiveUI.IBindingTypeConverter<TFrom, TTo>
+    {
+        protected BindingTypeConverter() { }
+        public System.Type FromType { get; }
+        public System.Type ToType { get; }
+        public abstract int GetAffinityForObjects() { }
+        public abstract bool TryConvert(TFrom? from, object? conversionHint, out TTo? result) { }
+        public bool TryConvertTyped(object? from, object? conversionHint, out object? result) { }
+    }
+    public static class BindingTypeConverterDispatch
+    {
+        public static bool TryConvertAny(object? converter, System.Type fromType, object? from, System.Type toType, object? conversionHint, out object? result) { }
+    }
+    public sealed class BindingTypeConverterRegistry
+    {
+        public BindingTypeConverterRegistry() { }
+        public System.Collections.Generic.IEnumerable<ReactiveUI.IBindingTypeConverter> GetAllConverters() { }
+        public void Register(ReactiveUI.IBindingTypeConverter converter) { }
+        public ReactiveUI.IBindingTypeConverter? TryGetConverter(System.Type fromType, System.Type toType) { }
+    }
+    public sealed class BooleanToStringTypeConverter : ReactiveUI.BindingTypeConverter<bool, string>
+    {
+        public BooleanToStringTypeConverter() { }
+        public override int GetAffinityForObjects() { }
+        public override bool TryConvert(bool from, object? conversionHint, out string? result) { }
+    }
+    public sealed class ByteToNullableByteTypeConverter : ReactiveUI.IBindingTypeConverter<byte, byte?>
+    {
+        public ByteToNullableByteTypeConverter() { }
+        public System.Type FromType { get; }
+        public System.Type ToType { get; }
+        public int GetAffinityForObjects() { }
+        public bool TryConvert(byte from, object? conversionHint, out byte? result) { }
+        public bool TryConvertTyped(object? from, object? conversionHint, out object? result) { }
+    }
+    public sealed class ByteToStringTypeConverter : ReactiveUI.BindingTypeConverter<byte, string>
+    {
+        public ByteToStringTypeConverter() { }
+        public override int GetAffinityForObjects() { }
+        public override bool TryConvert(byte from, object? conversionHint, out string? result) { }
+    }
+    public static class ChangeSetExtensions
+    {
+        extension<T>(System.Collections.ObjectModel.ObservableCollection<T> collection)
+        {
+            public System.IObservable<ReactiveUI.IReactiveChangeSet<T>> ToReactiveChangeSet() { }
+        }
+        extension<TCollection, T>(TCollection collection) where TCollection : System.Collections.Specialized.INotifyCollectionChanged, System.Collections.Generic.IEnumerable<T>
+        {
+            public System.IObservable<ReactiveUI.IReactiveChangeSet<T>> ToReactiveChangeSet() { }
+        }
+    }
+    public static class ChangeSetMixins
+    {
+        extension(ReactiveUI.IReactiveChangeSet changeSet)
+        {
+            public bool CountHasChanged() { }
+        }
+        extension<T>(System.IObservable<ReactiveUI.IReactiveChangeSet<T>> changeSet)
+        {
+            public System.IObservable<ReactiveUI.IReactiveChangeSet<T>> WhenCountChanged() { }
+        }
+    }
+    [System.Diagnostics.DebuggerDisplay("{EventArgs.Action}, Sender = {Sender}")]
+    public readonly struct CollectionChanged : System.IEquatable<ReactiveUI.CollectionChanged>
+    {
+        public CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs eventArgs) { }
+        public System.Collections.Specialized.NotifyCollectionChangedEventArgs EventArgs { get; }
+        public object? Sender { get; }
+        public readonly bool Equals(ReactiveUI.CollectionChanged other) { }
+        public override readonly bool Equals(object? obj) { }
+        public override readonly int GetHashCode() { }
+        public static bool operator ==(in ReactiveUI.CollectionChanged left, in ReactiveUI.CollectionChanged right) { }
+        public static bool operator !=(in ReactiveUI.CollectionChanged left, in ReactiveUI.CollectionChanged right) { }
+    }
+    public static class CollectionChangedExtensions
+    {
+        extension(System.Collections.Specialized.INotifyCollectionChanged source)
+        {
+            public System.IObservable<ReactiveUI.CollectionChanged> ObserveCollectionChanges() { }
+        }
+    }
+    public static class ComparerChainingExtensions
+    {
+        extension<T>(System.Collections.Generic.IComparer<T>? parent)
+        {
+            public System.Collections.Generic.IComparer<T> ThenBy<TValue>(System.Func<T, TValue> selector) { }
+            public System.Collections.Generic.IComparer<T> ThenBy<TValue>(System.Func<T, TValue> selector, System.Collections.Generic.IComparer<TValue> comparer) { }
+            public System.Collections.Generic.IComparer<T> ThenByDescending<TValue>(System.Func<T, TValue> selector) { }
+            public System.Collections.Generic.IComparer<T> ThenByDescending<TValue>(System.Func<T, TValue> selector, System.Collections.Generic.IComparer<TValue> comparer) { }
+        }
+    }
+    public static class ComponentModelConversion
+    {
+        public static int GetAffinity(System.Type fromType, System.Type toType) { }
+        public static bool TryConvert<TLogHost>(TLogHost logHost, System.Type fromType, object from, System.Type toType, out object? result) where TLogHost : class, Splat.IEnableLogger { }
+    }
+    public static class ConverterMigrationHelperMixins
+    {
+        public static (System.Collections.Generic.IList<ReactiveUI.IBindingTypeConverter> TypedConverters, System.Collections.Generic.IList<ReactiveUI.IBindingFallbackConverter> FallbackConverters, System.Collections.Generic.IList<ReactiveUI.ISetMethodBindingConverter> SetMethodConverters) ExtractConverters(Splat.IReadonlyDependencyResolver resolver) { }
+        extension(ReactiveUI.ConverterService converterService)
+        {
+            public void ImportFrom(Splat.IReadonlyDependencyResolver resolver) { }
+        }
+    }
+    public sealed class ConverterService
+    {
+        public ConverterService() { }
+        public ReactiveUI.BindingFallbackConverterRegistry FallbackConverters { get; }
+        public ReactiveUI.SetMethodBindingConverterRegistry SetMethodConverters { get; }
+        public ReactiveUI.BindingTypeConverterRegistry TypedConverters { get; }
+        public object? ResolveConverter(System.Type fromType, System.Type toType) { }
+        public ReactiveUI.ISetMethodBindingConverter? ResolveSetMethodConverter(System.Type? fromType, System.Type? toType) { }
+    }
+    public static class CreatesCommandBinding
+    {
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("String/reflection-based event binding may require members removed by trimming.")]
+        public static System.IDisposable BindCommandToObject<TControl>(System.Windows.Input.ICommand? command, TControl? target, System.IObservable<object?> commandParameter) where TControl : class { }
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("String/reflection-based event binding may require members removed by trimming.")]
+        public static System.IDisposable BindCommandToObject<TControl, TEventArgs>(System.Windows.Input.ICommand? command, TControl? target, System.IObservable<object?> commandParameter, string eventName) where TControl : class { }
+    }
+    public sealed class CreatesCommandBindingViaCommandParameter : ReactiveUI.ICreatesCommandBinding
+    {
+        public CreatesCommandBindingViaCommandParameter() { }
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("String/reflection-based event binding may require members removed by trimming.")]
+        public System.IDisposable? BindCommandToObject<T>(System.Windows.Input.ICommand? command, T? target, System.IObservable<object?> commandParameter) where T : class { }
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("String/reflection-based event binding may require members removed by trimming.")]
+        public System.IDisposable? BindCommandToObject<T, TEventArgs>(System.Windows.Input.ICommand? command, T? target, System.IObservable<object?> commandParameter, string eventName) where T : class { }
+        public System.IDisposable? BindCommandToObject<T, TEventArgs>(System.Windows.Input.ICommand? command, T? target, System.IObservable<object?> commandParameter, System.Action<System.EventHandler<TEventArgs>> addHandler, System.Action<System.EventHandler<TEventArgs>> removeHandler) where T : class where TEventArgs : System.EventArgs { }
+        public int GetAffinityForObject<T>(bool hasEventTarget) { }
+    }
+    public sealed class CreatesCommandBindingViaEvent : ReactiveUI.ICreatesCommandBinding
+    {
+        public CreatesCommandBindingViaEvent() { }
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("String/reflection-based event binding may require members removed by trimming.")]
+        public System.IDisposable? BindCommandToObject<T>(System.Windows.Input.ICommand? command, T? target, System.IObservable<object?> commandParameter) where T : class { }
+        public System.IDisposable BindCommandToObject<T>(System.Windows.Input.ICommand? command, T? target, System.IObservable<object?> commandParameter, System.Action<System.EventHandler> addHandler, System.Action<System.EventHandler> removeHandler) where T : class { }
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("String/reflection-based event binding may require members removed by trimming.")]
+        public System.IDisposable? BindCommandToObject<T, TEventArgs>(System.Windows.Input.ICommand? command, T? target, System.IObservable<object?> commandParameter, string eventName) where T : class { }
+        public System.IDisposable BindCommandToObject<T, TEventArgs>(System.Windows.Input.ICommand? command, T? target, System.IObservable<object?> commandParameter, System.Action<System.EventHandler<TEventArgs>> addHandler, System.Action<System.EventHandler<TEventArgs>> removeHandler) where T : class where TEventArgs : System.EventArgs { }
+        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+        public int GetAffinityForObject<T>(bool hasEventTarget) { }
+    }
+    public sealed class DateOnlyToStringTypeConverter : ReactiveUI.BindingTypeConverter<System.DateOnly, string>
+    {
+        public DateOnlyToStringTypeConverter() { }
+        public override int GetAffinityForObjects() { }
+        public override bool TryConvert(System.DateOnly from, object? conversionHint, out string? result) { }
+    }
+    public sealed class DateTimeOffsetToStringTypeConverter : ReactiveUI.BindingTypeConverter<System.DateTimeOffset, string>
+    {
+        public DateTimeOffsetToStringTypeConverter() { }
+        public override int GetAffinityForObjects() { }
+        public override bool TryConvert(System.DateTimeOffset from, object? conversionHint, out string? result) { }
+    }
+    public sealed class DateTimeToStringTypeConverter : ReactiveUI.BindingTypeConverter<System.DateTime, string>
+    {
+        public DateTimeToStringTypeConverter() { }
+        public override int GetAffinityForObjects() { }
+        public override bool TryConvert(System.DateTime from, object? conversionHint, out string? result) { }
+    }
+    public sealed class DecimalToNullableDecimalTypeConverter : ReactiveUI.IBindingTypeConverter<decimal, decimal?>
+    {
+        public DecimalToNullableDecimalTypeConverter() { }
+        public System.Type FromType { get; }
+        public System.Type ToType { get; }
+        public int GetAffinityForObjects() { }
+        public bool TryConvert(decimal from, object? conversionHint, out decimal? result) { }
+        public bool TryConvertTyped(object? from, object? conversionHint, out object? result) { }
+    }
+    public sealed class DecimalToStringTypeConverter : ReactiveUI.BindingTypeConverter<decimal, string>
+    {
+        public DecimalToStringTypeConverter() { }
+        public override int GetAffinityForObjects() { }
+        public override bool TryConvert(decimal from, object? conversionHint, out string? result) { }
+    }
+    [System.Diagnostics.DebuggerDisplay("Mappings = {_mappings.Count}")]
+    public sealed class DefaultViewLocator : ReactiveUI.IViewLocator
+    {
+        public DefaultViewLocator() { }
+        public ReactiveUI.DefaultViewLocator Map<TViewModel, TView>(System.Func<TView> factory) where TViewModel : class where TView : class, ReactiveUI.IViewFor<TViewModel> { }
+        public ReactiveUI.DefaultViewLocator Map<TViewModel, TView>(System.Func<TView> factory, string? contract) where TViewModel : class where TView : class, ReactiveUI.IViewFor<TViewModel> { }
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, or generic constraints), trimming can't validate that the requirements of those annotations are met.")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
+        public ReactiveUI.IViewFor? ResolveView(object? instance) { }
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, or generic constraints), trimming can't validate that the requirements of those annotations are met.")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
+        public ReactiveUI.IViewFor? ResolveView(object? instance, string? contract) { }
+        public ReactiveUI.IViewFor<TViewModel>? ResolveView<TViewModel>() where TViewModel : class { }
+        public ReactiveUI.IViewFor<TViewModel>? ResolveView<TViewModel>(string? contract) where TViewModel : class { }
+        public ReactiveUI.DefaultViewLocator Unmap<TViewModel>() where TViewModel : class { }
+        public ReactiveUI.DefaultViewLocator Unmap<TViewModel>(string? contract) where TViewModel : class { }
+    }
+    [ReactiveUI.Preserve(AllMembers=true)]
+    public static class DependencyResolverMixins
+    {
+        extension(Splat.IMutableDependencyResolver resolver)
+        {
+            [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Scans assembly for IViewFor implementations using reflection. For AOT compatibility, use the ReactiveUIBuilder pattern to register views explicitly.")]
+            public void RegisterViewsForViewModels(System.Reflection.Assembly assembly) { }
+        }
+    }
+    public sealed class DependencyResolverRegistrar : ReactiveUI.IRegistrar
+    {
+        public DependencyResolverRegistrar(Splat.IMutableDependencyResolver resolver) { }
+        public void Register<TService>(System.Func<TService> factory) where TService : class { }
+        public void Register<TService>(System.Func<TService> factory, string? contract) where TService : class { }
+        public void RegisterConstant<TService>(System.Func<TService> factory) where TService : class { }
+        public void RegisterConstant<TService>(System.Func<TService> factory, string? contract) where TService : class { }
+        public void RegisterLazySingleton<TService>(System.Func<TService> factory) where TService : class { }
+        public void RegisterLazySingleton<TService>(System.Func<TService> factory, string? contract) where TService : class { }
+    }
+    public sealed class DoubleToNullableDoubleTypeConverter : ReactiveUI.IBindingTypeConverter<double, double?>
+    {
+        public DoubleToNullableDoubleTypeConverter() { }
+        public System.Type FromType { get; }
+        public System.Type ToType { get; }
+        public int GetAffinityForObjects() { }
+        public bool TryConvert(double from, object? conversionHint, out double? result) { }
+        public bool TryConvertTyped(object? from, object? conversionHint, out object? result) { }
+    }
+    public sealed class DoubleToStringTypeConverter : ReactiveUI.BindingTypeConverter<double, string>
+    {
+        public DoubleToStringTypeConverter() { }
+        public override int GetAffinityForObjects() { }
+        public override bool TryConvert(double from, object? conversionHint, out string? result) { }
+    }
+    public sealed class EqualityTypeConverter : ReactiveUI.IBindingTypeConverter
+    {
+        public EqualityTypeConverter() { }
+        public System.Type FromType { get; }
+        public System.Type ToType { get; }
+        public int GetAffinityForObjects() { }
+        public bool TryConvertTyped(object? from, object? conversionHint, out object? result) { }
+    }
+    [System.AttributeUsage(System.AttributeTargets.Class, AllowMultiple=false, Inherited=false)]
+    public sealed class ExcludeFromViewRegistrationAttribute : System.Attribute
+    {
+        public ExcludeFromViewRegistrationAttribute() { }
+    }
+    public static class ExpressionMixins
+    {
+        extension(System.Linq.Expressions.Expression expression)
+        {
+            public object?[]? GetArgumentsArray() { }
+            public System.Collections.Generic.IEnumerable<System.Linq.Expressions.Expression> GetExpressionChain() { }
+            public System.Reflection.MemberInfo? GetMemberInfo() { }
+            public System.Linq.Expressions.Expression? GetParent() { }
+        }
+    }
+    public sealed class ExpressionRewriter : System.Linq.Expressions.ExpressionVisitor
+    {
+        public ExpressionRewriter() { }
+        public override System.Linq.Expressions.Expression Visit(System.Linq.Expressions.Expression? node) { }
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("Expression rewriting uses reflection over runtime types and may not be compatible with AOT compilation.")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Expression rewriting uses reflection over runtime types (e.g., Item/Length) which may be removed by trimming.")]
+        protected override System.Linq.Expressions.Expression VisitBinary(System.Linq.Expressions.BinaryExpression node) { }
+        protected override System.Linq.Expressions.Expression VisitIndex(System.Linq.Expressions.IndexExpression node) { }
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("Expression rewriting uses reflection over runtime types and may not be compatible with AOT compilation.")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Expression rewriting uses reflection over runtime types (e.g., Item/Length) which may be removed by trimming.")]
+        protected override System.Linq.Expressions.Expression VisitMethodCall(System.Linq.Expressions.MethodCallExpression node) { }
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("Expression rewriting uses reflection over runtime types and may not be compatible with AOT compilation.")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Expression rewriting uses reflection over runtime types (e.g., Item/Length) which may be removed by trimming.")]
+        protected override System.Linq.Expressions.Expression VisitUnary(System.Linq.Expressions.UnaryExpression node) { }
+    }
+    public sealed class GuidToStringTypeConverter : ReactiveUI.BindingTypeConverter<System.Guid, string>
+    {
+        public GuidToStringTypeConverter() { }
+        public override int GetAffinityForObjects() { }
+        public override bool TryConvert(System.Guid from, object? conversionHint, out string? result) { }
+    }
+    public interface IActivatableView
+    {
+    }
+    public interface IActivationForViewFetcher
+    {
+        System.IObservable<bool> GetActivationForView(ReactiveUI.IActivatableView view) { }
+        int GetAffinityForView(System.Type view) { }
+    }
+    public interface IBindingConverterResolver
+    {
+        object? GetBindingConverter(System.Type fromType, System.Type toType) { }
+        System.Func<object?, object?, object?[]?, object?>? GetSetMethodConverter(System.Type? fromType, System.Type? toType) { }
+    }
+    public interface IBindingFallbackConverter : Splat.IEnableLogger
+    {
+        int GetAffinityForObjects(System.Type fromType, System.Type toType) { }
+        bool TryConvert(System.Type fromType, object from, System.Type toType, object? conversionHint, out object? result) { }
+    }
+    public interface IBindingHookEvaluator
+    {
+        bool EvaluateBindingHooks<TViewModel, TView>(TViewModel? viewModel, TView view, System.Linq.Expressions.Expression viewModelExpression, System.Linq.Expressions.Expression viewExpression, ReactiveUI.BindingDirection direction) where TViewModel : class where TView : class, ReactiveUI.IViewFor { }
+    }
+    public interface IBindingTypeConverter : Splat.IEnableLogger
+    {
+        System.Type FromType { get; }
+        System.Type ToType { get; }
+        int GetAffinityForObjects() { }
+        bool TryConvertTyped(object? from, object? conversionHint, out object? result) { }
+    }
+    public interface IBindingTypeConverter<in TFrom, TTo> : ReactiveUI.IBindingTypeConverter
+    {
+        bool TryConvert(TFrom? from, object? conversionHint, out TTo? result) { }
+    }
+    public interface ICanForceManualActivation
+    {
+        void Activate(bool isActivating) { }
+    }
+    public interface ICommandBinderImplementation : Splat.IEnableLogger
+    {
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Dynamic observation uses reflection over members that may be trimmed.")]
+        ReactiveUI.IReactiveBinding<TView, TProp> BindCommand<TView, TViewModel, TProp, TControl, TParam>(TViewModel? viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, TProp?>> viewModelProperty, System.Linq.Expressions.Expression<System.Func<TView, TControl>> controlProperty, System.IObservable<TParam?> withParameter) where TView : class, ReactiveUI.IViewFor where TViewModel : class where TProp : System.Windows.Input.ICommand where TControl : class { }
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Dynamic observation uses reflection over members that may be trimmed.")]
+        ReactiveUI.IReactiveBinding<TView, TProp> BindCommand<TView, TViewModel, TProp, TControl, TParam>(TViewModel? viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, TProp?>> viewModelProperty, System.Linq.Expressions.Expression<System.Func<TView, TControl>> controlProperty, System.Linq.Expressions.Expression<System.Func<TViewModel, TParam?>> withParameter) where TView : class, ReactiveUI.IViewFor where TViewModel : class where TProp : System.Windows.Input.ICommand where TControl : class { }
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Dynamic observation uses reflection over members that may be trimmed.")]
+        ReactiveUI.IReactiveBinding<TView, TProp> BindCommand<TView, TViewModel, TProp, TControl, TParam>(TViewModel? viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, TProp?>> viewModelProperty, System.Linq.Expressions.Expression<System.Func<TView, TControl>> controlProperty, System.IObservable<TParam?> withParameter, string? toEvent) where TView : class, ReactiveUI.IViewFor where TViewModel : class where TProp : System.Windows.Input.ICommand where TControl : class { }
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Dynamic observation uses reflection over members that may be trimmed.")]
+        ReactiveUI.IReactiveBinding<TView, TProp> BindCommand<TView, TViewModel, TProp, TControl, TParam>(TViewModel? viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, TProp?>> viewModelProperty, System.Linq.Expressions.Expression<System.Func<TView, TControl>> controlProperty, System.Linq.Expressions.Expression<System.Func<TViewModel, TParam?>> withParameter, string? toEvent) where TView : class, ReactiveUI.IViewFor where TViewModel : class where TProp : System.Windows.Input.ICommand where TControl : class { }
+    }
+    public interface IComparerBuilder<T>
+    {
+        System.Collections.Generic.IComparer<T> OrderBy<TValue>(System.Func<T, TValue> selector) { }
+        System.Collections.Generic.IComparer<T> OrderBy<TValue>(System.Func<T, TValue> selector, System.Collections.Generic.IComparer<TValue> comparer) { }
+        System.Collections.Generic.IComparer<T> OrderByDescending<TValue>(System.Func<T, TValue> selector) { }
+        System.Collections.Generic.IComparer<T> OrderByDescending<TValue>(System.Func<T, TValue> selector, System.Collections.Generic.IComparer<TValue> comparer) { }
+    }
+    public interface ICreatesCommandBinding
+    {
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("String/reflection-based event binding may require members removed by trimming.")]
+        System.IDisposable? BindCommandToObject<T>(System.Windows.Input.ICommand? command, T? target, System.IObservable<object?> commandParameter) where T : class { }
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("String/reflection-based event binding may require members removed by trimming.")]
+        System.IDisposable? BindCommandToObject<T, TEventArgs>(System.Windows.Input.ICommand? command, T? target, System.IObservable<object?> commandParameter, string eventName) where T : class { }
+        System.IDisposable? BindCommandToObject<T, TEventArgs>(System.Windows.Input.ICommand? command, T? target, System.IObservable<object?> commandParameter, System.Action<System.EventHandler<TEventArgs>> addHandler, System.Action<System.EventHandler<TEventArgs>> removeHandler) where T : class where TEventArgs : System.EventArgs { }
+        int GetAffinityForObject<T>(bool hasEventTarget) { }
+    }
+    public interface ICreatesObservableForProperty : Splat.IEnableLogger
+    {
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Uses reflection over runtime types which is not trim- or AOT-safe.")]
+        int GetAffinityForObject(System.Type type, string propertyName) { }
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Uses reflection over runtime types which is not trim- or AOT-safe.")]
+        int GetAffinityForObject(System.Type? type, string propertyName, bool beforeChanged) { }
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Uses reflection over runtime types which is not trim- or AOT-safe.")]
+        System.IObservable<ReactiveUI.IObservedChange<object?, object?>> GetNotificationForProperty(object sender, System.Linq.Expressions.Expression expression, string propertyName) { }
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Uses reflection over runtime types which is not trim- or AOT-safe.")]
+        System.IObservable<ReactiveUI.IObservedChange<object?, object?>> GetNotificationForProperty(object sender, System.Linq.Expressions.Expression expression, string propertyName, bool beforeChanged) { }
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Uses reflection over runtime types which is not trim- or AOT-safe.")]
+        System.IObservable<ReactiveUI.IObservedChange<object?, object?>> GetNotificationForProperty(object sender, System.Linq.Expressions.Expression expression, string propertyName, bool beforeChanged, bool suppressWarnings) { }
+    }
+    public interface IExtensionState<out TSender> where TSender : ReactiveUI.IReactiveObject
+    {
+        System.IObservable<ReactiveUI.IReactivePropertyChangedEventArgs<TSender>> Changed { get; }
+        System.IObservable<ReactiveUI.IReactivePropertyChangedEventArgs<TSender>> Changing { get; }
+        System.IObservable<System.Exception> ThrownExceptions { get; }
+        bool AreChangeNotificationsDelayed() { }
+        System.IDisposable Delay() { }
+        bool NotificationsEnabled() { }
+        void RaiseChanged(string propertyName) { }
+        void RaiseChanging(string propertyName) { }
+        void SubscribeChanged() { }
+        void SubscribeChanging() { }
+        System.IDisposable Suppress() { }
+    }
+    public interface IHandleObservableErrors
+    {
+        System.IObservable<System.Exception> ThrownExceptions { get; }
+    }
+    public interface IInteractionContext<out TInput, in TOutput>
+    {
+        TInput Input { get; }
+        bool IsHandled { get; }
+        void SetOutput(TOutput output) { }
+    }
+    public class INPCObservableForProperty : ReactiveUI.ICreatesObservableForProperty
+    {
+        public INPCObservableForProperty() { }
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Uses reflection over runtime types which is not trim- or AOT-safe.")]
+        public int GetAffinityForObject(System.Type type, string propertyName) { }
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Uses reflection over runtime types which is not trim- or AOT-safe.")]
+        public int GetAffinityForObject(System.Type? type, string propertyName, bool beforeChanged) { }
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Uses reflection over runtime types which is not trim- or AOT-safe.")]
+        public System.IObservable<ReactiveUI.IObservedChange<object?, object?>> GetNotificationForProperty(object sender, System.Linq.Expressions.Expression expression, string propertyName) { }
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Uses reflection over runtime types which is not trim- or AOT-safe.")]
+        public System.IObservable<ReactiveUI.IObservedChange<object?, object?>> GetNotificationForProperty(object sender, System.Linq.Expressions.Expression expression, string propertyName, bool beforeChanged) { }
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Uses reflection over runtime types which is not trim- or AOT-safe.")]
+        public System.IObservable<ReactiveUI.IObservedChange<object?, object?>> GetNotificationForProperty(object sender, System.Linq.Expressions.Expression expression, string propertyName, bool beforeChanged, bool suppressWarnings) { }
+    }
+    public interface IObservedChange<out TSender, out TValue>
+    {
+        System.Linq.Expressions.Expression? Expression { get; }
+        TSender Sender { get; }
+        TValue Value { get; }
+    }
+    public interface IOutputContext<out TInput, TOutput> : ReactiveUI.IInteractionContext<TInput, TOutput>
+    {
+        TOutput GetOutput() { }
+    }
+    public interface IPlatformOperations
+    {
+        string? GetOrientation() { }
+    }
+    public interface IPropertyBinderImplementation : Splat.IEnableLogger
+    {
+        ReactiveUI.IReactiveBinding<TView, (object? view, bool isViewModel)> Bind<TViewModel, TView, TViewModelPropertyType, TViewPropertyType, TDontCare>(TViewModel? viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, TViewModelPropertyType?>> viewModelProperty, System.Linq.Expressions.Expression<System.Func<TView, TViewPropertyType>> viewProperty, System.IObservable<TDontCare>? signalViewUpdate, object? conversionHint) where TViewModel : class where TView : class, ReactiveUI.IViewFor { }
+        ReactiveUI.IReactiveBinding<TView, (object? view, bool isViewModel)> Bind<TViewModel, TView, TViewModelPropertyType, TViewPropertyType, TDontCare>(TViewModel? viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, TViewModelPropertyType?>> viewModelProperty, System.Linq.Expressions.Expression<System.Func<TView, TViewPropertyType>> viewProperty, System.IObservable<TDontCare>? signalViewUpdate, System.Func<TViewModelPropertyType?, TViewPropertyType> viewModelToViewConverter, System.Func<TViewPropertyType, TViewModelPropertyType?> viewToViewModelConverter) where TViewModel : class where TView : class, ReactiveUI.IViewFor { }
+        ReactiveUI.IReactiveBinding<TView, (object? view, bool isViewModel)> Bind<TViewModel, TView, TViewModelPropertyType, TViewPropertyType, TDontCare>(TViewModel? viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, TViewModelPropertyType?>> viewModelProperty, System.Linq.Expressions.Expression<System.Func<TView, TViewPropertyType>> viewProperty, System.IObservable<TDontCare>? signalViewUpdate, object? conversionHint, ReactiveUI.IBindingTypeConverter? viewModelToViewConverterOverride) where TViewModel : class where TView : class, ReactiveUI.IViewFor { }
+        ReactiveUI.IReactiveBinding<TView, (object? view, bool isViewModel)> Bind<TViewModel, TView, TViewModelPropertyType, TViewPropertyType, TDontCare>(TViewModel? viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, TViewModelPropertyType?>> viewModelProperty, System.Linq.Expressions.Expression<System.Func<TView, TViewPropertyType>> viewProperty, System.IObservable<TDontCare>? signalViewUpdate, System.Func<TViewModelPropertyType?, TViewPropertyType> viewModelToViewConverter, System.Func<TViewPropertyType, TViewModelPropertyType?> viewToViewModelConverter, ReactiveUI.TriggerUpdate triggerUpdate) where TViewModel : class where TView : class, ReactiveUI.IViewFor { }
+        ReactiveUI.IReactiveBinding<TView, (object? view, bool isViewModel)> Bind<TViewModel, TView, TViewModelPropertyType, TViewPropertyType, TDontCare>(TViewModel? viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, TViewModelPropertyType?>> viewModelProperty, System.Linq.Expressions.Expression<System.Func<TView, TViewPropertyType>> viewProperty, System.IObservable<TDontCare>? signalViewUpdate, object? conversionHint, ReactiveUI.IBindingTypeConverter? viewModelToViewConverterOverride, ReactiveUI.IBindingTypeConverter? viewToViewModelConverterOverride) where TViewModel : class where TView : class, ReactiveUI.IViewFor { }
+        ReactiveUI.IReactiveBinding<TView, (object? view, bool isViewModel)> Bind<TViewModel, TView, TViewModelPropertyType, TViewPropertyType, TDontCare>(TViewModel? viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, TViewModelPropertyType?>> viewModelProperty, System.Linq.Expressions.Expression<System.Func<TView, TViewPropertyType>> viewProperty, System.IObservable<TDontCare>? signalViewUpdate, object? conversionHint, ReactiveUI.IBindingTypeConverter? viewModelToViewConverterOverride, ReactiveUI.IBindingTypeConverter? viewToViewModelConverterOverride, ReactiveUI.TriggerUpdate triggerUpdate) where TViewModel : class where TView : class, ReactiveUI.IViewFor { }
+        System.IDisposable BindTo<TValue, TTarget, TTargetValue>(System.IObservable<TValue> observedChange, TTarget? target, System.Linq.Expressions.Expression<System.Func<TTarget, TTargetValue?>> propertyExpression) where TTarget : class { }
+        System.IDisposable BindTo<TValue, TTarget, TTargetValue>(System.IObservable<TValue> observedChange, TTarget? target, System.Linq.Expressions.Expression<System.Func<TTarget, TTargetValue?>> propertyExpression, object? conversionHint) where TTarget : class { }
+        System.IDisposable BindTo<TValue, TTarget, TTargetValue>(System.IObservable<TValue> observedChange, TTarget? target, System.Linq.Expressions.Expression<System.Func<TTarget, TTargetValue?>> propertyExpression, object? conversionHint, ReactiveUI.IBindingTypeConverter? viewModelToViewConverterOverride) where TTarget : class { }
+        ReactiveUI.IReactiveBinding<TView, TViewPropertyType> OneWayBind<TViewModel, TView, TViewModelPropertyType, TViewPropertyType>(TViewModel? viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, TViewModelPropertyType?>> viewModelProperty, System.Linq.Expressions.Expression<System.Func<TView, TViewPropertyType>> viewProperty) where TViewModel : class where TView : class, ReactiveUI.IViewFor { }
+        ReactiveUI.IReactiveBinding<TView, TOut> OneWayBind<TViewModel, TView, TProp, TOut>(TViewModel? viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, TProp>> viewModelProperty, System.Linq.Expressions.Expression<System.Func<TView, TOut>> viewProperty, System.Func<TProp, TOut> selector) where TViewModel : class where TView : class, ReactiveUI.IViewFor { }
+        ReactiveUI.IReactiveBinding<TView, TViewPropertyType> OneWayBind<TViewModel, TView, TViewModelPropertyType, TViewPropertyType>(TViewModel? viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, TViewModelPropertyType?>> viewModelProperty, System.Linq.Expressions.Expression<System.Func<TView, TViewPropertyType>> viewProperty, ReactiveUI.IBindingTypeConverter? viewModelToViewConverterOverride) where TViewModel : class where TView : class, ReactiveUI.IViewFor { }
+        ReactiveUI.IReactiveBinding<TView, TViewPropertyType> OneWayBind<TViewModel, TView, TViewModelPropertyType, TViewPropertyType>(TViewModel? viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, TViewModelPropertyType?>> viewModelProperty, System.Linq.Expressions.Expression<System.Func<TView, TViewPropertyType>> viewProperty, object? conversionHint) where TViewModel : class where TView : class, ReactiveUI.IViewFor { }
+        ReactiveUI.IReactiveBinding<TView, TViewPropertyType> OneWayBind<TViewModel, TView, TViewModelPropertyType, TViewPropertyType>(TViewModel? viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, TViewModelPropertyType?>> viewModelProperty, System.Linq.Expressions.Expression<System.Func<TView, TViewPropertyType>> viewProperty, object? conversionHint, ReactiveUI.IBindingTypeConverter? viewModelToViewConverterOverride) where TViewModel : class where TView : class, ReactiveUI.IViewFor { }
+    }
+    public interface IPropertyBindingExpressionCompiler
+    {
+        System.IObservable<(bool ShouldEmit, TValue Value)> CreateChainedSetObservable<TTarget, TValue, TObs>(TTarget? target, System.IObservable<TObs> observedChanged, System.Linq.Expressions.Expression viewExpression, System.Linq.Expressions.Expression[] hostExpressionChain, System.Func<object?, object?[]?, object?> getter, System.Action<object?, object?, object?[]?> setter, System.Func<System.Type?, System.Type?, System.Func<object?, object?, object?[]?, object?>?> getSetConverter) where TTarget : class { }
+        System.IObservable<(bool ShouldEmit, TValue Value)> CreateDirectSetObservable<TTarget, TValue, TObs>(TTarget? target, System.IObservable<TObs> observedChanged, System.Linq.Expressions.Expression viewExpression, System.Func<object?, object?[]?, object?> getter, System.Action<object?, object?, object?[]?> setter, System.Func<System.Type?, System.Type?, System.Func<object?, object?, object?[]?, object?>?> getSetConverter) where TTarget : class { }
+        System.Func<object?, object?, object?[]?, (bool ShouldEmit, object? Value)> CreateSetThenGet(System.Linq.Expressions.Expression viewExpression, System.Func<object?, object?[]?, object?> getter, System.Action<object?, object?, object?[]?> setter, System.Func<System.Type?, System.Type?, System.Func<object?, object?, object?[]?, object?>?> getSetConverter) { }
+        System.Linq.Expressions.Expression[]? GetExpressionChainArray(System.Linq.Expressions.Expression? expression) { }
+        bool IsDirectMemberAccess(System.Linq.Expressions.Expression viewExpression) { }
+        bool ShouldReplayOnHostChanges(System.Linq.Expressions.Expression[]? hostExpressionChain) { }
+    }
+    public interface IPropertyBindingHook
+    {
+        bool ExecuteHook(object? source, object target, System.Func<ReactiveUI.IObservedChange<object, object>[]> getCurrentViewModelProperties, System.Func<ReactiveUI.IObservedChange<object, object>[]> getCurrentViewProperties, ReactiveUI.BindingDirection direction) { }
+    }
+    public interface IReactiveBinding<out TView, out TValue> : System.IDisposable where TView : ReactiveUI.IViewFor
+    {
+        System.IObservable<TValue?> Changed { get; }
+        ReactiveUI.BindingDirection Direction { get; }
+        TView View { get; }
+        System.Linq.Expressions.Expression ViewExpression { get; }
+        System.Linq.Expressions.Expression ViewModelExpression { get; }
+    }
+    public interface IReactiveChangeSet : System.Collections.IEnumerable
+    {
+        int Adds { get; }
+        int Removes { get; }
+    }
+    public interface IReactiveChangeSet<T> : ReactiveUI.IReactiveChangeSet, System.Collections.Generic.IReadOnlyList<ReactiveUI.ReactiveChange<T>>
+    {
+    }
+    public interface IReactiveCommand : ReactiveUI.IHandleObservableErrors, System.IDisposable
+    {
+        System.IObservable<bool> CanExecute { get; }
+        System.IObservable<bool> IsExecuting { get; }
+    }
+    public interface IReactiveCommand<in TParam, out TResult> : ReactiveUI.IReactiveCommand, System.IObservable<TResult>
+    {
+        System.IObservable<TResult> Execute() { }
+        System.IObservable<TResult> Execute(TParam parameter) { }
+    }
+    public interface IReactiveNotifyPropertyChanged<out TSender>
+    {
+        System.IObservable<ReactiveUI.IReactivePropertyChangedEventArgs<TSender>> Changed { get; }
+        System.IObservable<ReactiveUI.IReactivePropertyChangedEventArgs<TSender>> Changing { get; }
+        System.IDisposable SuppressChangeNotifications() { }
+    }
+    public interface IReactiveObject : Splat.IEnableLogger, System.ComponentModel.INotifyPropertyChanged, System.ComponentModel.INotifyPropertyChanging
+    {
+        void RaisePropertyChanged(System.ComponentModel.PropertyChangedEventArgs args) { }
+        void RaisePropertyChanging(System.ComponentModel.PropertyChangingEventArgs args) { }
+    }
+    public interface IReactiveProperty<T> : ReactiveUI.Primitives.Disposables.IsDisposed, System.ComponentModel.INotifyDataErrorInfo, System.ComponentModel.INotifyPropertyChanged, System.IObservable<T?>
+    {
+        System.IObservable<System.Collections.IEnumerable?> ObserveErrorChanged { get; }
+        System.IObservable<bool> ObserveHasErrors { get; }
+        T? Value { get; set; }
+        void Refresh() { }
+    }
+    public interface IReactivePropertyChangedEventArgs<out TSender>
+    {
+        string? PropertyName { get; }
+        TSender Sender { get; }
+    }
+    public interface IRegistrar
+    {
+        void Register<TService>(System.Func<TService> factory) where TService : class { }
+        void Register<TService>(System.Func<TService> factory, string? contract) where TService : class { }
+        void RegisterConstant<TService>(System.Func<TService> factory) where TService : class { }
+        void RegisterConstant<TService>(System.Func<TService> factory, string? contract) where TService : class { }
+        void RegisterLazySingleton<TService>(System.Func<TService> factory) where TService : class { }
+        void RegisterLazySingleton<TService>(System.Func<TService> factory, string? contract) where TService : class { }
+    }
+    public interface ISetMethodBindingConverter : Splat.IEnableLogger
+    {
+        int GetAffinityForObjects(System.Type? fromType, System.Type? toType) { }
+        object? PerformSet(object? toTarget, object? newValue, object?[]? arguments) { }
+    }
+    public interface IViewFor : ReactiveUI.IActivatableView
+    {
+        object? ViewModel { get; set; }
+    }
+    public interface IViewFor<T> : ReactiveUI.IViewFor where T : class
+    {
+        T? ViewModel { get; set; }
+    }
+    public interface IViewLocator : Splat.IEnableLogger
+    {
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("Trimming can't validate that the requirements of those annotations are met.")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
+        ReactiveUI.IViewFor? ResolveView(object? instance) { }
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("Trimming can't validate that the requirements of those annotations are met.")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
+        ReactiveUI.IViewFor? ResolveView(object? instance, string? contract) { }
+        ReactiveUI.IViewFor<TViewModel>? ResolveView<TViewModel>() where TViewModel : class { }
+        ReactiveUI.IViewFor<TViewModel>? ResolveView<TViewModel>(string? contract) where TViewModel : class { }
+    }
+    public interface IViewModule
+    {
+        void RegisterViews(ReactiveUI.DefaultViewLocator locator) { }
+    }
+    public interface IWantsToRegisterStuff
+    {
+        void Register(ReactiveUI.IRegistrar registrar) { }
+    }
+    public sealed class IntegerToNullableIntegerTypeConverter : ReactiveUI.IBindingTypeConverter<int, int?>
+    {
+        public IntegerToNullableIntegerTypeConverter() { }
+        public System.Type FromType { get; }
+        public System.Type ToType { get; }
+        public int GetAffinityForObjects() { }
+        public bool TryConvert(int from, object? conversionHint, out int? result) { }
+        public bool TryConvertTyped(object? from, object? conversionHint, out object? result) { }
+    }
+    public sealed class IntegerToStringTypeConverter : ReactiveUI.BindingTypeConverter<int, string>
+    {
+        public IntegerToStringTypeConverter() { }
+        public override int GetAffinityForObjects() { }
+        public override bool TryConvert(int from, object? conversionHint, out string? result) { }
+    }
+    [System.Diagnostics.DebuggerDisplay("Input = {Input}, IsHandled = {IsHandled}")]
+    public sealed class InteractionContext<TInput, TOutput> : ReactiveUI.IOutputContext<TInput, TOutput>
+    {
+        public InteractionContext(TInput input) { }
+        public TInput Input { get; }
+        public bool IsHandled { get; }
+        public TOutput GetOutput() { }
+        public void SetOutput(TOutput output) { }
+    }
+    public sealed class LongToNullableLongTypeConverter : ReactiveUI.IBindingTypeConverter<long, long?>
+    {
+        public LongToNullableLongTypeConverter() { }
+        public System.Type FromType { get; }
+        public System.Type ToType { get; }
+        public int GetAffinityForObjects() { }
+        public bool TryConvert(long from, object? conversionHint, out long? result) { }
+        public bool TryConvertTyped(object? from, object? conversionHint, out object? result) { }
+    }
+    public sealed class LongToStringTypeConverter : ReactiveUI.BindingTypeConverter<long, string>
+    {
+        public LongToStringTypeConverter() { }
+        public override int GetAffinityForObjects() { }
+        public override bool TryConvert(long from, object? conversionHint, out string? result) { }
+    }
+    public class NotAWeakReference
+    {
+        public NotAWeakReference(object target) { }
+        public bool IsAlive { get; }
+        public object Target { get; }
+    }
+    public sealed class NullableBooleanToStringTypeConverter : ReactiveUI.BindingTypeConverter<bool?, string>
+    {
+        public NullableBooleanToStringTypeConverter() { }
+        public override int GetAffinityForObjects() { }
+        public override bool TryConvert(bool? from, object? conversionHint, out string? result) { }
+    }
+    public sealed class NullableByteToByteTypeConverter : ReactiveUI.IBindingTypeConverter<byte?, byte>
+    {
+        public NullableByteToByteTypeConverter() { }
+        public System.Type FromType { get; }
+        public System.Type ToType { get; }
+        public int GetAffinityForObjects() { }
+        public bool TryConvert(byte? from, object? conversionHint, out byte result) { }
+        public bool TryConvertTyped(object? from, object? conversionHint, out object? result) { }
+    }
+    public sealed class NullableByteToStringTypeConverter : ReactiveUI.BindingTypeConverter<byte?, string>
+    {
+        public NullableByteToStringTypeConverter() { }
+        public override int GetAffinityForObjects() { }
+        public override bool TryConvert(byte? from, object? conversionHint, out string? result) { }
+    }
+    public sealed class NullableDateOnlyToStringTypeConverter : ReactiveUI.BindingTypeConverter<System.DateOnly?, string>
+    {
+        public NullableDateOnlyToStringTypeConverter() { }
+        public override int GetAffinityForObjects() { }
+        public override bool TryConvert(System.DateOnly? from, object? conversionHint, out string? result) { }
+    }
+    public sealed class NullableDateTimeOffsetToStringTypeConverter : ReactiveUI.BindingTypeConverter<System.DateTimeOffset?, string>
+    {
+        public NullableDateTimeOffsetToStringTypeConverter() { }
+        public override int GetAffinityForObjects() { }
+        public override bool TryConvert(System.DateTimeOffset? from, object? conversionHint, out string? result) { }
+    }
+    public sealed class NullableDateTimeToStringTypeConverter : ReactiveUI.BindingTypeConverter<System.DateTime?, string>
+    {
+        public NullableDateTimeToStringTypeConverter() { }
+        public override int GetAffinityForObjects() { }
+        public override bool TryConvert(System.DateTime? from, object? conversionHint, out string? result) { }
+    }
+    public sealed class NullableDecimalToDecimalTypeConverter : ReactiveUI.IBindingTypeConverter<decimal?, decimal>
+    {
+        public NullableDecimalToDecimalTypeConverter() { }
+        public System.Type FromType { get; }
+        public System.Type ToType { get; }
+        public int GetAffinityForObjects() { }
+        public bool TryConvert(decimal? from, object? conversionHint, out decimal result) { }
+        public bool TryConvertTyped(object? from, object? conversionHint, out object? result) { }
+    }
+    public sealed class NullableDecimalToStringTypeConverter : ReactiveUI.BindingTypeConverter<decimal?, string>
+    {
+        public NullableDecimalToStringTypeConverter() { }
+        public override int GetAffinityForObjects() { }
+        public override bool TryConvert(decimal? from, object? conversionHint, out string? result) { }
+    }
+    public sealed class NullableDoubleToDoubleTypeConverter : ReactiveUI.IBindingTypeConverter<double?, double>
+    {
+        public NullableDoubleToDoubleTypeConverter() { }
+        public System.Type FromType { get; }
+        public System.Type ToType { get; }
+        public int GetAffinityForObjects() { }
+        public bool TryConvert(double? from, object? conversionHint, out double result) { }
+        public bool TryConvertTyped(object? from, object? conversionHint, out object? result) { }
+    }
+    public sealed class NullableDoubleToStringTypeConverter : ReactiveUI.BindingTypeConverter<double?, string>
+    {
+        public NullableDoubleToStringTypeConverter() { }
+        public override int GetAffinityForObjects() { }
+        public override bool TryConvert(double? from, object? conversionHint, out string? result) { }
+    }
+    public sealed class NullableGuidToStringTypeConverter : ReactiveUI.BindingTypeConverter<System.Guid?, string>
+    {
+        public NullableGuidToStringTypeConverter() { }
+        public override int GetAffinityForObjects() { }
+        public override bool TryConvert(System.Guid? from, object? conversionHint, out string? result) { }
+    }
+    public sealed class NullableIntegerToIntegerTypeConverter : ReactiveUI.IBindingTypeConverter<int?, int>
+    {
+        public NullableIntegerToIntegerTypeConverter() { }
+        public System.Type FromType { get; }
+        public System.Type ToType { get; }
+        public int GetAffinityForObjects() { }
+        public bool TryConvert(int? from, object? conversionHint, out int result) { }
+        public bool TryConvertTyped(object? from, object? conversionHint, out object? result) { }
+    }
+    public sealed class NullableIntegerToStringTypeConverter : ReactiveUI.BindingTypeConverter<int?, string>
+    {
+        public NullableIntegerToStringTypeConverter() { }
+        public override int GetAffinityForObjects() { }
+        public override bool TryConvert(int? from, object? conversionHint, out string? result) { }
+    }
+    public sealed class NullableLongToLongTypeConverter : ReactiveUI.IBindingTypeConverter<long?, long>
+    {
+        public NullableLongToLongTypeConverter() { }
+        public System.Type FromType { get; }
+        public System.Type ToType { get; }
+        public int GetAffinityForObjects() { }
+        public bool TryConvert(long? from, object? conversionHint, out long result) { }
+        public bool TryConvertTyped(object? from, object? conversionHint, out object? result) { }
+    }
+    public sealed class NullableLongToStringTypeConverter : ReactiveUI.BindingTypeConverter<long?, string>
+    {
+        public NullableLongToStringTypeConverter() { }
+        public override int GetAffinityForObjects() { }
+        public override bool TryConvert(long? from, object? conversionHint, out string? result) { }
+    }
+    public sealed class NullableShortToShortTypeConverter : ReactiveUI.IBindingTypeConverter<short?, short>
+    {
+        public NullableShortToShortTypeConverter() { }
+        public System.Type FromType { get; }
+        public System.Type ToType { get; }
+        public int GetAffinityForObjects() { }
+        public bool TryConvert(short? from, object? conversionHint, out short result) { }
+        public bool TryConvertTyped(object? from, object? conversionHint, out object? result) { }
+    }
+    public sealed class NullableShortToStringTypeConverter : ReactiveUI.BindingTypeConverter<short?, string>
+    {
+        public NullableShortToStringTypeConverter() { }
+        public override int GetAffinityForObjects() { }
+        public override bool TryConvert(short? from, object? conversionHint, out string? result) { }
+    }
+    public sealed class NullableSingleToSingleTypeConverter : ReactiveUI.IBindingTypeConverter<float?, float>
+    {
+        public NullableSingleToSingleTypeConverter() { }
+        public System.Type FromType { get; }
+        public System.Type ToType { get; }
+        public int GetAffinityForObjects() { }
+        public bool TryConvert(float? from, object? conversionHint, out float result) { }
+        public bool TryConvertTyped(object? from, object? conversionHint, out object? result) { }
+    }
+    public sealed class NullableSingleToStringTypeConverter : ReactiveUI.BindingTypeConverter<float?, string>
+    {
+        public NullableSingleToStringTypeConverter() { }
+        public override int GetAffinityForObjects() { }
+        public override bool TryConvert(float? from, object? conversionHint, out string? result) { }
+    }
+    public sealed class NullableTimeOnlyToStringTypeConverter : ReactiveUI.BindingTypeConverter<System.TimeOnly?, string>
+    {
+        public NullableTimeOnlyToStringTypeConverter() { }
+        public override int GetAffinityForObjects() { }
+        public override bool TryConvert(System.TimeOnly? from, object? conversionHint, out string? result) { }
+    }
+    public sealed class NullableTimeSpanToStringTypeConverter : ReactiveUI.BindingTypeConverter<System.TimeSpan?, string>
+    {
+        public NullableTimeSpanToStringTypeConverter() { }
+        public override int GetAffinityForObjects() { }
+        public override bool TryConvert(System.TimeSpan? from, object? conversionHint, out string? result) { }
+    }
+    [System.Diagnostics.DebuggerDisplay("Value = {Value}, Sender = {Sender}")]
+    public class ObservedChange<TSender, TValue> : ReactiveUI.IObservedChange<TSender, TValue>
+    {
+        public ObservedChange(TSender sender, System.Linq.Expressions.Expression? expression, TValue value) { }
+        public System.Linq.Expressions.Expression? Expression { get; }
+        public TSender Sender { get; }
+        public TValue Value { get; }
+    }
+    public static class OrderedComparer
+    {
+        public static ReactiveUI.IComparerBuilder<T> For<T>() { }
+        public static ReactiveUI.IComparerBuilder<T> For<T>(System.Collections.Generic.IEnumerable<T> enumerable) { }
+    }
+    public static class OrderedComparer<T>
+    {
+        public static System.Collections.Generic.IComparer<T> OrderBy<TValue>(System.Func<T, TValue> selector) { }
+        public static System.Collections.Generic.IComparer<T> OrderBy<TValue>(System.Func<T, TValue> selector, System.Collections.Generic.IComparer<TValue> comparer) { }
+        public static System.Collections.Generic.IComparer<T> OrderByDescending<TValue>(System.Func<T, TValue> selector) { }
+        public static System.Collections.Generic.IComparer<T> OrderByDescending<TValue>(System.Func<T, TValue> selector, System.Collections.Generic.IComparer<TValue> comparer) { }
+    }
+    [System.AttributeUsage(System.AttributeTargets.All)]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+    public sealed class PreserveAttribute : System.Attribute
+    {
+        public PreserveAttribute() { }
+        public bool AllMembers { get; set; }
+    }
+    public class ReactiveBinding<TView, TValue> : ReactiveUI.IReactiveBinding<TView, TValue> where TView : ReactiveUI.IViewFor
+    {
+        public ReactiveBinding(TView view, System.Linq.Expressions.Expression viewExpression, System.Linq.Expressions.Expression viewModelExpression, System.IObservable<TValue?> changed, ReactiveUI.BindingDirection direction, System.IDisposable bindingDisposable) { }
+        public System.IObservable<TValue?> Changed { get; }
+        public ReactiveUI.BindingDirection Direction { get; }
+        public TView View { get; }
+        public System.Linq.Expressions.Expression ViewExpression { get; }
+        public System.Linq.Expressions.Expression ViewModelExpression { get; }
+        public void Dispose() { }
+        protected virtual void Dispose(bool isDisposing) { }
+    }
+    [System.Diagnostics.DebuggerDisplay("{Reason}: {Current} @ {CurrentIndex}")]
+    public readonly struct ReactiveChange<T> : System.IEquatable<ReactiveUI.ReactiveChange<T>>
+    {
+        public ReactiveChange(ReactiveUI.ReactiveChangeReason reason, T current, T? previous, int currentIndex, int previousIndex) { }
+        public T Current { get; }
+        public int CurrentIndex { get; }
+        public T? Previous { get; }
+        public int PreviousIndex { get; }
+        public ReactiveUI.ReactiveChangeReason Reason { get; }
+        public readonly bool Equals(ReactiveUI.ReactiveChange<T> other) { }
+        public override readonly bool Equals(object? obj) { }
+        public override readonly int GetHashCode() { }
+        public static bool operator ==(in ReactiveUI.ReactiveChange<T> left, in ReactiveUI.ReactiveChange<T> right) { }
+        public static bool operator !=(in ReactiveUI.ReactiveChange<T> left, in ReactiveUI.ReactiveChange<T> right) { }
+    }
+    public enum ReactiveChangeReason
+    {
+        Add = 0,
+        Remove = 1,
+        Replace = 2,
+        Move = 3,
+        Refresh = 4,
+    }
+    [System.Diagnostics.DebuggerDisplay("Count = {Count}, Adds = {Adds}, Removes = {Removes}")]
+    public sealed class ReactiveChangeSet<T> : ReactiveUI.IReactiveChangeSet<T>
+    {
+        public ReactiveChangeSet(System.Collections.Generic.List<ReactiveUI.ReactiveChange<T>> changes) { }
+        public int Adds { get; }
+        public int Count { get; }
+        public int Removes { get; }
+        public ReactiveUI.ReactiveChange<T> this[int index] { get; }
+        public System.Collections.Generic.List<ReactiveUI.ReactiveChange<T>>.Enumerator GetEnumerator() { }
+        System.Collections.Generic.IEnumerator<ReactiveUI.ReactiveChange<T>> System.Collections.Generic.IEnumerable<ReactiveUI.ReactiveChange<T>>.GetEnumerator() { }
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() { }
+    }
+    [System.Diagnostics.DebuggerDisplay("PropertyName = {PropertyName}, Sender = {Sender}")]
+    public class ReactivePropertyChangedEventArgs<TSender> : System.ComponentModel.PropertyChangedEventArgs, ReactiveUI.IReactivePropertyChangedEventArgs<TSender>
+    {
+        public ReactivePropertyChangedEventArgs(TSender sender, string propertyName) { }
+        public TSender Sender { get; }
+    }
+    [System.Diagnostics.DebuggerDisplay("PropertyName = {PropertyName}, Sender = {Sender}")]
+    public class ReactivePropertyChangingEventArgs<TSender> : System.ComponentModel.PropertyChangingEventArgs, ReactiveUI.IReactivePropertyChangedEventArgs<TSender>
+    {
+        public ReactivePropertyChangingEventArgs(TSender sender, string? propertyName) { }
+        public TSender Sender { get; }
+    }
+    public static class ReflectionMixins
+    {
+        extension(System.Reflection.PropertyInfo item)
+        {
+            public bool IsStatic() { }
+        }
+    }
+    public static class RxConverters
+    {
+        public static ReactiveUI.ConverterService Current { get; }
+        public static void SetService(ReactiveUI.ConverterService service) { }
+    }
+    public sealed class SetMethodBindingConverterRegistry
+    {
+        public SetMethodBindingConverterRegistry() { }
+        public System.Collections.Generic.IEnumerable<ReactiveUI.ISetMethodBindingConverter> GetAllConverters() { }
+        public void Register(ReactiveUI.ISetMethodBindingConverter converter) { }
+        public ReactiveUI.ISetMethodBindingConverter? TryGetConverter(System.Type? fromType, System.Type? toType) { }
+    }
+    public sealed class ShortToNullableShortTypeConverter : ReactiveUI.IBindingTypeConverter<short, short?>
+    {
+        public ShortToNullableShortTypeConverter() { }
+        public System.Type FromType { get; }
+        public System.Type ToType { get; }
+        public int GetAffinityForObjects() { }
+        public bool TryConvert(short from, object? conversionHint, out short? result) { }
+        public bool TryConvertTyped(object? from, object? conversionHint, out object? result) { }
+    }
+    public sealed class ShortToStringTypeConverter : ReactiveUI.BindingTypeConverter<short, string>
+    {
+        public ShortToStringTypeConverter() { }
+        public override int GetAffinityForObjects() { }
+        public override bool TryConvert(short from, object? conversionHint, out string? result) { }
+    }
+    [System.AttributeUsage(System.AttributeTargets.Class)]
+    public sealed class SingleInstanceViewAttribute : System.Attribute
+    {
+        public SingleInstanceViewAttribute() { }
+    }
+    public sealed class SingleToNullableSingleTypeConverter : ReactiveUI.IBindingTypeConverter<float, float?>
+    {
+        public SingleToNullableSingleTypeConverter() { }
+        public System.Type FromType { get; }
+        public System.Type ToType { get; }
+        public int GetAffinityForObjects() { }
+        public bool TryConvert(float from, object? conversionHint, out float? result) { }
+        public bool TryConvertTyped(object? from, object? conversionHint, out object? result) { }
+    }
+    public sealed class SingleToStringTypeConverter : ReactiveUI.BindingTypeConverter<float, string>
+    {
+        public SingleToStringTypeConverter() { }
+        public override int GetAffinityForObjects() { }
+        public override bool TryConvert(float from, object? conversionHint, out string? result) { }
+    }
+    public static class SingletonDataErrorsChangedEventArgs
+    {
+        public static readonly System.ComponentModel.DataErrorsChangedEventArgs Value;
+    }
+    public static class SingletonPropertyChangedEventArgs
+    {
+        public static readonly System.ComponentModel.PropertyChangedEventArgs ErrorMessage;
+        public static readonly System.ComponentModel.PropertyChangedEventArgs HasErrors;
+        public static readonly System.ComponentModel.PropertyChangedEventArgs Value;
+    }
+    public sealed class StringConverter : ReactiveUI.IBindingTypeConverter
+    {
+        public StringConverter() { }
+        public System.Type FromType { get; }
+        public System.Type ToType { get; }
+        public int GetAffinityForObjects() { }
+        public bool TryConvertTyped(object? from, object? conversionHint, out object? result) { }
+    }
+    public sealed class StringToBooleanTypeConverter : ReactiveUI.BindingTypeConverter<string, bool>
+    {
+        public StringToBooleanTypeConverter() { }
+        public override int GetAffinityForObjects() { }
+        public override bool TryConvert(string? from, object? conversionHint, out bool result) { }
+    }
+    public sealed class StringToByteTypeConverter : ReactiveUI.BindingTypeConverter<string, byte>
+    {
+        public StringToByteTypeConverter() { }
+        public override int GetAffinityForObjects() { }
+        public override bool TryConvert(string? from, object? conversionHint, out byte result) { }
+    }
+    public sealed class StringToDateOnlyTypeConverter : ReactiveUI.BindingTypeConverter<string, System.DateOnly>
+    {
+        public StringToDateOnlyTypeConverter() { }
+        public override int GetAffinityForObjects() { }
+        public override bool TryConvert(string? from, object? conversionHint, out System.DateOnly result) { }
+    }
+    public sealed class StringToDateTimeOffsetTypeConverter : ReactiveUI.BindingTypeConverter<string, System.DateTimeOffset>
+    {
+        public StringToDateTimeOffsetTypeConverter() { }
+        public override int GetAffinityForObjects() { }
+        public override bool TryConvert(string? from, object? conversionHint, out System.DateTimeOffset result) { }
+    }
+    public sealed class StringToDateTimeTypeConverter : ReactiveUI.BindingTypeConverter<string, System.DateTime>
+    {
+        public StringToDateTimeTypeConverter() { }
+        public override int GetAffinityForObjects() { }
+        public override bool TryConvert(string? from, object? conversionHint, out System.DateTime result) { }
+    }
+    public sealed class StringToDecimalTypeConverter : ReactiveUI.BindingTypeConverter<string, decimal>
+    {
+        public StringToDecimalTypeConverter() { }
+        public override int GetAffinityForObjects() { }
+        public override bool TryConvert(string? from, object? conversionHint, out decimal result) { }
+    }
+    public sealed class StringToDoubleTypeConverter : ReactiveUI.BindingTypeConverter<string, double>
+    {
+        public StringToDoubleTypeConverter() { }
+        public override int GetAffinityForObjects() { }
+        public override bool TryConvert(string? from, object? conversionHint, out double result) { }
+    }
+    public sealed class StringToGuidTypeConverter : ReactiveUI.BindingTypeConverter<string, System.Guid>
+    {
+        public StringToGuidTypeConverter() { }
+        public override int GetAffinityForObjects() { }
+        public override bool TryConvert(string? from, object? conversionHint, out System.Guid result) { }
+    }
+    public sealed class StringToIntegerTypeConverter : ReactiveUI.BindingTypeConverter<string, int>
+    {
+        public StringToIntegerTypeConverter() { }
+        public override int GetAffinityForObjects() { }
+        public override bool TryConvert(string? from, object? conversionHint, out int result) { }
+    }
+    public sealed class StringToLongTypeConverter : ReactiveUI.BindingTypeConverter<string, long>
+    {
+        public StringToLongTypeConverter() { }
+        public override int GetAffinityForObjects() { }
+        public override bool TryConvert(string? from, object? conversionHint, out long result) { }
+    }
+    public sealed class StringToNullableBooleanTypeConverter : ReactiveUI.BindingTypeConverter<string, bool?>
+    {
+        public StringToNullableBooleanTypeConverter() { }
+        public override int GetAffinityForObjects() { }
+        public override bool TryConvert(string? from, object? conversionHint, out bool? result) { }
+    }
+    public sealed class StringToNullableByteTypeConverter : ReactiveUI.BindingTypeConverter<string, byte?>
+    {
+        public StringToNullableByteTypeConverter() { }
+        public override int GetAffinityForObjects() { }
+        public override bool TryConvert(string? from, object? conversionHint, out byte? result) { }
+    }
+    public sealed class StringToNullableDateOnlyTypeConverter : ReactiveUI.BindingTypeConverter<string, System.DateOnly?>
+    {
+        public StringToNullableDateOnlyTypeConverter() { }
+        public override int GetAffinityForObjects() { }
+        public override bool TryConvert(string? from, object? conversionHint, out System.DateOnly? result) { }
+    }
+    public sealed class StringToNullableDateTimeOffsetTypeConverter : ReactiveUI.BindingTypeConverter<string, System.DateTimeOffset?>
+    {
+        public StringToNullableDateTimeOffsetTypeConverter() { }
+        public override int GetAffinityForObjects() { }
+        public override bool TryConvert(string? from, object? conversionHint, out System.DateTimeOffset? result) { }
+    }
+    public sealed class StringToNullableDateTimeTypeConverter : ReactiveUI.BindingTypeConverter<string, System.DateTime?>
+    {
+        public StringToNullableDateTimeTypeConverter() { }
+        public override int GetAffinityForObjects() { }
+        public override bool TryConvert(string? from, object? conversionHint, out System.DateTime? result) { }
+    }
+    public sealed class StringToNullableDecimalTypeConverter : ReactiveUI.BindingTypeConverter<string, decimal?>
+    {
+        public StringToNullableDecimalTypeConverter() { }
+        public override int GetAffinityForObjects() { }
+        public override bool TryConvert(string? from, object? conversionHint, out decimal? result) { }
+    }
+    public sealed class StringToNullableDoubleTypeConverter : ReactiveUI.BindingTypeConverter<string, double?>
+    {
+        public StringToNullableDoubleTypeConverter() { }
+        public override int GetAffinityForObjects() { }
+        public override bool TryConvert(string? from, object? conversionHint, out double? result) { }
+    }
+    public sealed class StringToNullableGuidTypeConverter : ReactiveUI.BindingTypeConverter<string, System.Guid?>
+    {
+        public StringToNullableGuidTypeConverter() { }
+        public override int GetAffinityForObjects() { }
+        public override bool TryConvert(string? from, object? conversionHint, out System.Guid? result) { }
+    }
+    public sealed class StringToNullableIntegerTypeConverter : ReactiveUI.BindingTypeConverter<string, int?>
+    {
+        public StringToNullableIntegerTypeConverter() { }
+        public override int GetAffinityForObjects() { }
+        public override bool TryConvert(string? from, object? conversionHint, out int? result) { }
+    }
+    public sealed class StringToNullableLongTypeConverter : ReactiveUI.BindingTypeConverter<string, long?>
+    {
+        public StringToNullableLongTypeConverter() { }
+        public override int GetAffinityForObjects() { }
+        public override bool TryConvert(string? from, object? conversionHint, out long? result) { }
+    }
+    public sealed class StringToNullableShortTypeConverter : ReactiveUI.BindingTypeConverter<string, short?>
+    {
+        public StringToNullableShortTypeConverter() { }
+        public override int GetAffinityForObjects() { }
+        public override bool TryConvert(string? from, object? conversionHint, out short? result) { }
+    }
+    public sealed class StringToNullableSingleTypeConverter : ReactiveUI.BindingTypeConverter<string, float?>
+    {
+        public StringToNullableSingleTypeConverter() { }
+        public override int GetAffinityForObjects() { }
+        public override bool TryConvert(string? from, object? conversionHint, out float? result) { }
+    }
+    public sealed class StringToNullableTimeOnlyTypeConverter : ReactiveUI.BindingTypeConverter<string, System.TimeOnly?>
+    {
+        public StringToNullableTimeOnlyTypeConverter() { }
+        public override int GetAffinityForObjects() { }
+        public override bool TryConvert(string? from, object? conversionHint, out System.TimeOnly? result) { }
+    }
+    public sealed class StringToNullableTimeSpanTypeConverter : ReactiveUI.BindingTypeConverter<string, System.TimeSpan?>
+    {
+        public StringToNullableTimeSpanTypeConverter() { }
+        public override int GetAffinityForObjects() { }
+        public override bool TryConvert(string? from, object? conversionHint, out System.TimeSpan? result) { }
+    }
+    public sealed class StringToShortTypeConverter : ReactiveUI.BindingTypeConverter<string, short>
+    {
+        public StringToShortTypeConverter() { }
+        public override int GetAffinityForObjects() { }
+        public override bool TryConvert(string? from, object? conversionHint, out short result) { }
+    }
+    public sealed class StringToSingleTypeConverter : ReactiveUI.BindingTypeConverter<string, float>
+    {
+        public StringToSingleTypeConverter() { }
+        public override int GetAffinityForObjects() { }
+        public override bool TryConvert(string? from, object? conversionHint, out float result) { }
+    }
+    public sealed class StringToTimeOnlyTypeConverter : ReactiveUI.BindingTypeConverter<string, System.TimeOnly>
+    {
+        public StringToTimeOnlyTypeConverter() { }
+        public override int GetAffinityForObjects() { }
+        public override bool TryConvert(string? from, object? conversionHint, out System.TimeOnly result) { }
+    }
+    public sealed class StringToTimeSpanTypeConverter : ReactiveUI.BindingTypeConverter<string, System.TimeSpan>
+    {
+        public StringToTimeSpanTypeConverter() { }
+        public override int GetAffinityForObjects() { }
+        public override bool TryConvert(string? from, object? conversionHint, out System.TimeSpan result) { }
+    }
+    public sealed class StringToUriTypeConverter : ReactiveUI.BindingTypeConverter<string, System.Uri>
+    {
+        public StringToUriTypeConverter() { }
+        public override int GetAffinityForObjects() { }
+        public override bool TryConvert(string? from, object? conversionHint, out System.Uri? result) { }
+    }
+    public sealed class TimeOnlyToStringTypeConverter : ReactiveUI.BindingTypeConverter<System.TimeOnly, string>
+    {
+        public TimeOnlyToStringTypeConverter() { }
+        public override int GetAffinityForObjects() { }
+        public override bool TryConvert(System.TimeOnly from, object? conversionHint, out string? result) { }
+    }
+    public sealed class TimeSpanToStringTypeConverter : ReactiveUI.BindingTypeConverter<System.TimeSpan, string>
+    {
+        public TimeSpanToStringTypeConverter() { }
+        public override int GetAffinityForObjects() { }
+        public override bool TryConvert(System.TimeSpan from, object? conversionHint, out string? result) { }
+    }
+    public enum TriggerUpdate
+    {
+        ViewToViewModel = 0,
+        ViewModelToView = 1,
+    }
+    [System.Diagnostics.DebuggerDisplay("Message = {Message}")]
+    public class UnhandledErrorException : System.Exception
+    {
+        public UnhandledErrorException() { }
+        public UnhandledErrorException(string message) { }
+        public UnhandledErrorException(string message, System.Exception innerException) { }
+    }
+    public sealed class UriToStringTypeConverter : ReactiveUI.BindingTypeConverter<System.Uri, string>
+    {
+        public UriToStringTypeConverter() { }
+        public override int GetAffinityForObjects() { }
+        public override bool TryConvert(System.Uri? from, object? conversionHint, out string? result) { }
+    }
+    [System.AttributeUsage(System.AttributeTargets.Class)]
+    [System.Diagnostics.DebuggerDisplay("Contract = {Contract}")]
+    public sealed class ViewContractAttribute : System.Attribute
+    {
+        public ViewContractAttribute(string contract) { }
+        public string Contract { get; }
+    }
+    public static class ViewLocator
+    {
+        public static ReactiveUI.IViewLocator Current { get; }
+    }
+    [System.Diagnostics.DebuggerDisplay("Message = {Message}")]
+    public class ViewLocatorNotFoundException : System.Exception
+    {
+        public ViewLocatorNotFoundException() { }
+        public ViewLocatorNotFoundException(string message) { }
+        public ViewLocatorNotFoundException(string message, System.Exception innerException) { }
+    }
+    public sealed class ViewMappingBuilder
+    {
+        public ViewMappingBuilder(ReactiveUI.DefaultViewLocator locator) { }
+        public ReactiveUI.ViewMappingBuilder Map<TViewModel, TView>() where TViewModel : class where TView : class, ReactiveUI.IViewFor<TViewModel>, new() { }
+        public ReactiveUI.ViewMappingBuilder Map<TViewModel, TView>(System.Func<TView> factory) where TViewModel : class where TView : class, ReactiveUI.IViewFor<TViewModel> { }
+        public ReactiveUI.ViewMappingBuilder Map<TViewModel, TView>(string? contract) where TViewModel : class where TView : class, ReactiveUI.IViewFor<TViewModel>, new() { }
+        public ReactiveUI.ViewMappingBuilder Map<TViewModel, TView>(System.Func<TView> factory, string? contract) where TViewModel : class where TView : class, ReactiveUI.IViewFor<TViewModel> { }
+        public ReactiveUI.ViewMappingBuilder MapFromServiceLocator<TViewModel, TView>() where TViewModel : class where TView : class, ReactiveUI.IViewFor<TViewModel> { }
+        public ReactiveUI.ViewMappingBuilder MapFromServiceLocator<TViewModel, TView>(string? contract) where TViewModel : class where TView : class, ReactiveUI.IViewFor<TViewModel> { }
+    }
+}
+namespace ReactiveUI.Internal
+{
+    public sealed class StartWithObservable<T> : System.IObservable<T>
+    {
+        public StartWithObservable(System.IObservable<T> source, T value) { }
+        public System.IDisposable Subscribe(System.IObserver<T> observer) { }
+    }
+    public sealed class TaskObservable<T> : System.IObservable<T>
+    {
+        public TaskObservable(System.Threading.Tasks.Task<T> task) { }
+        public System.IDisposable Subscribe(System.IObserver<T> observer) { }
+    }
+}

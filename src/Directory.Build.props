@@ -180,15 +180,20 @@
   </ItemGroup>
 
   <PropertyGroup>
-    <!-- Public-API tracking (RS0016/RS0017/RS0037). Re-enabled now the System.Reactive→Primitives seam
-         split has landed; baselines are regenerated with tools/generate-publicapi.*. tests/benchmarks/examples
-         stay off via their own Directory.Build.props. -->
+    <!-- Public-API tracking: one always-current PublicAPI.txt per TFM. Regenerate by running
+         `dotnet format analyzers` over the project for a single target framework, restricted to the
+         PAS0001 and PAS0003 diagnostics at severity info. -->
     <TrackPublicApi Condition="'$(TrackPublicApi)' == ''">true</TrackPublicApi>
     <TrackPublicApi Condition="'$(IsTestProject)' == 'true'">false</TrackPublicApi>
+    <!-- The WPF markup pass generates <Project>_<hash>_wpftmp.csproj in the real project's
+         directory, so it resolves the same baseline path and would overwrite it. -->
+    <TrackPublicApi Condition="$(MSBuildProjectName.EndsWith('_wpftmp'))">false</TrackPublicApi>
+    <EnablePublicApiBaseline>$(TrackPublicApi)</EnablePublicApiBaseline>
   </PropertyGroup>
+  <!-- The package's own targets resolve PublicAPI/$(TargetFramework)/PublicAPI.txt per inner build
+       and add it to @(AdditionalFiles), so multi-targeting needs no wiring here. -->
   <ItemGroup Condition="'$(TrackPublicApi)' == 'true'">
-    <PackageReference Include="Microsoft.CodeAnalysis.PublicApiAnalyzers" PrivateAssets="all" />
-    <AdditionalFiles Include="$(MSBuildProjectDirectory)\PublicAPI\$(TargetFramework)\PublicAPI.*.txt" />
+    <PackageReference Include="PublicApiSharp.Analyzers" PrivateAssets="all" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(IsTestProject)' != 'true'">
