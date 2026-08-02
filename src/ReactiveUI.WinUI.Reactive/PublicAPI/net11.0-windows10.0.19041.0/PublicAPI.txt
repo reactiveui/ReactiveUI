@@ -1,0 +1,172 @@
+[assembly: System.Runtime.Versioning.SupportedOSPlatform("Windows10.0.19041.0")]
+namespace ReactiveUI
+{
+    public class AutoDataTemplateBindingHook : ReactiveUI.IPropertyBindingHook
+    {
+        public AutoDataTemplateBindingHook() { }
+        public static System.Lazy<Microsoft.UI.Xaml.DataTemplate> DefaultItemTemplate { get; }
+        public bool ExecuteHook(object? source, object target, System.Func<ReactiveUI.IObservedChange<object, object>[]> getCurrentViewModelProperties, System.Func<ReactiveUI.IObservedChange<object, object>[]> getCurrentViewProperties, ReactiveUI.BindingDirection direction) { }
+    }
+    [System.Flags]
+    public enum BooleanToVisibilityHint
+    {
+        None = 0,
+        Inverse = 2,
+        UseHidden = 4,
+    }
+    public sealed class BooleanToVisibilityTypeConverter : ReactiveUI.BindingTypeConverter<bool, Microsoft.UI.Xaml.Visibility>
+    {
+        public BooleanToVisibilityTypeConverter() { }
+        public override int GetAffinityForObjects() { }
+        public override bool TryConvert(bool from, object? conversionHint, out Microsoft.UI.Xaml.Visibility result) { }
+    }
+    public class DependencyObjectObservableForProperty : ReactiveUI.ICreatesObservableForProperty
+    {
+        public DependencyObjectObservableForProperty() { }
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("GetAffinityForObject uses methods that may require unreferenced code")]
+        public int GetAffinityForObject(System.Type type, string propertyName) { }
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("GetAffinityForObject uses methods that may require unreferenced code")]
+        public int GetAffinityForObject(System.Type? type, string propertyName, bool beforeChanged) { }
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("GetNotificationForProperty uses methods that may require unreferenced code")]
+        public System.IObservable<ReactiveUI.IObservedChange<object, object?>> GetNotificationForProperty(object sender, System.Linq.Expressions.Expression expression, string propertyName) { }
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("GetNotificationForProperty uses methods that may require unreferenced code")]
+        public System.IObservable<ReactiveUI.IObservedChange<object, object?>> GetNotificationForProperty(object sender, System.Linq.Expressions.Expression expression, string propertyName, bool beforeChanged) { }
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("GetNotificationForProperty uses methods that may require unreferenced code")]
+        public System.IObservable<ReactiveUI.IObservedChange<object, object?>> GetNotificationForProperty(object sender, System.Linq.Expressions.Expression expression, string propertyName, bool beforeChanged, bool suppressWarnings) { }
+    }
+    public class PlatformOperations : ReactiveUI.IPlatformOperations
+    {
+        public PlatformOperations() { }
+        public string? GetOrientation() { }
+    }
+    [WinRT.WinRTExposedType(typeof(ReactiveUI.ReactivePage_TViewModel_WinRTTypeDetails))]
+    [WinRT.WinRTRuntimeClassName("Microsoft.UI.Xaml.IUIElementOverrides")]
+    public class ReactivePage<TViewModel> : Microsoft.UI.Xaml.Controls.Page, ReactiveUI.IViewFor<TViewModel> where TViewModel : class
+    {
+        public ReactivePage() { }
+        public static readonly Microsoft.UI.Xaml.DependencyProperty ViewModelProperty;
+        public TViewModel? BindingRoot { get; }
+        object? ReactiveUI.IViewFor.ViewModel { get; set; }
+        public TViewModel? ViewModel { get; set; }
+    }
+    [WinRT.WinRTExposedType(typeof(ReactiveUI.ReactiveUserControl_TViewModel_WinRTTypeDetails))]
+    [WinRT.WinRTRuntimeClassName("Microsoft.UI.Xaml.IUIElementOverrides")]
+    public class ReactiveUserControl<TViewModel> : Microsoft.UI.Xaml.Controls.UserControl, ReactiveUI.IViewFor<TViewModel> where TViewModel : class
+    {
+        public ReactiveUserControl() { }
+        public static readonly Microsoft.UI.Xaml.DependencyProperty ViewModelProperty;
+        public TViewModel? BindingRoot { get; }
+        object? ReactiveUI.IViewFor.ViewModel { get; set; }
+        public TViewModel? ViewModel { get; set; }
+    }
+    [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("ViewLocator.ResolveView uses reflection which is incompatible with AOT compilation.")]
+    [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("This class uses reflection to determine view model types at runtime through ViewLocator, which may be incompatible with trimming.")]
+    [WinRT.WinRTExposedType(typeof(ReactiveUI.RoutedViewHostWinRTTypeDetails))]
+    [WinRT.WinRTRuntimeClassName("Microsoft.UI.Xaml.IUIElementOverrides")]
+    public class RoutedViewHost : ReactiveUI.TransitioningContentControl, ReactiveUI.IActivatableView
+    {
+        public RoutedViewHost() { }
+        public static readonly Microsoft.UI.Xaml.DependencyProperty DefaultContentProperty;
+        public static readonly Microsoft.UI.Xaml.DependencyProperty RouterProperty;
+        public static readonly Microsoft.UI.Xaml.DependencyProperty ViewContractObservableProperty;
+        public object DefaultContent { get; set; }
+        public ReactiveUI.Reactive.RoutingState Router { get; set; }
+        public string? ViewContract { get; set; }
+        public System.IObservable<string?> ViewContractObservable { get; set; }
+        public ReactiveUI.IViewLocator? ViewLocator { get; set; }
+        void ReactiveUI.Maui.Internal.IMauiRoutedViewHost.SetObservedViewContract(string? contract) { }
+    }
+    [WinRT.WinRTExposedType(typeof(ReactiveUI.RoutedViewHost_TViewModel_WinRTTypeDetails))]
+    [WinRT.WinRTRuntimeClassName("Microsoft.UI.Xaml.IUIElementOverrides")]
+    public class RoutedViewHost<TViewModel> : ReactiveUI.TransitioningContentControl, ReactiveUI.IActivatableView where TViewModel : class, ReactiveUI.Reactive.IRoutableViewModel
+    {
+        public RoutedViewHost() { }
+        public static readonly Microsoft.UI.Xaml.DependencyProperty DefaultContentProperty;
+        public static readonly Microsoft.UI.Xaml.DependencyProperty RouterProperty;
+        public static readonly Microsoft.UI.Xaml.DependencyProperty ViewContractObservableProperty;
+        public object DefaultContent { get; set; }
+        public ReactiveUI.Reactive.RoutingState Router { get; set; }
+        public string? ViewContract { get; set; }
+        public System.IObservable<string?> ViewContractObservable { get; set; }
+        public ReactiveUI.IViewLocator? ViewLocator { get; set; }
+        void ReactiveUI.Maui.Internal.IMauiRoutedViewHost.SetObservedViewContract(string? contract) { }
+    }
+    [WinRT.WinRTExposedType(typeof(ReactiveUI.TransitioningContentControlWinRTTypeDetails))]
+    [WinRT.WinRTRuntimeClassName("Microsoft.UI.Xaml.IUIElementOverrides")]
+    public class TransitioningContentControl : Microsoft.UI.Xaml.Controls.ContentControl
+    {
+        public TransitioningContentControl() { }
+    }
+    [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("ViewLocator.ResolveView uses reflection which is incompatible with AOT compilation.")]
+    [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("This class uses reflection to determine view model types at runtime through ViewLocator, which may be incompatible with trimming.")]
+    [WinRT.WinRTExposedType(typeof(ReactiveUI.ViewModelViewHostWinRTTypeDetails))]
+    [WinRT.WinRTRuntimeClassName("Microsoft.UI.Xaml.IUIElementOverrides")]
+    public class ViewModelViewHost : ReactiveUI.TransitioningContentControl, ReactiveUI.IViewFor, Splat.IEnableLogger
+    {
+        public ViewModelViewHost() { }
+        public static readonly Microsoft.UI.Xaml.DependencyProperty ContractFallbackByPassProperty;
+        public static readonly Microsoft.UI.Xaml.DependencyProperty DefaultContentProperty;
+        public static readonly Microsoft.UI.Xaml.DependencyProperty ViewContractObservableProperty;
+        public static readonly Microsoft.UI.Xaml.DependencyProperty ViewModelProperty;
+        public bool ContractFallbackByPass { get; set; }
+        public object DefaultContent { get; set; }
+        public string? ViewContract { get; set; }
+        public System.IObservable<string?> ViewContractObservable { get; set; }
+        public ReactiveUI.IViewLocator? ViewLocator { get; set; }
+        public object? ViewModel { get; set; }
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, or generic constraints), trimming can't validate that the requirements of those annotations are met.")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
+        protected virtual void ResolveViewForViewModel(object? viewModel, string? contract) { }
+    }
+    [WinRT.WinRTExposedType(typeof(ReactiveUI.ViewModelViewHost_TViewModel_WinRTTypeDetails))]
+    [WinRT.WinRTRuntimeClassName("Microsoft.UI.Xaml.IUIElementOverrides")]
+    public class ViewModelViewHost<TViewModel> : ReactiveUI.TransitioningContentControl, ReactiveUI.IViewFor<TViewModel>, Splat.IEnableLogger where TViewModel : class
+    {
+        public ViewModelViewHost() { }
+        public static readonly Microsoft.UI.Xaml.DependencyProperty ContractFallbackByPassProperty;
+        public static readonly Microsoft.UI.Xaml.DependencyProperty DefaultContentProperty;
+        public static readonly Microsoft.UI.Xaml.DependencyProperty ViewContractObservableProperty;
+        public static readonly Microsoft.UI.Xaml.DependencyProperty ViewModelProperty;
+        public bool ContractFallbackByPass { get; set; }
+        public object DefaultContent { get; set; }
+        object? ReactiveUI.IViewFor.ViewModel { get; set; }
+        public string? ViewContract { get; set; }
+        public System.IObservable<string?> ViewContractObservable { get; set; }
+        public ReactiveUI.IViewLocator? ViewLocator { get; set; }
+        public TViewModel? ViewModel { get; set; }
+        protected virtual void ResolveViewForViewModel(TViewModel? viewModel, string? contract) { }
+    }
+    public sealed class VisibilityToBooleanTypeConverter : ReactiveUI.BindingTypeConverter<Microsoft.UI.Xaml.Visibility, bool>
+    {
+        public VisibilityToBooleanTypeConverter() { }
+        public override int GetAffinityForObjects() { }
+        public override bool TryConvert(Microsoft.UI.Xaml.Visibility from, object? conversionHint, out bool result) { }
+    }
+}
+namespace ReactiveUI.Builder
+{
+    public static class WinUIReactiveUIBuilderExtensions
+    {
+        public static System.Reactive.Concurrency.IScheduler WinUIMainThreadScheduler { get; }
+        extension(ReactiveUI.Reactive.Builder.IReactiveUIBuilder builder)
+        {
+            public ReactiveUI.Reactive.Builder.IReactiveUIBuilder WithWinUI() { }
+            public ReactiveUI.Reactive.Builder.IReactiveUIBuilder WithWinUIConverters() { }
+            public ReactiveUI.Reactive.Builder.IReactiveUIBuilder WithWinUIScheduler() { }
+        }
+    }
+}
+namespace ReactiveUI.WinUI
+{
+    public class ActivationForViewFetcher : ReactiveUI.IActivationForViewFetcher
+    {
+        public ActivationForViewFetcher() { }
+        public System.IObservable<bool> GetActivationForView(ReactiveUI.IActivatableView view) { }
+        public int GetAffinityForView(System.Type view) { }
+    }
+    public class Registrations : ReactiveUI.IWantsToRegisterStuff
+    {
+        public Registrations() { }
+        public void Register(ReactiveUI.IRegistrar registrar) { }
+    }
+}
