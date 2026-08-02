@@ -13,18 +13,16 @@ public class RaceConditionFixture : ReactiveObject
     private readonly ObservableAsPropertyHelper<bool> _a;
 
     /// <summary>Initializes a new instance of the <see cref="RaceConditionFixture"/> class.</summary>
+    /// <remarks>
+    /// Emits a value on subscription that differs from the default, which triggers the property
+    /// change firing during the <see cref="ObservableAsPropertyHelper{T}"/> constructor - the race
+    /// this fixture exists to reproduce.
+    /// </remarks>
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Design",
         "SST2403:'this' escapes before construction finishes",
         Justification = "canonical ObservableAsPropertyHelper initialization requires 'this' in the constructor; the single-threaded fixture never exposes the half-built instance.")]
-    public RaceConditionFixture() =>
-
-        // We need to generate a value on subscription
-        // which is different than the default value.
-        // This triggers the property change firing
-        // upon subscription in the ObservableAsPropertyHelper
-        // constructor.
-        Signal.Emit(true).Do(_ => Count++).ToProperty(this, x => x.A, out _a);
+    public RaceConditionFixture() => Signal.Emit(true).Do(_ => Count++).ToProperty(this, x => x.A, out _a);
 
     /// <summary>Gets or sets the count.</summary>
     public int Count { get; set; }

@@ -18,8 +18,6 @@ public class ConverterMigrationHelperTests
     /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
     public async Task ExtractConverters_ShouldThrowArgumentNullException_WhenResolverIsNull() =>
-
-        // Act & Assert
         await Assert.That(static () => ConverterMigrationHelperMixins.ExtractConverters(null!))
             .Throws<ArgumentException>();
 

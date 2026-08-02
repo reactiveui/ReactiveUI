@@ -16,14 +16,14 @@ namespace ReactiveUI.Tests;
 public static class AssemblyHooks
 {
     /// <summary>Called before any tests in this assembly start.</summary>
+    /// <remarks>
+    /// Detects as a unit-test runner so platform registrations skip live scheduler wiring.
+    /// Per-test ReactiveUI builder initialization is handled by AppBuilderTestExecutor, which
+    /// the routing leaf otherwise lacked - without it the first WhenAny* call hits the
+    /// ReactiveNotifyPropertyChangedMixins static ctor and EnsureInitialized() throws.
+    /// </remarks>
     [Before(Assembly)]
-    public static void AssemblySetup() =>
-
-        // Detect as a unit-test runner so platform registrations skip live scheduler wiring.
-        // Per-test ReactiveUI builder initialization is handled by AppBuilderTestExecutor, which
-        // the routing leaf otherwise lacked — without it the first WhenAny* call hits the
-        // ReactiveNotifyPropertyChangedMixins static ctor and EnsureInitialized() throws.
-        ModeDetector.OverrideModeDetector(new TestModeDetector());
+    public static void AssemblySetup() => ModeDetector.OverrideModeDetector(new TestModeDetector());
 
     /// <summary>Mode detector that always indicates we're in a unit test runner.</summary>
     private sealed class TestModeDetector : IModeDetector

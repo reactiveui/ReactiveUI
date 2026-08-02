@@ -51,8 +51,6 @@ public class AppBuilderTestBaseTests
     /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
     public async Task RunAppBuilderTestAsync_WithAsyncTestBody_PropagatesExceptions() =>
-
-        // Act & Assert
         await Assert.That(static async () =>
         {
             await TestHelper.RunAppBuilderTestAsync(static async () =>
@@ -66,8 +64,6 @@ public class AppBuilderTestBaseTests
     /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
     public async Task RunAppBuilderTestAsync_WithSyncTestBody_PropagatesExceptions() =>
-
-        // Act & Assert
         await Assert.That(static async () => await TestHelper.RunAppBuilderTestAsync(static () => throw new InvalidOperationException("Test exception"))).Throws<InvalidOperationException>();
 
     /// <summary>Verifies that <see cref="AppBuilderTestBase.RunAppBuilderTestAsync(Action)"/> can be called multiple times sequentially without interference.</summary>
