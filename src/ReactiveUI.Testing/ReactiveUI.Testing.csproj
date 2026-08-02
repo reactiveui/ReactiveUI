@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>$(ReactiveUIModernTargets)</TargetFrameworks>
+    <!-- Matches the .NET Framework reach of the ReactiveUI package this one is used to test. -->
+    <TargetFrameworks>$(ReactiveUIModernTargets);$(ReactiveUIFrameworkTargets)</TargetFrameworks>
     <AssemblyName>ReactiveUI.Testing</AssemblyName>
     <RootNamespace>ReactiveUI.Testing</RootNamespace>
     <IsTestProject>false</IsTestProject>
