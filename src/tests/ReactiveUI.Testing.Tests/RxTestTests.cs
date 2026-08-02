@@ -56,8 +56,6 @@ public class RxTestTests
     /// <exception cref="InvalidOperationException">Thrown if the delegate passed to AppBuilderTestAsync throws an InvalidOperationException.</exception>
     [Test]
     public async Task AppBuilderTestAsync_PropagatesExceptions() =>
-
-        // Act & Assert
         await Assert.That(static async () => await RxTest.AppBuilderTestAsync(static () => throw new InvalidOperationException("Test exception"))).Throws<InvalidOperationException>();
 
     /// <summary>
@@ -161,8 +159,6 @@ public class RxTestTests
     /// <returns>A task that represents the asynchronous test operation.</returns>
     [Test]
     public async Task AppBuilderTestAsync_ThrowsTimeoutException_WhenTestExceedsTimeout() =>
-
-        // Act & Assert
         await Assert.That(static async () =>
         {
             await RxTest.AppBuilderTestAsync(
@@ -180,8 +176,5 @@ public class RxTestTests
     /// <returns>A task that represents the asynchronous test operation.</returns>
     [Test]
     public Task AppBuilderTestAsync_HandlesTaskCompletedTask() =>
-
-        // This test verifies that returning Task.CompletedTask works correctly
-        // Act - Should not throw
         RxTest.AppBuilderTestAsync(static () => Task.CompletedTask);
 }
