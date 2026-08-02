@@ -7,10 +7,10 @@
   <PropertyGroup Label="Shared Version Variables">
     <SplatVersion>20.2.0</SplatVersion>
     <PrimitivesVersion>7.1.0</PrimitivesVersion>
-    <TUnitVersion>1.61.38</TUnitVersion>
+    <TUnitVersion>1.63.0</TUnitVersion>
     <!-- StyleSharp.Analyzers, PerformanceSharp.Analyzers and SecuritySharp.Analyzers ship from the
          same release pipeline and always share a version. -->
-    <RoslynCommonAnalyzersVersion>3.38.1</RoslynCommonAnalyzersVersion>
+    <RoslynCommonAnalyzersVersion>3.40.1</RoslynCommonAnalyzersVersion>
     <XamarinAndroidXLifecycleLiveDataVersion>2.11.0.1</XamarinAndroidXLifecycleLiveDataVersion>
   </PropertyGroup>
 
@@ -77,7 +77,7 @@
     <PackageVersion Include="TUnit.Core" Version="$(TUnitVersion)"/>
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.8.1"/>
     <PackageVersion Include="Microsoft.Testing.Extensions.CodeCoverage" Version="18.9.0"/>
-    <PackageVersion Include="Microsoft.Testing.Platform.MSBuild" Version="2.3.2"/>
+    <PackageVersion Include="Microsoft.Testing.Platform.MSBuild" Version="2.3.3"/>
     <PackageVersion Include="Microsoft.Reactive.Testing" Version="7.0.0"/>
     <PackageVersion Include="System.Reactive" Version="7.0.0"/>
     <PackageVersion Include="Mocks.Maui" Version="1.2.5"/>
@@ -88,7 +88,7 @@
     <PackageVersion Include="PerformanceSharp.Analyzers" Version="$(RoslynCommonAnalyzersVersion)"/>
     <PackageVersion Include="SecuritySharp.Analyzers" Version="$(RoslynCommonAnalyzersVersion)"/>
     <PackageVersion Include="Roslynator.Analyzers" Version="4.15.0"/>
-    <PackageVersion Include="SonarAnalyzer.CSharp" Version="10.30.0.144632"/>
+    <PackageVersion Include="SonarAnalyzer.CSharp" Version="10.31.0.145097"/>
     <PackageVersion Include="Microsoft.CodeAnalysis.Analyzers" Version="5.6.0"/>
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="5.6.0"/>
     <PackageVersion Include="Microsoft.CodeAnalysis.PublicApiAnalyzers" Version="5.6.0"/>
