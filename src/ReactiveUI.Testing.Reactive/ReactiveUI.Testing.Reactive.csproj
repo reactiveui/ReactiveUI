@@ -4,7 +4,7 @@
          ReactiveUI.Reactive engine (RxSchedulers/MessageBus resolve to ReactiveUI.Reactive.* via the seam
          global usings in Directory.Build.props) and adds the Microsoft.Reactive.Testing TestScheduler helpers.
          The ReactiveUI.Testing namespace itself does not flip; nesting + global usings line up the engine types. -->
-    <TargetFrameworks>$(ReactiveUIModernTargets)</TargetFrameworks>
+    <TargetFrameworks>$(ReactiveUIModernTargets);$(ReactiveUIFrameworkTargets)</TargetFrameworks>
     <AssemblyName>ReactiveUI.Testing.Reactive</AssemblyName>
     <RootNamespace>ReactiveUI.Testing</RootNamespace>
     <IsTestProject>false</IsTestProject>
