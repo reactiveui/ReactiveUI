@@ -23,6 +23,7 @@ public partial class LobbyView : ReactiveComponentBase<LobbyViewModel>
 
     /// <summary>Handles the delete button click by executing the view model's delete command for the selected room.</summary>
     /// <returns>A task that represents the asynchronous delete operation.</returns>
+    /// <exception cref="InvalidOperationException">No room is currently selected, so there is nothing to delete.</exception>
     private async Task OnDeleteSelectedClicked()
     {
         ArgumentExceptionHelper.ThrowIfNull(ViewModel);

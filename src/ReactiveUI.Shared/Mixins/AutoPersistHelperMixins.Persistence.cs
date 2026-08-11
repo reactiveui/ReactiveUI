@@ -33,6 +33,7 @@ public static partial class AutoPersistHelperMixins
         /// <param name="manualSaveSignal">When invoked, the object will be saved regardless of whether it has changed.</param>
         /// <param name="metadata">The persistence metadata that determines which properties trigger persistence.</param>
         /// <returns>A disposable to disable automatic persistence.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IDisposable AutoPersistCollection<TDontCare>(
             Func<TItem, IObservable<RxVoid>> doPersist,
             IObservable<TDontCare> manualSaveSignal,
@@ -70,31 +71,9 @@ public static partial class AutoPersistHelperMixins
                     nameof(metadata));
             }
 
-            Dictionary<TItem, IDisposable> disposerList = [];
-
-            var subscription = @this.ActOnEveryObject<TItem, TCollection>(
-                x =>
-                {
-                    if (disposerList.ContainsKey(x))
-                    {
-                        return;
-                    }
-
-                    disposerList[x] = x.AutoPersist(doPersist, manualSaveSignal, metadata, interval);
-                },
-                x => DisposeAndRemove(disposerList, x));
-
-            return new ActionDisposable(() =>
-            {
-                subscription.Dispose();
-
-                foreach (var kvp in disposerList)
-                {
-                    kvp.Value.Dispose();
-                }
-
-                disposerList.Clear();
-            });
+            return TrackPerItemPersistence<TItem, TCollection>(
+                @this,
+                x => x.AutoPersist(doPersist, manualSaveSignal, metadata, interval));
         }
 
         /// <summary>Applies AutoPersistence to all objects in a collection using a metadata provider.</summary>
@@ -103,6 +82,7 @@ public static partial class AutoPersistHelperMixins
         /// <param name="manualSaveSignal">When invoked, the object will be saved regardless of whether it has changed.</param>
         /// <param name="metadataProvider">A function that returns the persistence metadata to use for a specific item instance.</param>
         /// <returns>A disposable to disable automatic persistence.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IDisposable AutoPersistCollection<TDontCare>(
             Func<TItem, IObservable<RxVoid>> doPersist,
             IObservable<TDontCare> manualSaveSignal,
@@ -136,32 +116,9 @@ public static partial class AutoPersistHelperMixins
             ArgumentExceptionHelper.ThrowIfNull(manualSaveSignal);
             ArgumentExceptionHelper.ThrowIfNull(metadataProvider);
 
-            Dictionary<TItem, IDisposable> disposerList = [];
-
-            var subscription = @this.ActOnEveryObject<TItem, TCollection>(
-                x =>
-                {
-                    if (disposerList.ContainsKey(x))
-                    {
-                        return;
-                    }
-
-                    var metadata = metadataProvider(x);
-                    disposerList[x] = x.AutoPersist(doPersist, manualSaveSignal, metadata, interval);
-                },
-                x => DisposeAndRemove(disposerList, x));
-
-            return new ActionDisposable(() =>
-            {
-                subscription.Dispose();
-
-                foreach (var kvp in disposerList)
-                {
-                    kvp.Value.Dispose();
-                }
-
-                disposerList.Clear();
-            });
+            return TrackPerItemPersistence<TItem, TCollection>(
+                @this,
+                x => x.AutoPersist(doPersist, manualSaveSignal, metadataProvider(x), interval));
         }
 
         /// <summary>Applies AutoPersistence to all objects in a collection.</summary>
@@ -171,6 +128,7 @@ public static partial class AutoPersistHelperMixins
         /// <returns>A disposable to disable automatic persistence.</returns>
         [RequiresUnreferencedCode("AutoPersist may reflect over the runtime type; prefer the AutoPersistMetadata overloads for trimming/AOT.")]
         [RequiresDynamicCode("AutoPersist may reflect over the runtime type; prefer the AutoPersistMetadata overloads for trimming/AOT.")]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IDisposable AutoPersistCollection<TDontCare>(
             Func<TItem, IObservable<RxVoid>> doPersist,
             IObservable<TDontCare> manualSaveSignal) =>
@@ -207,31 +165,9 @@ public static partial class AutoPersistHelperMixins
             ArgumentExceptionHelper.ThrowIfNull(doPersist);
             ArgumentExceptionHelper.ThrowIfNull(manualSaveSignal);
 
-            Dictionary<TItem, IDisposable> disposerList = [];
-
-            var subscription = @this.ActOnEveryObject<TItem, TCollection>(
-                x =>
-                {
-                    if (disposerList.TryGetValue(x, out _))
-                    {
-                        return;
-                    }
-
-                    disposerList[x] = x.AutoPersist(doPersist, manualSaveSignal, interval);
-                },
-                x => DisposeAndRemove(disposerList, x));
-
-            return new ActionDisposable(() =>
-            {
-                subscription.Dispose();
-
-                foreach (var kvp in disposerList)
-                {
-                    kvp.Value.Dispose();
-                }
-
-                disposerList.Clear();
-            });
+            return TrackPerItemPersistence<TItem, TCollection>(
+                @this,
+                x => x.AutoPersist(doPersist, manualSaveSignal, interval));
         }
 
         /// <summary>
@@ -299,12 +235,100 @@ public static partial class AutoPersistHelperMixins
         "Design",
         "SST2307:Generic method type parameters should be inferable from the parameters",
         Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static AutoPersistMetadata CreateMetadata<
         [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties
                                     | DynamicallyAccessedMemberTypes.NonPublicProperties)]
     T>()
         where T : IReactiveObject =>
         PersistMetadataHolder<T>.Metadata.Public;
+
+    /// <summary>
+    /// Schedules an auto-persist driver for one object onto the main thread and hands back a handle that is live
+    /// before the driver exists.
+    /// </summary>
+    /// <typeparam name="T">The reactive object type.</typeparam>
+    /// <typeparam name="TDontCare">The manual save signal type.</typeparam>
+    /// <param name="source">The object being persisted.</param>
+    /// <param name="doPersist">Runs the persist operation for the object.</param>
+    /// <param name="persistablePropertyNames">The property names whose changes trigger a save.</param>
+    /// <param name="manualSaveSignal">A signal that forces a save regardless of changes.</param>
+    /// <param name="interval">The quiet interval after which a save runs.</param>
+    /// <returns>A handle that stops persistence.</returns>
+    /// <remarks>
+    /// Disposing the handle before the scheduled start runs cancels the start outright; disposing it during the
+    /// window between the cancellation check and the assignment is absorbed by <see cref="OnceDisposable"/>, which
+    /// disposes an inner assigned after disposal. Either way no driver survives the handle.
+    /// </remarks>
+    private static OnceDisposable StartAutoPersist<T, TDontCare>(
+        T source,
+        Func<T, IObservable<RxVoid>> doPersist,
+        ISet<string> persistablePropertyNames,
+        IObservable<TDontCare> manualSaveSignal,
+        TimeSpan interval)
+        where T : IReactiveObject
+    {
+        var handle = new OnceDisposable();
+        _ = RxSchedulers.MainThreadScheduler.Schedule(
+            (handle, source, doPersist, persistablePropertyNames, manualSaveSignal, interval),
+            static (_, state) =>
+            {
+                if (state.handle.IsDisposed)
+                {
+                    return EmptyDisposable.Instance;
+                }
+
+                state.handle.Disposable = new AutoPersistDriver<T, TDontCare>(
+                    state.source,
+                    state.doPersist,
+                    state.persistablePropertyNames,
+                    state.manualSaveSignal,
+                    state.interval,
+                    RxSchedulers.TaskpoolScheduler);
+                return EmptyDisposable.Instance;
+            });
+
+        return handle;
+    }
+
+    /// <summary>Keeps one auto-persist subscription alive per collection member for as long as it is a member.</summary>
+    /// <typeparam name="TItem">The item type.</typeparam>
+    /// <typeparam name="TCollection">The collection type.</typeparam>
+    /// <param name="collection">The collection to watch.</param>
+    /// <param name="startTracking">Starts persistence for one item and returns its handle.</param>
+    /// <returns>A disposable that stops watching the collection and stops persistence for every tracked item.</returns>
+    private static ActionDisposable TrackPerItemPersistence<TItem, TCollection>(
+        TCollection collection,
+        Func<TItem, IDisposable> startTracking)
+        where TItem : IReactiveObject
+        where TCollection : INotifyCollectionChanged, IEnumerable<TItem>
+    {
+        Dictionary<TItem, IDisposable> trackers = [];
+
+        var subscription = collection.ActOnEveryObject<TItem, TCollection>(
+            x =>
+            {
+                if (trackers.ContainsKey(x))
+                {
+                    return;
+                }
+
+                trackers[x] = startTracking(x);
+            },
+            x => DisposeAndRemove(trackers, x));
+
+        return new(() =>
+        {
+            subscription.Dispose();
+
+            foreach (var kvp in trackers)
+            {
+                kvp.Value.Dispose();
+            }
+
+            trackers.Clear();
+        });
+    }
 
     /// <summary>Disposes and removes the tracked auto-persist subscription for an item that left the collection.</summary>
     /// <typeparam name="TItem">The item type.</typeparam>
@@ -384,6 +408,7 @@ public static partial class AutoPersistHelperMixins
     [RequiresDynamicCode(
         "AutoPersist reflects over the runtime type. In trimmed/AOT builds, required property/attribute metadata may be removed "
         + "unless explicitly preserved. Prefer CreateMetadata<T>() and the overloads that accept AutoPersistMetadata.")]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static PersistMetadata GetMetadataForUnknownRuntimeType(Type runtimeType) =>
         PersistMetadataByType.GetValue(runtimeType, PersistMetadata.Create);
 

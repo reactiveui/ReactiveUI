@@ -3,7 +3,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using Splat;
+using System.Diagnostics;
+using System.Runtime.CompilerServices;
 
 #if REACTIVE_SHIM
 namespace ReactiveUI.Reactive;
@@ -15,35 +16,10 @@ namespace ReactiveUI;
 public class PlatformRegistrations : IWantsToRegisterStuff
 {
     /// <inheritdoc/>
-    public void Register(IRegistrar registrar)
-    {
-        ArgumentExceptionHelper.ThrowIfNull(registrar);
-
-        registrar.RegisterConstant<IPlatformOperations>(static () => new PlatformOperations());
-        registrar.RegisterConstant<IBindingFallbackConverter>(static () => new ComponentModelFallbackConverter());
-        registrar.RegisterConstant<ICreatesObservableForProperty>(static () => new AppKitObservableForProperty());
-        registrar.RegisterConstant<ICreatesCommandBinding>(static () => new TargetActionCommandBinder());
-
-        // DateTime ↔ NSDate converters
-        registrar.RegisterConstant<IBindingTypeConverter>(static () => new DateTimeToNSDateConverter());
-        registrar.RegisterConstant<IBindingTypeConverter>(static () => new NullableDateTimeToNSDateConverter());
-        registrar.RegisterConstant<IBindingTypeConverter>(static () => new NSDateToDateTimeConverter());
-        registrar.RegisterConstant<IBindingTypeConverter>(static () => new NSDateToNullableDateTimeConverter());
-
-        // DateTimeOffset ↔ NSDate converters
-        registrar.RegisterConstant<IBindingTypeConverter>(static () => new DateTimeOffsetToNSDateConverter());
-        registrar.RegisterConstant<IBindingTypeConverter>(static () => new NullableDateTimeOffsetToNSDateConverter());
-        registrar.RegisterConstant<IBindingTypeConverter>(static () => new NSDateToDateTimeOffsetConverter());
-        registrar.RegisterConstant<IBindingTypeConverter>(static () => new NSDateToNullableDateTimeOffsetConverter());
-
-        registrar.RegisterConstant<ICreatesObservableForProperty>(static () => new KVOObservableForProperty());
-
-        if (!ModeDetector.InUnitTestRunner())
-        {
-            RxSchedulers.TaskpoolScheduler = Sequencer.Default;
-            RxSchedulers.MainThreadScheduler = NSRunloopSequencer.Main;
-        }
-
-        registrar.RegisterConstant<ISuspensionDriver>(static () => new AppSupportJsonSuspensionDriver());
-    }
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void Register(IRegistrar registrar) =>
+        ApplePlatformRegistrations.Register(
+            registrar,
+            static () => new AppKitObservableForProperty(),
+            static () => new TargetActionCommandBinder());
 }

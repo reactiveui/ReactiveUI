@@ -82,6 +82,7 @@ public static partial class AutoPersistHelperMixins
         /// <param name="doPersist">The asynchronous method to call to save the object to disk.</param>
         /// <param name="metadata">The persistence metadata that determines which properties trigger persistence.</param>
         /// <returns>A disposable to disable automatic persistence.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IDisposable AutoPersistCollection(
             Func<TItem, IObservable<RxVoid>> doPersist,
             AutoPersistMetadata metadata) =>
@@ -101,6 +102,7 @@ public static partial class AutoPersistHelperMixins
         /// <exception cref="ArgumentException">
         /// Thrown when <paramref name="metadata"/> indicates the object is not annotated with <c>[DataContract]</c>.
         /// </exception>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IDisposable AutoPersistCollection(
             Func<TItem, IObservable<RxVoid>> doPersist,
             AutoPersistMetadata metadata,
@@ -113,6 +115,7 @@ public static partial class AutoPersistHelperMixins
         /// <param name="manualSaveSignal">When invoked, the object will be saved regardless of whether it has changed.</param>
         /// <param name="metadata">The persistence metadata that determines which properties trigger persistence.</param>
         /// <returns>A disposable to disable automatic persistence.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IDisposable AutoPersistCollection<TDontCare>(
             Func<TItem, IObservable<RxVoid>> doPersist,
             IObservable<TDontCare> manualSaveSignal,
@@ -132,6 +135,7 @@ public static partial class AutoPersistHelperMixins
         /// <exception cref="ArgumentException">
         /// Thrown when <paramref name="metadata"/> indicates the object is not annotated with <c>[DataContract]</c>.
         /// </exception>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IDisposable AutoPersistCollection<TDontCare>(
             Func<TItem, IObservable<RxVoid>> doPersist,
             IObservable<TDontCare> manualSaveSignal,
@@ -149,6 +153,7 @@ public static partial class AutoPersistHelperMixins
         /// <returns>A disposable to disable automatic persistence.</returns>
         [RequiresUnreferencedCode("AutoPersist may reflect over the runtime type; prefer the AutoPersistMetadata overloads for trimming/AOT.")]
         [RequiresDynamicCode("AutoPersist may reflect over the runtime type; prefer the AutoPersistMetadata overloads for trimming/AOT.")]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IDisposable AutoPersistCollection(
             Func<TItem, IObservable<RxVoid>> doPersist) =>
             @this.AutoPersistCollection(doPersist, interval: null);
@@ -176,6 +181,7 @@ public static partial class AutoPersistHelperMixins
             "AutoPersistCollection may reflect over runtime item types via AutoPersist when generic type parameters do not match item runtime types. "
             + "In trimmed/AOT builds, required property/attribute metadata may be removed unless explicitly preserved. "
             + "Prefer the overloads that accept AutoPersistMetadata or a metadata provider to avoid runtime reflection.")]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IDisposable AutoPersistCollection(
             Func<TItem, IObservable<RxVoid>> doPersist,
             TimeSpan? interval) =>
@@ -188,6 +194,7 @@ public static partial class AutoPersistHelperMixins
         /// <returns>A disposable to disable automatic persistence.</returns>
         [RequiresUnreferencedCode("AutoPersist may reflect over the runtime type; prefer the AutoPersistMetadata overloads for trimming/AOT.")]
         [RequiresDynamicCode("AutoPersist may reflect over the runtime type; prefer the AutoPersistMetadata overloads for trimming/AOT.")]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IDisposable AutoPersistCollection<TDontCare>(
             Func<TItem, IObservable<RxVoid>> doPersist,
             IObservable<TDontCare> manualSaveSignal) =>
@@ -220,6 +227,7 @@ public static partial class AutoPersistHelperMixins
             "AutoPersistCollection may reflect over runtime item types via AutoPersist when generic type parameters do not match item runtime types. "
             + "In trimmed/AOT builds, required property/attribute metadata may be removed unless explicitly preserved. "
             + "Prefer the overloads that accept AutoPersistMetadata or a metadata provider to avoid runtime reflection.")]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IDisposable AutoPersistCollection<TDontCare>(
             Func<TItem, IObservable<RxVoid>> doPersist,
             IObservable<TDontCare> manualSaveSignal,
@@ -238,6 +246,7 @@ public static partial class AutoPersistHelperMixins
         /// <param name="onAdd">A method to be called when an object is added to the collection.</param>
         /// <param name="onRemove">A method to be called when an object is removed from the collection.</param>
         /// <returns>A disposable that deactivates this behavior.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IDisposable ActOnEveryObject(
             Action<TItem> onAdd,
             Action<TItem> onRemove) =>
@@ -256,6 +265,7 @@ public static partial class AutoPersistHelperMixins
         /// <param name="manualSaveSignal">When invoked, the object will be saved regardless of whether it has changed.</param>
         /// <param name="metadata">The persistence metadata that determines which properties trigger persistence.</param>
         /// <returns>A disposable to disable automatic persistence.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IDisposable AutoPersistCollection<TDontCare>(
             Func<TItem, IObservable<RxVoid>> doPersist,
             IObservable<TDontCare> manualSaveSignal,
@@ -275,6 +285,7 @@ public static partial class AutoPersistHelperMixins
         /// <exception cref="ArgumentException">
         /// Thrown when <paramref name="metadata"/> indicates the object is not annotated with <c>[DataContract]</c>.
         /// </exception>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IDisposable AutoPersistCollection<TDontCare>(
             Func<TItem, IObservable<RxVoid>> doPersist,
             IObservable<TDontCare> manualSaveSignal,
@@ -294,6 +305,7 @@ public static partial class AutoPersistHelperMixins
         /// <returns>A disposable to disable automatic persistence.</returns>
         [RequiresUnreferencedCode("AutoPersist may reflect over the runtime type; prefer the AutoPersistMetadata overloads for trimming/AOT.")]
         [RequiresDynamicCode("AutoPersist may reflect over the runtime type; prefer the AutoPersistMetadata overloads for trimming/AOT.")]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IDisposable AutoPersistCollection<TDontCare>(
             Func<TItem, IObservable<RxVoid>> doPersist,
             IObservable<TDontCare> manualSaveSignal) =>
@@ -326,6 +338,7 @@ public static partial class AutoPersistHelperMixins
             "AutoPersistCollection may reflect over runtime item types via AutoPersist when generic type parameters do not match item runtime types. "
             + "In trimmed/AOT builds, required property/attribute metadata may be removed unless explicitly preserved. "
             + "Prefer the overloads that accept AutoPersistMetadata or a metadata provider to avoid runtime reflection.")]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IDisposable AutoPersistCollection<TDontCare>(
             Func<TItem, IObservable<RxVoid>> doPersist,
             IObservable<TDontCare> manualSaveSignal,
@@ -344,6 +357,7 @@ public static partial class AutoPersistHelperMixins
         /// <param name="onAdd">A method to be called when an object is added to the collection.</param>
         /// <param name="onRemove">A method to be called when an object is removed from the collection.</param>
         /// <returns>A disposable that deactivates this behavior.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IDisposable ActOnEveryObject(
             Action<TItem> onAdd,
             Action<TItem> onRemove) =>
@@ -364,6 +378,7 @@ public static partial class AutoPersistHelperMixins
         /// <returns>A disposable to disable automatic persistence.</returns>
         [RequiresUnreferencedCode("AutoPersist may reflect over the runtime type; prefer the AutoPersistMetadata overloads for trimming/AOT.")]
         [RequiresDynamicCode("AutoPersist may reflect over the runtime type; prefer the AutoPersistMetadata overloads for trimming/AOT.")]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IDisposable AutoPersist(
             Func<T, IObservable<RxVoid>> doPersist) =>
             @this.AutoPersist(doPersist, interval: null);
@@ -397,6 +412,7 @@ public static partial class AutoPersistHelperMixins
         [RequiresDynamicCode(
             "AutoPersist may reflect over the runtime type when it differs from T. In trimmed/AOT builds, required property/attribute metadata "
             + "may be removed unless explicitly preserved. Prefer the overloads that accept AutoPersistMetadata to avoid runtime reflection.")]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IDisposable AutoPersist(
             Func<T, IObservable<RxVoid>> doPersist,
             TimeSpan? interval) =>
@@ -409,6 +425,7 @@ public static partial class AutoPersistHelperMixins
         /// <returns>A disposable to disable automatic persistence.</returns>
         [RequiresUnreferencedCode("AutoPersist may reflect over the runtime type; prefer the AutoPersistMetadata overloads for trimming/AOT.")]
         [RequiresDynamicCode("AutoPersist may reflect over the runtime type; prefer the AutoPersistMetadata overloads for trimming/AOT.")]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IDisposable AutoPersist<TDontCare>(
             Func<T, IObservable<RxVoid>> doPersist,
             IObservable<TDontCare> manualSaveSignal) =>
@@ -469,29 +486,12 @@ public static partial class AutoPersistHelperMixins
                 throw new ArgumentException("AutoPersist can only be applied to objects with [DataContract]");
             }
 
-            var persistablePropertyNames = metadata.PersistablePropertyNames;
-
-            var ret = new OnceDisposable();
-            _ = RxSchedulers.MainThreadScheduler.Schedule(
-                (ret, source: @this, doPersist, persistablePropertyNames, manualSaveSignal, interval: interval.Value),
-                static (_, state) =>
-                {
-                    if (state.ret.IsDisposed)
-                    {
-                        return EmptyDisposable.Instance;
-                    }
-
-                    state.ret.Disposable = new AutoPersistDriver<T, TDontCare>(
-                        state.source,
-                        state.doPersist,
-                        state.persistablePropertyNames,
-                        state.manualSaveSignal,
-                        state.interval,
-                        RxSchedulers.TaskpoolScheduler);
-                    return EmptyDisposable.Instance;
-                });
-
-            return ret;
+            return StartAutoPersist(
+                @this,
+                doPersist,
+                metadata.PersistablePropertyNames,
+                manualSaveSignal,
+                interval.Value);
         }
     }
 }

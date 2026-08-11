@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 
 namespace ReactiveUI;
@@ -31,6 +32,7 @@ namespace ReactiveUI;
 /// application startup, then looked up many times during binding operations.
 /// </para>
 /// </remarks>
+[DebuggerDisplay("BindingTypeConverterRegistry")]
 public sealed class BindingTypeConverterRegistry
 {
     /// <summary>The initial capacity used for a per-type-pair converter list.</summary>
@@ -187,12 +189,12 @@ public sealed class BindingTypeConverterRegistry
     /// Lists are cloned only when mutated (copy-on-write at the list level).
     /// </remarks>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static Dictionary<(Type fromType, Type toType), List<IBindingTypeConverter>> CloneRegistryShallow(
-        Dictionary<(Type fromType, Type toType), List<IBindingTypeConverter>> source)
+    private static Dictionary<(Type FromType, Type ToType), List<IBindingTypeConverter>> CloneRegistryShallow(
+        Dictionary<(Type FromType, Type ToType), List<IBindingTypeConverter>> source)
     {
         ArgumentExceptionHelper.ThrowIfNull(source);
 
-        Dictionary<(Type fromType, Type toType), List<IBindingTypeConverter>> clone = new(source.Count);
+        Dictionary<(Type FromType, Type ToType), List<IBindingTypeConverter>> clone = new(source.Count);
         foreach (var kvp in source)
         {
             clone[kvp.Key] = kvp.Value;
@@ -210,5 +212,5 @@ public sealed class BindingTypeConverterRegistry
     /// while writers publish a new snapshot after applying mutations.
     /// </remarks>
     private sealed record Snapshot(
-        Dictionary<(Type fromType, Type toType), List<IBindingTypeConverter>> ConvertersByTypePair);
+        Dictionary<(Type FromType, Type ToType), List<IBindingTypeConverter>> ConvertersByTypePair);
 }

@@ -79,8 +79,8 @@ internal class BindingHookEvaluator : IBindingHookEvaluator
             return shouldBind;
         }
 
-        var viewModelString = $"{nameof(TViewModel)}.{string.Join(".", viewModelExpression)}";
-        var viewString = $"{nameof(TView)}.{string.Join(".", viewExpression)}";
+        var viewModelString = $"{typeof(TViewModel).Name}.{string.Join(".", viewModelExpression)}";
+        var viewString = $"{typeof(TView).Name}.{string.Join(".", viewExpression)}";
         LogHost.Default.Warn($"Binding hook asked to disable binding {viewModelString} => {viewString}");
 
         return shouldBind;

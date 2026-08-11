@@ -16,8 +16,8 @@ public sealed class SubcribeTestViewModel : IDisposable
     /// <summary>Holds the created subscribers so they can be disposed.</summary>
     private readonly List<BasicViewModel> _cache = [];
 
-    /// <summary>Tracks whether the instance has been disposed.</summary>
-    private bool _disposedValue;
+    /// <summary>Tracks whether the instance has been disposed; non-zero once disposal has started.</summary>
+    private int _disposedValue;
 
     /// <summary>Initializes a new instance of the <see cref="SubcribeTestViewModel" /> class.</summary>
     /// <param name="count">The count.</param>
@@ -53,7 +53,7 @@ public sealed class SubcribeTestViewModel : IDisposable
     /// <inheritdoc/>
     public void Dispose()
     {
-        if (_disposedValue)
+        if (Interlocked.Exchange(ref _disposedValue, 1) != 0)
         {
             return;
         }
@@ -62,8 +62,6 @@ public sealed class SubcribeTestViewModel : IDisposable
         {
             item.Dispose();
         }
-
-        _disposedValue = true;
     }
 
     /// <summary>A simple subscriber that records values from the supplied observable.</summary>
@@ -73,19 +71,18 @@ public sealed class SubcribeTestViewModel : IDisposable
         /// <summary>The subscription to the observable.</summary>
         private readonly IDisposable _subscription = observable.Subscribe(_items.Add);
 
-        /// <summary>Tracks whether the instance has been disposed.</summary>
-        private bool _disposedValue;
+        /// <summary>Tracks whether the instance has been disposed; non-zero once disposal has started.</summary>
+        private int _disposedValue;
 
         /// <inheritdoc/>
         public void Dispose()
         {
-            if (_disposedValue)
+            if (Interlocked.Exchange(ref _disposedValue, 1) != 0)
             {
                 return;
             }
 
             _subscription.Dispose();
-            _disposedValue = true;
         }
     }
 }

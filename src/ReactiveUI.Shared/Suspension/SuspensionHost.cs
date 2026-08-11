@@ -154,10 +154,10 @@ internal class SuspensionHost : ReactiveObject, ISuspensionHost, IDisposable
     }
 
     /// <summary>Releases the unmanaged resources used by the object and optionally releases the managed resources.</summary>
+    /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
     /// <remarks>This method is called by public Dispose methods and finalizers to free resources. When
     /// disposing is true, this method releases all resources held by managed objects. Override this method to release
     /// additional resources in derived classes.</remarks>
-    /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
     protected virtual void Dispose(bool disposing)
     {
         if (!disposing)

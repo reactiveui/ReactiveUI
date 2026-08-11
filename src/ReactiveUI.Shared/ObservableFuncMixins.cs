@@ -5,6 +5,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 using ReactiveUI.Primitives.Disposables;
 
 #if REACTIVE_SHIM
@@ -29,6 +30,7 @@ public static class ObservableFuncMixins
         /// <param name="source">The view model.</param>
         /// <returns>An observable sequence of property values.</returns>
         [RequiresUnreferencedCode("Dynamic observation uses reflection over members that may be trimmed.")]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IObservable<TResult?> ToObservable(
             TSource? source) =>
             expression.ToObservable(source, false, false);
@@ -38,6 +40,7 @@ public static class ObservableFuncMixins
         /// <param name="beforeChange">If true, emits the value before the property changes rather than after.</param>
         /// <returns>An observable sequence of property values.</returns>
         [RequiresUnreferencedCode("Dynamic observation uses reflection over members that may be trimmed.")]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IObservable<TResult?> ToObservable(
             TSource? source,
             bool beforeChange) =>
@@ -134,6 +137,7 @@ public static class ObservableFuncMixins
             }
 
             /// <inheritdoc/>
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public void OnCompleted() => downstream.OnCompleted();
 
             /// <inheritdoc/>

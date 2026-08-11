@@ -13,6 +13,7 @@ public class FooViewModel : ReactiveObject
 
     /// <summary>Initializes a new instance of the <see cref="FooViewModel" /> class.</summary>
     /// <param name="foo">The foo model.</param>
+    /// <exception cref="ArgumentNullException"><paramref name="foo" /> is null.</exception>
     public FooViewModel(Foo foo)
     {
         Foo = foo ?? throw new ArgumentNullException(nameof(foo));

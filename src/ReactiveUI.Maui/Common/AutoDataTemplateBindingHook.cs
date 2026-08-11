@@ -3,7 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 #if WINUI_TARGET
-using Microsoft.UI.Xaml.Controls;
+using System.Diagnostics;
 using Microsoft.UI.Xaml.Markup;
 
 // Alias rather than import Microsoft.UI.Xaml: the Maui-windows TFM also imports Microsoft.Maui.Controls implicitly,
@@ -21,19 +21,30 @@ namespace ReactiveUI;
 /// that don't have DataTemplates, and assigns a default DataTemplate that
 /// loads the View associated with each ViewModel.
 /// </summary>
+[DebuggerDisplay("AutoDataTemplateBindingHook")]
 public class AutoDataTemplateBindingHook : IPropertyBindingHook
 {
     /// <summary>Gets the default item template.</summary>
     public static Lazy<DataTemplate> DefaultItemTemplate { get; } = new(static () =>
     {
-        const string template = "<DataTemplate xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation' "
-                 + "xmlns:xaml='clr-namespace:ReactiveUI'>"
+        // WinUI's XAML parser only understands the 'using:' prefix; 'clr-namespace:' is WPF-only and makes
+        // XamlReader.Load throw XamlParseException for an unknown namespace. The namespace must also match the
+        // one this type is actually compiled into: under REACTIVE_SHIM the shared source is recompiled into
+        // ReactiveUI.Reactive (see the conditional namespace above), so the XAML has to follow it. This is the
+        // WinUI counterpart of the WPF fix in issue #4398.
+#if REACTIVE_SHIM
+        const string XamlNamespace = "using:ReactiveUI.Reactive";
+#else
+        const string XamlNamespace = "using:ReactiveUI";
+#endif
+        const string Template = "<DataTemplate xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation' "
+                 + $"xmlns:xaml='{XamlNamespace}'>"
              + "<xaml:ViewModelViewHost ViewModel=\"{Binding Mode=OneWay}\" "
              + "VerticalContentAlignment=\"Stretch\" HorizontalContentAlignment=\"Stretch\" "
              + "IsTabStop=\"False\" />"
          + "</DataTemplate>";
 
-        return (DataTemplate)XamlReader.Load(template);
+        return (DataTemplate)XamlReader.Load(Template);
     });
 
     /// <inheritdoc/>
@@ -44,32 +55,7 @@ public class AutoDataTemplateBindingHook : IPropertyBindingHook
         Func<IObservedChange<object, object>[]> getCurrentViewProperties,
         BindingDirection direction)
     {
-        ArgumentNullException.ThrowIfNull(getCurrentViewProperties);
-
-        var viewProperties = getCurrentViewProperties();
-        var lastViewProperty = viewProperties.Length > 0 ? viewProperties[^1] : null;
-
-        if (lastViewProperty?.Sender is not ItemsControl itemsControl)
-        {
-            return true;
-        }
-
-        if (!string.IsNullOrEmpty(itemsControl.DisplayMemberPath))
-        {
-            return true;
-        }
-
-        if (viewProperties[^1].GetPropertyName() != "ItemsSource")
-        {
-            return true;
-        }
-
-        if (itemsControl.ItemTemplate is not null)
-        {
-            return true;
-        }
-
-        if (itemsControl.ItemTemplateSelector is not null)
+        if (ItemsControlTemplateBinding.FindDefaultTemplateTarget(getCurrentViewProperties) is not { } itemsControl)
         {
             return true;
         }

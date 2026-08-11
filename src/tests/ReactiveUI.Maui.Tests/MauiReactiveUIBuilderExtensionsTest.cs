@@ -33,9 +33,7 @@ public class MauiReactiveUIBuilderExtensionsTest
     {
         // The MauiTestExecutor installs a TestDispatcherProvider whose GetForCurrentThread() returns a dispatcher,
         // so the property takes the dispatcher.ToSequencer() branch instead of falling back to Sequencer.Default.
-        var scheduler = MauiReactiveUIBuilderExtensions.MauiMainThreadScheduler;
-
-        await Assert.That(scheduler.GetType().Name).IsEqualTo(MauiDispatcherSequencerTypeName);
+        await Assert.That(MauiReactiveUIBuilderExtensions.MauiMainThreadScheduler.GetType().Name).IsEqualTo(MauiDispatcherSequencerTypeName);
     }
 
     /// <summary>Tests that WithMauiScheduler (no dispatcher) resolves the MAUI main-thread scheduler when not in a unit test runner.</summary>

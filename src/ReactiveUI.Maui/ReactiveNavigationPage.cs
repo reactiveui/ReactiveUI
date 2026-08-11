@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Maui.Controls;
 
@@ -15,6 +16,7 @@ namespace ReactiveUI.Maui;
 /// <summary>This is an <see cref="NavigationPage"/> that is also an <see cref="IViewFor{T}"/>.</summary>
 /// <typeparam name="TViewModel">The type of the view model.</typeparam>
 /// <seealso cref="IViewFor{TViewModel}" />
+[DebuggerDisplay("{ViewModel}")]
 public class ReactiveNavigationPage<
     [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes
         .PublicParameterlessConstructor)]

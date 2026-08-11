@@ -35,19 +35,19 @@ public class WpfCommandBindingImplementationTests
     public enum NullBindingCase
     {
         /// <summary>An explicit-event binding with no target.</summary>
-        ExplicitEventNullTarget,
+        ExplicitEventNullTarget = 0,
 
         /// <summary>A default-event binding with no target.</summary>
-        DefaultEventNullTarget,
+        DefaultEventNullTarget = 1,
 
         /// <summary>An explicit-event binding with no event name.</summary>
-        NullEventName,
+        NullEventName = 2,
 
         /// <summary>An explicit-event binding with no command.</summary>
-        ExplicitEventNullCommand,
+        ExplicitEventNullCommand = 3,
 
         /// <summary>A default-event binding with no command.</summary>
-        DefaultEventNullCommand
+        DefaultEventNullCommand = 4,
     }
 
     /// <summary>Commands the bind to explicit event wireup.</summary>
@@ -214,9 +214,9 @@ public class WpfCommandBindingImplementationTests
         var view = new FakeXamlCommandBindingView { ViewModel = vm };
 
         await Assert.That(testLogger.Messages.Exists(t =>
-                t.message.Contains(nameof(POCOObservableForProperty), StringComparison.Ordinal)
-                && t.message.Contains(view.NameOfButtonDeclaredInXaml, StringComparison.Ordinal)
-                && t.logLevel == LogLevel.Warn)).IsFalse();
+                t.Message.Contains(nameof(POCOObservableForProperty), StringComparison.Ordinal)
+                && t.Message.Contains(view.NameOfButtonDeclaredInXaml, StringComparison.Ordinal)
+                && t.LogLevel == LogLevel.Warn)).IsFalse();
     }
 
     /// <summary>Verifies that an overwritten view model is garbage collected after a command binding.</summary>

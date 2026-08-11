@@ -30,7 +30,7 @@ public partial class SuspensionHostExtensionsAotTests
             },
             IsLaunchingNew = Signal.Silent<RxVoid>(),
             IsResuming = Signal.Silent<RxVoid>(),
-            ShouldInvalidateState = Signal.Silent<RxVoid>()
+            ShouldInvalidateState = Signal.Silent<RxVoid>(),
         };
 
         var driver = new TestSuspensionDriver<TestAppState> { StateToLoad = loadedState };
@@ -66,7 +66,7 @@ public partial class SuspensionHostExtensionsAotTests
             AppStateValue = appState,
             IsLaunchingNew = Signal.Silent<RxVoid>(),
             IsResuming = Signal.Silent<RxVoid>(),
-            ShouldInvalidateState = Signal.Silent<RxVoid>()
+            ShouldInvalidateState = Signal.Silent<RxVoid>(),
         };
 
         var driver = new TestSuspensionDriver<TestAppState>();
@@ -109,7 +109,7 @@ public partial class SuspensionHostExtensionsAotTests
         {
             CreateNewAppStateTyped = static () => new(),
             ShouldPersistState = Signal.Silent<IDisposable>(),
-            ShouldInvalidateState = Signal.Silent<RxVoid>()
+            ShouldInvalidateState = Signal.Silent<RxVoid>(),
         };
 
         var driver = new TestSuspensionDriver<TestAppState> { StateToLoad = new() { Value = LoadedStateValue } };
@@ -138,7 +138,7 @@ public partial class SuspensionHostExtensionsAotTests
             IsLaunchingNew = Signal.Silent<RxVoid>(),
             IsResuming = Signal.Silent<RxVoid>(),
             ShouldPersistState = Signal.Silent<IDisposable>(),
-            ShouldInvalidateState = Signal.Silent<RxVoid>()
+            ShouldInvalidateState = Signal.Silent<RxVoid>(),
         };
 
         var previousDrivers = Splat.Locator.Current.GetServices<ISuspensionDriver>().ToList();
@@ -170,7 +170,7 @@ public partial class SuspensionHostExtensionsAotTests
             IsLaunchingNew = Signal.Silent<RxVoid>(),
             IsResuming = Signal.Silent<RxVoid>(),
             ShouldPersistState = Signal.Silent<IDisposable>(),
-            ShouldInvalidateState = Signal.Silent<RxVoid>()
+            ShouldInvalidateState = Signal.Silent<RxVoid>(),
         };
 
         var driver = new TestSuspensionDriver<TestAppState>();
@@ -194,7 +194,7 @@ public partial class SuspensionHostExtensionsAotTests
             IsLaunchingNew = Signal.Silent<RxVoid>(),
             IsResuming = Signal.Silent<RxVoid>(),
             ShouldPersistState = Signal.Silent<IDisposable>(),
-            ShouldInvalidateState = Signal.Silent<RxVoid>()
+            ShouldInvalidateState = Signal.Silent<RxVoid>(),
         };
 
         var driver = new TestSuspensionDriver<TestAppState> { ShouldThrowOnLoad = true };
@@ -219,7 +219,7 @@ public partial class SuspensionHostExtensionsAotTests
             IsLaunchingNew = Signal.Silent<RxVoid>(),
             IsResuming = Signal.Silent<RxVoid>(),
             ShouldPersistState = Signal.Silent<IDisposable>(),
-            ShouldInvalidateState = Signal.Silent<RxVoid>()
+            ShouldInvalidateState = Signal.Silent<RxVoid>(),
         };
 
         var driver = new TestSuspensionDriver<TestAppState> { ShouldThrowOnLoad = true };
@@ -242,7 +242,7 @@ public partial class SuspensionHostExtensionsAotTests
             IsLaunchingNew = Signal.Silent<RxVoid>(),
             IsResuming = Signal.Silent<RxVoid>(),
             ShouldPersistState = Signal.Silent<IDisposable>(),
-            ShouldInvalidateState = Signal.Silent<RxVoid>()
+            ShouldInvalidateState = Signal.Silent<RxVoid>(),
         };
 
         var driver = new TestSuspensionDriver<TestAppState> { StateToLoad = new() { Value = SampleStateValue } };
@@ -279,7 +279,7 @@ public partial class SuspensionHostExtensionsAotTests
             IsLaunchingNew = Signal.Silent<RxVoid>(),
             IsResuming = Signal.Silent<RxVoid>(),
             ShouldPersistState = Signal.Silent<IDisposable>(),
-            ShouldInvalidateState = Signal.Silent<RxVoid>()
+            ShouldInvalidateState = Signal.Silent<RxVoid>(),
         };
 
         var driver = new TestSuspensionDriver<TestAppState> { StateToLoad = new() { Value = SampleStateValue } };

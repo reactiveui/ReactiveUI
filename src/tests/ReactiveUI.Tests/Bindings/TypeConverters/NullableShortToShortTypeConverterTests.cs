@@ -25,9 +25,8 @@ public class NullableShortToShortTypeConverterTests
     {
         var converter = new NullableShortToShortTypeConverter();
         const short Value = 1_234;
-        short? value = Value;
 
-        var result = converter.TryConvert(value, null, out var output);
+        var result = converter.TryConvert(Value, null, out var output);
 
         await Assert.That(result).IsTrue();
         await Assert.That(output).IsEqualTo(Value);
@@ -39,9 +38,8 @@ public class NullableShortToShortTypeConverterTests
     public async Task TryConvert_Null_ReturnsFalse()
     {
         var converter = new NullableShortToShortTypeConverter();
-        short? value = null;
 
-        var result = converter.TryConvert(value, null, out _);
+        var result = converter.TryConvert(null, null, out _);
 
         await Assert.That(result).IsFalse();
     }
@@ -71,9 +69,8 @@ public class NullableShortToShortTypeConverterTests
     {
         var converter = new NullableShortToShortTypeConverter();
         const short Value = 42;
-        short? value = Value;
 
-        var success = converter.TryConvertTyped(value, null, out var result);
+        var success = converter.TryConvertTyped(Value, null, out var result);
 
         await Assert.That(success).IsTrue();
         await Assert.That(result).IsEqualTo(Value);

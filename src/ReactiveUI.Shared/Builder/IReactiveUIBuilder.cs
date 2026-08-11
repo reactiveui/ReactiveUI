@@ -121,12 +121,12 @@ public interface IReactiveUIBuilder : IAppBuilder
         where TViewModel : class, IReactiveObject, new();
 
     /// <summary>Registers a constant instance of the specified view model type for use in the reactive UI builder.</summary>
-    /// <remarks>The registered view model instance is created once using its parameterless constructor and
-    /// reused for all requests. Use this method when the view model does not require per-request state or
-    /// dependencies.</remarks>
     /// <typeparam name="TViewModel">The type of the view model to register. Must be a reference type that implements IReactiveObject and has a
     /// parameterless constructor.</typeparam>
     /// <returns>The current instance of the reactive UI builder, enabling method chaining.</returns>
+    /// <remarks>The registered view model instance is created once using its parameterless constructor and
+    /// reused for all requests. Use this method when the view model does not require per-request state or
+    /// dependencies.</remarks>
     IReactiveUIBuilder RegisterConstantViewModel<TViewModel>()
         where TViewModel : class, IReactiveObject, new();
 

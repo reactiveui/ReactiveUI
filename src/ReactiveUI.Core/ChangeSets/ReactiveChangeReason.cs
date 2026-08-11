@@ -12,17 +12,17 @@ namespace ReactiveUI;
 public enum ReactiveChangeReason
 {
     /// <summary>An item was added to the collection.</summary>
-    Add,
+    Add = 0,
 
     /// <summary>An item was removed from the collection (a reset is reported as one remove per prior item).</summary>
-    Remove,
+    Remove = 1,
 
     /// <summary>An item replaced an existing item at the same index.</summary>
-    Replace,
+    Replace = 2,
 
     /// <summary>An item moved from one index to another (count is unchanged).</summary>
-    Move,
+    Move = 3,
 
     /// <summary>An item signalled that it should be re-evaluated without being added or removed.</summary>
-    Refresh,
+    Refresh = 4,
 }

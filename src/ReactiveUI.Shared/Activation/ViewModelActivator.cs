@@ -3,6 +3,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using ReactiveUI.Primitives.Disposables;
 
 #if REACTIVE_SHIM
@@ -37,6 +39,7 @@ namespace ReactiveUI;
 /// ViewModel Activation.
 /// </para>
 /// </summary>
+[DebuggerDisplay("{Activated}, {Deactivated}")]
 public sealed class ViewModelActivator : IDisposable
 {
     /// <summary>List of registered activation blocks run when the view model is activated.</summary>
@@ -106,6 +109,7 @@ public sealed class ViewModelActivator : IDisposable
     /// This method is called by the framework when the corresponding View
     /// is deactivated. Respects the activation reference count.
     /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Deactivate() => Deactivate(false);
 
     /// <summary>This method is called by the framework when the corresponding View is deactivated.</summary>
@@ -156,5 +160,6 @@ public sealed class ViewModelActivator : IDisposable
 
     /// <summary>Adds a action blocks to the list of registered blocks. These will called on activation, then disposed on deactivation.</summary>
     /// <param name="block">The block to add.</param>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal void AddActivationBlock(Func<IEnumerable<IDisposable>> block) => _blocks.Add(block);
 }

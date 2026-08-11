@@ -4,6 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using Android.Views;
 #if REACTIVE_SHIM
 using static ReactiveUI.Reactive.ControlFetcherMixins;
@@ -36,12 +37,17 @@ public static class ControlFetcherMixins
         [RequiresUnreferencedCode(
             "Android resource discovery uses reflection over generated resource types that may be trimmed.")]
         [RequiresDynamicCode("Android resource discovery uses reflection that may require dynamic code generation.")]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WireUpControls(View inflatedView) =>
             fragment.WireUpControls(inflatedView, ResolveStrategy.Implicit);
 
         /// <summary>Wires a control to a property. This should be called in the Fragment's OnCreateView, with the newly inflated layout.</summary>
         /// <param name="inflatedView">The inflated view.</param>
         /// <param name="resolveMembers">The resolve members.</param>
+        /// <exception cref="MissingFieldException">
+        /// Thrown when a member selected for wire-up cannot be resolved to a view in <paramref name="inflatedView"/>
+        /// carrying the matching resource identifier.
+        /// </exception>
         [RequiresUnreferencedCode(
             "Android resource discovery uses reflection over generated resource types that may be trimmed.")]
         [RequiresDynamicCode("Android resource discovery uses reflection that may require dynamic code generation.")]

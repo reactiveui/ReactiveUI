@@ -151,8 +151,7 @@ public class ReactiveUIBuilderRxAppMigrationTests
         await Assert.That(WithAllMigrationMethodsExecutor.CapturedEx).IsEqualTo(testException);
 
         // Verify suspension host
-        var host = RxSuspension.SuspensionHost;
-        await Assert.That(host).IsTypeOf<SuspensionHost<TestAppState>>();
+        await Assert.That(RxSuspension.SuspensionHost).IsTypeOf<SuspensionHost<TestAppState>>();
 
         // Verify cache sizes
         await Assert.That(RxCacheSize.SmallCacheLimit).IsEqualTo(ChainedSmallCacheSize);
@@ -162,20 +161,14 @@ public class ReactiveUIBuilderRxAppMigrationTests
     /// <summary>Verifies that the default exception handler is not null.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
-    public async Task RxSchedulers_DefaultExceptionHandler_Should_Not_Be_Null()
-    {
-        var handler = RxState.DefaultExceptionHandler;
-        await Assert.That(handler).IsNotNull();
-    }
+    public async Task RxSchedulers_DefaultExceptionHandler_Should_Not_Be_Null() =>
+        await Assert.That(RxState.DefaultExceptionHandler).IsNotNull();
 
     /// <summary>Verifies that the suspension host is not null.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
-    public async Task RxSchedulers_SuspensionHost_Should_Not_Be_Null()
-    {
-        var host = RxSuspension.SuspensionHost;
-        await Assert.That(host).IsNotNull();
-    }
+    public async Task RxSchedulers_SuspensionHost_Should_Not_Be_Null() =>
+        await Assert.That(RxSuspension.SuspensionHost).IsNotNull();
 
     /// <summary>Verifies that the last exception handler wins when set multiple times.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
@@ -204,11 +197,8 @@ public class ReactiveUIBuilderRxAppMigrationTests
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     [TestExecutor<WithSuspensionHostOverrideExecutor>]
-    public async Task WithSuspensionHost_Generic_Overrides_NonGeneric()
-    {
-        var host = RxSuspension.SuspensionHost;
-        await Assert.That(host).IsTypeOf<SuspensionHost<TestAppState>>();
-    }
+    public async Task WithSuspensionHost_Generic_Overrides_NonGeneric() =>
+        await Assert.That(RxSuspension.SuspensionHost).IsTypeOf<SuspensionHost<TestAppState>>();
 
     /// <summary>Executor that resets RxApp migration-related static state before and after each test.</summary>
     internal class RxAppMigrationTestExecutor : BuilderTestExecutorBase

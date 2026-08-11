@@ -13,7 +13,7 @@ public sealed class TestFixtureBuilderExtensionTests
 
     /// <summary>Gets the data.</summary>
     /// <returns>The data.</returns>
-    public static IEnumerable<(string test1, string test2, string test3)> Data()
+    public static IEnumerable<(string Test1, string Test2, string Test3)> Data()
     {
         yield return (TestingValue, string.Empty, string.Empty);
         yield return (TestingValue, TestingValue, string.Empty);
@@ -23,7 +23,7 @@ public sealed class TestFixtureBuilderExtensionTests
 
     /// <summary>Gets the key values.</summary>
     /// <returns>The key values.</returns>
-    public static IEnumerable<(string key, string value)> KeyValues()
+    public static IEnumerable<(string Key, string Value)> KeyValues()
     {
         yield return (TestingValue, string.Empty);
         yield return (TestingValue, "one");

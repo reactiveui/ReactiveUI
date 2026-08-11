@@ -43,8 +43,7 @@ public class ComprehensiveAOTMarkupTests
     [Test]
     public async Task ReactiveProperty_Refresh_WorksWithAOTSuppression()
     {
-        var scheduler = Sequencer.CurrentThread;
-        var property = new ReactiveProperty<string>(InitialValue, scheduler, false, false);
+        var property = new ReactiveProperty<string>(InitialValue, Sequencer.CurrentThread, false, false);
         var values = new List<string>();
 
         _ = property.Subscribe(value => values.Add(value ?? string.Empty));
@@ -68,8 +67,7 @@ public class ComprehensiveAOTMarkupTests
         // This test validates that platform-specific code has AOT attributes
         // We can't directly test Android code in this context, but we can verify
         // that the patterns we expect are working
-        var testScheduler = Sequencer.CurrentThread;
-        var property = new ReactiveProperty<string>("test", testScheduler, false, false);
+        var property = new ReactiveProperty<string>("test", Sequencer.CurrentThread, false, false);
 
         // Test that basic ReactiveUI functionality works
         await Assert.That(property.Value).IsEqualTo("test");
@@ -82,8 +80,7 @@ public class ComprehensiveAOTMarkupTests
     [Test]
     public async Task ReactiveProperty_ComprehensiveOperations_WorkWithAOT()
     {
-        var scheduler = Sequencer.CurrentThread;
-        var property = new ReactiveProperty<string>(InitialValue, scheduler, false, false);
+        var property = new ReactiveProperty<string>(InitialValue, Sequencer.CurrentThread, false, false);
 
         // Test basic operations
         var valueChanges = new List<string>();
@@ -266,8 +263,7 @@ public class ComprehensiveAOTMarkupTests
     [Test]
     public async Task ErrorHandling_AOTScenarios_WorkCorrectly()
     {
-        var scheduler = Sequencer.CurrentThread;
-        var property = new ReactiveProperty<string>("test", scheduler, false, false);
+        var property = new ReactiveProperty<string>("test", Sequencer.CurrentThread, false, false);
         var errors = new List<Exception>();
 
         // Subscribe to thrown exceptions (tests ReactiveObject error handling)

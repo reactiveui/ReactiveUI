@@ -219,7 +219,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
             { static x => x.Child!.IsOnlyOneWord!.Length, [ChildName, IsOnlyOneWordName, "Length"] },
             { static x => x.SomeOtherParam, ["SomeOtherParam"] },
             { static x => x.Child!.IsNotNullString!, [ChildName, "IsNotNullString"] },
-            { static x => x.Child!.Changed, [ChildName, ChangedText] }
+            { static x => x.Child!.Changed, [ChildName, ChangedText] },
         };
 
         var dataTypes = new Dictionary<Expression<Func<HostTestFixture, object>>, string[]>
@@ -238,28 +238,28 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
                     typeof(TestFixture).FullName!,
                     typeof(IObservable<IReactivePropertyChangedEventArgs<IReactiveObject>>).FullName!
                 ]
-            }
+            },
         };
 
-        var results = data.Keys.Select(static x => (input: x, output: Reflection.Rewrite(x.Body).GetExpressionChain())).ToArray();
+        var results = data.Keys.Select(static x => (Input: x, Output: Reflection.Rewrite(x.Body).GetExpressionChain())).ToArray();
 
         var resultTypes = dataTypes.Keys.Select(static x =>
-                    (input: x, output: Reflection.Rewrite(x.Body).GetExpressionChain())).ToArray();
+                    (Input: x, Output: Reflection.Rewrite(x.Body).GetExpressionChain())).ToArray();
 
         foreach (var x in results)
         {
-            var names = x.output.Select(static y =>
+            var names = x.Output.Select(static y =>
                 y.GetMemberInfo()?.Name
                 ?? throw new InvalidOperationException("propertyName should not be null.")).ToArray();
 
-            await Assert.That(names).IsEquivalentTo(data[x.input], CollectionOrdering.Matching);
+            await Assert.That(names).IsEquivalentTo(data[x.Input], CollectionOrdering.Matching);
         }
 
         foreach (var x in resultTypes)
         {
-            var types = x.output.Select(static y => y.Type.FullName!).ToArray();
+            var types = x.Output.Select(static y => y.Type.FullName!).ToArray();
 
-            await Assert.That(types).IsEquivalentTo(dataTypes[x.input], CollectionOrdering.Matching);
+            await Assert.That(types).IsEquivalentTo(dataTypes[x.Input], CollectionOrdering.Matching);
         }
     }
 

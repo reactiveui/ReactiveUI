@@ -15,6 +15,7 @@ namespace ReactiveUI.AndroidX;
 /// (i.e. you can call RaiseAndSetIfChanged).
 /// </summary>
 /// <typeparam name="TViewModel">The view model type.</typeparam>
+[System.Diagnostics.DebuggerDisplay("{ViewModel}")]
 public abstract class ReactivePreferenceFragment<TViewModel> : ReactivePreferenceFragment, IViewFor<TViewModel>,
     ICanActivate
     where TViewModel : class

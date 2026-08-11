@@ -45,6 +45,8 @@
   <ItemGroup>
     <Compile Include="..\Shared\ArgumentValidation.cs" Link="Shared\ArgumentValidation.cs"/>
     <Compile Include="..\Shared\DelegateObserver.cs" Link="Shared\DelegateObserver.cs"/>
+    <Compile Include="..\Shared\TaskObserverBridge.cs" Link="Shared\TaskObserverBridge.cs"/>
+    <Compile Include="..\Shared\ActivationSignals.cs" Link="Shared\ActivationSignals.cs"/>
   </ItemGroup>
   <!-- Shared source carries no per-file usings for the namespaces it shifts between leaves; the lean leaf
        imports them globally here (unshifted). The .Reactive leaf imports the shifted forms (Directory.Build.props). -->
@@ -85,12 +87,14 @@
   <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios' or $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst' or $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'macos' or $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tvos'">
     <Compile Include="..\Shared\Platform\FromEventObservable.cs" Link="Shared\Platform\FromEventObservable.cs"/>
     <Compile Include="..\Shared\Platform\EventPatternObservable.cs" Link="Shared\Platform\EventPatternObservable.cs"/>
+    <Compile Include="..\Shared\Platform\ObservedChangeEventObservable.cs" Link="Shared\Platform\ObservedChangeEventObservable.cs"/>
   </ItemGroup>
   <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
     <Compile Include="Platforms\android\**\*.cs"/>
     <Compile Include="Platforms\mobile-common\**\*.cs"/>
-    <!-- Android reuses the platform-lib-only fused sink from Shared\Platform (excluded from the core compile above). -->
+    <!-- Android reuses the platform-lib-only fused sinks from Shared\Platform (excluded from the core compile above). -->
     <Compile Include="..\Shared\Platform\EventPatternObservable.cs" Link="Shared\Platform\EventPatternObservable.cs"/>
+    <Compile Include="..\Shared\Platform\ObservedChangeEventObservable.cs" Link="Shared\Platform\ObservedChangeEventObservable.cs"/>
   </ItemGroup>
   <ItemGroup Condition=" $(TargetFramework.StartsWith('net4')) or '$(TargetFramework)' == 'net11.0' or '$(TargetFramework)' == 'net10.0' or '$(TargetFramework)' == 'net9.0' or '$(TargetFramework)' == 'net8.0' or $(TargetFramework.EndsWith('-windows10.0.17763.0')) or $(TargetFramework.EndsWith('-windows10.0.19041.0')) ">
     <Compile Include="Platforms\net\**\*.cs"/>

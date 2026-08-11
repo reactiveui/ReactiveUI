@@ -3,6 +3,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using BenchmarkDotNet.Attributes;
 
 namespace ReactiveUI.Benchmarks;
@@ -10,6 +12,7 @@ namespace ReactiveUI.Benchmarks;
 /// <summary>Benchmarks <see cref="MessageBus"/> throughput: sending messages to a live listener and cold listener subscription.</summary>
 [MemoryDiagnoser]
 [MarkdownExporterAttribute.GitHub]
+[DebuggerDisplay("MessageBusBenchmarks")]
 public class MessageBusBenchmarks
 {
     /// <summary>The number of messages sent per benchmark invocation.</summary>
@@ -34,6 +37,7 @@ public class MessageBusBenchmarks
 
     /// <summary>Disposes the standing listener.</summary>
     [GlobalCleanup]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Cleanup() => _subscription.Dispose();
 
     /// <summary>Measures repeated message delivery to the standing listener.</summary>

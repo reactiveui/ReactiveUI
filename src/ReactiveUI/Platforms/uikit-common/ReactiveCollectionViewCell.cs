@@ -4,6 +4,8 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.ComponentModel;
+using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using CoreGraphics;
 using Foundation;
 using UIKit;
@@ -17,6 +19,7 @@ namespace ReactiveUI;
 /// This is a UICollectionViewCell that is both an UICollectionViewCell and has ReactiveObject powers
 /// (i.e. you can call RaiseAndSetIfChanged).
 /// </summary>
+[DebuggerDisplay("{Activated}, {Deactivated}")]
 public class ReactiveCollectionViewCell : UICollectionViewCell, IReactiveNotifyPropertyChanged<ReactiveCollectionViewCell>, IHandleObservableErrors, IReactiveObject, ICanActivate
 {
     /// <summary>The subject used to signal view activation.</summary>
@@ -80,9 +83,11 @@ public class ReactiveCollectionViewCell : UICollectionViewCell, IReactiveNotifyP
     public IObservable<RxVoid> Deactivated => _deactivated;
 
     /// <inheritdoc/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args) => PropertyChanging?.Invoke(this, args);
 
     /// <inheritdoc/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args) => PropertyChanged?.Invoke(this, args);
 
     /// <summary>
@@ -92,6 +97,7 @@ public class ReactiveCollectionViewCell : UICollectionViewCell, IReactiveNotifyP
     /// </summary>
     /// <returns>An object that, when disposed, reenables change
     /// notifications.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public IDisposable SuppressChangeNotifications() => IReactiveObjectExtensions.SuppressChangeNotifications(this);
 
     /// <inheritdoc/>
@@ -104,12 +110,7 @@ public class ReactiveCollectionViewCell : UICollectionViewCell, IReactiveNotifyP
     /// <inheritdoc/>
     protected override void Dispose(bool disposing)
     {
-        if (disposing)
-        {
-            _activated?.Dispose();
-            _deactivated?.Dispose();
-        }
-
+        ActivationSignals.DisposeWhen(disposing, _activated, _deactivated);
         base.Dispose(disposing);
     }
 }

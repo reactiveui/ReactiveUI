@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>$(ReactiveUIAndroidTargets)</TargetFrameworks>
     <PackageDescription>Provides ReactiveUI extensions for .NET Android applications using AndroidX libraries</PackageDescription>
@@ -15,6 +15,7 @@
     <!-- Multicast subjects come from the ReactiveUI.Primitives package (Signal&lt;T&gt;), reached via the ReactiveUI ref. DelegateObserver is internal and used by ChangeSetBinder. -->
     <Compile Include="..\Shared\ArgumentValidation.cs" Link="Shared\ArgumentValidation.cs"/>
     <Compile Include="..\Shared\DelegateObserver.cs" Link="Shared\DelegateObserver.cs"/>
+    <Compile Include="..\Shared\ActivationSignals.cs" Link="Shared\ActivationSignals.cs"/>
     <Compile Include="..\Shared\Platform\FromEventObservable.cs" Link="Shared\Platform\FromEventObservable.cs"/>
     <Compile Include="..\Shared\Platform\ChangeSetBinder.cs" Link="Shared\Platform\ChangeSetBinder.cs"/>
   </ItemGroup>

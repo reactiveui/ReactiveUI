@@ -3,6 +3,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Runtime.CompilerServices;
+
 #if REACTIVE_SHIM
 namespace ReactiveUI.Reactive.Blend;
 #else
@@ -10,12 +12,12 @@ namespace ReactiveUI.Blend;
 #endif
 
 /// <summary>Subscribes to a source observable and marshals each notification to delegate callbacks on a scheduler.</summary>
+/// <typeparam name="T">The observed element type.</typeparam>
 /// <remarks>
 /// A dedicated, allocation-light fusion of <c>ObserveOn(scheduler).Subscribe(onNext, onError)</c> used by the
 /// Blend behaviors: the sink is its own observer, schedules each value and error onto the supplied scheduler, and
 /// disposes the source subscription on <see cref="Dispose"/> — no operator chain and no intermediate observable.
 /// </remarks>
-/// <typeparam name="T">The observed element type.</typeparam>
 internal sealed class ScheduledObserver<T> : IObserver<T>, IDisposable
 {
     /// <summary>The scheduler each notification is delivered on.</summary>
@@ -42,6 +44,7 @@ internal sealed class ScheduledObserver<T> : IObserver<T>, IDisposable
     }
 
     /// <inheritdoc/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void OnNext(T value) =>
         _scheduler.Schedule(
             (Observer: this, Value: value),
@@ -52,6 +55,7 @@ internal sealed class ScheduledObserver<T> : IObserver<T>, IDisposable
             });
 
     /// <inheritdoc/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void OnError(Exception error) =>
         _scheduler.Schedule(
             (Observer: this, Error: error),
@@ -67,6 +71,7 @@ internal sealed class ScheduledObserver<T> : IObserver<T>, IDisposable
     }
 
     /// <inheritdoc/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Dispose() => _subscription?.Dispose();
 
     /// <summary>Subscribes to <paramref name="source"/>, delivering notifications to the callbacks on <paramref name="scheduler"/>.</summary>

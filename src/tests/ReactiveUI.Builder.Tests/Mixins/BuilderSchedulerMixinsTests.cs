@@ -89,9 +89,8 @@ public class BuilderSchedulerMixinsTests
     public async Task WithTaskPoolScheduler_Extension_Method_Returns_Builder()
     {
         var builder = RxAppBuilder.CreateReactiveUIBuilder();
-        var scheduler = Sequencer.Immediate;
 
-        var result = BuilderMixins.WithTaskPoolScheduler(builder, scheduler);
+        var result = BuilderMixins.WithTaskPoolScheduler(builder, Sequencer.Immediate);
 
         await Assert.That(result).IsSameReferenceAs(builder);
     }
@@ -103,9 +102,8 @@ public class BuilderSchedulerMixinsTests
     public async Task WithMainThreadScheduler_Extension_Method_Returns_Builder()
     {
         var builder = RxAppBuilder.CreateReactiveUIBuilder();
-        var scheduler = Sequencer.Immediate;
 
-        var result = BuilderMixins.WithMainThreadScheduler(builder, scheduler);
+        var result = BuilderMixins.WithMainThreadScheduler(builder, Sequencer.Immediate);
 
         await Assert.That(result).IsSameReferenceAs(builder);
     }

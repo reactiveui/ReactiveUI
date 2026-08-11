@@ -4,6 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 #if REACTIVE_SHIM
 namespace ReactiveUI.Reactive.Blazor.Internal;
@@ -14,13 +15,13 @@ namespace ReactiveUI.Blazor.Internal;
 /// Drives Blazor re-rendering for a component's view model: it re-renders when the view model instance is
 /// reassigned (after the first assignment) and whenever the current view model raises any property change.
 /// </summary>
+/// <typeparam name="T">The view model type.</typeparam>
 /// <remarks>
 /// A single fused sink that wires the CLR <see cref="INotifyPropertyChanged.PropertyChanged"/> events directly,
 /// replacing the previous <c>Publish().RefCount().Skip().Select().Switch()</c> pipeline. It allocates only the
 /// sink plus two reused handler delegates — no intermediate observables, no per-change delegate or disposable
 /// allocations — and swaps the observed view model in place under a reference-equality guard.
 /// </remarks>
-/// <typeparam name="T">The view model type.</typeparam>
 internal sealed class ViewModelReactivitySink<T> : IDisposable
     where T : class, INotifyPropertyChanged
 {
@@ -46,7 +47,7 @@ internal sealed class ViewModelReactivitySink<T> : IDisposable
     private T? _subscribedViewModel;
 
     /// <summary>Guards against double disposal.</summary>
-    private bool _disposed;
+    private int _disposed;
 
     /// <summary>Initializes a new instance of the <see cref="ViewModelReactivitySink{T}"/> class.</summary>
     /// <param name="getCurrentViewModel">Returns the component's current view model.</param>
@@ -78,12 +79,11 @@ internal sealed class ViewModelReactivitySink<T> : IDisposable
     /// <inheritdoc/>
     public void Dispose()
     {
-        if (_disposed)
+        if (Interlocked.Exchange(ref _disposed, 1) != 0)
         {
             return;
         }
 
-        _disposed = true;
         _removeComponentHandler(_componentHandler);
 
         if (_subscribedViewModel is null)
@@ -118,6 +118,7 @@ internal sealed class ViewModelReactivitySink<T> : IDisposable
     /// <summary>Re-renders when the current view model raises any property change.</summary>
     /// <param name="sender">The view model.</param>
     /// <param name="e">The property-changed arguments.</param>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void OnViewModelPropertyChanged(object? sender, PropertyChangedEventArgs e) => _stateHasChanged();
 
     /// <summary>Moves the property-changed subscription onto <paramref name="viewModel"/>, if it changed.</summary>

@@ -126,7 +126,7 @@ public class TransitioningContentControlTest
             TransitioningContentControl.TransitionType.Move,
             TransitioningContentControl.TransitionType.Slide,
             TransitioningContentControl.TransitionType.Drop,
-            TransitioningContentControl.TransitionType.Bounce
+            TransitioningContentControl.TransitionType.Bounce,
         };
 
         foreach (var type in types)
@@ -147,7 +147,7 @@ public class TransitioningContentControlTest
             TransitioningContentControl.TransitionDirection.Up,
             TransitioningContentControl.TransitionDirection.Down,
             TransitioningContentControl.TransitionDirection.Left,
-            TransitioningContentControl.TransitionDirection.Right
+            TransitioningContentControl.TransitionDirection.Right,
         };
 
         foreach (var direction in directions)
@@ -297,7 +297,7 @@ public class TransitioningContentControlTest
             Direction = direction,
             Duration = TimeSpan.FromSeconds(HalfSecond),
             Width = ControlSize,
-            Height = ControlSize
+            Height = ControlSize,
         };
 
         // Force a measure and arrange to set ActualWidth/Height
@@ -339,7 +339,7 @@ public class TransitioningContentControlTest
             Direction = direction,
             Duration = TimeSpan.FromSeconds(HalfSecond),
             Width = ControlSize,
-            Height = ControlSize
+            Height = ControlSize,
         };
 
         control.Measure(new(ControlSize, ControlSize));
@@ -659,7 +659,7 @@ public class TransitioningContentControlTest
             Transition = TransitioningContentControl.TransitionType.Bounce,
             Direction = TransitioningContentControl.TransitionDirection.Down,
             Width = ControlSize,
-            Height = ControlSize
+            Height = ControlSize,
         };
 
         control.Measure(new(ControlSize, ControlSize));

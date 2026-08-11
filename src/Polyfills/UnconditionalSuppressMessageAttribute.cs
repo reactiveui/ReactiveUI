@@ -3,6 +3,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Runtime.CompilerServices;
+
 #if !NET
 namespace System.Diagnostics.CodeAnalysis;
 
@@ -52,7 +54,5 @@ internal sealed class UnconditionalSuppressMessageAttribute : Attribute
 
 #else
 using System.Diagnostics.CodeAnalysis;
-using System.Runtime.CompilerServices;
-
 [assembly: TypeForwardedTo(typeof(UnconditionalSuppressMessageAttribute))]
 #endif

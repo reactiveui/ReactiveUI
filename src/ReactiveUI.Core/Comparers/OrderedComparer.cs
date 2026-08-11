@@ -4,6 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 
 namespace ReactiveUI;
 
@@ -22,6 +23,7 @@ public static class OrderedComparer
     /// <typeparam name="T">The type.</typeparam>
     /// <param name="enumerable">The enumerable.</param>
     /// <returns>A comparer builder.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static IComparerBuilder<T> For<T>(IEnumerable<T> enumerable) => For<T>();
 
     /// <summary>
@@ -36,16 +38,17 @@ public static class OrderedComparer
         "Design",
         "SST2307:A generic method's type parameter appears in no parameter, so no caller can infer it",
         Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static IComparerBuilder<T> For<T>() => OrderedComparerTypeWrapper<T>.Instance;
 
     /// <summary>
     /// Provides a type-safe wrapper for building ordered comparers for elements of type <typeparamref name="T"/>.
     /// Implements the <see cref="IComparerBuilder{T}"/> interface to enable fluent construction of comparison logic.
     /// </summary>
+    /// <typeparam name="T">The type of elements to compare.</typeparam>
     /// <remarks>This class is intended for internal use to facilitate the creation of ordered comparers using
     /// the <see cref="IComparerBuilder{T}"/> interface. It exposes static methods for ordering elements by specified
     /// keys, supporting both ascending and descending order, with optional custom comparers.</remarks>
-    /// <typeparam name="T">The type of elements to compare.</typeparam>
     private sealed class OrderedComparerTypeWrapper<T> : IComparerBuilder<T>
     {
         /// <summary>The singleton instance of this wrapper used to provide the IComparerBuilder for type T.</summary>
@@ -55,30 +58,33 @@ public static class OrderedComparer
         /// Creates a comparer that orders elements based on a key extracted from each element using the specified
         /// selector function.
         /// </summary>
-        /// <remarks>Use this method to define custom ordering for elements by specifying a key selector.
-        /// The resulting comparer can be used with sorting methods or data structures that accept an
-        /// IComparer{T}.</remarks>
         /// <typeparam name="TValue">The type of the key returned by the selector function.</typeparam>
         /// <param name="selector">A function that extracts the key from an element to use for ordering. Cannot be null.</param>
         /// <returns>An IComparer{T} that compares elements according to the values returned by the selector function.</returns>
+        /// <remarks>Use this method to define custom ordering for elements by specifying a key selector.
+        /// The resulting comparer can be used with sorting methods or data structures that accept an
+        /// IComparer{T}.</remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IComparer<T> OrderBy<TValue>(Func<T, TValue> selector) => OrderedComparer<T>.OrderBy(selector);
 
         /// <summary>Creates a comparer that orders elements by a specified key using the provided key selector and comparer.</summary>
-        /// <remarks>Use this method to perform custom ordering of elements based on a key. This is
-        /// typically used in conjunction with sorting operations or when building composite comparers.</remarks>
         /// <typeparam name="TValue">The type of the key returned by the selector function.</typeparam>
         /// <param name="selector">A function that extracts the key from an element to use for ordering. Cannot be null.</param>
         /// <param name="comparer">An object that compares keys for ordering. If null, the default comparer for the key type is used.</param>
         /// <returns>An IComparer{T} that compares elements based on the specified key and comparer.</returns>
+        /// <remarks>Use this method to perform custom ordering of elements based on a key. This is
+        /// typically used in conjunction with sorting operations or when building composite comparers.</remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IComparer<T> OrderBy<TValue>(Func<T, TValue> selector, IComparer<TValue> comparer) =>
             OrderedComparer<T>.OrderBy(selector, comparer);
 
         /// <summary>Creates a comparer that orders elements in descending order according to a specified key selector.</summary>
-        /// <remarks>Use this method to sort elements in descending order by a specific property or value.
-        /// The comparer can be used with sorting methods that accept an IComparer{T}.</remarks>
         /// <typeparam name="TValue">The type of the key returned by the selector function.</typeparam>
         /// <param name="selector">A function to extract the key from an element for comparison. Cannot be null.</param>
         /// <returns>An IComparer{T} that compares elements based on the descending order of the selected key.</returns>
+        /// <remarks>Use this method to sort elements in descending order by a specific property or value.
+        /// The comparer can be used with sorting methods that accept an IComparer{T}.</remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IComparer<T> OrderByDescending<TValue>(Func<T, TValue> selector) =>
             OrderedComparer<T>.OrderByDescending(selector);
 
@@ -87,6 +93,7 @@ public static class OrderedComparer
         /// <param name="selector">A function that extracts the key from an element to determine its order. Cannot be null.</param>
         /// <param name="comparer">An optional comparer to use for comparing keys. If null, the default comparer for the key type is used.</param>
         /// <returns>An IComparer{T} that compares elements in descending order based on the specified key and comparer.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IComparer<T> OrderByDescending<TValue>(Func<T, TValue> selector, IComparer<TValue> comparer) =>
             OrderedComparer<T>.OrderByDescending(selector, comparer);
     }

@@ -36,6 +36,7 @@ public class DefaultPropertyBindingTests
 
     /// <summary>Tests Winforms creates observable for property works for textboxes.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    /// <exception cref="InvalidOperationException">The property name cannot be resolved from the expression.</exception>
     [Test]
     public async Task WinformsCreatesObservableForPropertyWorksForTextboxes()
     {
@@ -68,6 +69,7 @@ public class DefaultPropertyBindingTests
 
     /// <summary>Tests that Winform creates observable for property works for components.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    /// <exception cref="InvalidOperationException">The property name cannot be resolved from the expression.</exception>
     [Test]
     public async Task WinformsCreatesObservableForPropertyWorksForComponents()
     {
@@ -100,6 +102,7 @@ public class DefaultPropertyBindingTests
 
     /// <summary>Tests that winforms creates observable for property works for third party controls.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    /// <exception cref="InvalidOperationException">The property name cannot be resolved from the expression.</exception>
     [Test]
     public async Task WinformsCreatesObservableForPropertyWorksForThirdPartyControls()
     {

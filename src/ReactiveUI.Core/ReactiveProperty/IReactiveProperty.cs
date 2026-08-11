@@ -10,10 +10,10 @@ using ReactiveUI.Primitives.Disposables;
 namespace ReactiveUI;
 
 /// <summary>Represents a reactive property that supports value observation, change notification, validation, and cancellation.</summary>
+/// <typeparam name="T">The type of the value stored by the reactive property.</typeparam>
 /// <remarks>Implementations of this interface provide a property that notifies observers of value changes,
 /// supports error notification for data validation, and allows cancellation of ongoing operations. This interface is
 /// commonly used in reactive programming scenarios to enable data binding and validation in UI frameworks.</remarks>
-/// <typeparam name="T">The type of the value stored by the reactive property.</typeparam>
 public interface IReactiveProperty<T> : IObservable<T?>, IsDisposed, INotifyDataErrorInfo, INotifyPropertyChanged
 {
     /// <summary>Gets or sets the value contained in the current instance.</summary>

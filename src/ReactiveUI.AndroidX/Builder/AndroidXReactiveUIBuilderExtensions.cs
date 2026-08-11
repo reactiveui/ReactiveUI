@@ -23,6 +23,7 @@ public static class AndroidXReactiveUIBuilderExtensions
     {
         /// <summary>Configures the builder to use AndroidX platform services and schedulers.</summary>
         /// <returns>The builder instance for chaining.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the builder being extended is <see langword="null"/>.</exception>
         public IReactiveUIBuilder WithAndroidX() =>
             builder is null
                 ? throw new ArgumentNullException(nameof(builder))
@@ -33,6 +34,7 @@ public static class AndroidXReactiveUIBuilderExtensions
 
         /// <summary>Withes the android x scheduler.</summary>
         /// <returns>The builder instance for chaining.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the builder being extended is <see langword="null"/>.</exception>
         public IReactiveUIBuilder WithAndroidXScheduler() =>
             builder is null
                 ? throw new ArgumentNullException(nameof(builder))

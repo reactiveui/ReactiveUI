@@ -16,7 +16,7 @@ public class TestSequencer : IDisposable
     private readonly Barrier _phaseSync;
 
     /// <summary>Tracks whether this instance has already been disposed.</summary>
-    private bool _disposedValue;
+    private int _disposedValue;
 
     /// <summary>Initializes a new instance of the <see cref="TestSequencer" /> class.</summary>
     public TestSequencer() => _phaseSync = new(ParticipantCount);
@@ -67,16 +67,11 @@ public class TestSequencer : IDisposable
     /// </param>
     protected virtual void Dispose(bool disposing)
     {
-        if (_disposedValue)
+        if (Interlocked.Exchange(ref _disposedValue, 1) != 0 || !disposing)
         {
             return;
         }
 
-        if (disposing)
-        {
-            _phaseSync.Dispose();
-        }
-
-        _disposedValue = true;
+        _phaseSync.Dispose();
     }
 }

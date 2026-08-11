@@ -4,6 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using Android.Runtime;
 using AndroidX.Preference;
 
@@ -16,6 +17,7 @@ namespace ReactiveUI.AndroidX;
 /// This is a PreferenceFragment that is both an Activity and has ReactiveObject powers
 /// (i.e. you can call RaiseAndSetIfChanged).
 /// </summary>
+[System.Diagnostics.DebuggerDisplay("{Activated}, {Deactivated}")]
 public abstract class ReactivePreferenceFragment : PreferenceFragmentCompat,
     IReactiveNotifyPropertyChanged<ReactivePreferenceFragment>, IReactiveObject, IHandleObservableErrors
 {
@@ -62,37 +64,35 @@ public abstract class ReactivePreferenceFragment : PreferenceFragmentCompat,
     public IObservable<RxVoid> Deactivated => _deactivated;
 
     /// <inheritdoc/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public IDisposable SuppressChangeNotifications() => IReactiveObjectExtensions.SuppressChangeNotifications(this);
 
     /// <inheritdoc/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args) => PropertyChanged?.Invoke(this, args);
 
     /// <inheritdoc/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args) => PropertyChanging?.Invoke(this, args);
 
     /// <inheritdoc/>
     public override void OnPause()
     {
         base.OnPause();
-        _deactivated.OnNext(RxVoid.Default);
+        ActivationSignals.Raise(_deactivated);
     }
 
     /// <inheritdoc/>
     public override void OnResume()
     {
         base.OnResume();
-        _activated.OnNext(RxVoid.Default);
+        ActivationSignals.Raise(_activated);
     }
 
     /// <inheritdoc/>
     protected override void Dispose(bool disposing)
     {
-        if (disposing)
-        {
-            _activated.Dispose();
-            _deactivated.Dispose();
-        }
-
+        ActivationSignals.DisposeWhen(disposing, _activated, _deactivated);
         base.Dispose(disposing);
     }
 }

@@ -4,7 +4,9 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Windows;
 using Splat;
 
@@ -14,6 +16,7 @@ namespace ReactiveUI.Reactive;
 namespace ReactiveUI;
 #endif
 /// <summary>Creates a observable for a property if available that is based on a DependencyProperty.</summary>
+[DebuggerDisplay("{Scheduler}")]
 public class DependencyObjectObservableForProperty : ICreatesObservableForProperty
 {
     /// <summary>The affinity returned when the type exposes a matching dependency property.</summary>
@@ -32,6 +35,7 @@ public class DependencyObjectObservableForProperty : ICreatesObservableForProper
     }
 
     /// <inheritdoc/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public int GetAffinityForObject(Type type, string propertyName) =>
         GetAffinityForObject(type, propertyName, false);
 
@@ -47,6 +51,7 @@ public class DependencyObjectObservableForProperty : ICreatesObservableForProper
     }
 
     /// <inheritdoc/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public IObservable<IObservedChange<object, object?>> GetNotificationForProperty(
         object sender,
         System.Linq.Expressions.Expression expression,
@@ -54,6 +59,7 @@ public class DependencyObjectObservableForProperty : ICreatesObservableForProper
         GetNotificationForProperty(sender, expression, propertyName, false, false);
 
     /// <inheritdoc/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public IObservable<IObservedChange<object, object?>> GetNotificationForProperty(
         object sender,
         System.Linq.Expressions.Expression expression,

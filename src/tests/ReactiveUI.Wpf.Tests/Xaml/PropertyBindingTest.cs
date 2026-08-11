@@ -548,8 +548,7 @@ public partial class PropertyBindingTest
 
         _ = view.OneWayBind(view.ViewModel, static x => x.SomeCollectionOfStrings, static x => x.FakeItemsControl.ItemsSource);
 
-        var itemsSourceValue = (IList)view.FakeItemsControl.ItemsSource;
-        await Assert.That(itemsSourceValue.OfType<string>().Count()).IsGreaterThan(1);
+        await Assert.That(((IList)view.FakeItemsControl.ItemsSource).OfType<string>().Count()).IsGreaterThan(1);
     }
 
     /// <summary>Tests OneWayBind and a converter.</summary>

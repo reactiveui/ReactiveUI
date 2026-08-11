@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics;
 using BenchmarkDotNet.Attributes;
 
 namespace ReactiveUI.Benchmarks;
@@ -10,6 +11,7 @@ namespace ReactiveUI.Benchmarks;
 /// <summary>Benchmarks <c>BindTo</c>: cold bind setup and per-value propagation of an observable into a target property.</summary>
 [MemoryDiagnoser]
 [MarkdownExporterAttribute.GitHub]
+[DebuggerDisplay("BindToBenchmarks")]
 public class BindToBenchmarks
 {
     /// <summary>The number of values pushed through the source observable per emission benchmark.</summary>

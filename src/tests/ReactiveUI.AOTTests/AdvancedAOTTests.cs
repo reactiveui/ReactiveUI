@@ -95,10 +95,8 @@ public class AdvancedAOTTests
     [Test]
     public async Task DependencyResolution_BasicOperations_WorkInAOT()
     {
-        var resolver = Locator.CurrentMutable;
-
         // Test basic registration and resolution
-        resolver.RegisterConstant("test value");
+        Locator.CurrentMutable.RegisterConstant("test value");
         var resolved = Locator.Current.GetService<string>();
 
         await Assert.That(resolved).IsEqualTo("test value");

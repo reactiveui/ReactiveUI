@@ -11,12 +11,12 @@ namespace ReactiveUI;
 /// View, you can select between different Views for a single ViewModel
 /// instance.
 /// </summary>
+/// <param name="contract">The value of the contract for view
+/// resolution.</param>
 /// <remarks>
 /// Initializes a new instance of the <see cref="ViewContractAttribute"/> class.
 /// Constructs the ViewContractAttribute with a specific contract value.
 /// </remarks>
-/// <param name="contract">The value of the contract for view
-/// resolution.</param>
 [AttributeUsage(AttributeTargets.Class)]
 [System.Diagnostics.DebuggerDisplay("Contract = {Contract}")]
 public sealed class ViewContractAttribute(string contract) : Attribute

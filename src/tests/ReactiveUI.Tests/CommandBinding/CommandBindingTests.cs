@@ -32,13 +32,13 @@ public class CommandBindingTests
     public enum ParameterSource
     {
         /// <summary>No command parameter.</summary>
-        None,
+        None = 0,
 
         /// <summary>An observable command parameter.</summary>
-        Observable,
+        Observable = 1,
 
         /// <summary>A view-model expression command parameter.</summary>
-        Expression
+        Expression = 2,
     }
 
     /// <summary>Verifies that the command binder binds a command to a control event so the command executes when the event is raised.</summary>
@@ -92,6 +92,7 @@ public class CommandBindingTests
     /// <summary>Verifies that each parameter-source extension overload creates an executable binding.</summary>
     /// <param name="parameterSource">The command-parameter source shape to bind.</param>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="parameterSource" /> is not a supported parameter-source shape.</exception>
     [Test]
     [Arguments(ParameterSource.None)]
     [Arguments(ParameterSource.Observable)]

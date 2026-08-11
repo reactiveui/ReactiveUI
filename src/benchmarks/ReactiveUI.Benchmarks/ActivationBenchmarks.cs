@@ -3,6 +3,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using BenchmarkDotNet.Attributes;
 
 namespace ReactiveUI.Benchmarks;
@@ -13,6 +15,7 @@ namespace ReactiveUI.Benchmarks;
 /// </summary>
 [MemoryDiagnoser]
 [MarkdownExporterAttribute.GitHub]
+[DebuggerDisplay("ActivationBenchmarks")]
 public class ActivationBenchmarks : IDisposable
 {
     /// <summary>The number of activate / deactivate cycles per benchmark invocation.</summary>
@@ -27,6 +30,7 @@ public class ActivationBenchmarks : IDisposable
 
     /// <summary>Disposes the activatable view model.</summary>
     [GlobalCleanup]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Cleanup() => Dispose();
 
     /// <summary>Disposes the activatable view model.</summary>

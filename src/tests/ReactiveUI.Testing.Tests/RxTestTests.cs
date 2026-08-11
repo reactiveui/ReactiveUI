@@ -110,9 +110,9 @@ public class RxTestTests
     }
 
     /// <summary>Verifies that the AppBuilderTestAsync method resets its builder state between test executions.</summary>
+    /// <returns>A task that represents the asynchronous test operation.</returns>
     /// <remarks>This test ensures that state changes in one invocation of AppBuilderTestAsync do not affect
     /// subsequent invocations, maintaining test isolation.</remarks>
-    /// <returns>A task that represents the asynchronous test operation.</returns>
     [Test]
     public async Task AppBuilderTestAsync_ResetsBuilderStateBetweenTests()
     {
@@ -133,9 +133,9 @@ public class RxTestTests
     }
 
     /// <summary>Verifies that the AppBuilderTestAsync method completes execution within the specified custom timeout.</summary>
+    /// <returns>A task that represents the asynchronous test operation.</returns>
     /// <remarks>This test ensures that the provided delegate is executed and completes within the given
     /// timeout period. It is intended to validate timeout handling in asynchronous test scenarios.</remarks>
-    /// <returns>A task that represents the asynchronous test operation.</returns>
     [Test]
     public async Task AppBuilderTestAsync_WithCustomTimeout_ExecutesWithinTimeout()
     {

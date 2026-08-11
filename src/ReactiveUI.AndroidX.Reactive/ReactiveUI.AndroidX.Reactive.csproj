@@ -21,6 +21,7 @@
     <Compile Include="..\ReactiveUI.AndroidX\**\*.cs" Exclude="..\ReactiveUI.AndroidX\obj\**\*.cs;..\ReactiveUI.AndroidX\bin\**\*.cs" Link="ReactiveUI.AndroidX\%(RecursiveDir)%(Filename)%(Extension)"/>
     <Compile Include="..\Shared\ArgumentValidation.cs" Link="Shared\ArgumentValidation.cs"/>
     <Compile Include="..\Shared\DelegateObserver.cs" Link="Shared\DelegateObserver.cs"/>
+    <Compile Include="..\Shared\ActivationSignals.cs" Link="Shared\ActivationSignals.cs"/>
     <Compile Include="..\Shared\Platform\FromEventObservable.cs" Link="Shared\Platform\FromEventObservable.cs"/>
     <Compile Include="..\Shared\Platform\ChangeSetBinder.cs" Link="Shared\Platform\ChangeSetBinder.cs"/>
   </ItemGroup>

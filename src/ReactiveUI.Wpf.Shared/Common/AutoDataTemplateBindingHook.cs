@@ -3,8 +3,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Markup;
 
 #if REACTIVE_SHIM
@@ -58,32 +58,7 @@ public class AutoDataTemplateBindingHook : IPropertyBindingHook
         Func<IObservedChange<object, object>[]> getCurrentViewProperties,
         BindingDirection direction)
     {
-        ArgumentExceptionHelper.ThrowIfNull(getCurrentViewProperties);
-
-        var viewProperties = getCurrentViewProperties();
-        var lastViewProperty = viewProperties.Length > 0 ? viewProperties[^1] : null;
-
-        if (lastViewProperty?.Sender is not ItemsControl itemsControl)
-        {
-            return true;
-        }
-
-        if (!string.IsNullOrEmpty(itemsControl.DisplayMemberPath))
-        {
-            return true;
-        }
-
-        if (viewProperties[^1].GetPropertyName() != "ItemsSource")
-        {
-            return true;
-        }
-
-        if (itemsControl.ItemTemplate is not null)
-        {
-            return true;
-        }
-
-        if (itemsControl.ItemTemplateSelector is not null)
+        if (ItemsControlTemplateBinding.FindDefaultTemplateTarget(getCurrentViewProperties) is not { } itemsControl)
         {
             return true;
         }

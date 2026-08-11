@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics;
 using BenchmarkDotNet.Attributes;
 
 namespace ReactiveUI.Benchmarks;
@@ -10,6 +11,7 @@ namespace ReactiveUI.Benchmarks;
 /// <summary>Benchmarks <see cref="ReactiveCommand"/> execution on the immediate scheduler, for both the synchronous and task-based pipelines.</summary>
 [MemoryDiagnoser]
 [MarkdownExporterAttribute.GitHub]
+[DebuggerDisplay("ReactiveCommandExecuteBenchmarks")]
 public class ReactiveCommandExecuteBenchmarks
 {
     /// <summary>The number of executions per benchmark.</summary>

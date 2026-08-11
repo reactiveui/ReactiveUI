@@ -12,8 +12,8 @@ namespace ReactiveUI;
 public enum UpdateType
 {
     /// <summary>An add update.</summary>
-    Add,
+    Add = 0,
 
     /// <summary>A delete update.</summary>
-    Delete
+    Delete = 1,
 }

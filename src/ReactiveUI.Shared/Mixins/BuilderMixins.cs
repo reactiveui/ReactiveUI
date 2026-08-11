@@ -5,6 +5,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using Splat;
 using Splat.Builder;
 
@@ -35,10 +36,10 @@ public static partial class BuilderMixins
     extension(IAppBuilder appBuilder)
     {
         /// <summary>Builds and configures the application using the ReactiveUI builder pattern.</summary>
-        /// <remarks>Use this extension method to finalize application setup when working with ReactiveUI. This
-        /// method should be called after all necessary configuration has been applied to the builder.</remarks>
         /// <returns>An <see cref="IReactiveUIBuilder"/> instance representing the configured application.</returns>
         /// <exception cref="InvalidOperationException">Thrown if <paramref name="appBuilder"/> does not implement <see cref="IReactiveUIBuilder"/>.</exception>
+        /// <remarks>Use this extension method to finalize application setup when working with ReactiveUI. This
+        /// method should be called after all necessary configuration has been applied to the builder.</remarks>
         public IReactiveUIBuilder BuildApp()
         {
             ArgumentExceptionHelper.ThrowIfNull(appBuilder);
@@ -142,6 +143,7 @@ public static partial class BuilderMixins
         /// The builder instance for chaining.
         /// </returns>
         /// <exception cref="ArgumentNullException">scheduler.</exception>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IReactiveUIBuilder WithTaskPoolScheduler(
             ISequencer scheduler) =>
             WithTaskPoolScheduler(builder, scheduler, true);
@@ -169,6 +171,7 @@ public static partial class BuilderMixins
         /// The builder instance for chaining.
         /// </returns>
         /// <exception cref="ArgumentNullException">builder.</exception>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IReactiveUIBuilder WithMainThreadScheduler(
             ISequencer scheduler) =>
             WithMainThreadScheduler(builder, scheduler, true);

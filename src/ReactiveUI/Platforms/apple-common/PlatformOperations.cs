@@ -3,6 +3,9 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics;
+using System.Runtime.CompilerServices;
+
 #if REACTIVE_SHIM
 namespace ReactiveUI.Reactive;
 #else
@@ -12,6 +15,7 @@ namespace ReactiveUI;
 public class PlatformOperations : IPlatformOperations
 {
     /// <inheritdoc/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public string? GetOrientation() =>
 #if UIKIT && !TVOS
         UIKit.UIDevice.CurrentDevice.Orientation.ToString();

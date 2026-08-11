@@ -4,6 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 #if WINUI_TARGET
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.UI.Xaml;
 #if REACTIVE_SHIM
@@ -24,6 +25,7 @@ namespace ReactiveUI;
 /// This generic version provides AOT-compatibility by using compile-time type information.
 /// </summary>
 /// <typeparam name="TViewModel">The type of the view model. Must have a public parameterless constructor and implement IRoutableViewModel.</typeparam>
+[DebuggerDisplay("Router = {Router}")]
 public partial class RoutedViewHost<
     [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)] TViewModel> : TransitioningContentControl, IActivatableView, IMauiRoutedViewHost
     where TViewModel : class, IRoutableViewModel
@@ -108,9 +110,10 @@ public partial class RoutedViewHost<
     /// This method uses the generic ViewLocator.ResolveView{TViewModel} which is AOT-safe.
     /// </summary>
     /// <param name="route">Tuple containing the view model and contract.</param>
-    private void ResolveViewForViewModel((IRoutableViewModel? viewModel, string? contract) route)
+    /// <exception cref="InvalidOperationException">No view is registered for the routed view model.</exception>
+    private void ResolveViewForViewModel((IRoutableViewModel? ViewModel, string? Contract) route)
     {
-        if (route.viewModel is null)
+        if (route.ViewModel is null)
         {
             Content = DefaultContent;
             return;
@@ -119,9 +122,9 @@ public partial class RoutedViewHost<
         var viewLocator = ViewLocator ?? ReactiveUI.ViewLocator.Current;
 
         // Use the generic ResolveView<TViewModel> method - this is AOT-safe!
-        var view = viewLocator.ResolveView<TViewModel>(route.contract) ?? viewLocator.ResolveView<TViewModel>()
-            ?? throw new InvalidOperationException($"Couldn't find view for '{nameof(TViewModel)}'.");
-        view.ViewModel = route.viewModel as TViewModel;
+        var view = viewLocator.ResolveView<TViewModel>(route.Contract) ?? viewLocator.ResolveView<TViewModel>()
+            ?? throw new InvalidOperationException($"Couldn't find view for '{typeof(TViewModel).Name}'.");
+        view.ViewModel = route.ViewModel as TViewModel;
         Content = view;
     }
 }

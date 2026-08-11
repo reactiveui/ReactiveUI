@@ -44,6 +44,7 @@ public static class RxSuspension
 
     /// <summary>Initializes the suspension host with a custom instance. Called by ReactiveUIBuilder.</summary>
     /// <param name="suspensionHost">The custom suspension host to use.</param>
+    /// <exception cref="ArgumentNullException"><paramref name="suspensionHost"/> is null.</exception>
     internal static void InitializeSuspensionHost(ISuspensionHost suspensionHost)
     {
         if (Interlocked.CompareExchange(ref _suspensionHostInitialized, 1, 0) != 0)

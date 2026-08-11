@@ -4,6 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using Microsoft.AspNetCore.Components;
 #if REACTIVE_SHIM
@@ -32,6 +33,7 @@ namespace ReactiveUI.Blazor;
 /// The <see cref="ViewModel"/> is provided via DI using <see cref="InjectAttribute"/>.
 /// </para>
 /// </remarks>
+[DebuggerDisplay("{ViewModel}, {Activated}")]
 public class ReactiveInjectableComponentBase<T> : ComponentBase, IViewFor<T>, INotifyPropertyChanged, IDisposable, ICanActivate
     where T : class, INotifyPropertyChanged
 {

@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.UI.Xaml;
 #if REACTIVE_SHIM
@@ -25,6 +26,7 @@ namespace ReactiveUI;
 /// </summary>
 [RequiresUnreferencedCode("This class uses reflection to determine view model types at runtime through ViewLocator, which may be incompatible with trimming.")]
 [RequiresDynamicCode("ViewLocator.ResolveView uses reflection which is incompatible with AOT compilation.")]
+[DebuggerDisplay("{ViewContractObservable}, {DefaultContent}")]
 public partial class ViewModelViewHost : TransitioningContentControl, IViewFor, IEnableLogger
 {
     /// <summary>The default content dependency property.</summary>
@@ -54,15 +56,13 @@ public partial class ViewModelViewHost : TransitioningContentControl, IViewFor, 
         "Design",
         "SST2403:'this' escapes before construction finishes",
         Justification = "The single-threaded UI control hands 'this' to MauiReactiveHelpers to observe its own dependency-property changes; it is never published to another thread.")]
-    public ViewModelViewHost()
-    {
+    public ViewModelViewHost() =>
         MauiReactiveHelpers.InitializeViewModelViewHost(
             (this, this.Log(), observable => ViewContractObservable = observable),
             (nameof(ViewModel), ViewModelProperty, () => ViewModel),
             contract => _viewContract = contract,
             ResolveViewForViewModel,
             _subscriptions);
-    }
 
     /// <summary>Gets or sets the view contract observable.</summary>
     public IObservable<string?> ViewContractObservable

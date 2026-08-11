@@ -3,7 +3,9 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using Splat;
 
 namespace ReactiveUI;
@@ -12,10 +14,11 @@ namespace ReactiveUI;
 /// Provides an implementation of the IRegistrar interface that registers services with an underlying
 /// IMutableDependencyResolver.
 /// </summary>
+/// <param name="resolver">The dependency resolver used to register service instances and factories. Cannot be null.</param>
 /// <remarks>This class acts as an adapter, allowing services to be registered with the specified dependency
 /// resolver using various registration methods. All registrations are forwarded to the underlying
 /// IMutableDependencyResolver instance.</remarks>
-/// <param name="resolver">The dependency resolver used to register service instances and factories. Cannot be null.</param>
+[DebuggerDisplay("DependencyResolverRegistrar")]
 public sealed class DependencyResolverRegistrar(IMutableDependencyResolver resolver) : IRegistrar
 {
     /// <summary>The underlying dependency resolver used for all service registrations.</summary>
@@ -23,6 +26,7 @@ public sealed class DependencyResolverRegistrar(IMutableDependencyResolver resol
         resolver ?? throw new ArgumentNullException(nameof(resolver));
 
     /// <inheritdoc/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void RegisterConstant<TService>(Func<TService> factory)
         where TService : class =>
         RegisterConstant(factory, null);
@@ -43,6 +47,7 @@ public sealed class DependencyResolverRegistrar(IMutableDependencyResolver resol
     }
 
     /// <inheritdoc/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void RegisterLazySingleton<
         [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)] TService>(
         Func<TService> factory)
@@ -68,6 +73,7 @@ public sealed class DependencyResolverRegistrar(IMutableDependencyResolver resol
     }
 
     /// <inheritdoc/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Register<TService>(Func<TService> factory)
         where TService : class =>
         Register(factory, null);

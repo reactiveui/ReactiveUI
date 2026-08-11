@@ -5,6 +5,8 @@
 
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using Foundation;
 using UIKit;
 
@@ -20,6 +22,7 @@ namespace ReactiveUI;
 /// items are animated in and out as items are added.
 /// </summary>
 /// <typeparam name="TSource">The source type.</typeparam>
+[DebuggerDisplay("{Data}")]
 public class ReactiveTableViewSource<TSource> : UITableViewSource, IReactiveNotifyPropertyChanged<ReactiveTableViewSource<TSource>>, IHandleObservableErrors, IReactiveObject
 {
     /// <summary>The common reactive source that manages section data and drives table view updates.</summary>
@@ -212,37 +215,41 @@ public class ReactiveTableViewSource<TSource> : UITableViewSource, IReactiveNoti
         return footer?.View is null ? -1 : footer.Height;
     }
 
-#pragma warning disable CS8603 // Possible null reference return.
-
     /// <inheritdoc/>
-    public override string TitleForHeader(UITableView tableView, nint section)
+    public override string? TitleForHeader(UITableView tableView, nint section)
     {
         var header = _commonSource.SectionInfo[(int)section].Header;
         return header?.Title;
     }
 
     /// <inheritdoc/>
-    public override string TitleForFooter(UITableView tableView, nint section)
+    public override string? TitleForFooter(UITableView tableView, nint section)
     {
         var footer = _commonSource.SectionInfo[(int)section].Footer;
         return footer?.Title;
     }
 
     /// <inheritdoc/>
+    /// <remarks>
+    /// UIKit treats a null header view as "no custom header", but the binding declares the return
+    /// non-nullable, so the null is asserted here rather than fabricating an empty view.
+    /// </remarks>
     public override UIView GetViewForHeader(UITableView tableView, nint section)
     {
         var header = _commonSource.SectionInfo[(int)section].Header;
-        return header?.View?.Invoke();
+        return header?.View?.Invoke()!;
     }
 
     /// <inheritdoc/>
+    /// <remarks>
+    /// UIKit treats a null footer view as "no custom footer", but the binding declares the return
+    /// non-nullable, so the null is asserted here rather than fabricating an empty view.
+    /// </remarks>
     public override UIView GetViewForFooter(UITableView tableView, nint section)
     {
         var footer = _commonSource.SectionInfo[(int)section].Footer;
-        return footer?.View?.Invoke();
+        return footer?.View?.Invoke()!;
     }
-
-#pragma warning restore CS8603 // Possible null reference return.
 
     /// <summary>Items at.</summary>
     /// <param name="indexPath">The index path.</param>
@@ -261,12 +268,15 @@ public class ReactiveTableViewSource<TSource> : UITableViewSource, IReactiveNoti
     /// </summary>
     /// <returns>An object that, when disposed, re-enables change
     /// notifications.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public IDisposable SuppressChangeNotifications() => IReactiveObjectExtensions.SuppressChangeNotifications(this);
 
     /// <inheritdoc/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args) => PropertyChanging?.Invoke(this, args);
 
     /// <inheritdoc/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args) => PropertyChanged?.Invoke(this, args);
 
     /// <inheritdoc/>

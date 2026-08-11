@@ -22,8 +22,8 @@ public interface ICreatesCommandBinding
     /// implementations return positive values, the one with the highest value will
     /// be chosen. Default values are typically '2' or '0'.
     /// </summary>
-    /// <param name="hasEventTarget">Determines if the host intends to use a custom event target.</param>
     /// <typeparam name="T">The type of the object to query for compatibility with command binding.</typeparam>
+    /// <param name="hasEventTarget">Determines if the host intends to use a custom event target.</param>
     /// <returns>A positive integer if binding is supported, or zero/a negative value if not supported.</returns>
     [SuppressMessage(
         "Design",

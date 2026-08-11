@@ -5,6 +5,4 @@ ReactiveUI.Builder.ReactiveUIBuilderDrawingExtensions.extension(ReactiveUI.Build
 ReactiveUI.Drawing.Registrations
 ReactiveUI.Drawing.Registrations.Register(ReactiveUI.IRegistrar! registrar) -> void
 ReactiveUI.Drawing.Registrations.Registrations() -> void
-ReactiveUI.Drawing.Resource
-ReactiveUI.Drawing.Resource.Resource() -> void
 static ReactiveUI.Builder.ReactiveUIBuilderDrawingExtensions.WithDrawing(this ReactiveUI.Builder.IReactiveUIBuilder! builder) -> ReactiveUI.Builder.IReactiveUIBuilder!

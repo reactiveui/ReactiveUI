@@ -19,6 +19,9 @@
     <Compile Include="..\Shared\DelegateObserver.cs" Link="Shared\DelegateObserver.cs"/>
   </ItemGroup>
   <ItemGroup>
+    <InternalsVisibleTo Include="ReactiveUI.Blazor.Tests"/>
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj"/>
   </ItemGroup>
 </Project>

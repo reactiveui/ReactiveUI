@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using AppKit;
@@ -42,6 +43,7 @@ namespace ReactiveUI;
 /// </code>
 /// </para>
 /// </remarks>
+[DebuggerDisplay("AutoSuspendHelper")]
 public class AutoSuspendHelper<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicMethods | DynamicallyAccessedMemberTypes.NonPublicMethods)] T> : IEnableLogger, IDisposable
     where T : NSApplicationDelegate
 {
@@ -60,8 +62,8 @@ public class AutoSuspendHelper<[DynamicallyAccessedMembers(DynamicallyAccessedMe
     /// <summary>Cached handler so we can unsubscribe during <see cref="Dispose()"/>.</summary>
     private readonly UnhandledExceptionEventHandler _unhandledExceptionHandler;
 
-    /// <summary>Tracks whether this instance has been disposed.</summary>
-    private bool _isDisposed;
+    /// <summary>Tracks whether this instance has been disposed. Non-zero once disposal has begun.</summary>
+    private int _isDisposed;
 
     /// <summary>Initializes a new instance of the <see cref="AutoSuspendHelper{T}"/> class.</summary>
     /// <param name="appDelegate">The application delegate.</param>
@@ -106,11 +108,11 @@ public class AutoSuspendHelper<[DynamicallyAccessedMembers(DynamicallyAccessedMe
 
         // Ensure the persist notification is emitted on the main thread, as callers typically interact with AppKit.
         _ = RxSchedulers.MainThreadScheduler.Schedule(
-            (host: this, sender),
+            (Host: this, Sender: sender),
             static (_, state) =>
             {
-                state.host._shouldPersistState.OnNext(
-                    Scope.Create(state.sender, static s => s.ReplyToApplicationShouldTerminate(true)));
+                state.Host._shouldPersistState.OnNext(
+                    Scope.Create(state.Sender, static s => s.ReplyToApplicationShouldTerminate(true)));
                 return EmptyDisposable.Instance;
             });
 
@@ -155,6 +157,7 @@ public class AutoSuspendHelper<[DynamicallyAccessedMembers(DynamicallyAccessedMe
     /// <remarks>
     /// Initiates a quick save when the app is hidden, mirroring the behavior of <see cref="DidResignActive"/>.
     /// </remarks>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void DidHide(NSNotification notification) => DidResignActive(notification);
 
     /// <inheritdoc />
@@ -168,14 +171,7 @@ public class AutoSuspendHelper<[DynamicallyAccessedMembers(DynamicallyAccessedMe
     /// <param name="isDisposing">If <see langword="true"/>, disposes managed resources.</param>
     protected virtual void Dispose(bool isDisposing)
     {
-        if (_isDisposed)
-        {
-            return;
-        }
-
-        _isDisposed = true;
-
-        if (!isDisposing)
+        if (Interlocked.Exchange(ref _isDisposed, 1) != 0 || !isDisposing)
         {
             return;
         }
@@ -222,7 +218,7 @@ public class AutoSuspendHelper<[DynamicallyAccessedMembers(DynamicallyAccessedMe
     /// <exception cref="ObjectDisposedException">Thrown when the instance is disposed.</exception>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void ThrowIfDisposed() =>
-        ObjectDisposedException.ThrowIf(_isDisposed, this);
+        ObjectDisposedException.ThrowIf(Volatile.Read(ref _isDisposed) != 0, this);
 
     /// <summary>Stores a process-wide cache of which delegate types have been validated for lifecycle forwarding.</summary>
     /// <remarks>

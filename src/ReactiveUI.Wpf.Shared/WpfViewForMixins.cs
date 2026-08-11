@@ -5,6 +5,7 @@
 
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using System.Windows;
 
 #if REACTIVE_SHIM
@@ -16,8 +17,8 @@ namespace ReactiveUI;
 public static class WpfViewForMixins
 {
     /// <summary>Provides WPF activation extension methods for activatable framework element views.</summary>
-    /// <param name="item">The view.</param>
     /// <typeparam name="TView">The type of the view.</typeparam>
+    /// <param name="item">The view.</param>
     extension<TView>(TView item)
         where TView : FrameworkElement, IActivatableView
     {
@@ -31,9 +32,9 @@ public static class WpfViewForMixins
         }
 
         /// <summary>Activates the WPF view for its activation lifecycle without registering any activation-scoped disposables.</summary>
+        /// <returns>An <see cref="IDisposable"/> that deactivates the view when disposed.</returns>
         /// <remarks>Use this no-op overload purely to trigger <see cref="IActivatableViewModel"/> activation when the
         /// view itself has no resources to manage — it avoids the empty <c>WhenActivated(_ =&gt; { })</c> boilerplate.</remarks>
-        /// <returns>An <see cref="IDisposable"/> that deactivates the view when disposed.</returns>
         [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
         public IDisposable WhenActivated() =>
             item.GetIsDesignMode()
@@ -94,6 +95,7 @@ public static class WpfViewForMixins
         /// <param name="block">An action that receives a composite disposable for activation-related resources.</param>
         /// <returns>An <see cref="IDisposable"/> that unregisters the activation logic.</returns>
         [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IDisposable WhenActivated(Action<MultipleDisposable> block) => item.WhenActivated(block, null);
 
         /// <summary>Activates the specified WPF view and manages the provided disposables for the duration of the activation lifecycle.</summary>

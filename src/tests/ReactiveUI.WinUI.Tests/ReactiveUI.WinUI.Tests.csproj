@@ -1,0 +1,66 @@
+<!--
+ Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+ Licensed to the .NET Foundation under one or more agreements.
+ The .NET Foundation licenses this file to you under the MIT license.
+ See the LICENSE file in the project root for full license information.
+-->
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>$(ReactiveUITestingUITargets)</TargetFrameworks>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>ReactiveUI.Tests</RootNamespace>
+    <IsTestProject>true</IsTestProject>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ReactiveUI.Test.Utilities\ReactiveUI.Test.Utilities.csproj"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="**\*.cs"/>
+    <None Include="**\*.cs"/>
+    <Compile Include="API\**\*.cs"/>
+  </ItemGroup>
+
+  <Choose>
+    <When Condition=" $(TargetFramework.EndsWith('-windows10.0.19041.0')) ">
+      <PropertyGroup>
+        <UseWinUI>true</UseWinUI>
+        <DefineConstants>$(DefineConstants);IS_WINUI;WINUI_TARGET</DefineConstants>
+        <!-- The test host is a plain console executable, not an MSIX app, so the Windows App SDK framework
+             package has to be resolved by the bootstrapper at start-up. -->
+        <WindowsPackageType>None</WindowsPackageType>
+        <WindowsAppSDKSelfContained>false</WindowsAppSDKSelfContained>
+        <!-- WindowsPackageType=None would otherwise have the SDK emit a module initializer that bootstraps
+             before Main and calls Environment.Exit with the HRESULT when no framework package matches. That
+             kills the test host before the platform discovers a test, which surfaces as a zero-test run and a
+             failed job rather than as a missing prerequisite. WindowsAppRuntimeBootstrap does it explicitly
+             instead, so an absent runtime is reported and the WinUI tests skip. Only the bootstrap targets
+             emit the version constants it needs, hence asking for them directly. -->
+        <WindowsAppSdkBootstrapInitialize>false</WindowsAppSdkBootstrapInitialize>
+        <WindowsAppSdkIncludeVersionInfo>true</WindowsAppSdkIncludeVersionInfo>
+        <GenerateAppxPackageOnBuild>false</GenerateAppxPackageOnBuild>
+        <PublishAppxPackage>false</PublishAppxPackage>
+        <AppxPackageSigningEnabled>false</AppxPackageSigningEnabled>
+        <WindowsSdkPackageVersion>10.0.19041.48</WindowsSdkPackageVersion>
+        <TargetPlatformMinVersion>10.0.19041.0</TargetPlatformMinVersion>
+        <SupportedOSPlatformVersion>10.0.19041.0</SupportedOSPlatformVersion>
+      </PropertyGroup>
+      <ItemGroup>
+        <PackageReference Include="Microsoft.WindowsAppSDK"/>
+        <PackageReference Include="Microsoft.Windows.SDK.BuildTools"/>
+        <ProjectReference Include="..\..\ReactiveUI.WinUI\ReactiveUI.WinUI.csproj"/>
+        <Using Include="ReactiveUI.Builder"/>
+        <Compile Include="WinUI\**\*.cs"/>
+        <Compile Include="AssemblyHooks.cs"/>
+        <Compile Include="AssemblyInfo.Parallel.cs"/>
+      </ItemGroup>
+    </When>
+  </Choose>
+
+  <!-- Off-Windows the WinUI MSIX/PRI pipeline (MakePri.exe) and the CsWinRT projection cannot run; the managed
+       assembly still compiles so the Linux/macOS CI legs validate this project. -->
+  <Import Project="..\..\ReactiveUI.WinUI\build\SkipMakePriOnNonWindows.targets"
+          Condition="!$([MSBuild]::IsOsPlatform('Windows'))"/>
+</Project>

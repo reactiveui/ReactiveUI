@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Runtime.CompilerServices;
 using ReactiveUI.Primitives.Disposables;
 
 #if REACTIVE_SHIM
@@ -30,6 +31,7 @@ public static partial class AutoPersistHelperMixins
         /// <param name="doPersist">The asynchronous method to call to save the object to disk.</param>
         /// <param name="metadata">The persistence metadata to use for determining persistable properties.</param>
         /// <returns>A disposable to disable automatic persistence.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IDisposable AutoPersist(
             Func<T, IObservable<RxVoid>> doPersist,
             AutoPersistMetadata metadata) =>
@@ -41,6 +43,7 @@ public static partial class AutoPersistHelperMixins
         /// <param name="interval">The interval to save the object on.</param>
         /// <returns>A disposable to disable automatic persistence.</returns>
         /// <exception cref="ArgumentException">Thrown when <paramref name="metadata"/> indicates the object is not persistable.</exception>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IDisposable AutoPersist(
             Func<T, IObservable<RxVoid>> doPersist,
             AutoPersistMetadata metadata,
@@ -53,6 +56,7 @@ public static partial class AutoPersistHelperMixins
         /// <param name="manualSaveSignal">When invoked, the object will be saved regardless of whether it has changed.</param>
         /// <param name="metadata">The persistence metadata to use for determining persistable properties.</param>
         /// <returns>A disposable to disable automatic persistence.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IDisposable AutoPersist<TDontCare>(
             Func<T, IObservable<RxVoid>> doPersist,
             IObservable<TDontCare> manualSaveSignal,
@@ -92,29 +96,12 @@ public static partial class AutoPersistHelperMixins
 
             interval ??= TimeSpan.FromSeconds(DefaultAutoPersistIntervalSeconds);
 
-            var persistablePropertyNames = metadata.PersistablePropertyNames;
-
-            var ret = new OnceDisposable();
-            _ = RxSchedulers.MainThreadScheduler.Schedule(
-                (ret, source: @this, doPersist, persistablePropertyNames, manualSaveSignal, interval: interval.Value),
-                static (_, state) =>
-                {
-                    if (state.ret.IsDisposed)
-                    {
-                        return EmptyDisposable.Instance;
-                    }
-
-                    state.ret.Disposable = new AutoPersistDriver<T, TDontCare>(
-                        state.source,
-                        state.doPersist,
-                        state.persistablePropertyNames,
-                        state.manualSaveSignal,
-                        state.interval,
-                        RxSchedulers.TaskpoolScheduler);
-                    return EmptyDisposable.Instance;
-                });
-
-            return ret;
+            return StartAutoPersist(
+                @this,
+                doPersist,
+                metadata.PersistablePropertyNames,
+                manualSaveSignal,
+                interval.Value);
         }
     }
 }

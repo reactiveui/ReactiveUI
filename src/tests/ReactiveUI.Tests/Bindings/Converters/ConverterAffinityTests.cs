@@ -21,7 +21,7 @@ public class ConverterAffinityTests
         "Maintainability",
         "SST1523:Method is over the maximum line count",
         Justification = "Exhaustive one-per-converter registration table; splitting it fragments a single lookup that is read top to bottom.")]
-    public static IEnumerable<Func<(IBindingTypeConverter converter, int expectedAffinity)>> GetStandardConverters()
+    public static IEnumerable<Func<(IBindingTypeConverter Converter, int ExpectedAffinity)>> GetStandardConverters()
     {
         // String identity converter
         yield return static () => (new StringConverter(), BindingAffinity.DefaultInternalTypeConverter);

@@ -4,6 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using Android.Content;
 using Android.Runtime;
 using AndroidX.AppCompat.App;
@@ -14,6 +15,7 @@ namespace ReactiveUI.Reactive.AndroidX;
 namespace ReactiveUI.AndroidX;
 #endif
 /// <summary>This is an Activity that is both an Activity and has ReactiveObject powers (i.e. you can call RaiseAndSetIfChanged).</summary>
+[System.Diagnostics.DebuggerDisplay("{Activated}, {Deactivated}")]
 public class ReactiveAppCompatActivity : AppCompatActivity, IReactiveObject,
     IReactiveNotifyPropertyChanged<ReactiveAppCompatActivity>, IHandleObservableErrors
 {
@@ -24,7 +26,7 @@ public class ReactiveAppCompatActivity : AppCompatActivity, IReactiveObject,
     private readonly Signal<RxVoid> _deactivated = new();
 
     /// <summary>The subject that signals activity results.</summary>
-    private readonly Signal<(int requestCode, Result result, Intent? intent)> _activityResult = new();
+    private readonly Signal<(int RequestCode, Result Result, Intent? Intent)> _activityResult = new();
 
     /// <summary>Initializes a new instance of the <see cref="ReactiveAppCompatActivity" /> class.</summary>
     protected ReactiveAppCompatActivity()
@@ -72,58 +74,49 @@ public class ReactiveAppCompatActivity : AppCompatActivity, IReactiveObject,
     /// <value>
     /// The activity result.
     /// </value>
-    public IObservable<(int requestCode, Result result, Intent? intent)> ActivityResult =>
+    public IObservable<(int RequestCode, Result Result, Intent? Intent)> ActivityResult =>
         _activityResult;
 
     /// <inheritdoc/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args) => PropertyChanging?.Invoke(this, args);
 
     /// <inheritdoc/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args) => PropertyChanged?.Invoke(this, args);
 
     /// <inheritdoc/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public IDisposable SuppressChangeNotifications() => IReactiveObjectExtensions.SuppressChangeNotifications(this);
 
     /// <summary>Starts the activity for result asynchronously.</summary>
     /// <param name="intent">The intent.</param>
     /// <param name="requestCode">The request code.</param>
     /// <returns>A task with the result and intent.</returns>
-    public Task<(Result result, Intent? intent)> StartActivityForResultAsync(Intent intent, int requestCode)
-    {
-        // NB: It's important that we set up the subscription *before* we
-        // call ActivityForResult
-        var ret = ActivityResultAwaiter.Await(ActivityResult, requestCode);
-
-        StartActivityForResult(intent, requestCode);
-        return ret;
-    }
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public Task<(Result Result, Intent? Intent)> StartActivityForResultAsync(Intent intent, int requestCode) =>
+        ActivityResultAwaiter.StartForResultAsync(this, ActivityResult, intent, requestCode);
 
     /// <summary>Starts the activity for result asynchronously.</summary>
     /// <param name="type">The type.</param>
     /// <param name="requestCode">The request code.</param>
     /// <returns>A task with the result and intent.</returns>
-    public Task<(Result result, Intent? intent)> StartActivityForResultAsync(Type type, int requestCode)
-    {
-        // NB: It's important that we set up the subscription *before* we
-        // call ActivityForResult
-        var ret = ActivityResultAwaiter.Await(ActivityResult, requestCode);
-
-        StartActivityForResult(type, requestCode);
-        return ret;
-    }
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public Task<(Result Result, Intent? Intent)> StartActivityForResultAsync(Type type, int requestCode) =>
+        ActivityResultAwaiter.StartForResultAsync(this, ActivityResult, type, requestCode);
 
     /// <inheritdoc/>
     protected override void OnPause()
     {
         base.OnPause();
-        _deactivated.OnNext(RxVoid.Default);
+        ActivationSignals.Raise(_deactivated);
     }
 
     /// <inheritdoc/>
     protected override void OnResume()
     {
         base.OnResume();
-        _activated.OnNext(RxVoid.Default);
+        ActivationSignals.Raise(_activated);
     }
 
     /// <inheritdoc/>
@@ -136,13 +129,7 @@ public class ReactiveAppCompatActivity : AppCompatActivity, IReactiveObject,
     /// <inheritdoc/>
     protected override void Dispose(bool disposing)
     {
-        if (disposing)
-        {
-            _activated.Dispose();
-            _deactivated.Dispose();
-            _activityResult.Dispose();
-        }
-
+        ActivationSignals.DisposeWhen(disposing, _activated, _deactivated, _activityResult);
         base.Dispose(disposing);
     }
 }

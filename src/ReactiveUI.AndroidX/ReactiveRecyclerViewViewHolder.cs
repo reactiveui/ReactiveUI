@@ -6,6 +6,7 @@
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
 using Android.Views;
@@ -22,6 +23,7 @@ namespace ReactiveUI.AndroidX;
 [RequiresUnreferencedCode(
     "Android property discovery uses reflection over generated resource types that may be trimmed.")]
 [RequiresDynamicCode("Android property discovery discovery uses reflection that may require dynamic code generation.")]
+[System.Diagnostics.DebuggerDisplay("{ViewModel}")]
 public class ReactiveRecyclerViewViewHolder<TViewModel> : RecyclerView.ViewHolder, ILayoutViewHost,
     IViewFor<TViewModel>, IReactiveNotifyPropertyChanged<ReactiveRecyclerViewViewHolder<TViewModel>>, IReactiveObject,
     ICanActivate
@@ -155,16 +157,20 @@ public class ReactiveRecyclerViewViewHolder<TViewModel> : RecyclerView.ViewHolde
     protected Lazy<PropertyInfo[]>? AllPublicProperties { get; set; }
 
     /// <inheritdoc/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public IDisposable SuppressChangeNotifications() => IReactiveObjectExtensions.SuppressChangeNotifications(this);
 
     /// <summary>Gets if change notifications via the INotifyPropertyChanged interface are being sent.</summary>
     /// <returns>A value indicating whether change notifications are enabled or not.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool AreChangeNotificationsEnabled() => IReactiveObjectExtensions.AreChangeNotificationsEnabled(this);
 
     /// <inheritdoc/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args) => PropertyChanging?.Invoke(this, args);
 
     /// <inheritdoc/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args) => PropertyChanged?.Invoke(this, args);
 
     /// <inheritdoc/>
@@ -174,17 +180,16 @@ public class ReactiveRecyclerViewViewHolder<TViewModel> : RecyclerView.ViewHolde
         {
             View.ViewAttachedToWindow -= OnViewAttachedToWindow;
             View.ViewDetachedFromWindow -= OnViewDetachedFromWindow;
-
-            _activated.Dispose();
-            _deactivated.Dispose();
         }
 
+        ActivationSignals.DisposeWhen(disposing, _activated, _deactivated);
         base.Dispose(disposing);
     }
 
     /// <summary>Sets up the reactive object after deserialization.</summary>
     /// <param name="sc">The streaming context.</param>
     [OnDeserialized]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void SetupRxObj(in StreamingContext sc) => SetupRxObj();
 
     /// <summary>Sets up the reactive object by initializing the public property cache.</summary>
@@ -194,12 +199,14 @@ public class ReactiveRecyclerViewViewHolder<TViewModel> : RecyclerView.ViewHolde
     /// <summary>Handles the view being attached to the window and signals activation.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="args">The event arguments.</param>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void OnViewAttachedToWindow(object? sender, View.ViewAttachedToWindowEventArgs args) =>
-        _activated.OnNext(RxVoid.Default);
+        ActivationSignals.Raise(_activated);
 
     /// <summary>Handles the view being detached from the window and signals deactivation.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="args">The event arguments.</param>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void OnViewDetachedFromWindow(object? sender, View.ViewDetachedFromWindowEventArgs args) =>
-        _deactivated.OnNext(RxVoid.Default);
+        ActivationSignals.Raise(_deactivated);
 }

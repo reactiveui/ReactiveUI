@@ -5,7 +5,7 @@ ReactiveUI.Reactive.AndroidX.ControlFetcherMixins.extension(AndroidX.Fragment.Ap
 ReactiveUI.Reactive.AndroidX.ControlFetcherMixins.extension(AndroidX.Fragment.App.Fragment!).WireUpControls(Android.Views.View! inflatedView, ReactiveUI.Reactive.ControlFetcherMixins.ResolveStrategy resolveMembers) -> void
 ReactiveUI.Reactive.AndroidX.ReactiveAppCompatActivity
 ReactiveUI.Reactive.AndroidX.ReactiveAppCompatActivity.Activated.get -> System.IObservable<System.Reactive.Unit>!
-ReactiveUI.Reactive.AndroidX.ReactiveAppCompatActivity.ActivityResult.get -> System.IObservable<(int requestCode, Android.App.Result result, Android.Content.Intent? intent)>!
+ReactiveUI.Reactive.AndroidX.ReactiveAppCompatActivity.ActivityResult.get -> System.IObservable<(int RequestCode, Android.App.Result Result, Android.Content.Intent? Intent)>!
 ReactiveUI.Reactive.AndroidX.ReactiveAppCompatActivity.Changed.get -> System.IObservable<ReactiveUI.IReactivePropertyChangedEventArgs<ReactiveUI.Reactive.AndroidX.ReactiveAppCompatActivity!>!>!
 ReactiveUI.Reactive.AndroidX.ReactiveAppCompatActivity.Changing.get -> System.IObservable<ReactiveUI.IReactivePropertyChangedEventArgs<ReactiveUI.Reactive.AndroidX.ReactiveAppCompatActivity!>!>!
 ReactiveUI.Reactive.AndroidX.ReactiveAppCompatActivity.Deactivated.get -> System.IObservable<System.Reactive.Unit>!
@@ -13,8 +13,8 @@ ReactiveUI.Reactive.AndroidX.ReactiveAppCompatActivity.PropertyChanged -> System
 ReactiveUI.Reactive.AndroidX.ReactiveAppCompatActivity.PropertyChanging -> System.ComponentModel.PropertyChangingEventHandler?
 ReactiveUI.Reactive.AndroidX.ReactiveAppCompatActivity.ReactiveAppCompatActivity() -> void
 ReactiveUI.Reactive.AndroidX.ReactiveAppCompatActivity.ReactiveAppCompatActivity(in nint handle, Android.Runtime.JniHandleOwnership ownership) -> void
-ReactiveUI.Reactive.AndroidX.ReactiveAppCompatActivity.StartActivityForResultAsync(Android.Content.Intent! intent, int requestCode) -> System.Threading.Tasks.Task<(Android.App.Result result, Android.Content.Intent? intent)>!
-ReactiveUI.Reactive.AndroidX.ReactiveAppCompatActivity.StartActivityForResultAsync(System.Type! type, int requestCode) -> System.Threading.Tasks.Task<(Android.App.Result result, Android.Content.Intent? intent)>!
+ReactiveUI.Reactive.AndroidX.ReactiveAppCompatActivity.StartActivityForResultAsync(Android.Content.Intent! intent, int requestCode) -> System.Threading.Tasks.Task<(Android.App.Result Result, Android.Content.Intent? Intent)>!
+ReactiveUI.Reactive.AndroidX.ReactiveAppCompatActivity.StartActivityForResultAsync(System.Type! type, int requestCode) -> System.Threading.Tasks.Task<(Android.App.Result Result, Android.Content.Intent? Intent)>!
 ReactiveUI.Reactive.AndroidX.ReactiveAppCompatActivity.SuppressChangeNotifications() -> System.IDisposable!
 ReactiveUI.Reactive.AndroidX.ReactiveAppCompatActivity.ThrownExceptions.get -> System.IObservable<System.Exception!>!
 ReactiveUI.Reactive.AndroidX.ReactiveAppCompatActivity<TViewModel>
@@ -51,15 +51,15 @@ ReactiveUI.Reactive.AndroidX.ReactiveFragment<TViewModel>.ViewModel.get -> TView
 ReactiveUI.Reactive.AndroidX.ReactiveFragment<TViewModel>.ViewModel.set -> void
 ReactiveUI.Reactive.AndroidX.ReactiveFragmentActivity
 ReactiveUI.Reactive.AndroidX.ReactiveFragmentActivity.Activated.get -> System.IObservable<System.Reactive.Unit>!
-ReactiveUI.Reactive.AndroidX.ReactiveFragmentActivity.ActivityResult.get -> System.IObservable<(int requestCode, Android.App.Result result, Android.Content.Intent? intent)>!
+ReactiveUI.Reactive.AndroidX.ReactiveFragmentActivity.ActivityResult.get -> System.IObservable<(int RequestCode, Android.App.Result Result, Android.Content.Intent? Intent)>!
 ReactiveUI.Reactive.AndroidX.ReactiveFragmentActivity.Changed.get -> System.IObservable<ReactiveUI.IReactivePropertyChangedEventArgs<ReactiveUI.Reactive.AndroidX.ReactiveFragmentActivity!>!>!
 ReactiveUI.Reactive.AndroidX.ReactiveFragmentActivity.Changing.get -> System.IObservable<ReactiveUI.IReactivePropertyChangedEventArgs<ReactiveUI.Reactive.AndroidX.ReactiveFragmentActivity!>!>!
 ReactiveUI.Reactive.AndroidX.ReactiveFragmentActivity.Deactivated.get -> System.IObservable<System.Reactive.Unit>!
 ReactiveUI.Reactive.AndroidX.ReactiveFragmentActivity.PropertyChanged -> System.ComponentModel.PropertyChangedEventHandler?
 ReactiveUI.Reactive.AndroidX.ReactiveFragmentActivity.PropertyChanging -> System.ComponentModel.PropertyChangingEventHandler?
 ReactiveUI.Reactive.AndroidX.ReactiveFragmentActivity.ReactiveFragmentActivity() -> void
-ReactiveUI.Reactive.AndroidX.ReactiveFragmentActivity.StartActivityForResultAsync(Android.Content.Intent! intent, int requestCode) -> System.Threading.Tasks.Task<(Android.App.Result result, Android.Content.Intent? intent)>!
-ReactiveUI.Reactive.AndroidX.ReactiveFragmentActivity.StartActivityForResultAsync(System.Type! type, int requestCode) -> System.Threading.Tasks.Task<(Android.App.Result result, Android.Content.Intent? intent)>!
+ReactiveUI.Reactive.AndroidX.ReactiveFragmentActivity.StartActivityForResultAsync(Android.Content.Intent! intent, int requestCode) -> System.Threading.Tasks.Task<(Android.App.Result Result, Android.Content.Intent? Intent)>!
+ReactiveUI.Reactive.AndroidX.ReactiveFragmentActivity.StartActivityForResultAsync(System.Type! type, int requestCode) -> System.Threading.Tasks.Task<(Android.App.Result Result, Android.Content.Intent? Intent)>!
 ReactiveUI.Reactive.AndroidX.ReactiveFragmentActivity.SuppressChangeNotifications() -> System.IDisposable!
 ReactiveUI.Reactive.AndroidX.ReactiveFragmentActivity.ThrownExceptions.get -> System.IObservable<System.Exception!>!
 ReactiveUI.Reactive.AndroidX.ReactiveFragmentActivity<TViewModel>
@@ -114,8 +114,6 @@ ReactiveUI.Reactive.AndroidX.ReactiveRecyclerViewViewHolder<TViewModel>.ViewMode
 ReactiveUI.Reactive.AndroidX.Registrations
 ReactiveUI.Reactive.AndroidX.Registrations.Register(ReactiveUI.IRegistrar! registrar) -> void
 ReactiveUI.Reactive.AndroidX.Registrations.Registrations() -> void
-ReactiveUI.Reactive.AndroidX.Resource
-ReactiveUI.Reactive.AndroidX.Resource.Resource() -> void
 ReactiveUI.Reactive.Builder.AndroidXReactiveUIBuilderExtensions
 ReactiveUI.Reactive.Builder.AndroidXReactiveUIBuilderExtensions.extension(ReactiveUI.Reactive.Builder.IReactiveUIBuilder?)
 ReactiveUI.Reactive.Builder.AndroidXReactiveUIBuilderExtensions.extension(ReactiveUI.Reactive.Builder.IReactiveUIBuilder?).WithAndroidX() -> ReactiveUI.Reactive.Builder.IReactiveUIBuilder!

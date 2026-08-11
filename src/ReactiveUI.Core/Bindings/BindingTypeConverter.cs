@@ -3,6 +3,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics;
+
 namespace ReactiveUI;
 
 /// <summary>Base class for type-pair binding converters.</summary>
@@ -13,6 +15,7 @@ namespace ReactiveUI;
 /// object-based shim (<see cref="TryConvertTyped(object?, object?, out object?)"/>), allowing the dispatch
 /// layer to avoid reflection.
 /// </remarks>
+[DebuggerDisplay("{FromType}, {ToType}")]
 public abstract class BindingTypeConverter<TFrom, TTo> : IBindingTypeConverter<TFrom, TTo>
 {
     /// <inheritdoc/>

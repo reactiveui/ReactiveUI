@@ -125,6 +125,14 @@
     <ReactiveUIFinalModernTargetFrameworks Condition="$([MSBuild]::IsOsPlatform('Windows'))">$(ReactiveUIFinalModernTargetFrameworks);$(ReactiveUIFrameworkTargets);$(ReactiveUIWindowsTargets)</ReactiveUIFinalModernTargetFrameworks>
   </PropertyGroup>
 
+  <!-- None of these libraries ship Android resources, so the generated Resource designer class would be an
+       empty passthrough over the resource designer assembly - and a public type in every shipped Android
+       assembly. Control wiring resolves resource identifiers by reflection against the consuming app at
+       runtime, so nothing here needs a compile-time Resource. -->
+  <PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
+    <AndroidGenerateResourceDesigner>false</AndroidGenerateResourceDesigner>
+  </PropertyGroup>
+
   <!-- MTP Native JSON Configuration -->
   <ItemGroup Condition="'$(IsTestProject)' == 'true'">
     <None Include="$(MSBuildThisFileDirectory)testconfig.json">

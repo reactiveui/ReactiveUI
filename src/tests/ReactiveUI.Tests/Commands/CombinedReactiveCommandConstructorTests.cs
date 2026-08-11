@@ -18,7 +18,7 @@ public class CombinedReactiveCommandConstructorTests
     {
         var child = ReactiveCommand.Create(static () => { }, outputScheduler: Sequencer.Immediate);
         IEnumerable<ReactiveCommandBase<RxVoid, RxVoid>> children = [child];
-        IObservable<bool> canExecute = Signal.Emit(true);
+        var canExecute = Signal.Emit(true);
 
         using var combined = new CombinedReactiveCommand<RxVoid, RxVoid>(children, canExecute);
 

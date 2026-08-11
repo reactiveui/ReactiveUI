@@ -7,6 +7,7 @@ using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 
 namespace ReactiveUI;
 
@@ -24,6 +25,7 @@ public class INPCObservableForProperty : ICreatesObservableForProperty
 {
     /// <inheritdoc/>
     [RequiresUnreferencedCode("Uses reflection over runtime types which is not trim- or AOT-safe.")]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public int GetAffinityForObject(Type type, string propertyName) =>
         GetAffinityForObject(type, propertyName, false);
 
@@ -36,12 +38,16 @@ public class INPCObservableForProperty : ICreatesObservableForProperty
             return 0;
         }
 
-        var target = beforeChanged ? typeof(INotifyPropertyChanging) : typeof(INotifyPropertyChanged);
-        return target.GetTypeInfo().IsAssignableFrom(type.GetTypeInfo()) ? BindingAffinity.Explicit : 0;
+        return (beforeChanged ? typeof(INotifyPropertyChanging) : typeof(INotifyPropertyChanged))
+            .GetTypeInfo()
+            .IsAssignableFrom(type.GetTypeInfo())
+            ? BindingAffinity.Explicit
+            : 0;
     }
 
     /// <inheritdoc/>
     [RequiresUnreferencedCode("Uses reflection over runtime types which is not trim- or AOT-safe.")]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public IObservable<IObservedChange<object?, object?>> GetNotificationForProperty(
         object sender,
         Expression expression,
@@ -50,6 +56,7 @@ public class INPCObservableForProperty : ICreatesObservableForProperty
 
     /// <inheritdoc/>
     [RequiresUnreferencedCode("Uses reflection over runtime types which is not trim- or AOT-safe.")]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public IObservable<IObservedChange<object?, object?>> GetNotificationForProperty(
         object sender,
         Expression expression,
@@ -80,14 +87,6 @@ public class INPCObservableForProperty : ICreatesObservableForProperty
             : Signal.Silent<IObservedChange<object?, object?>>();
     }
 
-    /// <summary>Determines whether a notified property name matches the observed property (an empty name means "all properties").</summary>
-    /// <param name="notifiedName">The property name carried by the notification.</param>
-    /// <param name="observedName">The observed property name.</param>
-    /// <returns><see langword="true"/> if the notification applies to the observed property.</returns>
-    private static bool Matches(string? notifiedName, string observedName) =>
-        string.IsNullOrEmpty(notifiedName)
-        || string.Equals(notifiedName, observedName, StringComparison.InvariantCulture);
-
     /// <summary>
     /// A single-layer observable over <see cref="INotifyPropertyChanged.PropertyChanged"/>: each subscription attaches
     /// a handler that filters by name and emits the observed change directly, with no intermediate operators.
@@ -110,20 +109,10 @@ public class INPCObservableForProperty : ICreatesObservableForProperty
         }
 
         /// <summary>Attaches the property-changed handler for the lifetime of the subscription.</summary>
-        private sealed class Subscription : IDisposable
+        private sealed class Subscription : ObservedChangeForwarder, IDisposable
         {
             /// <summary>The change notifier this subscription is hooked to.</summary>
             private readonly INotifyPropertyChanged _notifier;
-
-            /// <summary>The observed property name.</summary>
-            private readonly string _observedName;
-
-            /// <summary>The observer receiving observed changes.</summary>
-            private readonly IObserver<IObservedChange<object?, object?>> _observer;
-
-            /// <summary>The projected change is constant for this subscription (fixed sender/expression, lazily-read
-            /// null value), so it is built once and reused rather than allocated on every matching notification.</summary>
-            private readonly IObservedChange<object?, object?> _change;
 
             /// <summary>Initializes a new instance of the <see cref="Subscription"/> class and hooks the event.</summary>
             /// <param name="notifier">The change notifier to hook.</param>
@@ -137,11 +126,9 @@ public class INPCObservableForProperty : ICreatesObservableForProperty
                 Expression expression,
                 string observedName,
                 IObserver<IObservedChange<object?, object?>> observer)
+                : base(sender, expression, observedName, observer)
             {
                 _notifier = notifier;
-                _observedName = observedName;
-                _observer = observer;
-                _change = new ObservedChange<object?, object?>(sender, expression, null);
                 _notifier.PropertyChanged += OnPropertyChanged;
             }
 
@@ -151,15 +138,8 @@ public class INPCObservableForProperty : ICreatesObservableForProperty
             /// <summary>Filters the changed property name and forwards a matching observed change.</summary>
             /// <param name="sender">The event sender.</param>
             /// <param name="e">The property-changed event arguments.</param>
-            private void OnPropertyChanged(object? sender, PropertyChangedEventArgs e)
-            {
-                if (!Matches(e.PropertyName, _observedName))
-                {
-                    return;
-                }
-
-                _observer.OnNext(_change);
-            }
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private void OnPropertyChanged(object? sender, PropertyChangedEventArgs e) => Forward(e.PropertyName);
         }
     }
 
@@ -185,20 +165,10 @@ public class INPCObservableForProperty : ICreatesObservableForProperty
         }
 
         /// <summary>Attaches the property-changing handler for the lifetime of the subscription.</summary>
-        private sealed class Subscription : IDisposable
+        private sealed class Subscription : ObservedChangeForwarder, IDisposable
         {
             /// <summary>The change notifier this subscription is hooked to.</summary>
             private readonly INotifyPropertyChanging _notifier;
-
-            /// <summary>The observed property name.</summary>
-            private readonly string _observedName;
-
-            /// <summary>The observer receiving observed changes.</summary>
-            private readonly IObserver<IObservedChange<object?, object?>> _observer;
-
-            /// <summary>The projected change is constant for this subscription (fixed sender/expression, lazily-read
-            /// null value), so it is built once and reused rather than allocated on every matching notification.</summary>
-            private readonly IObservedChange<object?, object?> _change;
 
             /// <summary>Initializes a new instance of the <see cref="Subscription"/> class and hooks the event.</summary>
             /// <param name="notifier">The change notifier to hook.</param>
@@ -212,11 +182,9 @@ public class INPCObservableForProperty : ICreatesObservableForProperty
                 Expression expression,
                 string observedName,
                 IObserver<IObservedChange<object?, object?>> observer)
+                : base(sender, expression, observedName, observer)
             {
                 _notifier = notifier;
-                _observedName = observedName;
-                _observer = observer;
-                _change = new ObservedChange<object?, object?>(sender, expression, null);
                 _notifier.PropertyChanging += OnPropertyChanging;
             }
 
@@ -226,15 +194,44 @@ public class INPCObservableForProperty : ICreatesObservableForProperty
             /// <summary>Filters the changing property name and forwards a matching observed change.</summary>
             /// <param name="sender">The event sender.</param>
             /// <param name="e">The property-changing event arguments.</param>
-            private void OnPropertyChanging(object? sender, PropertyChangingEventArgs e)
-            {
-                if (!Matches(e.PropertyName, _observedName))
-                {
-                    return;
-                }
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private void OnPropertyChanging(object? sender, PropertyChangingEventArgs e) => Forward(e.PropertyName);
+        }
+    }
 
-                _observer.OnNext(_change);
+    /// <summary>
+    /// The per-subscription state shared by the changed and changing hooks: the observer, the observed property name,
+    /// and the single projected change reused for every notification. Derived subscriptions supply only the event
+    /// hook-up and tear-down, and call <see cref="Forward"/> from their handler.
+    /// </summary>
+    /// <param name="sender">The object surfaced on the observed change.</param>
+    /// <param name="expression">The expression surfaced on the observed change.</param>
+    /// <param name="observedName">The observed property name.</param>
+    /// <param name="observer">The observer receiving observed changes.</param>
+    private class ObservedChangeForwarder(
+        object sender,
+        Expression expression,
+        string observedName,
+        IObserver<IObservedChange<object?, object?>> observer)
+    {
+        /// <summary>The projected change is constant for this subscription (fixed sender/expression, lazily-read
+        /// null value), so it is built once and reused rather than allocated on every matching notification.</summary>
+        private readonly IObservedChange<object?, object?> _change = new ObservedChange<object?, object?>(sender, expression, null);
+
+        /// <summary>Forwards the reused observed change when the notification applies to the observed property.</summary>
+        /// <param name="notifiedName">
+        /// The property name carried by the notification. An empty or <see langword="null"/> name means "every
+        /// property", so it matches whatever this subscription observes.
+        /// </param>
+        protected void Forward(string? notifiedName)
+        {
+            if (!string.IsNullOrEmpty(notifiedName)
+                && !string.Equals(notifiedName, observedName, StringComparison.InvariantCulture))
+            {
+                return;
             }
+
+            observer.OnNext(_change);
         }
     }
 }

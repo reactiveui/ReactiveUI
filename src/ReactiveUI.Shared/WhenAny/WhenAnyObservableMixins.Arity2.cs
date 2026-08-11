@@ -5,6 +5,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 
 #if REACTIVE_SHIM
 namespace ReactiveUI.Reactive;
@@ -26,6 +27,7 @@ public static partial class WhenAnyObservableMixins
         /// <param name="obs2">An expression pointing to observable property 2.</param>
         /// <returns>An observable that produces the merged latest values of the observed observables.</returns>
         [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IObservable<TRet> WhenAnyObservable<TRet>(
             Expression<Func<TSender, IObservable<TRet>?>> obs1,
             Expression<Func<TSender, IObservable<TRet>?>> obs2) =>
@@ -48,6 +50,7 @@ public static partial class WhenAnyObservableMixins
         /// <param name="selector">Combines the latest values of the observed observables into a result.</param>
         /// <returns>An observable that produces the projected result of the combined observables.</returns>
         [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IObservable<TRet> WhenAnyObservable<TRet, T1, T2>(
             Expression<Func<TSender, IObservable<T1>?>> obs1,
             Expression<Func<TSender, IObservable<T2>?>> obs2,

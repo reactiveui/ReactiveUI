@@ -4,12 +4,14 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using ReactiveUI.Primitives;
 
 namespace ReactiveUI.Samples.Winforms;
 
 /// <summary>A reactive login view demonstrating WhenActivated and reactive subscriptions for WinForms.</summary>
+[DebuggerDisplay("LoginView")]
 public sealed class LoginView : UserControl, IViewFor<LoginViewModel>
 {
     /// <summary>The padding, in pixels, around the vertical layout panel.</summary>

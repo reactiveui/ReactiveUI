@@ -76,6 +76,7 @@ public sealed class SchedulerExtensionTests
 
     /// <summary>Tests that WithScheduler properly releases the gate even when an exception is thrown.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    /// <exception cref="InvalidOperationException">Thrown deliberately inside the first scheduler scope to prove the gate is still released.</exception>
     [Test]
     public async Task WithScheduler_ExceptionInCriticalSection_ShouldStillReleaseGate()
     {

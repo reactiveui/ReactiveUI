@@ -51,6 +51,7 @@ public static partial class Reflection
     /// <summary>Uses the expression re-writer to simplify the expression down to its simplest expression.</summary>
     /// <param name="expression">The expression to rewrite.</param>
     /// <returns>The rewritten expression, or <see langword="null"/> if <paramref name="expression"/> is <see langword="null"/>.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Expression Rewrite(Expression? expression) => _expressionRewriter.Visit(expression);
 
     /// <summary>
@@ -343,6 +344,7 @@ public static partial class Reflection
     /// <exception cref="ArgumentNullException">Thrown when target is null and traversal is required.</exception>
     /// <exception cref="ArgumentException">Thrown when a required member is not settable.</exception>
     [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool TrySetValueToPropertyChain<TValue>(
         object? target,
         IEnumerable<Expression> expressionChain,
@@ -454,7 +456,7 @@ public static partial class Reflection
     /// <param name="eventName">The name of the event.</param>
     /// <returns>The type of the event args used by the event handler.</returns>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="type"/> is <see langword="null"/>.</exception>
-    /// <exception cref="Exception">Thrown if there is no event matching the name on the target type.</exception>
+    /// <exception cref="InvalidOperationException">There is no event matching the name on the target type.</exception>
     /// <exception cref="MissingMethodException">Thrown if the event handler type does not expose an <c>Invoke</c> method.</exception>
     /// <remarks>
     /// Trimming note: the event handler type is obtained from <see cref="EventInfo.EventHandlerType"/>, which does not carry
@@ -484,7 +486,7 @@ public static partial class Reflection
     /// <param name="callingTypeName">The name of the calling type.</param>
     /// <param name="targetType">The type to check. Must preserve public and non-public methods under trimming.</param>
     /// <param name="methodsToCheck">The method names to check.</param>
-    /// <exception cref="Exception">Thrown if any method is not overridden on the target type.</exception>
+    /// <exception cref="InvalidOperationException">A method is not overridden on the target type.</exception>
     /// <remarks>
     /// Trimming note: this method inspects declared method names; the <paramref name="targetType"/> parameter is annotated accordingly.
     /// </remarks>
@@ -506,11 +508,13 @@ public static partial class Reflection
 
             foreach (var m in methods)
             {
-                if (string.Equals(m.Name, name, StringComparison.Ordinal))
+                if (!string.Equals(m.Name, name, StringComparison.Ordinal))
                 {
-                    found = m;
-                    break;
+                    continue;
                 }
+
+                found = m;
+                break;
             }
 
             if (found is null)
@@ -525,7 +529,7 @@ public static partial class Reflection
     /// <param name="targetObject">The object to check.</param>
     /// <param name="methodsToCheck">The method names to check.</param>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="targetObject"/> is <see langword="null"/>.</exception>
-    /// <exception cref="Exception">Thrown if any method is not overridden on the target object.</exception>
+    /// <exception cref="InvalidOperationException">A method is not overridden on the target object.</exception>
     /// <remarks>
     /// Trimming note: the runtime type is discovered dynamically via <see cref="object.GetType"/>, so this method
     /// cannot express a complete trimming contract locally.
@@ -548,11 +552,13 @@ public static partial class Reflection
 
             foreach (var m in methods)
             {
-                if (string.Equals(m.Name, name, StringComparison.Ordinal))
+                if (!string.Equals(m.Name, name, StringComparison.Ordinal))
                 {
-                    found = m;
-                    break;
+                    continue;
                 }
+
+                found = m;
+                break;
             }
 
             if (found is null)
@@ -594,6 +600,7 @@ public static partial class Reflection
     /// Trimming note: this is string-based type resolution and may fail under trimming without explicit preservation.
     /// </remarks>
     [RequiresUnreferencedCode("Resolves types by name and loads assemblies; types may be trimmed.")]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static Type? GetTypeHelper(string type) =>
         Type.GetType(
             type,

@@ -9,8 +9,8 @@ namespace ReactiveUI;
 public enum TriggerUpdate
 {
     /// <summary>The view to view model.</summary>
-    ViewToViewModel,
+    ViewToViewModel = 0,
 
     /// <summary>The view model to view.</summary>
-    ViewModelToView
+    ViewModelToView = 1,
 }

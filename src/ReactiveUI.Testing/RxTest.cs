@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Runtime.CompilerServices;
 using Splat.Builder;
 
 namespace ReactiveUI.Testing;
@@ -18,15 +19,17 @@ public static class RxTest
 
     /// <summary>Applications the builder test asynchronous.</summary>
     /// <param name="testBody">The test body.</param>
-    /// <exception cref="ArgumentNullException">testBody.</exception>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    /// <exception cref="ArgumentNullException">testBody.</exception>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Task AppBuilderTestAsync(Func<Task> testBody) => AppBuilderTestAsync(testBody, DefaultMaxWaitMs);
 
     /// <summary>Applications the builder test asynchronous.</summary>
     /// <param name="testBody">The test body.</param>
     /// <param name="maxWaitMs">The maximum wait in milliseconds for both acquiring the test gate and running the test body.</param>
-    /// <exception cref="ArgumentNullException">testBody.</exception>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    /// <exception cref="ArgumentNullException">testBody.</exception>
+    /// <exception cref="TimeoutException">The global test gate was not acquired within <paramref name="maxWaitMs"/>.</exception>
     public static async Task AppBuilderTestAsync(Func<Task> testBody, int maxWaitMs)
     {
         ArgumentExceptionHelper.ThrowIfNull(testBody);

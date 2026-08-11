@@ -4,6 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using ReactiveUI.Primitives.Disposables;
 
 #if REACTIVE_SHIM
@@ -27,6 +28,7 @@ public static class ObservableMixins
     {
         /// <summary>Returns only values that are not null. Converts the nullability.</summary>
         /// <returns>A non nullable version of the observable that only emits valid values.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IObservable<T> WhereNotNull() =>
             new WhereNotNullObservable<T>(observable);
     }
@@ -39,6 +41,7 @@ public static class ObservableMixins
     /// </summary>
     /// <param name="actionAsync">Asynchronous action to convert.</param>
     /// <returns>An observable sequence exposing a Unit value upon completion of the action, or an exception.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static IObservable<(IObservable<RxVoid> Result, Action Cancel)> FromAsyncWithAllNotifications(
         Func<CancellationToken, Task> actionAsync) =>
         new DeferredValueObservable<(IObservable<RxVoid> Result, Action Cancel)>(() =>
@@ -64,6 +67,7 @@ public static class ObservableMixins
     /// <param name="actionAsync">Asynchronous action to convert.</param>
     /// <param name="param">The parameter.</param>
     /// <returns>An observable sequence exposing a Unit value upon completion of the action, or an exception.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static IObservable<(IObservable<RxVoid> Result, Action Cancel)> FromAsyncWithAllNotifications<TParam>(
         Func<TParam, CancellationToken, Task> actionAsync,
         TParam param) =>
@@ -89,6 +93,7 @@ public static class ObservableMixins
     /// <typeparam name="TResult">The type of the result.</typeparam>
     /// <param name="actionAsync">Asynchronous action to convert.</param>
     /// <returns>An observable sequence exposing a Unit value upon completion of the action, or an exception.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static IObservable<(IObservable<TResult> Result, Action Cancel)> FromAsyncWithAllNotifications<TResult>(
         Func<CancellationToken, Task<TResult>> actionAsync) =>
         new DeferredValueObservable<(IObservable<TResult> Result, Action Cancel)>(() =>
@@ -109,6 +114,7 @@ public static class ObservableMixins
     /// <param name="actionAsync">Asynchronous action to convert.</param>
     /// <param name="param">The parameter.</param>
     /// <returns>An observable sequence exposing a Unit value upon completion of the action, or an exception.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static IObservable<(IObservable<TResult> Result, Action Cancel)> FromAsyncWithAllNotifications<
         TParam,
         TResult>(
@@ -168,9 +174,11 @@ public static class ObservableMixins
             }
 
             /// <inheritdoc/>
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public void OnError(Exception error) => downstream.OnError(error);
 
             /// <inheritdoc/>
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public void OnCompleted() => downstream.OnCompleted();
         }
     }
@@ -303,6 +311,7 @@ public static class ObservableMixins
             /// because that assignment completes before the disposable is returned to the caller.
             /// </summary>
             [ExcludeFromCodeCoverage]
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             private void DisposeLinkedSource() => Volatile.Read(ref _linked)?.Dispose();
         }
     }

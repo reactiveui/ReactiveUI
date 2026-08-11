@@ -104,10 +104,54 @@ public sealed class AutoSuspendHelperTest
     /// <summary>Tests that UntimelyDemise property is accessible.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public async Task UntimelyDemise_IsAccessible()
-    {
-        var untimelyDemise = AutoSuspendHelper.UntimelyDemise;
+    public async Task UntimelyDemise_IsAccessible() =>
+        await Assert.That(AutoSuspendHelper.UntimelyDemise).IsNotNull();
 
-        await Assert.That(untimelyDemise).IsNotNull();
+    /// <summary>
+    /// Tests that a second Dispose is a no-op: it does not throw, and it leaves the helper's lifecycle signals in the
+    /// disposed state the first call put them in.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task Dispose_CalledTwice_LeavesTheLifecycleSignalsDisposed()
+    {
+        var helper = new AutoSuspendHelper();
+        helper.Dispose();
+
+        await Assert.That(helper.Dispose).ThrowsNothing();
+
+        await Assert.That(helper.OnCreate).Throws<ObjectDisposedException>();
+        await Assert.That(helper.OnStart).Throws<ObjectDisposedException>();
+        await Assert.That(helper.OnResume).Throws<ObjectDisposedException>();
+        await Assert.That(helper.OnSleep).Throws<ObjectDisposedException>();
+    }
+
+    /// <summary>
+    /// Tests that the non-disposing branch of the dispose pattern leaves the managed lifecycle signals alone, so the
+    /// helper can still relay MAUI's notifications to the suspension host.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task Dispose_WithoutDisposingManagedResources_KeepsTheLifecycleSignalsUsable()
+    {
+        using var helper = new TestAutoSuspendHelper();
+        var unpaused = false;
+        _ = RxSuspension.SuspensionHost.IsUnpausing.Subscribe(_ => unpaused = true);
+
+        helper.InvokeDispose(false);
+
+        await Assert.That(helper.OnStart).ThrowsNothing();
+        await Assert.That(unpaused).IsTrue();
+    }
+
+    /// <summary>
+    /// An <see cref="AutoSuspendHelper"/> that exposes the protected dispose overload, so the non-disposing branch the
+    /// base class reserves for finalization can be driven from a test.
+    /// </summary>
+    private sealed class TestAutoSuspendHelper : AutoSuspendHelper
+    {
+        /// <summary>Runs the protected dispose overload.</summary>
+        /// <param name="disposing"><see langword="true"/> to release managed resources.</param>
+        public void InvokeDispose(bool disposing) => Dispose(disposing);
     }
 }

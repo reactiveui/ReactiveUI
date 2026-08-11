@@ -11,9 +11,6 @@ namespace ReactiveUI;
 public static class BindingTypeConverterDispatch
 {
     /// <summary>Attempts to convert an object to a specified target type using the provided converter.</summary>
-    /// <remarks>This method supports both type-based and fallback converters. If the provided converter does
-    /// not implement a supported interface or is null, the method returns false and result is set to null. The method
-    /// does not throw exceptions for failed conversions; instead, it returns false to indicate failure.</remarks>
     /// <param name="converter">The converter instance to use for the conversion. Must implement either IBindingTypeConverter or
     /// IBindingFallbackConverter. If null or of an unsupported type, the conversion will not be performed.</param>
     /// <param name="fromType">The type of the source object to convert. Used to determine the appropriate conversion logic.</param>
@@ -24,6 +21,9 @@ public static class BindingTypeConverterDispatch
     /// <param name="result">When this method returns, contains the converted value if the conversion succeeded; otherwise, null. This
     /// parameter is passed uninitialized.</param>
     /// <returns>true if the conversion was successful and result contains the converted value; otherwise, false.</returns>
+    /// <remarks>This method supports both type-based and fallback converters. If the provided converter does
+    /// not implement a supported interface or is null, the method returns false and result is set to null. The method
+    /// does not throw exceptions for failed conversions; instead, it returns false to indicate failure.</remarks>
     public static bool TryConvertAny(
         object? converter,
         [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)]
@@ -66,9 +66,6 @@ public static class BindingTypeConverterDispatch
     }
 
     /// <summary>Attempts to convert a value to the specified target type using the provided binding type converter.</summary>
-    /// <remarks>The conversion will only be attempted if the converter's ToType matches the specified toType
-    /// and the runtime type of from matches the converter's FromType (or is compatible with a nullable value type). No
-    /// exceptions are thrown for conversion failures; instead, the method returns false.</remarks>
     /// <param name="converter">The binding type converter to use for the conversion. Cannot be null.</param>
     /// <param name="from">The value to convert. May be null if the target type accepts null values.</param>
     /// <param name="toType">The target type to convert the value to. Must match the converter's ToType. Cannot be null.</param>
@@ -77,6 +74,9 @@ public static class BindingTypeConverterDispatch
     /// <param name="result">When this method returns, contains the converted value if the conversion succeeded; otherwise, null. This
     /// parameter is passed uninitialized.</param>
     /// <returns>true if the value was successfully converted; otherwise, false.</returns>
+    /// <remarks>The conversion will only be attempted if the converter's ToType matches the specified toType
+    /// and the runtime type of from matches the converter's FromType (or is compatible with a nullable value type). No
+    /// exceptions are thrown for conversion failures; instead, the method returns false.</remarks>
     internal static bool TryConvert(
         IBindingTypeConverter converter,
         object? from,
@@ -119,9 +119,6 @@ public static class BindingTypeConverterDispatch
     }
 
     /// <summary>Attempts to convert an object to a specified type using the provided fallback converter.</summary>
-    /// <remarks>This method delegates the conversion to the specified fallback converter. The result is
-    /// guaranteed to be non-null only if the conversion succeeds. Callers should check the return value to determine
-    /// whether the conversion was successful before using the result.</remarks>
     /// <param name="converter">The fallback converter to use for the conversion operation. Cannot be null.</param>
     /// <param name="fromType">The type of the source object to convert. Used to inform the converter of the input type.</param>
     /// <param name="from">The source object to convert. Cannot be null.</param>
@@ -130,6 +127,9 @@ public static class BindingTypeConverterDispatch
     /// <param name="result">When this method returns, contains the converted object if the conversion succeeded; otherwise, null. This
     /// parameter is passed uninitialized.</param>
     /// <returns>true if the conversion was successful and the result is non-null; otherwise, false.</returns>
+    /// <remarks>This method delegates the conversion to the specified fallback converter. The result is
+    /// guaranteed to be non-null only if the conversion succeeds. Callers should check the return value to determine
+    /// whether the conversion was successful before using the result.</remarks>
     internal static bool TryConvertFallback(
         IBindingFallbackConverter converter,
         [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)]

@@ -30,6 +30,13 @@ internal class ValidationBindingWpf<TView, TViewModel, TVProp, TVMProp> : IReact
     where TView : class, IViewFor
     where TViewModel : class
 {
+    /// <summary>
+    /// How far from the end of a view expression chain the control element sits. The chain ends with the bound
+    /// property (for example <c>view =&gt; view.MyTextBox.Text</c> ends in <c>Text</c>), so the control is the
+    /// element immediately before it.
+    /// </summary>
+    private const int ControlOffsetFromChainEnd = 2;
+
     /// <summary>The WPF control that the binding targets.</summary>
     private readonly FrameworkElement _control;
 
@@ -45,14 +52,15 @@ internal class ValidationBindingWpf<TView, TViewModel, TVProp, TVMProp> : IReact
     /// <summary>The disposable that tears down the active binding.</summary>
     private ActionDisposable? _inner;
 
-    /// <summary>Tracks whether this instance has already been disposed.</summary>
-    private bool _disposed;
+    /// <summary>Non-zero once this instance has been disposed; flipped atomically so only one caller runs the teardown.</summary>
+    private int _disposed;
 
     /// <summary>Initializes a new instance of the <see cref="ValidationBindingWpf{TView, TViewModel, TVProp, TVMProp}"/> class.</summary>
     /// <param name="view">The view that owns the binding.</param>
     /// <param name="viewModel">The view model that supplies the bound value.</param>
     /// <param name="viewModelProperty">An expression selecting the view model property to bind.</param>
     /// <param name="viewProperty">An expression selecting the view property to bind.</param>
+    /// <exception cref="ArgumentException">The named control, or its dependency property, cannot be found on the view.</exception>
     public ValidationBindingWpf(
         TView view,
         TViewModel viewModel,
@@ -72,14 +80,14 @@ internal class ValidationBindingWpf<TView, TViewModel, TVProp, TVMProp> : IReact
         var controlName = ExtractControlName(viewExpressionChain, typeof(TView));
         _control = FindControlByName(view as DependencyObject, controlName)
                    ?? throw new ArgumentException(
-                       $"Control '{controlName}' not found in view {nameof(TView)}",
+                       $"Control '{controlName}' not found in view {typeof(TView).Name}",
                        nameof(viewProperty));
 
         var lastViewExpression = viewExpressionChain.Length > 0 ? viewExpressionChain[^1] : null;
         var propertyName = lastViewExpression?.GetMemberInfo()?.Name;
         _dependencyProperty = GetDependencyProperty(_control, propertyName)
                           ?? throw new ArgumentException(
-                              $"Dependency property '{propertyName}' not found on {nameof(TVProp)}",
+                              $"Dependency property '{propertyName}' not found on {typeof(TVProp).Name}",
                               nameof(viewProperty));
 
         Changed = new ChangedObservable(
@@ -142,15 +150,14 @@ internal class ValidationBindingWpf<TView, TViewModel, TVProp, TVMProp> : IReact
     /// <exception cref="ArgumentException">Thrown when the control name cannot be determined.</exception>
     internal static string ExtractControlName(Expression[] expressionChain, Type viewType)
     {
-        if (expressionChain.Length < 2)
+        if (expressionChain.Length < ControlOffsetFromChainEnd)
         {
             throw new ArgumentException(
                 $"Expression chain too short to contain a control reference on {viewType.Name}",
                 nameof(expressionChain));
         }
 
-        var lastIndex = expressionChain.Length - 1;
-        var controlExpression = expressionChain[lastIndex - 1];
+        var controlExpression = expressionChain[^ControlOffsetFromChainEnd];
         var controlName = controlExpression.GetMemberInfo()?.Name;
 
         return controlName
@@ -280,17 +287,12 @@ internal class ValidationBindingWpf<TView, TViewModel, TVProp, TVMProp> : IReact
     /// <param name="disposing">True to release managed resources; otherwise, false.</param>
     protected virtual void Dispose(bool disposing)
     {
-        if (_disposed)
+        if (Interlocked.Exchange(ref _disposed, 1) != 0 || !disposing)
         {
             return;
         }
 
-        if (disposing)
-        {
-            _inner?.Dispose();
-        }
-
-        _disposed = true;
+        _inner?.Dispose();
     }
 
     /// <summary>Recursively searches the visual tree for controls matching the specified name.</summary>

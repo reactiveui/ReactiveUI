@@ -167,9 +167,8 @@ public class SuspensionHostTests
     {
         using var host = new SuspensionHost();
         var wasTriggered = false;
-        var disposable = Scope.Empty;
 
-        host.ShouldPersistState = Signal.Emit(disposable, Sequencer.Immediate);
+        host.ShouldPersistState = Signal.Emit(Scope.Empty, Sequencer.Immediate);
 
         using var subscription = host.ShouldPersistState.Subscribe(_ => wasTriggered = true);
 

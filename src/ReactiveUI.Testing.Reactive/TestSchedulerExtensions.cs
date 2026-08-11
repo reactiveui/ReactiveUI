@@ -5,6 +5,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.Reactive;
+using System.Runtime.CompilerServices;
 using Microsoft.Reactive.Testing;
 
 namespace ReactiveUI.Testing;
@@ -19,6 +20,7 @@ public static class TestSchedulerExtensions
         /// <summary>Converts a timespan to a virtual time for testing.</summary>
         /// <param name="span">Timespan to convert.</param>
         /// <returns>Timespan for virtual scheduler to use.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static long FromTimeSpan(TimeSpan span) => span.Ticks;
 
         /// <summary>

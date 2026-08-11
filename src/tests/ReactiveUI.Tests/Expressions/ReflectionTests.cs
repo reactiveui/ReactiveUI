@@ -242,9 +242,8 @@ public class ReflectionTests
     public async Task GetParent_WithMemberExpression_ReturnsExpression()
     {
         Expression<Func<TestClass, string?>> expr = x => x.Nested!.Property;
-        var memberExpr = (MemberExpression)expr.Body;
 
-        var parent = memberExpr.GetParent();
+        var parent = ((MemberExpression)expr.Body).GetParent();
 
         await Assert.That(parent).IsNotNull();
         await Assert.That(parent!.NodeType).IsEqualTo(ExpressionType.MemberAccess);

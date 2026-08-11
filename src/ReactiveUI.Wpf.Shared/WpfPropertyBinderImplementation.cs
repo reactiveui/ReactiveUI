@@ -18,9 +18,9 @@ internal sealed class WpfPropertyBinderImplementation : PropertyBinderImplementa
         new DispatcherValueObservable(view as DispatcherObject, value);
 
     /// <summary>Set the view value.</summary>
+    /// <typeparam name="TView">The type of the view.</typeparam>
     /// <param name="view">The view to fetch the value from.</param>
     /// <param name="setter">The setter action.</param>
-    /// <typeparam name="TView">The type of the view.</typeparam>
     protected override void SetViewValue<TView>(TView view, Action setter)
     {
         ArgumentExceptionHelper.ThrowIfNull(setter);

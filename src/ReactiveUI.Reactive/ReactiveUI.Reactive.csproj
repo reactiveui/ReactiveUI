@@ -63,6 +63,8 @@
   <ItemGroup>
     <Compile Include="..\Shared\ArgumentValidation.cs" Link="Shared\ArgumentValidation.cs"/>
     <Compile Include="..\Shared\DelegateObserver.cs" Link="Shared\DelegateObserver.cs"/>
+    <Compile Include="..\Shared\TaskObserverBridge.cs" Link="Shared\TaskObserverBridge.cs"/>
+    <Compile Include="..\Shared\ActivationSignals.cs" Link="Shared\ActivationSignals.cs"/>
   </ItemGroup>
   <!-- Base .NET platform registration (not a workload platform) — net/net4 + windows TFMs (mirrors lean's net group). -->
   <ItemGroup Condition=" $(TargetFramework.StartsWith('net4')) or '$(TargetFramework)' == 'net11.0' or '$(TargetFramework)' == 'net10.0' or '$(TargetFramework)' == 'net9.0' or '$(TargetFramework)' == 'net8.0' or $(TargetFramework.EndsWith('-windows10.0.17763.0')) or $(TargetFramework.EndsWith('-windows10.0.19041.0')) ">
@@ -75,6 +77,7 @@
     <Compile Include="..\ReactiveUI\Platforms\android\**\*.cs" Link="Platforms\android\%(RecursiveDir)%(Filename)%(Extension)"/>
     <Compile Include="..\ReactiveUI\Platforms\mobile-common\**\*.cs" Link="Platforms\mobile-common\%(RecursiveDir)%(Filename)%(Extension)"/>
     <Compile Include="..\Shared\Platform\EventPatternObservable.cs" Link="Shared\Platform\EventPatternObservable.cs"/>
+    <Compile Include="..\Shared\Platform\ObservedChangeEventObservable.cs" Link="Shared\Platform\ObservedChangeEventObservable.cs"/>
   </ItemGroup>
 
   <!-- Apple platform legs: the same ReactiveUI Platforms apple source the lean engine compiles, recompiled
@@ -99,6 +102,7 @@
   <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios' or $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst' or $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'macos' or $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tvos'">
     <Compile Include="..\Shared\Platform\FromEventObservable.cs" Link="Shared\Platform\FromEventObservable.cs"/>
     <Compile Include="..\Shared\Platform\EventPatternObservable.cs" Link="Shared\Platform\EventPatternObservable.cs"/>
+    <Compile Include="..\Shared\Platform\ObservedChangeEventObservable.cs" Link="Shared\Platform\ObservedChangeEventObservable.cs"/>
   </ItemGroup>
 
   <ItemGroup>

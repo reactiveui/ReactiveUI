@@ -6,11 +6,11 @@
 
   <PropertyGroup Label="Shared Version Variables">
     <SplatVersion>20.2.0</SplatVersion>
-    <PrimitivesVersion>7.1.0</PrimitivesVersion>
+    <PrimitivesVersion>7.1.1</PrimitivesVersion>
     <TUnitVersion>1.63.0</TUnitVersion>
     <!-- StyleSharp.Analyzers, PerformanceSharp.Analyzers and SecuritySharp.Analyzers ship from the
          same release pipeline and always share a version. -->
-    <RoslynCommonAnalyzersVersion>3.40.1</RoslynCommonAnalyzersVersion>
+    <RoslynCommonAnalyzersVersion>3.43.2</RoslynCommonAnalyzersVersion>
     <XamarinAndroidXLifecycleLiveDataVersion>2.11.0.1</XamarinAndroidXLifecycleLiveDataVersion>
   </PropertyGroup>
 

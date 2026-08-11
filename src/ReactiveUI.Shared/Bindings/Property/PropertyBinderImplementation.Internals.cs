@@ -5,6 +5,7 @@
 
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using ReactiveUI.Primitives;
 using ReactiveUI.Primitives.Disposables;
 using Splat;
@@ -55,7 +56,7 @@ public partial class PropertyBinderImplementation
     /// A tuple containing the subscription <see cref="IDisposable"/> and an observable sequence of values that were effectively set.
     /// </returns>
     /// <exception cref="InvalidOperationException">Thrown when a required getter cannot be resolved.</exception>
-    private (IDisposable disposable, IObservable<TValue> value) BindToDirect<TTarget, TValue, TObs>(
+    private (IDisposable Disposable, IObservable<TValue> Value) BindToDirect<TTarget, TValue, TObs>(
         IObservable<TObs> changeObservable,
         TTarget target,
         Expression viewExpression)
@@ -134,7 +135,7 @@ public partial class PropertyBinderImplementation
     /// <typeparam name="TDontCare">A dummy type used only to signal view updates.</typeparam>
     /// <param name="request">The bundled inputs describing the two-way binding to create.</param>
     /// <returns>The configured two-way reactive binding, or null if hooks blocked the binding.</returns>
-    private ReactiveBinding<TView, (object? view, bool isViewModel)> BindImpl<
+    private ReactiveBinding<TView, (object? View, bool IsViewModel)> BindImpl<
         TViewModel,
         TView,
         TViewModelPropertyType,
@@ -175,7 +176,7 @@ public partial class PropertyBinderImplementation
             viewChanges,
             signalInitialUpdate);
 
-        var changeWithValues = new MapSignal<bool, (bool isValid, object? view, bool isViewModel)>(
+        var changeWithValues = new MapSignal<bool, (bool IsValid, object? View, bool IsViewModel)>(
             new ScheduledChangeObservable<TView>(somethingChanged, this, view),
             isViewModelChange =>
                 ProjectChange(isViewModelChange, view, viewModelChainGetter, viewChainGetter, viewModelToViewConverter, viewToViewModelConverter));
@@ -191,7 +192,7 @@ public partial class PropertyBinderImplementation
             return null!;
         }
 
-        var changes = new Signal<(object? view, bool isViewModel)>();
+        var changes = new Signal<(object? View, bool IsViewModel)>();
         var bindingDisposable = WireTwoWayBinding(changeWithValues, changes, view, viewChainSetter, viewModelChainSetter);
 
         signalInitialUpdate.OnNext(true);
@@ -214,28 +215,28 @@ public partial class PropertyBinderImplementation
     /// <param name="viewModelChainSetter">Writes values into the view model property chain.</param>
     /// <returns>The disposables for the wired subscriptions.</returns>
     private DisposableBag WireTwoWayBinding<TView>(
-        IObservable<(bool isValid, object? view, bool isViewModel)> changeWithValues,
-        Signal<(object? view, bool isViewModel)> changes,
+        IObservable<(bool IsValid, object? View, bool IsViewModel)> changeWithValues,
+        Signal<(object? View, bool IsViewModel)> changes,
         TView view,
         Reflection.CompiledPropertyChainSetter<TView, object?> viewChainSetter,
         Reflection.CompiledPropertyChainSetter<object?, object?> viewModelChainSetter)
         where TView : class, IViewFor
     {
-        // Filter to valid changes and project to the (view, isViewModel) pair, then multicast through a shared subject
+        // Filter to valid changes and project to the (View, IsViewModel) pair, then multicast through a shared subject
         // so the internal setter and external subscribers share one upstream subscription.
         var projected = changeWithValues
-            .Choose(static value => value.isValid ? (true, (value.view, value.isViewModel)) : (false, default));
+            .Choose(static value => value.IsValid ? (true, (value.View, value.IsViewModel)) : (false, default));
         var upstreamConnection = projected.Subscribe(changes);
 
-        var setterSubscription = changes.Subscribe(new DelegateObserver<(object? view, bool isViewModel)>(latestValue =>
+        var setterSubscription = changes.Subscribe(new DelegateObserver<(object? View, bool IsViewModel)>(latestValue =>
         {
-            if (latestValue.isViewModel)
+            if (latestValue.IsViewModel)
             {
-                SetViewValue(view, () => viewChainSetter.TrySetValue(view, latestValue.view, false));
+                SetViewValue(view, () => viewChainSetter.TrySetValue(view, latestValue.View, false));
             }
             else
             {
-                _ = viewModelChainSetter.TrySetValue(view.ViewModel, latestValue.view, false);
+                _ = viewModelChainSetter.TrySetValue(view.ViewModel, latestValue.View, false);
             }
         }));
 
@@ -270,14 +271,17 @@ public partial class PropertyBinderImplementation
         private sealed class Sink(IObserver<bool> downstream, PropertyBinderImplementation owner, TView view) : IObserver<bool>
         {
             /// <inheritdoc/>
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public void OnNext(bool value) =>
                 owner.ScheduleForBinding(view, value)
                     .Subscribe(new DelegateObserver<bool>(downstream.OnNext, downstream.OnError));
 
             /// <inheritdoc/>
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public void OnError(Exception error) => downstream.OnError(error);
 
             /// <inheritdoc/>
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public void OnCompleted() => downstream.OnCompleted();
         }
     }
@@ -302,8 +306,8 @@ public partial class PropertyBinderImplementation
             /// <summary>The subscription to the source.</summary>
             private IDisposable? _subscription;
 
-            /// <summary>Whether the first value has been delivered.</summary>
-            private bool _done;
+            /// <summary>Whether the first value has been delivered; latched to 1 by the thread that delivers it.</summary>
+            private int _done;
 
             /// <summary>Subscribes to the source.</summary>
             /// <param name="source">The source observable.</param>
@@ -317,12 +321,11 @@ public partial class PropertyBinderImplementation
             /// <inheritdoc/>
             public void OnNext(T value)
             {
-                if (_done)
+                if (Interlocked.Exchange(ref _done, 1) != 0)
                 {
                     return;
                 }
 
-                _done = true;
                 downstream.OnNext(value);
                 downstream.OnCompleted();
                 Dispose();
@@ -331,7 +334,7 @@ public partial class PropertyBinderImplementation
             /// <inheritdoc/>
             public void OnError(Exception error)
             {
-                if (_done)
+                if (Volatile.Read(ref _done) != 0)
                 {
                     return;
                 }
@@ -342,7 +345,7 @@ public partial class PropertyBinderImplementation
             /// <inheritdoc/>
             public void OnCompleted()
             {
-                if (_done)
+                if (Volatile.Read(ref _done) != 0)
                 {
                     return;
                 }
@@ -351,6 +354,7 @@ public partial class PropertyBinderImplementation
             }
 
             /// <inheritdoc/>
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public void Dispose() => _subscription?.Dispose();
         }
     }

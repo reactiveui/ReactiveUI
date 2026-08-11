@@ -82,10 +82,10 @@ public class BindingTypeConvertersUnitTests
     public async Task NullableByteToStringTypeConverter_Converts_Correctly()
     {
         var converter = new NullableByteToStringTypeConverter();
-        byte? val = 123;
+        const byte Val = 123;
 
         // Byte? to String
-        var result = converter.TryConvert(val, null, out var output);
+        var result = converter.TryConvert(Val, null, out var output);
         await Assert.That(result).IsTrue();
         await Assert.That(output).IsEqualTo("123");
     }
@@ -122,9 +122,9 @@ public class BindingTypeConvertersUnitTests
     public async Task NullableIntegerToStringTypeConverter_Converts_Correctly()
     {
         var converter = new NullableIntegerToStringTypeConverter();
-        int? val = 123_456_789;
+        const int Val = 123_456_789;
 
-        var result = converter.TryConvert(val, null, out var output);
+        var result = converter.TryConvert(Val, null, out var output);
         await Assert.That(result).IsTrue();
         await Assert.That(output).IsEqualTo("123456789");
     }
@@ -135,9 +135,9 @@ public class BindingTypeConvertersUnitTests
     public async Task NullableLongToStringTypeConverter_Converts_Correctly()
     {
         var converter = new NullableLongToStringTypeConverter();
-        long? val = 1_234_567_890_123_456_789;
+        const long Val = 1_234_567_890_123_456_789;
 
-        var result = converter.TryConvert(val, null, out var output);
+        var result = converter.TryConvert(Val, null, out var output);
         await Assert.That(result).IsTrue();
         await Assert.That(output).IsEqualTo("1234567890123456789");
     }
@@ -148,9 +148,9 @@ public class BindingTypeConvertersUnitTests
     public async Task NullableShortToStringTypeConverter_Converts_Correctly()
     {
         var converter = new NullableShortToStringTypeConverter();
-        short? val = 12_345;
+        const short Val = 12_345;
 
-        var result = converter.TryConvert(val, null, out var output);
+        var result = converter.TryConvert(Val, null, out var output);
         await Assert.That(result).IsTrue();
         await Assert.That(output).IsEqualTo("12345");
     }

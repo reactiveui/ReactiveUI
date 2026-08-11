@@ -4,6 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Globalization;
+using System.Runtime.CompilerServices;
 using ReactiveUI.Primitives.Disposables;
 using Splat;
 
@@ -27,6 +28,7 @@ public static class ObservableLoggingMixins
         /// <typeparam name="TObj">The type of the logger object. Must implement IEnableLogger.</typeparam>
         /// <param name="logObject">An object that provides logging capabilities.</param>
         /// <returns>An observable sequence that logs each notification using the provided logger.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IObservable<T> Log<TObj>(
             TObj logObject)
             where TObj : IEnableLogger =>
@@ -37,6 +39,7 @@ public static class ObservableLoggingMixins
         /// <param name="logObject">An object that provides logging capabilities.</param>
         /// <param name="message">An optional message to include in each log entry. If null, an empty string is used.</param>
         /// <returns>An observable sequence that logs each notification using the provided logger.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IObservable<T> Log<TObj>(
             TObj logObject,
             string? message)
@@ -44,15 +47,15 @@ public static class ObservableLoggingMixins
             Log(@this, logObject, message, null);
 
         /// <summary>Returns an observable sequence that logs each notification using the specified logger object.</summary>
-        /// <remarks>This method does not modify the elements of the sequence or affect its timing, but adds side
-        /// effects for logging purposes. Logging occurs for each notification: OnNext (with the element value), OnError,
-        /// and OnCompleted. The returned observable can be further composed or subscribed to as usual.</remarks>
         /// <typeparam name="TObj">The type of the logger object. Must implement IEnableLogger.</typeparam>
         /// <param name="logObject">An object that provides logging capabilities.</param>
         /// <param name="message">An optional message to include in each log entry. If null, an empty string is used.</param>
         /// <param name="stringifier">An optional function to convert each element to a string for logging. If null, the element's ToString method is used.</param>
         /// <returns>An observable sequence that is functionally equivalent to the source, but logs each OnNext, OnError, and
         /// OnCompleted notification using the provided logger.</returns>
+        /// <remarks>This method does not modify the elements of the sequence or affect its timing, but adds side
+        /// effects for logging purposes. Logging occurs for each notification: OnNext (with the element value), OnError,
+        /// and OnCompleted. The returned observable can be further composed or subscribed to as usual.</remarks>
         public IObservable<T> Log<TObj>(
             TObj logObject,
             string? message,
@@ -76,6 +79,7 @@ public static class ObservableLoggingMixins
         /// <typeparam name="TObj">The type of the logger, which must implement IEnableLogger.</typeparam>
         /// <param name="class">An object that provides logging capabilities.</param>
         /// <returns>An observable sequence that logs exceptions and continues with an empty sequence.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IObservable<T> LoggedCatch<TObj>(
             TObj @class)
             where TObj : IEnableLogger =>
@@ -86,6 +90,7 @@ public static class ObservableLoggingMixins
         /// <param name="class">An object that provides logging capabilities.</param>
         /// <param name="next">An observable sequence to continue with after an exception is caught.</param>
         /// <returns>An observable sequence that logs exceptions and continues with the fallback sequence.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IObservable<T> LoggedCatch<TObj>(
             TObj @class,
             IObservable<T>? next)
@@ -96,15 +101,15 @@ public static class ObservableLoggingMixins
         /// Returns an observable sequence that logs any exception using the specified logger and continues with the
         /// provided fallback sequence, if supplied.
         /// </summary>
-        /// <remarks>This method is useful for handling errors in observable sequences by logging exceptions and
-        /// optionally providing a fallback sequence to continue processing. The exception is logged at the warning level
-        /// using the provided logger.</remarks>
         /// <typeparam name="TObj">The type of the logger, which must implement IEnableLogger.</typeparam>
         /// <param name="class">An object that provides logging capabilities and is used to log any exceptions encountered.</param>
         /// <param name="next">An observable sequence to continue with after an exception is caught. If null, a default empty sequence is used.</param>
         /// <param name="message">An optional message to include in the log entry when an exception is caught. If null, an empty string is used.</param>
         /// <returns>An observable sequence that emits the original elements until an exception occurs, logs the exception, and then
         /// continues with the specified fallback sequence.</returns>
+        /// <remarks>This method is useful for handling errors in observable sequences by logging exceptions and
+        /// optionally providing a fallback sequence to continue processing. The exception is logged at the warning level
+        /// using the provided logger.</remarks>
         public IObservable<T> LoggedCatch<TObj>(
             TObj @class,
             IObservable<T>? next,
@@ -128,6 +133,7 @@ public static class ObservableLoggingMixins
         /// <param name="class">An object that provides logging capabilities.</param>
         /// <param name="next">A function that returns an alternative observable sequence for the caught exception.</param>
         /// <returns>An observable sequence that continues with the next function after logging the exception.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IObservable<T> LoggedCatch<TObj, TException>(
             TObj @class,
             Func<TException, IObservable<T>> next)
@@ -139,9 +145,6 @@ public static class ObservableLoggingMixins
         /// Handles exceptions of a specified type in the observable sequence by logging a warning and continuing with an
         /// alternative observable sequence.
         /// </summary>
-        /// <remarks>This method is useful for handling recoverable errors in reactive streams while ensuring that
-        /// exceptions are logged for diagnostic purposes. Only exceptions of type TException are caught and logged; other
-        /// exceptions are propagated.</remarks>
         /// <typeparam name="TObj">The type of the logger-enabled object used for logging. Must implement IEnableLogger.</typeparam>
         /// <typeparam name="TException">The type of exception to catch and handle. Must derive from Exception.</typeparam>
         /// <param name="class">An object that provides logging capabilities. Used to log the caught exception as a warning.</param>
@@ -150,6 +153,10 @@ public static class ObservableLoggingMixins
         /// <param name="message">An optional message to include in the warning log. If null, an empty string is used.</param>
         /// <returns>An observable sequence that continues with the sequence returned by the next function after logging the
         /// exception, or propagates other exceptions.</returns>
+        /// <remarks>This method is useful for handling recoverable errors in reactive streams while ensuring that
+        /// exceptions are logged for diagnostic purposes. Only exceptions of type TException are caught and logged; other
+        /// exceptions are propagated.</remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IObservable<T> LoggedCatch<TObj, TException>(
             TObj @class,
             Func<TException, IObservable<T>> next,
@@ -281,9 +288,11 @@ public static class ObservableLoggingMixins
             public void Run(IObservable<T> source) => _source.Disposable = source.Subscribe(this);
 
             /// <inheritdoc/>
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public void OnNext(T value) => downstream.OnNext(value);
 
             /// <inheritdoc/>
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public void OnCompleted() => downstream.OnCompleted();
 
             /// <inheritdoc/>

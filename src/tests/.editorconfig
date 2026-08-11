@@ -13,7 +13,9 @@ dotnet_diagnostic.CA2213.severity = none # Disposable fields should be disposed
 # PerformanceSharp / StyleSharp test relaxations imported from Primitives
 ###################
 dotnet_diagnostic.SST1432.severity = none # Test fixtures need not be static
+dotnet_diagnostic.SST2334.severity = none # Test doubles and fixtures are not inspected in a watch window
 dotnet_diagnostic.SST2410.severity = none # A test creates the disposable it is asserting about; the test process owns it and exits
+dotnet_diagnostic.PSH1410.severity = none # Inlining test helpers only obscures stack traces
 performancesharp.avoid_linq_on_hot_path = false
 dotnet_diagnostic.PSH1100.severity = none # Tests can use LINQ for clarity
 dotnet_diagnostic.PSH1101.severity = error # In tests, simplify LINQ Where plus terminal calls instead of banning LINQ

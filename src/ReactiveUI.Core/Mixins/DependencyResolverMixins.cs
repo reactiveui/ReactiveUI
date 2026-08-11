@@ -63,11 +63,13 @@ public static class DependencyResolverMixins
         ConstructorInfo? parameterlessConstructor = null;
         foreach (var ci in typeInfo.DeclaredConstructors)
         {
-            if (ci.IsPublic && ci.GetParameters().Length == 0)
+            if (!ci.IsPublic || ci.GetParameters().Length != 0)
             {
-                parameterlessConstructor = ci;
-                break;
+                continue;
             }
+
+            parameterlessConstructor = ci;
+            break;
         }
 
         return parameterlessConstructor is null
@@ -82,9 +84,6 @@ public static class DependencyResolverMixins
     /// Registers a type with the specified dependency resolver, using singleton or transient lifetime based on the
     /// type's attributes and an optional contract.
     /// </summary>
-    /// <remarks>If the implementation type is marked with the SingleInstanceViewAttribute, it is registered
-    /// as a singleton; otherwise, it is registered as transient. The contract parameter allows multiple registrations
-    /// of the same service type under different contracts.</remarks>
     /// <param name="resolver">The dependency resolver with which to register the type. Cannot be null.</param>
     /// <param name="ti">The type information for the implementation to register. Must provide accessible constructors as required by the
     /// registration process.</param>
@@ -92,6 +91,9 @@ public static class DependencyResolverMixins
     /// resolver.</param>
     /// <param name="contract">An optional contract string that distinguishes this registration from others of the same service type. If null,
     /// the registration is not associated with a contract.</param>
+    /// <remarks>If the implementation type is marked with the SingleInstanceViewAttribute, it is registered
+    /// as a singleton; otherwise, it is registered as transient. The contract parameter allows multiple registrations
+    /// of the same service type under different contracts.</remarks>
     private static void RegisterType(
         IMutableDependencyResolver resolver,
         [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors

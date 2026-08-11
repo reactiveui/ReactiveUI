@@ -3,6 +3,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using BenchmarkDotNet.Attributes;
 
 namespace ReactiveUI.Benchmarks;
@@ -13,6 +15,7 @@ namespace ReactiveUI.Benchmarks;
 /// </summary>
 [MemoryDiagnoser]
 [MarkdownExporterAttribute.GitHub]
+[DebuggerDisplay("NestedWhenAnyValueBenchmarks")]
 public class NestedWhenAnyValueBenchmarks
 {
     /// <summary>The number of changes pushed per emission benchmark.</summary>
@@ -37,6 +40,7 @@ public class NestedWhenAnyValueBenchmarks
 
     /// <summary>Disposes the standing subscription.</summary>
     [GlobalCleanup]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Cleanup() => _subscription.Dispose();
 
     /// <summary>Measures leaf-value propagation (changing <c>Child.First</c>).</summary>

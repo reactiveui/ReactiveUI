@@ -4,6 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Collections.Specialized;
+using System.Runtime.CompilerServices;
 
 namespace ReactiveUI;
 
@@ -34,6 +35,7 @@ public readonly struct CollectionChanged : IEquatable<CollectionChanged>
     /// <param name="left">The first notification.</param>
     /// <param name="right">The second notification.</param>
     /// <returns><see langword="true"/> if equal.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool operator ==(in CollectionChanged left, in CollectionChanged right) => left.Equals(right);
 
     /// <summary>Determines whether two notifications are unequal.</summary>

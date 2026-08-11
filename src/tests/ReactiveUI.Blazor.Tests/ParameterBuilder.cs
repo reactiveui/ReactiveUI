@@ -21,6 +21,7 @@ public sealed class ParameterBuilder<T>
     /// <param name="parameterSelector">A property-access expression identifying the parameter, e.g. <c>p =&gt; p.ViewModel</c>.</param>
     /// <param name="value">The value to supply for the parameter.</param>
     /// <returns>The same builder, for chaining.</returns>
+    /// <exception cref="ArgumentException"><paramref name="parameterSelector"/> is not a property access expression.</exception>
     public ParameterBuilder<T> Add<TValue>(Expression<Func<T, TValue>> parameterSelector, TValue value)
     {
         ArgumentNullException.ThrowIfNull(parameterSelector);

@@ -3,12 +3,21 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics;
+using System.Runtime.CompilerServices;
+
 #if REACTIVE_SHIM
 namespace ReactiveUI.Reactive;
 #else
 namespace ReactiveUI;
 #endif
 /// <summary>Encapsulates a composite user interaction.</summary>
+/// <typeparam name="TParam">
+/// The type of parameter values passed in during command execution.
+/// </typeparam>
+/// <typeparam name="TResult">
+/// The type of the values that are the result of command execution.
+/// </typeparam>
 /// <remarks>
 /// <para>
 /// This class provides the bulk of the actual implementation for combined reactive commands. You should not
@@ -25,12 +34,7 @@ namespace ReactiveUI;
 /// In addition, any <c>canExecute</c> observable passed in during construction must also yield <c>true</c>.
 /// </para>
 /// </remarks>
-/// <typeparam name="TParam">
-/// The type of parameter values passed in during command execution.
-/// </typeparam>
-/// <typeparam name="TResult">
-/// The type of the values that are the result of command execution.
-/// </typeparam>
+[DebuggerDisplay("{CanExecute}, {IsExecuting}")]
 public class CombinedReactiveCommand<TParam, TResult> : ReactiveCommandBase<TParam, IList<TResult>>
 {
     /// <summary>The inner command that executes all child commands and aggregates their results.</summary>
@@ -276,11 +280,13 @@ public class CombinedReactiveCommand<TParam, TResult> : ReactiveCommandBase<TPar
                     all = true;
                     for (var j = 0; j < _latest.Length; j++)
                     {
-                        if (!_latest[j])
+                        if (_latest[j])
                         {
-                            all = false;
-                            break;
+                            continue;
                         }
+
+                        all = false;
+                        break;
                     }
                 }
 
@@ -332,12 +338,15 @@ public class CombinedReactiveCommand<TParam, TResult> : ReactiveCommandBase<TPar
             private sealed class Element(Sink parent, int index) : IObserver<bool>
             {
                 /// <inheritdoc/>
+                [MethodImpl(MethodImplOptions.AggressiveInlining)]
                 public void OnNext(bool value) => parent.OnNextAt(index, value);
 
                 /// <inheritdoc/>
+                [MethodImpl(MethodImplOptions.AggressiveInlining)]
                 public void OnError(Exception error) => parent.OnErrorAt(error);
 
                 /// <inheritdoc/>
+                [MethodImpl(MethodImplOptions.AggressiveInlining)]
                 public void OnCompleted() => parent.OnCompletedAt();
             }
         }
@@ -499,12 +508,15 @@ public class CombinedReactiveCommand<TParam, TResult> : ReactiveCommandBase<TPar
             private sealed class Element(Sink parent, int index) : IObserver<TResult>
             {
                 /// <inheritdoc/>
+                [MethodImpl(MethodImplOptions.AggressiveInlining)]
                 public void OnNext(TResult value) => parent.OnNextAt(index, value);
 
                 /// <inheritdoc/>
+                [MethodImpl(MethodImplOptions.AggressiveInlining)]
                 public void OnError(Exception error) => parent.OnErrorAt(error);
 
                 /// <inheritdoc/>
+                [MethodImpl(MethodImplOptions.AggressiveInlining)]
                 public void OnCompleted() => parent.OnCompletedAt();
             }
         }
@@ -529,6 +541,7 @@ public class CombinedReactiveCommand<TParam, TResult> : ReactiveCommandBase<TPar
         private sealed class Sink(IObserver<Exception> downstream) : IObserver<bool>
         {
             /// <inheritdoc/>
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public void OnCompleted() => downstream.OnCompleted();
 
             /// <inheritdoc/>
@@ -677,12 +690,15 @@ public class CombinedReactiveCommand<TParam, TResult> : ReactiveCommandBase<TPar
             private sealed class Element(Sink parent) : IObserver<Exception>
             {
                 /// <inheritdoc/>
+                [MethodImpl(MethodImplOptions.AggressiveInlining)]
                 public void OnNext(Exception value) => parent.OnNextAt(value);
 
                 /// <inheritdoc/>
+                [MethodImpl(MethodImplOptions.AggressiveInlining)]
                 public void OnError(Exception error) => parent.OnErrorAt(error);
 
                 /// <inheritdoc/>
+                [MethodImpl(MethodImplOptions.AggressiveInlining)]
                 public void OnCompleted() => parent.OnCompletedAt();
             }
         }

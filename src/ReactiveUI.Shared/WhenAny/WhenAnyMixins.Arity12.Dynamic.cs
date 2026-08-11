@@ -5,6 +5,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 
 #if REACTIVE_SHIM
 namespace ReactiveUI.Reactive;
@@ -40,6 +41,7 @@ public static partial class WhenAnyMixins
         /// <param name="selector">Combines the observed change notifications into a result.</param>
         /// <returns>An observable that emits the projected result on each change.</returns>
         [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IObservable<TRet> WhenAnyDynamic<TRet>(
             Expression? property1,
             Expression? property2,
@@ -113,6 +115,7 @@ public static partial class WhenAnyMixins
         /// <param name="isDistinct">Whether to emit only when the combined value changes.</param>
         /// <returns>An observable that emits the projected result on each change.</returns>
         [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IObservable<TRet> WhenAnyDynamic<TRet>(
             Expression? property1,
             Expression? property2,

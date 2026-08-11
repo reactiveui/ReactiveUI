@@ -23,11 +23,11 @@ public static class ViewCommandExtensions
         /// Binds the specified command to the click event of the given view, enabling or disabling the view based on the
         /// command's ability to execute.
         /// </summary>
-        /// <remarks>The view's enabled state is automatically updated to reflect whether the command can execute.
-        /// Disposing the returned object is required to avoid memory leaks and to properly detach event handlers.</remarks>
         /// <param name="control">The view whose click event will trigger the command. Cannot be null.</param>
         /// <returns>An <see cref="IDisposable"/> that, when disposed, detaches the event handlers and unbinds the command from the
         /// view.</returns>
+        /// <remarks>The view's enabled state is automatically updated to reflect whether the command can execute.
+        /// Disposing the returned object is required to avoid memory leaks and to properly detach event handlers.</remarks>
         public IDisposable BindToTarget(View control)
         {
             ArgumentExceptionHelper.ThrowIfNull(command);

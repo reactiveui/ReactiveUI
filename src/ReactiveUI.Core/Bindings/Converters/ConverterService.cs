@@ -3,7 +3,9 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 
 namespace ReactiveUI;
 
@@ -53,6 +55,7 @@ namespace ReactiveUI;
 /// <item><description><strong>100+:</strong> Third-party override range (use to override ReactiveUI defaults)</description></item>
 /// </list>
 /// </remarks>
+[DebuggerDisplay("{TypedConverters}, {FallbackConverters}")]
 public sealed class ConverterService
 {
     /// <summary>Initializes a new instance of the <see cref="ConverterService"/> class.</summary>
@@ -162,6 +165,7 @@ public sealed class ConverterService
     /// This method is thread-safe and lock-free, making it safe to call from multiple threads concurrently.
     /// </para>
     /// </remarks>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public ISetMethodBindingConverter? ResolveSetMethodConverter(
         [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)]
         Type? fromType,

@@ -4,6 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using Foundation;
 using UIKit;
 
@@ -24,8 +25,8 @@ internal class UITableViewAdapter : IUICollViewAdapter<UITableView, UITableViewC
     /// <summary>The number of <see cref="ReloadData"/> calls that have not yet completed on the main thread.</summary>
     private int _inFlightReloads;
 
-    /// <summary>Whether this instance has already been disposed.</summary>
-    private bool _isDisposed;
+    /// <summary>Whether this instance has already been disposed. Non-zero once disposal has begun.</summary>
+    private int _isDisposed;
 
     /// <summary>Initializes a new instance of the <see cref="UITableViewAdapter"/> class.</summary>
     /// <param name="view">The table view to adapt.</param>
@@ -74,6 +75,7 @@ internal class UITableViewAdapter : IUICollViewAdapter<UITableView, UITableViewC
     }
 
     /// <inheritdoc/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void BeginUpdates() => _view.BeginUpdates();
 
     /// <inheritdoc/>
@@ -92,33 +94,43 @@ internal class UITableViewAdapter : IUICollViewAdapter<UITableView, UITableViewC
     }
 
     /// <inheritdoc/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void EndUpdates() => _view.EndUpdates();
 
     /// <inheritdoc/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void InsertSections(NSIndexSet indexes) => _view.InsertSections(indexes, InsertSectionsAnimation);
 
     /// <inheritdoc/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void DeleteSections(NSIndexSet indexes) => _view.DeleteSections(indexes, DeleteSectionsAnimation);
 
     /// <inheritdoc/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ReloadSections(NSIndexSet indexes) => _view.ReloadSections(indexes, ReloadSectionsAnimation);
 
     /// <inheritdoc/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void MoveSection(int fromIndex, int toIndex) => _view.MoveSection(fromIndex, toIndex);
 
     /// <inheritdoc/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void InsertItems(NSIndexPath[] paths) => _view.InsertRows(paths, InsertRowsAnimation);
 
     /// <inheritdoc/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void DeleteItems(NSIndexPath[] paths) => _view.DeleteRows(paths, DeleteRowsAnimation);
 
     /// <inheritdoc/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ReloadItems(NSIndexPath[] paths) => _view.ReloadRows(paths, ReloadRowsAnimation);
 
     /// <inheritdoc/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void MoveItem(NSIndexPath path, NSIndexPath newPath) => _view.MoveRow(path, newPath);
 
     /// <inheritdoc/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public UITableViewCell DequeueReusableCell(NSString cellKey, NSIndexPath path) => _view.DequeueReusableCell(cellKey, path);
 
     /// <inheritdoc/>
@@ -132,17 +144,12 @@ internal class UITableViewAdapter : IUICollViewAdapter<UITableView, UITableViewC
     /// <param name="disposing"><see langword="true"/> when called from <see cref="Dispose()"/>; <see langword="false"/> when called from a finalizer.</param>
     protected virtual void Dispose(bool disposing)
     {
-        if (_isDisposed)
+        if (Interlocked.Exchange(ref _isDisposed, 1) != 0 || !disposing)
         {
             return;
         }
 
-        if (disposing)
-        {
-            _isReloadingData?.Dispose();
-        }
-
-        _isDisposed = true;
+        _isReloadingData?.Dispose();
     }
 
     /// <summary>Decrements the in-flight reload counter and signals completion when all reloads are done.</summary>

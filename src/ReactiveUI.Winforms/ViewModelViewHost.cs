@@ -4,7 +4,9 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using ReactiveUI.Internal;
 
 #if REACTIVE_SHIM
@@ -22,6 +24,7 @@ namespace ReactiveUI.Winforms;
 [RequiresUnreferencedCode(
     "This class uses reflection to determine view model types at runtime through ViewLocator, which may be incompatible with trimming.")]
 [RequiresDynamicCode("ViewLocator.ResolveView uses reflection which is incompatible with AOT compilation.")]
+[DebuggerDisplay("{CurrentView}, {DefaultContent}")]
 public partial class ViewModelControlHost : UserControl, IReactiveObject, IViewFor
 {
     /// <summary>Holds the subscriptions created during setup so they can be disposed together.</summary>
@@ -118,9 +121,11 @@ public partial class ViewModelControlHost : UserControl, IReactiveObject, IViewF
     }
 
     /// <inheritdoc/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args) => PropertyChanging?.Invoke(this, args);
 
     /// <inheritdoc/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args) => PropertyChanged?.Invoke(this, args);
 
     /// <summary>Clean up any resources being used.</summary>
@@ -176,8 +181,7 @@ public partial class ViewModelControlHost : UserControl, IReactiveObject, IViewF
             return;
         }
 
-        var viewLocator = ViewLocator ?? ReactiveUI.ViewLocator.Current;
-        var view = viewLocator.ResolveView(viewModel, contract);
+        var view = (ViewLocator ?? ReactiveUI.ViewLocator.Current).ResolveView(viewModel, contract);
         if (view is null)
         {
             return;

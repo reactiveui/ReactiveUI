@@ -3,9 +3,12 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics;
+
 namespace ReactiveUI.Samples.Winforms;
 
 /// <summary>A view model that handles user login with reactive validation and async execution.</summary>
+[DebuggerDisplay("LoginViewModel UserName={UserName}")]
 public class LoginViewModel : ReactiveObject, IDisposable
 {
     /// <summary>Cancellation source for the in-flight login operation, signalled by the <see cref="Cancel"/> command.</summary>

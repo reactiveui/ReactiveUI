@@ -43,8 +43,7 @@ public class DefaultViewLocatorTests
     public async Task CanResolveCustomViewWithMap()
     {
         // Get the resolver set up by the executor scope
-        var resolver = AppLocator.Current as IDependencyResolver;
-        ArgumentNullException.ThrowIfNull(resolver);
+        ArgumentNullException.ThrowIfNull(AppLocator.Current as IDependencyResolver);
 
         var fixture = new DefaultViewLocator();
 

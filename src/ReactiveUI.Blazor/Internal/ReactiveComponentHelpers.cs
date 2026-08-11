@@ -33,14 +33,14 @@ internal static class ReactiveComponentHelpers
     /// <typeparam name="T">The view model type that implements <see cref="INotifyPropertyChanged"/>.</typeparam>
     /// <param name="viewModel">The view model to wire activation for.</param>
     /// <param name="state">The reactive component state that provides activation/deactivation observables.</param>
+    /// <exception cref="ArgumentNullException">
+    /// Thrown when <paramref name="viewModel"/> or <paramref name="state"/> is <see langword="null"/>.
+    /// </exception>
     /// <remarks>
     /// When the component is activated, the view model's <see cref="ViewModelActivator"/> is triggered; when the
     /// component is deactivated, the activator is deactivated. The activation subscription is tracked by
     /// <see cref="ReactiveComponentState.LifetimeDisposables"/> so it is disposed with the component.
     /// </remarks>
-    /// <exception cref="ArgumentNullException">
-    /// Thrown when <paramref name="viewModel"/> or <paramref name="state"/> is <see langword="null"/>.
-    /// </exception>
     internal static void WireActivationIfSupported<T>(T? viewModel, ReactiveComponentState state)
         where T : class, INotifyPropertyChanged
     {
@@ -83,12 +83,12 @@ internal static class ReactiveComponentHelpers
     /// A disposable that tears down all subscriptions when disposed. Should be assigned to
     /// <see cref="ReactiveComponentState.FirstRenderSubscriptions"/>.
     /// </returns>
+    /// <exception cref="ArgumentNullException">Thrown when any parameter is <see langword="null"/>.</exception>
     /// <remarks>
     /// Re-renders when the view model instance is reassigned (after the first assignment) and whenever the current
     /// view model raises any property change, implemented as a single fused
     /// <see cref="ViewModelReactivitySink{T}"/> rather than an operator pipeline.
     /// </remarks>
-    /// <exception cref="ArgumentNullException">Thrown when any parameter is <see langword="null"/>.</exception>
     internal static IDisposable WireViewModelChangeReactivity<T>(
         Func<T?> getCurrentViewModel,
         Action<PropertyChangedEventHandler> addPropertyChangedHandler,

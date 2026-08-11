@@ -4,6 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using Android.Content;
 using Android.Views;
 using Splat;
@@ -29,6 +30,7 @@ namespace ReactiveUI;
 /// auto-wireup path for compatibility.
 /// </para>
 /// </summary>
+[System.Diagnostics.DebuggerDisplay("{View}")]
 public class LayoutViewHost : ILayoutViewHost, IEnableLogger
 {
     /// <summary>The backing view instance owned by this host.</summary>
@@ -179,6 +181,7 @@ public class LayoutViewHost : ILayoutViewHost, IEnableLogger
 
     /// <summary>Gets the backing <see cref="View"/> for this host as a friendly alternate to the implicit operator.</summary>
     /// <returns>The backing <see cref="View"/> instance, or <see langword="null"/> if none has been assigned.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public View? ToView() => _view;
 
     /// <summary>Inflates an Android layout resource into a <see cref="View"/> using the provided context.</summary>

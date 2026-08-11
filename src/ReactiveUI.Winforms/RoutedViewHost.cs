@@ -4,6 +4,8 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.ComponentModel;
+using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using ReactiveUI.Internal;
 
 #if REACTIVE_SHIM
@@ -14,6 +16,7 @@ namespace ReactiveUI.Winforms;
 
 /// <summary>A control host which will handling routing between different ViewModels and Views.</summary>
 [DefaultProperty("ViewModel")]
+[DebuggerDisplay("{DefaultContent}, {Router}")]
 public partial class RoutedControlHost : UserControl, IReactiveObject
 {
     /// <summary>Holds the subscriptions created during construction so they can be disposed together.</summary>
@@ -74,9 +77,11 @@ public partial class RoutedControlHost : UserControl, IReactiveObject
     public IViewLocator? ViewLocator { get; set; }
 
     /// <inheritdoc/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args) => PropertyChanging?.Invoke(this, args);
 
     /// <inheritdoc/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args) => PropertyChanged?.Invoke(this, args);
 
     /// <summary>Clean up any resources being used.</summary>
@@ -179,8 +184,7 @@ public partial class RoutedControlHost : UserControl, IReactiveObject
                 return;
             }
 
-            var viewLocator = _host.ViewLocator ?? ReactiveUI.ViewLocator.Current;
-            var view = viewLocator.ResolveView(viewModel, contract);
+            var view = (_host.ViewLocator ?? ReactiveUI.ViewLocator.Current).ResolveView(viewModel, contract);
             if (view is not null)
             {
                 view.ViewModel = viewModel;

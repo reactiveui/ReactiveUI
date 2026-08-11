@@ -250,7 +250,7 @@ public class FinalAOTValidationTests
             "Property validation",
             "Error handling",
             "Disposal patterns",
-            "Observable compositions"
+            "Observable compositions",
         };
 
         // Verify we have comprehensive coverage

@@ -4,6 +4,8 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.ComponentModel;
+using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using Foundation;
 
 using NSTableViewController = UIKit.UITableViewController;
@@ -18,6 +20,7 @@ namespace ReactiveUI;
 /// This is a NSTableViewController that is both an NSTableViewController and has ReactiveObject powers
 /// (i.e. you can call RaiseAndSetIfChanged).
 /// </summary>
+[DebuggerDisplay("{Activated}, {Deactivated}")]
 public class ReactiveTableViewController : NSTableViewController, IReactiveNotifyPropertyChanged<ReactiveTableViewController>, IHandleObservableErrors, IReactiveObject, ICanActivate
 {
     /// <summary>The subject used to signal view activation.</summary>
@@ -95,39 +98,35 @@ public class ReactiveTableViewController : NSTableViewController, IReactiveNotif
     /// </summary>
     /// <returns>An object that, when disposed, reenables change
     /// notifications.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public IDisposable SuppressChangeNotifications() => IReactiveObjectExtensions.SuppressChangeNotifications(this);
 
     /// <inheritdoc/>
     public override void ViewWillAppear(bool animated)
     {
         base.ViewWillAppear(animated);
-        _activated.OnNext(RxVoid.Default);
-        this.ActivateSubviews(true);
+        this.RaiseActivation(_activated, _deactivated, true);
     }
 
     /// <inheritdoc/>
     public override void ViewDidDisappear(bool animated)
     {
         base.ViewDidDisappear(animated);
-        _deactivated.OnNext(RxVoid.Default);
-        this.ActivateSubviews(false);
+        this.RaiseActivation(_activated, _deactivated, false);
     }
 
     /// <inheritdoc/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args) => PropertyChanging?.Invoke(this, args);
 
     /// <inheritdoc/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args) => PropertyChanged?.Invoke(this, args);
 
     /// <inheritdoc/>
     protected override void Dispose(bool disposing)
     {
-        if (disposing)
-        {
-            _activated?.Dispose();
-            _deactivated?.Dispose();
-        }
-
+        ActivationSignals.DisposeWhen(disposing, _activated, _deactivated);
         base.Dispose(disposing);
     }
 }

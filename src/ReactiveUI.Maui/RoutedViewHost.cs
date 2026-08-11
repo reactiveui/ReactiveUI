@@ -4,8 +4,10 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Collections.Specialized;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using Microsoft.Maui.Controls;
 using ReactiveUI.Internal;
 using ReactiveUI.Primitives;
@@ -20,6 +22,7 @@ namespace ReactiveUI.Maui;
 /// <summary>This is a <see cref="NavigationPage"/> that serves as a router.</summary>
 /// <seealso cref="NavigationPage" />
 /// <seealso cref="IActivatableView" />
+[DebuggerDisplay("{Router}, {SetTitleOnNavigate}")]
 public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
 {
     /// <summary>The router bindable property.</summary>
@@ -134,6 +137,8 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
     /// <summary>Page for view model.</summary>
     /// <param name="vm">The vm.</param>
     /// <returns>An observable of the page associated to a <see cref="IRoutableViewModel"/>.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="vm"/> is null.</exception>
+    /// <exception cref="InvalidOperationException">No <c>IViewFor</c> is registered for the view model.</exception>
     [RequiresUnreferencedCode(
         "This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
     [RequiresDynamicCode(
@@ -158,9 +163,9 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
 
         if (SetTitleOnNavigate)
         {
-            _ = RxSchedulers.MainThreadScheduler.Schedule((page: pg, vm), static (_, state) =>
+            _ = RxSchedulers.MainThreadScheduler.Schedule((Page: pg, vm), static (_, state) =>
             {
-                state.page.Title = state.vm.UrlPathSegment;
+                state.Page.Title = state.vm.UrlPathSegment;
                 return EmptyDisposable.Instance;
             });
         }
@@ -258,6 +263,7 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
     [RequiresDynamicCode(
         "If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, or generic constraints), "
         + "trimming can't validate that the requirements of those annotations are met.")]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void SubscribeToNavigationStackChanges() =>
         new FromEventObservable<RxVoid>(onNext =>
             {
@@ -283,6 +289,7 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
     [RequiresDynamicCode(
         "If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, or generic constraints), "
         + "trimming can't validate that the requirements of those annotations are met.")]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void SubscribeToNavigateBack() =>
         Router?
             .NavigateBack
@@ -319,6 +326,7 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
     [RequiresDynamicCode(
         "If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, or generic constraints), "
         + "trimming can't validate that the requirements of those annotations are met.")]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void SubscribeToNavigate() =>
         Router?
             .Navigate

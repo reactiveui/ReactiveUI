@@ -2,11 +2,14 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
+using System.Diagnostics;
+
 #if NET6_0_OR_GREATER
 
 namespace ReactiveUI;
 
 /// <summary>Converts <see cref="string"/> to <see cref="TimeOnly"/> using <see cref="TimeOnly.TryParse(string?, out TimeOnly)"/>.</summary>
+[DebuggerDisplay("StringToTimeOnlyTypeConverter")]
 public sealed class StringToTimeOnlyTypeConverter : BindingTypeConverter<string, TimeOnly>
 {
     /// <inheritdoc/>

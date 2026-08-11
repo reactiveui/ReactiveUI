@@ -132,8 +132,7 @@ public partial class ObservableAsPropertyHelperTest
             return Task.CompletedTask;
         }).ThrowsNothing();
 
-        var value = fixture.Value;
-        await Assert.That(value).IsEqualTo(0);
+        await Assert.That(fixture.Value).IsEqualTo(0);
     }
 
     /// <summary>
@@ -196,8 +195,7 @@ public partial class ObservableAsPropertyHelperTest
 
         var fixture = new ObservableAsPropertyHelper<int>(observable, OnChanged, OnChanging, () => initialValue, true);
 
-        var result = fixture.Value;
-        await Assert.That(result).IsEqualTo(initialValue);
+        await Assert.That(fixture.Value).IsEqualTo(initialValue);
 
         observable.OnNext(initialValue);
 

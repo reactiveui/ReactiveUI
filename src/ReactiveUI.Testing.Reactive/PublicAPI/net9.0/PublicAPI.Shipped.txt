@@ -17,6 +17,8 @@ ReactiveUI.Testing.MessageBusExtensions.extension(ReactiveUI.Reactive.IMessageBu
 ReactiveUI.Testing.MessageBusExtensions.extension(ReactiveUI.Reactive.IMessageBus!).WithMessageBus() -> System.IDisposable!
 ReactiveUI.Testing.RxTest
 ReactiveUI.Testing.SchedulerExtensions
+ReactiveUI.Testing.SchedulerExtensions.extension(System.Reactive.Concurrency.IScheduler!)
+ReactiveUI.Testing.SchedulerExtensions.extension(System.Reactive.Concurrency.IScheduler!).WithScheduler() -> System.IDisposable!
 ReactiveUI.Testing.SchedulerExtensions.extension<T>(T)
 ReactiveUI.Testing.SchedulerExtensions.extension<T>(T).With(System.Action<T>! block) -> void
 ReactiveUI.Testing.SchedulerExtensions.extension<T>(T).With<TRet>(System.Func<T, TRet>! block) -> TRet
@@ -50,7 +52,7 @@ static ReactiveUI.Testing.SchedulerExtensions.With<T, TRet>(this T scheduler, Sy
 static ReactiveUI.Testing.SchedulerExtensions.With<T>(this T scheduler, System.Action<T>! block) -> void
 static ReactiveUI.Testing.SchedulerExtensions.WithAsync<T, TRet>(this T scheduler, System.Func<T, System.Threading.Tasks.Task<TRet>!>! block) -> System.Threading.Tasks.Task<TRet>!
 static ReactiveUI.Testing.SchedulerExtensions.WithAsync<T>(this T scheduler, System.Func<T, System.Threading.Tasks.Task!>! block) -> System.Threading.Tasks.Task!
-static ReactiveUI.Testing.SchedulerExtensions.WithScheduler(System.Reactive.Concurrency.IScheduler! scheduler) -> System.IDisposable!
+static ReactiveUI.Testing.SchedulerExtensions.WithScheduler(this System.Reactive.Concurrency.IScheduler! scheduler) -> System.IDisposable!
 static ReactiveUI.Testing.TestSchedulerExtensions.AdvanceByMs(this Microsoft.Reactive.Testing.TestScheduler! scheduler, double milliseconds) -> void
 static ReactiveUI.Testing.TestSchedulerExtensions.AdvanceToMs(this Microsoft.Reactive.Testing.TestScheduler! scheduler, double milliseconds) -> void
 static ReactiveUI.Testing.TestSchedulerExtensions.FromTimeSpan(System.TimeSpan span) -> long

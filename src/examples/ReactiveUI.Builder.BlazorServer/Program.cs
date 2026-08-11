@@ -29,7 +29,7 @@ builder.Services.UseMicrosoftDependencyResolver();
 _ = RxAppBuilder.CreateReactiveUIBuilder()
     .WithBlazor()
     .WithMessageBus()
-    .WithViewsFromAssembly(typeof(Program).Assembly)
+    .WithViewsFromAssembly(Program.HostAssembly)
     .BuildApp();
 
 var app = builder.Build();
@@ -55,3 +55,13 @@ _ = app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
 await app.RunAsync();
+
+/// <summary>
+/// The host type the compiler generates for this file's top-level statements. Declared explicitly so the
+/// entry point carries the same debugger and sealing attributes as the rest of the sample.
+/// </summary>
+internal sealed partial class Program
+{
+    /// <summary>Gets the assembly that hosts the sample's views, used when registering them at startup.</summary>
+    internal static System.Reflection.Assembly HostAssembly => typeof(Program).Assembly;
+}

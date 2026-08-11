@@ -14,10 +14,11 @@ namespace ReactiveUI.AndroidX;
 /// <summary>An adapter for the Android <see cref="RecyclerView"/>.</summary>
 /// <typeparam name="TViewModel">The type of ViewModel that this adapter holds.</typeparam>
 /// <typeparam name="TCollection">The type of collection.</typeparam>
+/// <param name="backingList">The backing list.</param>
 /// <remarks>
 /// Initializes a new instance of the <see cref="ReactiveRecyclerViewAdapter{TViewModel, TCollection}"/> class.
 /// </remarks>
-/// <param name="backingList">The backing list.</param>
+[System.Diagnostics.DebuggerDisplay("ItemCount = {ItemCount}")]
 public abstract class ReactiveRecyclerViewAdapter<TViewModel, TCollection>(TCollection backingList)
     : ReactiveRecyclerViewAdapter<TViewModel>(backingList.ToReactiveChangeSet<TCollection, TViewModel>())
     where TViewModel : class, IReactiveObject

@@ -4,6 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 #if WINUI_TARGET
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.UI.Xaml;
 #if REACTIVE_SHIM
@@ -24,6 +25,7 @@ namespace ReactiveUI;
 /// </summary>
 [RequiresUnreferencedCode("This class uses reflection to determine view model types at runtime through ViewLocator, which may be incompatible with trimming.")]
 [RequiresDynamicCode("ViewLocator.ResolveView uses reflection which is incompatible with AOT compilation.")]
+[DebuggerDisplay("Router = {Router}")]
 public partial class RoutedViewHost : TransitioningContentControl, IActivatableView, IMauiRoutedViewHost
 {
     /// <summary>The router dependency property.</summary>
@@ -103,21 +105,22 @@ public partial class RoutedViewHost : TransitioningContentControl, IActivatableV
 
     /// <summary>Resolves and hosts the view for the supplied view model/contract pair.</summary>
     /// <param name="route">The view model and contract to resolve a view for.</param>
+    /// <exception cref="InvalidOperationException">No view is registered for the routed view model.</exception>
     [RequiresUnreferencedCode("This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
     [RequiresDynamicCode("If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, "
         + "or generic constraints), trimming can't validate that the requirements of those annotations are met.")]
-    private void ResolveViewForViewModel((IRoutableViewModel? viewModel, string? contract) route)
+    private void ResolveViewForViewModel((IRoutableViewModel? ViewModel, string? Contract) route)
     {
-        if (route.viewModel is null)
+        if (route.ViewModel is null)
         {
             Content = DefaultContent;
             return;
         }
 
         var viewLocator = ViewLocator ?? ReactiveUI.ViewLocator.Current;
-        var view = (viewLocator.ResolveView(route.viewModel, route.contract) ?? viewLocator.ResolveView(route.viewModel))
-            ?? throw new InvalidOperationException($"Couldn't find view for '{route.viewModel}'.");
-        view.ViewModel = route.viewModel;
+        var view = (viewLocator.ResolveView(route.ViewModel, route.Contract) ?? viewLocator.ResolveView(route.ViewModel))
+            ?? throw new InvalidOperationException($"Couldn't find view for '{route.ViewModel}'.");
+        view.ViewModel = route.ViewModel;
         Content = view;
     }
 }

@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Runtime.CompilerServices;
 using ReactiveUI.Primitives.Signals;
 
 namespace ReactiveUI.Benchmarks;
@@ -17,9 +18,11 @@ internal sealed class ObservableBenchmarkViewModel : ReactiveObject, IDisposable
     internal IObservable<int> Values => _subject;
 
     /// <inheritdoc/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Dispose() => _subject.Dispose();
 
     /// <summary>Pushes a value through the inner observable.</summary>
     /// <param name="value">The value to emit.</param>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal void Push(int value) => _subject.OnNext(value);
 }

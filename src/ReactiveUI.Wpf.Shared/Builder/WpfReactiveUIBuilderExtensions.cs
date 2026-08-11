@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Runtime.CompilerServices;
 using Splat.Builder;
 
 #if REACTIVE_SHIM
@@ -39,6 +40,7 @@ public static class WpfReactiveUIBuilderExtensions
     {
         /// <summary>Configures ReactiveUI for WPF platform with appropriate schedulers.</summary>
         /// <returns>The builder instance for chaining.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IReactiveUIBuilder WithWpf() => ((IReactiveUIBuilder)builder).WithWpf();
     }
 

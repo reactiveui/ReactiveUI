@@ -4,6 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using System.Text.Json.Serialization.Metadata;
 using ReactiveUI.Primitives.Disposables;
 using Splat;
@@ -112,6 +113,7 @@ public static class SuspensionHostExtensions
         [RequiresDynamicCode(
             "This overload may invoke ISuspensionDriver.LoadState()/SaveState<T>(T), which are commonly reflection-based. "
             + "Prefer SetupDefaultSuspendResume<TAppState>(..., JsonTypeInfo<TAppState>, ...) for trimming/AOT scenarios.")]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IDisposable SetupDefaultSuspendResume() =>
             item.SetupDefaultSuspendResume(null);
 
@@ -221,6 +223,7 @@ public static class SuspensionHostExtensions
         /// <summary>Sets up suspend/resume using a strongly-typed host and source-generated JSON metadata, using a resolved driver.</summary>
         /// <param name="typeInfo">Source-generated metadata for TAppState.</param>
         /// <returns>A disposable which will stop responding to Suspend and Resume requests.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IDisposable SetupDefaultSuspendResume(
             JsonTypeInfo<TAppState> typeInfo) =>
             item.SetupDefaultSuspendResume(typeInfo, null);
@@ -358,6 +361,7 @@ public static class SuspensionHostExtensions
     }
 
     /// <summary>Runs the pending one-time app-state load exactly once, if one is registered.</summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static void RunPendingLoad() => Interlocked.Exchange(ref _ensureLoadAppStateFunc, null)?.Invoke();
 
     /// <summary>Subscribes to a single-value observable and blocks until it terminates, returning its last value.</summary>
@@ -405,9 +409,11 @@ public static class SuspensionHostExtensions
             }
 
             /// <inheritdoc/>
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public void OnError(Exception error) => downstream.OnError(error);
 
             /// <inheritdoc/>
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public void OnCompleted() => downstream.OnCompleted();
         }
     }
@@ -448,9 +454,11 @@ public static class SuspensionHostExtensions
             }
 
             /// <inheritdoc/>
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public void OnError(Exception error) => downstream.OnError(error);
 
             /// <inheritdoc/>
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public void OnCompleted() => downstream.OnCompleted();
         }
     }
@@ -492,6 +500,7 @@ public static class SuspensionHostExtensions
         }
 
         /// <inheritdoc/>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void OnError(Exception error) => logHost.Log().Warn(error, errorMessage);
 
         /// <inheritdoc/>
@@ -512,10 +521,11 @@ public static class SuspensionHostExtensions
             string successMessage,
             string errorMessage) : IObserver<RxVoid>
         {
-            /// <summary>Whether the finalizer has run.</summary>
-            private bool _finished;
+            /// <summary>Whether the finalizer has run; latched to 1 by the first thread to reach it.</summary>
+            private int _finished;
 
             /// <inheritdoc/>
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public void OnNext(RxVoid value) => logHost.Log().Info(successMessage);
 
             /// <inheritdoc/>
@@ -526,17 +536,17 @@ public static class SuspensionHostExtensions
             }
 
             /// <inheritdoc/>
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public void OnCompleted() => Finish();
 
             /// <summary>Runs the finalizer exactly once.</summary>
             private void Finish()
             {
-                if (_finished)
+                if (Interlocked.Exchange(ref _finished, 1) != 0)
                 {
                     return;
                 }
 
-                _finished = true;
                 onFinally(arg);
             }
         }
@@ -564,6 +574,7 @@ public static class SuspensionHostExtensions
         }
 
         /// <inheritdoc/>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void OnCompleted() => signal.Set();
 
         /// <summary>Returns the captured value, rethrowing any terminal error.</summary>

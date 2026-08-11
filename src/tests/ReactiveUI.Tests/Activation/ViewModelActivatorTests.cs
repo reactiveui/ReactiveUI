@@ -71,10 +71,12 @@ public class ViewModelActivatorTests
         var deactivated = viewModelActivator.Deactivated.Collect();
 
         using (viewModelActivator.Activate())
-        using (Assert.Multiple())
         {
-            await Assert.That(activated).Count().IsEqualTo(1);
-            await Assert.That(deactivated).IsEmpty();
+            using (Assert.Multiple())
+            {
+                await Assert.That(activated).Count().IsEqualTo(1);
+                await Assert.That(deactivated).IsEmpty();
+            }
         }
 
         using (Assert.Multiple())

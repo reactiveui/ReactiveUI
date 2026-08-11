@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Threading;
@@ -32,6 +33,7 @@ namespace ReactiveUI;
 /// Prefer the add/remove handler overload for AOT-safe event binding.
 /// </para>
 /// </remarks>
+[DebuggerDisplay("FlexibleCommandBinder")]
 public class FlexibleCommandBinder : ICreatesCommandBinding
 {
     /// <summary>A single synchronization gate for all mutable state in this instance.</summary>
@@ -126,11 +128,13 @@ public class FlexibleCommandBinder : ICreatesCommandBinding
                 continue;
             }
 
-            if (entry.Affinity > bestAffinity)
+            if (entry.Affinity <= bestAffinity)
             {
-                bestAffinity = entry.Affinity;
-                best = entry;
+                continue;
             }
+
+            bestAffinity = entry.Affinity;
+            best = entry;
         }
 
         if (best is null || best.Value.Factory is null)

@@ -38,9 +38,8 @@ public class NullableGuidToStringTypeConverterTests
     public async Task TryConvert_Null_ReturnsNullString()
     {
         var converter = new NullableGuidToStringTypeConverter();
-        Guid? value = null;
 
-        var result = converter.TryConvert(value, null, out var output);
+        var result = converter.TryConvert(null, null, out var output);
 
         await Assert.That(result).IsTrue();
         await Assert.That(output).IsNull();

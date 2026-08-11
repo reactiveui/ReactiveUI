@@ -4,8 +4,10 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using Foundation;
 using ObjCRuntime;
@@ -95,6 +97,11 @@ public class TargetActionCommandBinder : ICreatesCommandBinding
     }
 
     /// <inheritdoc/>
+    /// <typeparam name="T">The target type being bound.</typeparam>
+    /// <param name="command">The command to bind to the target.</param>
+    /// <param name="target">The target object to bind the command to.</param>
+    /// <param name="commandParameter">An observable providing the latest command parameter.</param>
+    /// <returns>A disposable that tears down the binding, or <see langword="null"/> when binding is not possible.</returns>
     /// <remarks>
     /// <para>
     /// This binds via Target/Action, not via a .NET event. It requires that the runtime type exposes a <c>Target</c>
@@ -105,11 +112,6 @@ public class TargetActionCommandBinder : ICreatesCommandBinding
     /// <see cref="ICommand.CanExecute(object?)"/> and <see cref="ICommand.CanExecuteChanged"/>.
     /// </para>
     /// </remarks>
-    /// <typeparam name="T">The target type being bound.</typeparam>
-    /// <param name="command">The command to bind to the target.</param>
-    /// <param name="target">The target object to bind the command to.</param>
-    /// <param name="commandParameter">An observable providing the latest command parameter.</param>
-    /// <returns>A disposable that tears down the binding, or <see langword="null"/> when binding is not possible.</returns>
     [RequiresUnreferencedCode("String/reflection-based event binding may require members removed by trimming.")]
     public IDisposable? BindCommandToObject<
         [DynamicallyAccessedMembers(
@@ -188,10 +190,6 @@ public class TargetActionCommandBinder : ICreatesCommandBinding
     }
 
     /// <inheritdoc/>
-    /// <remarks>
-    /// This overload binds to a named .NET event. It is reflection-based and therefore not trimming-safe.
-    /// Prefer the add/remove handler overload when you can supply delegates.
-    /// </remarks>
     /// <typeparam name="T">The target type being bound.</typeparam>
     /// <typeparam name="TEventArgs">The event args type of the named event.</typeparam>
     /// <param name="command">The command to bind to the target.</param>
@@ -199,6 +197,10 @@ public class TargetActionCommandBinder : ICreatesCommandBinding
     /// <param name="commandParameter">An observable providing the latest command parameter.</param>
     /// <param name="eventName">The name of the event to subscribe to.</param>
     /// <returns>A disposable that tears down the binding, or <see langword="null"/> when binding is not possible.</returns>
+    /// <remarks>
+    /// This overload binds to a named .NET event. It is reflection-based and therefore not trimming-safe.
+    /// Prefer the add/remove handler overload when you can supply delegates.
+    /// </remarks>
     [RequiresUnreferencedCode("String/reflection-based event binding may require members removed by trimming.")]
     public IDisposable? BindCommandToObject<T, TEventArgs>(
         ICommand? command,
@@ -239,9 +241,6 @@ public class TargetActionCommandBinder : ICreatesCommandBinding
     }
 
     /// <inheritdoc/>
-    /// <remarks>
-    /// This overload is fully AOT-compatible and should be preferred when an explicit event subscription API is available.
-    /// </remarks>
     /// <typeparam name="T">The target type being bound.</typeparam>
     /// <typeparam name="TEventArgs">The event args type of the subscribed event.</typeparam>
     /// <param name="command">The command to bind to the target.</param>
@@ -250,6 +249,9 @@ public class TargetActionCommandBinder : ICreatesCommandBinding
     /// <param name="addHandler">Adds the event handler to the target.</param>
     /// <param name="removeHandler">Removes the event handler from the target.</param>
     /// <returns>A disposable that tears down the binding, or <see langword="null"/> when binding is not possible.</returns>
+    /// <remarks>
+    /// This overload is fully AOT-compatible and should be preferred when an explicit event subscription API is available.
+    /// </remarks>
     public IDisposable? BindCommandToObject<
         [DynamicallyAccessedMembers(
             DynamicallyAccessedMemberTypes.PublicProperties
@@ -381,6 +383,7 @@ public class TargetActionCommandBinder : ICreatesCommandBinding
         /// <summary>Selector invoked by Cocoa controls for Target/Action.</summary>
         /// <param name="sender">The sender object.</param>
         [Export("theAction:")]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void TheAction(NSObject sender) => _block(sender);
 
 #if !UIKIT

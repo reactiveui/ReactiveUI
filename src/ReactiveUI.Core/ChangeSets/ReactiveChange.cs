@@ -3,6 +3,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Runtime.CompilerServices;
+
 namespace ReactiveUI;
 
 /// <summary>
@@ -47,6 +49,7 @@ public readonly struct ReactiveChange<T> : IEquatable<ReactiveChange<T>>
     /// <param name="left">The first change.</param>
     /// <param name="right">The second change.</param>
     /// <returns><see langword="true"/> if equal.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool operator ==(in ReactiveChange<T> left, in ReactiveChange<T> right) => left.Equals(right);
 
     /// <summary>Determines whether two changes are unequal.</summary>

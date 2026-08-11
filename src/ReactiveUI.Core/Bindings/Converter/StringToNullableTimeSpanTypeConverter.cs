@@ -12,21 +12,6 @@ public sealed class StringToNullableTimeSpanTypeConverter : BindingTypeConverter
     public override int GetAffinityForObjects() => BindingAffinity.DefaultInternalTypeConverter;
 
     /// <inheritdoc/>
-    public override bool TryConvert(string? from, object? conversionHint, out TimeSpan? result)
-    {
-        if (string.IsNullOrEmpty(from))
-        {
-            result = null;
-            return true;
-        }
-
-        if (TimeSpan.TryParse(from, out var value))
-        {
-            result = value;
-            return true;
-        }
-
-        result = null;
-        return false;
-    }
+    public override bool TryConvert(string? from, object? conversionHint, out TimeSpan? result) =>
+        NullableValueConversion.TryConvert(from, TimeSpan.TryParse, out result);
 }

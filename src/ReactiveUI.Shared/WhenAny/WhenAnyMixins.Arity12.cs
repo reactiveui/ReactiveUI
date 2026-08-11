@@ -5,6 +5,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 
 #if REACTIVE_SHIM
 namespace ReactiveUI.Reactive;
@@ -52,6 +53,7 @@ public static partial class WhenAnyMixins
         /// <param name="selector">Combines the observed property values into a result.</param>
         /// <returns>An observable that emits the projected result on each change.</returns>
         [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IObservable<TRet> WhenAnyValue<TRet, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>(
             Expression<Func<TSender, T1>> property1,
             Expression<Func<TSender, T2>> property2,
@@ -195,6 +197,7 @@ public static partial class WhenAnyMixins
         /// <param name="isDistinct">Whether to emit only when the combined value changes.</param>
         /// <returns>An observable that emits the projected result on each change.</returns>
         [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IObservable<TRet> WhenAnyValue<TRet, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>(
             Expression<Func<TSender, T1>> property1,
             Expression<Func<TSender, T2>> property2,
@@ -341,6 +344,7 @@ public static partial class WhenAnyMixins
         /// <param name="selector">Combines the observed change notifications into a result.</param>
         /// <returns>An observable that emits the projected result on each change.</returns>
         [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IObservable<TRet> WhenAny<TRet, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>(
             Expression<Func<TSender, T1>> property1,
             Expression<Func<TSender, T2>> property2,
@@ -425,6 +429,7 @@ public static partial class WhenAnyMixins
         /// <param name="selector">Combines the observed change notifications into a result.</param>
         /// <returns>An observable that emits the projected result on each change.</returns>
         [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IObservable<TRet> WhenAny<TRet, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>(
             string property1Name,
             string property2Name,
@@ -510,6 +515,7 @@ public static partial class WhenAnyMixins
         /// <param name="isDistinct">Whether to emit only when the combined value changes.</param>
         /// <returns>An observable that emits the projected result on each change.</returns>
         [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IObservable<TRet> WhenAny<TRet, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>(
             Expression<Func<TSender, T1>> property1,
             Expression<Func<TSender, T2>> property2,
@@ -596,6 +602,7 @@ public static partial class WhenAnyMixins
         /// <param name="isDistinct">Whether to emit only when the combined value changes.</param>
         /// <returns>An observable that emits the projected result on each change.</returns>
         [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IObservable<TRet> WhenAny<TRet, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>(
             string property1Name,
             string property2Name,

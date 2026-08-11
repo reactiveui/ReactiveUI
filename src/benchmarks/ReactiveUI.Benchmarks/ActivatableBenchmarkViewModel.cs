@@ -3,6 +3,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Runtime.CompilerServices;
+
 namespace ReactiveUI.Benchmarks;
 
 /// <summary>
@@ -26,5 +28,6 @@ internal sealed class ActivatableBenchmarkViewModel : ReactiveObject, IActivatab
     internal long ActivationCount { get; private set; }
 
     /// <summary>Disposes the activator that drives the activation lifecycle.</summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Dispose() => Activator.Dispose();
 }

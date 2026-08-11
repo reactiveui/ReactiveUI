@@ -3,10 +3,12 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Foundation;
 
@@ -24,6 +26,7 @@ public sealed class KVOObservableForProperty : ICreatesObservableForProperty
 
     /// <inheritdoc />
     [RequiresUnreferencedCode("Uses reflection over runtime types which is not trim- or AOT-safe.")]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public int GetAffinityForObject(Type type, string propertyName) =>
         GetAffinityForObject(type, propertyName, false);
 
@@ -44,6 +47,7 @@ public sealed class KVOObservableForProperty : ICreatesObservableForProperty
 
     /// <inheritdoc />
     [RequiresUnreferencedCode("Uses reflection over runtime types which is not trim- or AOT-safe.")]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public IObservable<IObservedChange<object?, object?>> GetNotificationForProperty(
         object sender,
         Expression expression,
@@ -52,6 +56,7 @@ public sealed class KVOObservableForProperty : ICreatesObservableForProperty
 
     /// <inheritdoc />
     [RequiresUnreferencedCode("Uses reflection over runtime types which is not trim- or AOT-safe.")]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public IObservable<IObservedChange<object?, object?>> GetNotificationForProperty(
         object sender,
         Expression expression,
@@ -88,15 +93,6 @@ public sealed class KVOObservableForProperty : ICreatesObservableForProperty
     }
 
     /// <summary>Subscribes to KVO change notifications using a pre-resolved observation key (KVO key path).</summary>
-    /// <remarks>
-    /// <para>
-    /// This helper wires NSObject AddObserver/RemoveObserver patterns
-    /// to an <see cref="IObservable{T}"/> sequence and ensures deterministic unsubscription.
-    /// </para>
-    /// <para>
-    /// The returned disposable is idempotent and will remove the observer and release the pinned delegate instance.
-    /// </para>
-    /// </remarks>
     /// <param name="sender">The object to observe. Must be an <see cref="NSObject"/>.</param>
     /// <param name="expression">
     /// The expression describing the observed member. This value is surfaced in emitted
@@ -116,6 +112,15 @@ public sealed class KVOObservableForProperty : ICreatesObservableForProperty
     /// <paramref name="observationKey"/> is <see langword="null"/>.
     /// </exception>
     /// <exception cref="ArgumentException">Thrown when <paramref name="sender"/> is not an <see cref="NSObject"/>.</exception>
+    /// <remarks>
+    /// <para>
+    /// This helper wires NSObject AddObserver/RemoveObserver patterns
+    /// to an <see cref="IObservable{T}"/> sequence and ensures deterministic unsubscription.
+    /// </para>
+    /// <para>
+    /// The returned disposable is idempotent and will remove the observer and release the pinned delegate instance.
+    /// </para>
+    /// </remarks>
     private static KeyValueObservingObservable GetNotificationForProperty(
         object sender,
         Expression expression,
@@ -172,6 +177,9 @@ public sealed class KVOObservableForProperty : ICreatesObservableForProperty
     }
 
     /// <summary>Maps a .NET property name to an Objective-C selector / KVO key path using reflection over the runtime type.</summary>
+    /// <param name="senderType">The runtime type of the sender.</param>
+    /// <param name="propertyName">The .NET property name.</param>
+    /// <returns>The derived Cocoa key path to use for KVO.</returns>
     /// <remarks>
     /// <para>
     /// This method inspects the runtime type for an exported selector attribute on the getter, and falls back to a
@@ -181,9 +189,6 @@ public sealed class KVOObservableForProperty : ICreatesObservableForProperty
     /// Trimming/AOT: this method reflects over runtime types and is not trimming-safe.
     /// </para>
     /// </remarks>
-    /// <param name="senderType">The runtime type of the sender.</param>
-    /// <param name="propertyName">The .NET property name.</param>
-    /// <returns>The derived Cocoa key path to use for KVO.</returns>
     [RequiresUnreferencedCode("Uses reflection over runtime types which is not trim- or AOT-safe.")]
     private static string GetCocoaKeyPathUnsafe(Type senderType, string propertyName)
     {

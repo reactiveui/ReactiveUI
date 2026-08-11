@@ -5,6 +5,8 @@
 
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using Foundation;
 using UIKit;
 
@@ -20,6 +22,7 @@ namespace ReactiveUI;
 /// View items are animated in and out as items are added.
 /// </summary>
 /// <typeparam name="TSource">The source type.</typeparam>
+[DebuggerDisplay("{Data}")]
 public class ReactiveCollectionViewSource<TSource> : UICollectionViewSource, IReactiveNotifyPropertyChanged<ReactiveCollectionViewSource<TSource>>, IHandleObservableErrors, IReactiveObject
 {
     /// <summary>The common reactive source that manages section data and drives collection view updates.</summary>
@@ -130,9 +133,11 @@ public class ReactiveCollectionViewSource<TSource> : UICollectionViewSource, IRe
     }
 
     /// <inheritdoc/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args) => PropertyChanging?.Invoke(this, args);
 
     /// <inheritdoc/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args) => PropertyChanged?.Invoke(this, args);
 
     /// <summary>
@@ -142,6 +147,7 @@ public class ReactiveCollectionViewSource<TSource> : UICollectionViewSource, IRe
     /// </summary>
     /// <returns>An object that, when disposed, re-enables change
     /// notifications.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public IDisposable SuppressChangeNotifications() => IReactiveObjectExtensions.SuppressChangeNotifications(this);
 
     /// <inheritdoc/>

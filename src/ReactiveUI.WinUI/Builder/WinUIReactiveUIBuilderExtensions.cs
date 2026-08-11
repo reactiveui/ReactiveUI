@@ -46,9 +46,9 @@ public static class WinUIReactiveUIBuilderExtensions
         }
 
         /// <summary>Configures the builder to use the WinUI main thread scheduler for reactive operations.</summary>
+        /// <returns>The same builder instance configured to use the WinUI main thread scheduler.</returns>
         /// <remarks>Use this method when building reactive applications targeting WinUI to ensure that main
         /// thread operations are scheduled appropriately for the WinUI environment.</remarks>
-        /// <returns>The same builder instance configured to use the WinUI main thread scheduler.</returns>
         public IReactiveUIBuilder WithWinUIScheduler()
         {
             ArgumentExceptionHelper.ThrowIfNull(builder);

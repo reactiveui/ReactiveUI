@@ -15,12 +15,12 @@ public static partial class ControlFetcherMixins
     public enum ResolveStrategy
     {
         /// <summary>Resolve all properties that use a subclass of View.</summary>
-        Implicit,
+        Implicit = 0,
 
         /// <summary>Resolve only properties with an WireUpResource attribute.</summary>
-        ExplicitOptIn,
+        ExplicitOptIn = 1,
 
         /// <summary>Resolve all View properties and those that use a subclass of View, except those with an IgnoreResource attribute.</summary>
-        ExplicitOptOut
+        ExplicitOptOut = 2,
     }
 }

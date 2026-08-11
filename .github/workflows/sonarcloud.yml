@@ -15,6 +15,12 @@ jobs:
         with:
             productNamespacePrefix: ReactiveUI
             installWorkloads: true
+            # ReactiveUI.WinUI.Tests hosts a real WinUI application; without the Windows App SDK runtime on the
+            # agent those tests skip and contribute no coverage. It is a machine-level MSIX framework package,
+            # not an SDK workload, so installWorkloads does not cover it. Keep in step with the
+            # Microsoft.WindowsAppSDK version pinned in src/Directory.Packages.props.
+            installWindowsAppRuntime: true
+            windowsAppRuntimeVersion: '2.3'
             sonarProjectKey: reactiveui_ReactiveUI
             sonarOrganization: reactiveui
             sonarExclusions: '**/tests/**,**/integrationtests/**,**/benchmarks/**,**/examples/**,**/TestResults/**'
@@ -29,7 +35,11 @@ jobs:
             #    apple-common,ios,mac,tvos,uikit-common,mobile-common}: those need an emulator/device or a mac runner, so
             #    their tests never execute in CI and the files always read 0%. Exclude exactly those per-OS dirs from
             #    coverage (Platforms/net and Platforms/netstandard2.0 stay measured — they run under the core tests).
-            sonarCoverageExclusions: '**/tests/**,**/integrationtests/**,**/benchmarks/**,**/examples/**,**/*Tests/**,**/*Tests.cs,**/Generated/**,**/Shared/Platform/**,**/Platforms/android/**,**/Platforms/apple-common/**,**/Platforms/ios/**,**/Platforms/mac/**,**/Platforms/tvos/**,**/Platforms/uikit-common/**,**/Platforms/mobile-common/**'
+            #  - ReactiveUI.AndroidX is the same case one level up: it is a whole assembly of AppCompat activities,
+            #    fragments and view holders that only construct on a device or emulator, so it has no test project and
+            #    always reads 0%. ReactiveUI.Maui is NOT excluded — ReactiveUI.Maui.Tests runs on the Windows leg and
+            #    genuinely measures it.
+            sonarCoverageExclusions: '**/tests/**,**/integrationtests/**,**/benchmarks/**,**/examples/**,**/*Tests/**,**/*Tests.cs,**/Generated/**,**/Shared/Platform/**,**/Platforms/android/**,**/Platforms/apple-common/**,**/Platforms/ios/**,**/Platforms/mac/**,**/Platforms/tvos/**,**/Platforms/uikit-common/**,**/Platforms/mobile-common/**,**/ReactiveUI.AndroidX/**,**/ReactiveUI.AndroidX.Reactive/**'
             # CPD (copy/paste detection) exclusions:
             #  - tests/integrationtests/Benchmarks/examples are non-shipping code. The examples are
             #    demo apps that deliberately parallel each other (each sample reimplements the same
@@ -47,7 +57,18 @@ jobs:
             #    per-arity shape: after the shared scaffold is factored out, the residual is one typed
             #    GetService list per arity, which cannot be folded further without variadic generics
             #    (absent in C#) or reflection/boxing. Same treatment as the Arity{N} files above.
-            sonarCpdExclusions: '**/tests/**,**/integrationtests/**,**/benchmarks/**,**/examples/**,**/*.Arity?.cs,**/*.Arity??.cs,**/*.Arity?.Dynamic.cs,**/*.Arity??.Dynamic.cs,**/BuilderMixins.Instance.cs,**/ReactiveUIBuilder.Build.cs'
+            #  - The platform view types under ReactiveUI.AndroidX and Platforms/{android,apple-common,
+            #    uikit-common,mac} each implement IReactiveObject, IReactiveNotifyPropertyChanged<T>,
+            #    IHandleObservableErrors and ICanActivate against a *different* platform base class
+            #    (AppCompatActivity, Fragment, NSViewController, UINavigationController, NSWindowController...).
+            #    The shared behaviour has already been factored out - activation teardown, manual activation
+            #    and the appear/disappear handling all live in src/Shared/ActivationSignals.cs. What is left is
+            #    the interface surface itself, which C# cannot share: no common base is possible, the raise
+            #    methods invoke each type's own field-like event so no static helper can reach them, and default
+            #    interface members are unavailable because these assemblies still target net462/net472/net481.
+            #    Removing it would need a source generator; suppressing CPD keeps the metric honest meanwhile,
+            #    and every other rule still runs on these files.
+            sonarCpdExclusions: '**/tests/**,**/integrationtests/**,**/benchmarks/**,**/examples/**,**/*.Arity?.cs,**/*.Arity??.cs,**/*.Arity?.Dynamic.cs,**/*.Arity??.Dynamic.cs,**/BuilderMixins.Instance.cs,**/ReactiveUIBuilder.Build.cs,**/ReactiveUI.AndroidX/Reactive*.cs,**/Platforms/android/Reactive*.cs,**/Platforms/apple-common/Reactive*.cs,**/Platforms/uikit-common/Reactive*.cs,**/Platforms/mac/Reactive*.cs'
             sonarTestExclusions: '**/tests/**,**/integrationtests/**,**/benchmarks/**'
             testTimeout: '15m'
         secrets:

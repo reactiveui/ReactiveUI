@@ -3,6 +3,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Runtime.CompilerServices;
+
 #if !NET7_0_OR_GREATER
 #nullable enable
 
@@ -44,7 +46,5 @@ internal sealed class RequiresDynamicCodeAttribute :
 }
 #else
 using System.Diagnostics.CodeAnalysis;
-using System.Runtime.CompilerServices;
-
 [assembly: TypeForwardedTo(typeof(RequiresDynamicCodeAttribute))]
 #endif

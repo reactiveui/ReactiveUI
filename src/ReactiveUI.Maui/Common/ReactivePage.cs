@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 #if WINUI_TARGET
 using Microsoft.UI.Xaml;
@@ -30,6 +31,9 @@ namespace ReactiveUI;
 #endif
 
 /// <summary>A <see cref="Page"/> that is reactive.</summary>
+/// <typeparam name="TViewModel">
+/// The type of the view model backing the view.
+/// </typeparam>
 /// <remarks>
 /// <para>
 /// This class is a <see cref="Page"/> that is also reactive. That is, it implements <see cref="IViewFor{TViewModel}"/>.
@@ -86,9 +90,7 @@ namespace ReactiveUI;
 /// </code>
 /// </para>
 /// </remarks>
-/// <typeparam name="TViewModel">
-/// The type of the view model backing the view.
-/// </typeparam>
+[DebuggerDisplay("{BindingRoot}, {ViewModel}")]
 #if WINUI_TARGET
 public partial class ReactivePage<
     [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)] TViewModel> :

@@ -67,6 +67,10 @@
     <Compile Remove="..\ReactiveUI.Maui\WinUI\DispatcherQueueScheduler.cs"/>
     <Compile Remove="..\ReactiveUI.Maui\WinUI\TransitioningContentControl.Empty.cs"/>
   </ItemGroup>
+  <!-- The shared WPF/WinUI ItemsControl hook body, compiled only where the WinUI hook itself is. -->
+  <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">
+    <Compile Include="..\Shared\Platform\ItemsControlTemplateBinding.cs" Link="Shared\Platform\ItemsControlTemplateBinding.cs"/>
+  </ItemGroup>
   <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) != 'windows'">
     <Compile Remove="..\ReactiveUI.Maui\Common\AutoDataTemplateBindingHook.cs"/>
     <Compile Remove="..\ReactiveUI.Maui\Common\ReactiveUserControl.cs"/>

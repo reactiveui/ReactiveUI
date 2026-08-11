@@ -37,6 +37,7 @@ public class InpcObservableForPropertyTests
 
     /// <summary>Verifies that property changed notifications are raised for an individual property.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
+    /// <exception cref="InvalidOperationException">Thrown when the rewritten expression carries no member information to take the property name from.</exception>
     [Test]
     public async Task NotificationOnPropertyChanged()
     {
@@ -68,6 +69,7 @@ public class InpcObservableForPropertyTests
 
     /// <summary>Verifies that property changing notifications are raised for an individual property.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
+    /// <exception cref="InvalidOperationException">Thrown when the rewritten expression carries no member information to take the property name from.</exception>
     [Test]
     public async Task NotificationOnPropertyChanging()
     {
@@ -99,6 +101,7 @@ public class InpcObservableForPropertyTests
 
     /// <summary>Verifies that notifications are raised when the whole object signals a change.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
+    /// <exception cref="InvalidOperationException">Thrown when the rewritten expression carries no member information to take the property name from.</exception>
     [Test]
     public async Task NotificationOnWholeObjectChanged()
     {
@@ -133,6 +136,7 @@ public class InpcObservableForPropertyTests
 
     /// <summary>Verifies that notifications are raised when the whole object signals a changing event.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
+    /// <exception cref="InvalidOperationException">Thrown when the rewritten expression carries no member information to take the property name from.</exception>
     [Test]
     public async Task NotificationOnWholeObjectChanging()
     {
@@ -181,6 +185,7 @@ public class InpcObservableForPropertyTests
 
     /// <summary>A changing notification ignores other properties' events and unsubscribes on dispose.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
+    /// <exception cref="InvalidOperationException">Thrown when the rewritten expression carries no member information to take the property name from.</exception>
     [Test]
     public async Task ChangingNotificationIgnoresOtherPropertiesAndDisposes()
     {
@@ -301,10 +306,7 @@ public class InpcObservableForPropertyTests
 
         /// <summary>Raises the <see cref="PropertyChanging"/> event.</summary>
         /// <param name="propertyName">The name of the property that is changing.</param>
-        private void OnPropertyChanging([CallerMemberName] string? propertyName = null)
-        {
-            var handler = PropertyChanging;
-            handler?.Invoke(this, new(propertyName));
-        }
+        private void OnPropertyChanging([CallerMemberName] string? propertyName = null) =>
+            RaiseChanging(propertyName);
     }
 }

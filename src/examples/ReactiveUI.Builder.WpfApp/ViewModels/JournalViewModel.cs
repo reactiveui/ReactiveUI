@@ -4,12 +4,14 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using ReactiveUI.Builder.WpfApp.Models;
 
 namespace ReactiveUI.Builder.WpfApp.ViewModels;
 
 /// <summary>Shows the persisted transaction journal and the running total of today's approved takings.</summary>
+[DebuggerDisplay("JournalViewModel Transactions={Transactions.Count}, TodayTotal={TodayTotal}")]
 public sealed class JournalViewModel : ReactiveObject, IRoutableViewModel
 {
     /// <summary>Backs the derived <see cref="TodayTotal"/> property.</summary>
@@ -69,7 +71,7 @@ public sealed class JournalViewModel : ReactiveObject, IRoutableViewModel
     private decimal ComputeTodayTotal()
     {
         var today = UtcToday();
-        decimal total = 0M;
+        var total = 0M;
         foreach (var transaction in Transactions)
         {
 #if NET8_0_OR_GREATER

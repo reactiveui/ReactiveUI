@@ -10,6 +10,7 @@ using ReactiveUI.Builder.BlazorServer.Models;
 namespace ReactiveUI.Builder.BlazorServer.ViewModels;
 
 /// <summary>View model for a single chat room.</summary>
+[DebuggerDisplay("ChatRoomViewModel Room={RoomName}")]
 public class ChatRoomViewModel : ReactiveObject, IRoutableViewModel
 {
     /// <summary>The quiet window, in milliseconds, applied before notifying the UI of newly received messages.</summary>
@@ -31,6 +32,7 @@ public class ChatRoomViewModel : ReactiveObject, IRoutableViewModel
     /// <param name="hostScreen">The host screen.</param>
     /// <param name="room">The room.</param>
     /// <param name="user">The user.</param>
+    /// <exception cref="InvalidOperationException"><paramref name="hostScreen"/> is not an <see cref="AppBootstrapper"/>, so there is no circuit id to tag outgoing messages with.</exception>
     [SuppressMessage(
         "Design",
         "SST2403:'this' escapes before construction finishes",

@@ -269,9 +269,7 @@ public class ReflectionTest
     [Test]
     public async Task ReallyFindType_ValidType_ReturnsType()
     {
-        var typeName = typeof(TestFixture).AssemblyQualifiedName;
-
-        var result = Reflection.ReallyFindType(typeName, false);
+        var result = Reflection.ReallyFindType(typeof(TestFixture).AssemblyQualifiedName, false);
 
         await Assert.That(result).IsNotNull();
         await Assert.That(result).IsEqualTo(typeof(TestFixture));

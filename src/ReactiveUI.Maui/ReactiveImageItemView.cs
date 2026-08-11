@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Graphics;
@@ -16,6 +17,7 @@ namespace ReactiveUI.Maui;
 /// <summary>A <see cref="ReactiveContentView{TViewModel}"/> that displays an image with text content for use with CollectionView and DataTemplates.</summary>
 /// <typeparam name="TViewModel">The type of the view model.</typeparam>
 /// <seealso cref="ReactiveContentView{TViewModel}" />
+[DebuggerDisplay("{ImageSource}, {Text}")]
 public class ReactiveImageItemView<
     [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes
         .PublicParameterlessConstructor)]
@@ -102,7 +104,7 @@ TViewModel> : ReactiveContentView<TViewModel>
             Orientation = StackOrientation.Vertical,
             VerticalOptions = LayoutOptions.Center,
             HorizontalOptions = LayoutOptions.Fill,
-            Children = { _textLabel, _detailLabel }
+            Children = { _textLabel, _detailLabel },
         };
 
         Content = new StackLayout
@@ -111,7 +113,7 @@ TViewModel> : ReactiveContentView<TViewModel>
             VerticalOptions = LayoutOptions.Center,
             Padding = ContentPadding,
             Spacing = ContentSpacing,
-            Children = { _image, textStackLayout }
+            Children = { _image, textStackLayout },
         };
     }
 

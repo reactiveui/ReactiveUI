@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Maui.Controls;
 
@@ -16,6 +17,7 @@ namespace ReactiveUI.Maui;
 /// <typeparam name="TViewModel">The type of the view model.</typeparam>
 /// <seealso cref="TitleBar" />
 /// <seealso cref="IViewFor{TViewModel}" />
+[DebuggerDisplay("{ViewModel}")]
 public class ReactiveTitleBar<
     [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes
         .PublicParameterlessConstructor)]

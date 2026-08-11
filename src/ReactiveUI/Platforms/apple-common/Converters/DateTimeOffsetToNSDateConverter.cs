@@ -4,12 +4,14 @@
 // See the LICENSE file in the project root for full license information.
 
 #if UIKIT || MACOS
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using Foundation;
 
 namespace ReactiveUI;
 
 /// <summary>Converts <see cref="DateTimeOffset"/> to <see cref="NSDate"/>.</summary>
+[DebuggerDisplay("DateTimeOffsetToNSDateConverter")]
 public sealed class DateTimeOffsetToNSDateConverter : BindingTypeConverter<DateTimeOffset, NSDate>
 {
     /// <summary>The affinity score returned for supported type pairs.</summary>

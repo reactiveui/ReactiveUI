@@ -29,9 +29,8 @@ public class ReflectionAdvancedTests
     public async Task Rewrite_WithComplexExpression_SimplifiesExpression()
     {
         Expression<Func<TestClass, string?>> expr = x => x.Nested!.Property;
-        var body = expr.Body;
 
-        var rewritten = Reflection.Rewrite(body);
+        var rewritten = Reflection.Rewrite(expr.Body);
 
         await Assert.That(rewritten).IsNotNull();
         await Assert.That(rewritten.NodeType).IsEqualTo(ExpressionType.MemberAccess);
@@ -43,9 +42,8 @@ public class ReflectionAdvancedTests
     public async Task Rewrite_WithConvertExpression_UnwrapsConvert()
     {
         Expression<Func<TestClass, object>> expr = x => x.Property!;
-        var body = expr.Body; // This is a Convert expression
 
-        var rewritten = Reflection.Rewrite(body);
+        var rewritten = Reflection.Rewrite(expr.Body);
 
         // The rewriter should unwrap the Convert and return the MemberAccess
         await Assert.That(rewritten).IsNotNull();

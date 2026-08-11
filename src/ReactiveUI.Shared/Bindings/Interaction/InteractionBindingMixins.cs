@@ -5,6 +5,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 
 #if REACTIVE_SHIM
 namespace ReactiveUI.Reactive;
@@ -45,10 +46,6 @@ public static class InteractionBindingMixins
         /// Binds an interaction from a view model to a view, allowing the view to handle interaction requests using the
         /// specified handler.
         /// </summary>
-        /// <remarks>This method enables the view to respond to interaction requests initiated by the view model,
-        /// such as displaying dialogs or requesting user input. The returned IDisposable should be disposed when the
-        /// binding is no longer needed, such as when the view is unloaded, to avoid memory leaks. This method uses
-        /// reflection and may not be compatible with trimming or AOT scenarios.</remarks>
         /// <typeparam name="TViewModel">The type of the view model that contains the interaction property.</typeparam>
         /// <typeparam name="TInput">The type of the input parameter for the interaction.</typeparam>
         /// <typeparam name="TOutput">The type of the output parameter for the interaction.</typeparam>
@@ -58,7 +55,12 @@ public static class InteractionBindingMixins
         /// <param name="handler">A function that will be invoked to handle each interaction request. Receives the interaction context and returns
         /// a task representing the asynchronous operation.</param>
         /// <returns>An IDisposable that can be disposed to unbind the interaction and release associated resources.</returns>
+        /// <remarks>This method enables the view to respond to interaction requests initiated by the view model,
+        /// such as displaying dialogs or requesting user input. The returned IDisposable should be disposed when the
+        /// binding is no longer needed, such as when the view is unloaded, to avoid memory leaks. This method uses
+        /// reflection and may not be compatible with trimming or AOT scenarios.</remarks>
         [RequiresUnreferencedCode("Dynamic observation uses reflection over members that may be trimmed.")]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IDisposable BindInteraction<TViewModel, TInput, TOutput>(
             TViewModel? viewModel,
             Expression<Func<TViewModel, IInteraction<TInput, TOutput>>> propertyName,
@@ -74,10 +76,6 @@ public static class InteractionBindingMixins
         /// Binds an interaction from a view model to a view, allowing the view to handle interaction requests using the
         /// specified handler.
         /// </summary>
-        /// <remarks>This method enables the view to respond to interaction requests initiated by the view model,
-        /// typically for user-driven workflows such as dialogs or prompts. The handler is invoked each time the interaction
-        /// is triggered. The returned IDisposable should be disposed when the binding is no longer needed, such as when the
-        /// view is unloaded.</remarks>
         /// <typeparam name="TViewModel">The type of the view model containing the interaction property.</typeparam>
         /// <typeparam name="TInput">The type of the input parameter for the interaction.</typeparam>
         /// <typeparam name="TOutput">The type of the output parameter for the interaction.</typeparam>
@@ -88,7 +86,12 @@ public static class InteractionBindingMixins
         /// <param name="handler">A function that handles the interaction by processing the interaction context and returning an observable
         /// sequence. The result of the observable is ignored.</param>
         /// <returns>An IDisposable that can be disposed to unbind the interaction and release associated resources.</returns>
+        /// <remarks>This method enables the view to respond to interaction requests initiated by the view model,
+        /// typically for user-driven workflows such as dialogs or prompts. The handler is invoked each time the interaction
+        /// is triggered. The returned IDisposable should be disposed when the binding is no longer needed, such as when the
+        /// view is unloaded.</remarks>
         [RequiresUnreferencedCode("Dynamic observation uses reflection over members that may be trimmed.")]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IDisposable BindInteraction<TViewModel, TInput, TOutput, TDontCare>(
             TViewModel? viewModel,
             Expression<Func<TViewModel, IInteraction<TInput, TOutput>>> propertyName,

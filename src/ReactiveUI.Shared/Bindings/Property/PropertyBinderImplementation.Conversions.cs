@@ -3,8 +3,10 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 
 #if REACTIVE_SHIM
 namespace ReactiveUI.Reactive;
@@ -13,6 +15,7 @@ namespace ReactiveUI;
 #endif
 /// <summary>Conversion and change-projection helpers used by the two-way binding pipeline.</summary>
 [SuppressMessage("Design", "SST1432:Mark the type as static", Justification = "Partial of a non-static type; the instance members live in the primary PropertyBinderImplementation partial.")]
+[DebuggerDisplay("PropertyBinderImplementation")]
 public partial class PropertyBinderImplementation
 {
     /// <summary>Dispatches a single conversion attempt to an explicitly supplied typed converter.</summary>
@@ -21,6 +24,7 @@ public partial class PropertyBinderImplementation
     /// <param name="conversionHint">An optional hint passed to the converter.</param>
     /// <param name="result">The converted value when conversion succeeds.</param>
     /// <returns><see langword="true"/> when the converter produced a value; otherwise <see langword="false"/>.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static bool TryConvertUsingConverter(
         IBindingTypeConverter converter,
         object? value,
@@ -169,7 +173,7 @@ public partial class PropertyBinderImplementation
     /// <param name="viewModelToViewConverter">Converter from view model value to view value.</param>
     /// <param name="viewToViewModelConverter">Converter from view value to view model value.</param>
     /// <returns>Whether a value should be applied, the value to apply, and the direction to apply it.</returns>
-    private static (bool isValid, object? view, bool isViewModel) ProjectChange<TView, TViewModelPropertyType, TViewPropertyType>(
+    private static (bool IsValid, object? View, bool IsViewModel) ProjectChange<TView, TViewModelPropertyType, TViewPropertyType>(
         bool isViewModelChange,
         TView view,
         Reflection.CompiledPropertyChain<object?, TViewModelPropertyType> viewModelChainGetter,

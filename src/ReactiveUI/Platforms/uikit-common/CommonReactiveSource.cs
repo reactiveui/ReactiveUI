@@ -52,7 +52,7 @@ internal sealed class CommonReactiveSource<TSource, TUIView, TUIViewCell, TSecti
     private readonly SwapDisposable _sectionInfoDisposable;
 
     /// <summary>Pending collection changes captured while the UI is not reloading and before a scheduled batch update is applied.</summary>
-    private readonly List<(int section, PendingChange pendingChange)> _pendingChanges;
+    private readonly List<(int Section, PendingChange PendingChange)> _pendingChanges;
 
     /// <summary>Indicates whether pending changes are currently being collected for later application.</summary>
     private bool _isCollectingChanges;
@@ -179,8 +179,7 @@ internal sealed class CommonReactiveSource<TSource, TUIView, TUIViewCell, TSecti
             view.ViewModel = viewModel;
         }
 
-        var initializeCellAction = section.InitializeCellAction ?? NoOpInitializeCell;
-        initializeCellAction(cell);
+        (section.InitializeCellAction ?? NoOpInitializeCell)(cell);
 
         return cell;
     }
@@ -327,7 +326,7 @@ internal sealed class CommonReactiveSource<TSource, TUIView, TUIViewCell, TSecti
 
         var disposables = new MultipleDisposable
         {
-            Scope.Create((self: this, sectionInfoId), static state => state.self.Log().Debug(CultureInfo.InvariantCulture, "[#{0}] Disposed of section info", state.sectionInfoId))
+            Scope.Create((Self: this, SectionInfoId: sectionInfoId), static state => state.Self.Log().Debug(CultureInfo.InvariantCulture, "[#{0}] Disposed of section info", state.SectionInfoId)),
         };
 
         _sectionInfoDisposable.Disposable = disposables;
@@ -427,16 +426,16 @@ internal sealed class CommonReactiveSource<TSource, TUIView, TUIViewCell, TSecti
 
             applyPendingChangesDisposable.Disposable =
                 RxSchedulers.MainThreadScheduler.Schedule(
-                    (self: this, sectionInfoId, applyPendingChangesDisposable),
+                    (Self: this, SectionInfoId: sectionInfoId, ApplyPendingChangesDisposable: applyPendingChangesDisposable),
                     static (_, state) =>
                     {
-                        state.self.ApplyPendingChanges(state.sectionInfoId);
+                        state.Self.ApplyPendingChanges(state.SectionInfoId);
 
-                        state.self.Log().Debug(CultureInfo.InvariantCulture, "[#{0}] EndUpdates", state.sectionInfoId);
-                        state.self._adapter.EndUpdates();
+                        state.Self.Log().Debug(CultureInfo.InvariantCulture, "[#{0}] EndUpdates", state.SectionInfoId);
+                        state.Self._adapter.EndUpdates();
 
-                        state.self._isCollectingChanges = false;
-                        state.applyPendingChangesDisposable.Disposable = null;
+                        state.Self._isCollectingChanges = false;
+                        state.ApplyPendingChangesDisposable.Disposable = null;
                         return EmptyDisposable.Instance;
                     });
         }
@@ -478,12 +477,12 @@ internal sealed class CommonReactiveSource<TSource, TUIView, TUIViewCell, TSecti
         LogPendingChanges(sectionInfoId);
 
         // Sort by section to process per section without GroupBy allocations.
-        _pendingChanges.Sort(static (a, b) => a.section.CompareTo(b.section));
+        _pendingChanges.Sort(static (a, b) => a.Section.CompareTo(b.Section));
 
         var changeIndex = 0;
         while (changeIndex < _pendingChanges.Count)
         {
-            var section = _pendingChanges[changeIndex].section;
+            var section = _pendingChanges[changeIndex].Section;
             this.Log().Debug(CultureInfo.InvariantCulture, "[#{0}] Processing updates for section {1}", sectionInfoId, section);
             changeIndex = ProcessSectionUpdates(sectionInfoId, section, changeIndex);
         }
@@ -527,9 +526,9 @@ internal sealed class CommonReactiveSource<TSource, TUIView, TUIViewCell, TSecti
         var endIndex = changeIndex;
         var hasReset = false;
 
-        while (endIndex < _pendingChanges.Count && _pendingChanges[endIndex].section == section)
+        while (endIndex < _pendingChanges.Count && _pendingChanges[endIndex].Section == section)
         {
-            if (_pendingChanges[endIndex].pendingChange.Action == NotifyCollectionChangedAction.Reset)
+            if (_pendingChanges[endIndex].PendingChange.Action == NotifyCollectionChangedAction.Reset)
             {
                 hasReset = true;
             }
@@ -558,6 +557,8 @@ internal sealed class CommonReactiveSource<TSource, TUIView, TUIViewCell, TSecti
     /// <param name="section">The section index.</param>
     /// <param name="changeIndex">Inclusive start index into <see cref="_pendingChanges"/> for this section.</param>
     /// <param name="endIndex">Exclusive end index into <see cref="_pendingChanges"/> for this section.</param>
+    /// <exception cref="NotSupportedException">Thrown when a normalized update is neither an add nor a delete, or when a
+    /// pending change carries a collection change action that cannot be translated into item updates.</exception>
     private void ApplySectionItemUpdates(int sectionInfoId, int section, int changeIndex, int endIndex)
     {
         // Materialize updates for this section.
@@ -566,7 +567,7 @@ internal sealed class CommonReactiveSource<TSource, TUIView, TUIViewCell, TSecti
 
         for (var j = changeIndex; j < endIndex; j++)
         {
-            foreach (var update in GetUpdatesForEvent(_pendingChanges[j].pendingChange))
+            foreach (var update in GetUpdatesForEvent(_pendingChanges[j].PendingChange))
             {
                 if (update is null)
                 {
@@ -784,11 +785,11 @@ internal sealed class CommonReactiveSource<TSource, TUIView, TUIViewCell, TSecti
         public int NewStartingIndex { get; }
 
         /// <summary>Creates a shallow copy of the items in the specified list, returning a new list containing the same elements.</summary>
-        /// <remarks>The copy is shallow; reference types within the list are not cloned. The returned
-        /// list is always of type <see cref="List{Object}"/>.</remarks>
         /// <param name="source">The list whose items are to be copied. Can be null or empty.</param>
         /// <returns>A new list containing the elements of <paramref name="source"/>. Returns null if <paramref name="source"/>
         /// is null, or an empty list if <paramref name="source"/> is empty.</returns>
+        /// <remarks>The copy is shallow; reference types within the list are not cloned. The returned
+        /// list is always of type <see cref="List{Object}"/>.</remarks>
         private static IList? CopyItems(IList? source)
         {
             if (source is null || source.Count == 0)

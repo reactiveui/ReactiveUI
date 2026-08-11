@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics;
 using Foundation;
 
 #if REACTIVE_SHIM
@@ -12,6 +13,7 @@ namespace ReactiveUI;
 #endif
 /// <summary>This is a TabBar that is both an TabBar and has ReactiveObject powers (i.e. you can call RaiseAndSetIfChanged).</summary>
 /// <typeparam name="TViewModel">The view model type.</typeparam>
+[DebuggerDisplay("{ViewModel}")]
 public class ReactiveTabBarController<TViewModel> : ReactiveTabBarController, IViewFor<TViewModel>
     where TViewModel : class
 {

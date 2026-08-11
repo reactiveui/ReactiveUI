@@ -3,11 +3,14 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 
 namespace ReactiveUI;
 
 /// <summary>Converts <see cref="float"/> to <see cref="float"/>?.</summary>
+[DebuggerDisplay("{FromType}, {ToType}")]
 public sealed class SingleToNullableSingleTypeConverter : IBindingTypeConverter<float, float?>
 {
     /// <inheritdoc/>
@@ -17,6 +20,7 @@ public sealed class SingleToNullableSingleTypeConverter : IBindingTypeConverter<
     public Type ToType => typeof(float?);
 
     /// <inheritdoc/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public int GetAffinityForObjects() => BindingAffinity.DefaultInternalTypeConverter;
 
     /// <inheritdoc/>

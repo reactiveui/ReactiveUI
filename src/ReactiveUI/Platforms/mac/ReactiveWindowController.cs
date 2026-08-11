@@ -4,6 +4,8 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.ComponentModel;
+using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using AppKit;
 using Foundation;
 
@@ -16,6 +18,7 @@ namespace ReactiveUI;
 /// This is a NSWindowController that is both a NSWindowController and has ReactiveObject powers
 /// (i.e. you can call RaiseAndSetIfChanged).
 /// </summary>
+[DebuggerDisplay("{Activated}, {Deactivated}")]
 public class ReactiveWindowController : NSWindowController, IReactiveNotifyPropertyChanged<ReactiveWindowController>, IHandleObservableErrors, IReactiveObject, ICanActivate
 {
     /// <summary>The subject used to signal window activation.</summary>
@@ -124,6 +127,7 @@ public class ReactiveWindowController : NSWindowController, IReactiveNotifyPrope
     /// </summary>
     /// <returns>An object that, when disposed, reenables change
     /// notifications.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public IDisposable SuppressChangeNotifications() => IReactiveObjectExtensions.SuppressChangeNotifications(this);
 
     /// <inheritdoc/>
@@ -143,12 +147,7 @@ public class ReactiveWindowController : NSWindowController, IReactiveNotifyPrope
     /// <inheritdoc/>
     protected override void Dispose(bool disposing)
     {
-        if (disposing)
-        {
-            _activated?.Dispose();
-            _deactivated?.Dispose();
-        }
-
+        ActivationSignals.DisposeWhen(disposing, _activated, _deactivated);
         base.Dispose(disposing);
     }
 }

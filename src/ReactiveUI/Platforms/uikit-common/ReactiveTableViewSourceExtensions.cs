@@ -5,6 +5,7 @@
 
 using System.Collections.Specialized;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using Foundation;
 using UIKit;
 
@@ -21,18 +22,19 @@ public static class ReactiveTableViewSourceExtensions
     extension(IObservable<INotifyCollectionChanged> sourceObservable)
     {
         /// <summary>Extension method that binds an observable of a collection as the source of a <see cref="UITableView"/>.</summary>
-        /// <returns>The <see cref="IDisposable"/> used to dispose this binding.</returns>
+        /// <typeparam name="TSource">The source type.</typeparam>
+        /// <typeparam name="TCell">Type of the <see cref="UITableViewCell"/>.</typeparam>
         /// <param name="tableView">Table view.</param>
         /// <param name="cellKey">Cell key.</param>
         /// <param name="sizeHint">Size hint.</param>
-        /// <typeparam name="TSource">The source type.</typeparam>
-        /// <typeparam name="TCell">Type of the <see cref="UITableViewCell"/>.</typeparam>
+        /// <returns>The <see cref="IDisposable"/> used to dispose this binding.</returns>
         [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
         [RequiresDynamicCode("Uses dynamic binding paths which may require runtime code generation or reflection-based invocation.")]
         [SuppressMessage(
             "Design",
             "SST2307:Generic method type parameters should be inferable from the parameters",
             Justification = "Type parameters are specified at the call site; this is a type-argument-driven binding factory.")]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IDisposable BindTo<TSource, TCell>(
             UITableView tableView,
             NSString cellKey,
@@ -41,19 +43,20 @@ public static class ReactiveTableViewSourceExtensions
             sourceObservable.BindTo<TSource, TCell>(tableView, cellKey, sizeHint, initializeCellAction: null);
 
         /// <summary>Extension method that binds an observable of a collection as the source of a <see cref="UITableView"/>.</summary>
-        /// <returns>The <see cref="IDisposable"/> used to dispose this binding.</returns>
+        /// <typeparam name="TSource">The source type.</typeparam>
+        /// <typeparam name="TCell">Type of the <see cref="UITableViewCell"/>.</typeparam>
         /// <param name="tableView">Table view.</param>
         /// <param name="cellKey">Cell key.</param>
         /// <param name="sizeHint">Size hint.</param>
         /// <param name="initializeCellAction">Initialize cell action.</param>
-        /// <typeparam name="TSource">The source type.</typeparam>
-        /// <typeparam name="TCell">Type of the <see cref="UITableViewCell"/>.</typeparam>
+        /// <returns>The <see cref="IDisposable"/> used to dispose this binding.</returns>
         [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
         [RequiresDynamicCode("Uses dynamic binding paths which may require runtime code generation or reflection-based invocation.")]
         [SuppressMessage(
             "Design",
             "SST2307:Generic method type parameters should be inferable from the parameters",
             Justification = "Type parameters are specified at the call site; this is a type-argument-driven binding factory.")]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IDisposable BindTo<TSource, TCell>(
             UITableView tableView,
             NSString cellKey,
@@ -63,17 +66,18 @@ public static class ReactiveTableViewSourceExtensions
             sourceObservable.BindTo<TSource, TCell>(tableView, cellKey, sizeHint, initializeCellAction, initSource: null);
 
         /// <summary>Extension method that binds an observable of a collection as the source of a <see cref="UITableView"/>.</summary>
-        /// <returns>The <see cref="IDisposable"/> used to dispose this binding.</returns>
+        /// <typeparam name="TSource">The source type.</typeparam>
+        /// <typeparam name="TCell">Type of the <see cref="UITableViewCell"/>.</typeparam>
         /// <param name="tableView">Table view.</param>
         /// <param name="cellKey">Cell key.</param>
         /// <param name="sizeHint">Size hint.</param>
         /// <param name="initializeCellAction">Initialize cell action.</param>
         /// <param name="initSource">Optionally initializes some property of
         /// the <see cref="ReactiveTableViewSource{TSource}"/>.</param>
-        /// <typeparam name="TSource">The source type.</typeparam>
-        /// <typeparam name="TCell">Type of the <see cref="UITableViewCell"/>.</typeparam>
+        /// <returns>The <see cref="IDisposable"/> used to dispose this binding.</returns>
         [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
         [RequiresDynamicCode("Uses dynamic binding paths which may require runtime code generation or reflection-based invocation.")]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IDisposable BindTo<TSource, TCell>(
             UITableView tableView,
             NSString cellKey,
@@ -99,17 +103,18 @@ public static class ReactiveTableViewSourceExtensions
         /// the given class with an unspecified cellKey (you should probably
         /// not specify any other cellKeys).
         /// </summary>
-        /// <returns>The <see cref="IDisposable"/> used to dispose this binding.</returns>
-        /// <param name="tableView">Table view.</param>
-        /// <param name="sizeHint">Size hint.</param>
         /// <typeparam name="TSource">The source type.</typeparam>
         /// <typeparam name="TCell">Type of the <see cref="UITableViewCell"/>.</typeparam>
+        /// <param name="tableView">Table view.</param>
+        /// <param name="sizeHint">Size hint.</param>
+        /// <returns>The <see cref="IDisposable"/> used to dispose this binding.</returns>
         [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
         [RequiresDynamicCode("Uses dynamic binding paths which may require runtime code generation or reflection-based invocation.")]
         [SuppressMessage(
             "Design",
             "SST2307:Generic method type parameters should be inferable from the parameters",
             Justification = "Type parameters are specified at the call site; this is a type-argument-driven binding factory.")]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IDisposable BindTo<TSource, TCell>(
             UITableView tableView,
             float sizeHint)
@@ -122,18 +127,19 @@ public static class ReactiveTableViewSourceExtensions
         /// the given class with an unspecified cellKey (you should probably
         /// not specify any other cellKeys).
         /// </summary>
-        /// <returns>The <see cref="IDisposable"/> used to dispose this binding.</returns>
+        /// <typeparam name="TSource">The source type.</typeparam>
+        /// <typeparam name="TCell">Type of the <see cref="UITableViewCell"/>.</typeparam>
         /// <param name="tableView">Table view.</param>
         /// <param name="sizeHint">Size hint.</param>
         /// <param name="initializeCellAction">Initialize cell action.</param>
-        /// <typeparam name="TSource">The source type.</typeparam>
-        /// <typeparam name="TCell">Type of the <see cref="UITableViewCell"/>.</typeparam>
+        /// <returns>The <see cref="IDisposable"/> used to dispose this binding.</returns>
         [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
         [RequiresDynamicCode("Uses dynamic binding paths which may require runtime code generation or reflection-based invocation.")]
         [SuppressMessage(
             "Design",
             "SST2307:Generic method type parameters should be inferable from the parameters",
             Justification = "Type parameters are specified at the call site; this is a type-argument-driven binding factory.")]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IDisposable BindTo<TSource, TCell>(
             UITableView tableView,
             float sizeHint,
@@ -147,14 +153,14 @@ public static class ReactiveTableViewSourceExtensions
         /// the given class with an unspecified cellKey (you should probably
         /// not specify any other cellKeys).
         /// </summary>
-        /// <returns>The <see cref="IDisposable"/> used to dispose this binding.</returns>
+        /// <typeparam name="TSource">The source type.</typeparam>
+        /// <typeparam name="TCell">Type of the <see cref="UITableViewCell"/>.</typeparam>
         /// <param name="tableView">Table view.</param>
         /// <param name="sizeHint">Size hint.</param>
         /// <param name="initializeCellAction">Initialize cell action.</param>
         /// <param name="initSource">Optionally initializes some property of
         /// the <see cref="ReactiveTableViewSource{TSource}"/>.</param>
-        /// <typeparam name="TSource">The source type.</typeparam>
-        /// <typeparam name="TCell">Type of the <see cref="UITableViewCell"/>.</typeparam>
+        /// <returns>The <see cref="IDisposable"/> used to dispose this binding.</returns>
         [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
         [RequiresDynamicCode("Uses dynamic binding paths which may require runtime code generation or reflection-based invocation.")]
         public IDisposable BindTo<TSource, TCell>(
@@ -176,9 +182,9 @@ public static class ReactiveTableViewSourceExtensions
     }
 
     /// <summary>Provides table-view binding extension members for an observable of a list of table sections.</summary>
-    /// <param name="sectionsObservable">Sections observable.</param>
     /// <typeparam name="TSource">The source type.</typeparam>
     /// <typeparam name="TCell">Type of the <see cref="UITableViewCell"/>.</typeparam>
+    /// <param name="sectionsObservable">Sections observable.</param>
     extension<TSource, TCell>(IObservable<IReadOnlyList<TableSectionInformation<TSource, TCell>>> sectionsObservable)
         where TCell : UITableViewCell
     {
@@ -190,10 +196,11 @@ public static class ReactiveTableViewSourceExtensions
         /// will silently update the bindings whenever it changes as well.
         /// Otherwise, it will just log a message.</para>
         /// </summary>
-        /// <returns>The <see cref="IDisposable"/> used to dispose this binding.</returns>
         /// <param name="tableView">Table view.</param>
+        /// <returns>The <see cref="IDisposable"/> used to dispose this binding.</returns>
         [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
         [RequiresDynamicCode("Uses dynamic binding paths which may require runtime code generation or reflection-based invocation.")]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IDisposable BindTo(UITableView tableView) =>
             sectionsObservable.BindTo(tableView, initSource: null);
 
@@ -205,10 +212,10 @@ public static class ReactiveTableViewSourceExtensions
         /// will silently update the bindings whenever it changes as well.
         /// Otherwise, it will just log a message.</para>
         /// </summary>
-        /// <returns>The <see cref="IDisposable"/> used to dispose this binding.</returns>
         /// <param name="tableView">Table view.</param>
         /// <param name="initSource">Optionally initializes some property of
         /// the <see cref="ReactiveTableViewSource{TSource}"/>.</param>
+        /// <returns>The <see cref="IDisposable"/> used to dispose this binding.</returns>
         [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
         [RequiresDynamicCode("Uses dynamic binding paths which may require runtime code generation or reflection-based invocation.")]
         public IDisposable BindTo(

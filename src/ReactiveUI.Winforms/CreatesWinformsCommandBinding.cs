@@ -4,6 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Windows.Input;
@@ -39,7 +40,7 @@ public sealed class CreatesWinformsCommandBinding : ICreatesCommandBinding
     private const int DefaultEventAffinity = 4;
 
     /// <summary>The conventional default events to bind to, listed in priority order.</summary>
-    private static readonly List<(string name, Type type)> _defaultEventsToBind =
+    private static readonly List<(string Name, Type Type)> _defaultEventsToBind =
     [
         ("Click", typeof(EventArgs)),
         ("MouseUp", typeof(MouseEventArgs))
@@ -66,7 +67,7 @@ public sealed class CreatesWinformsCommandBinding : ICreatesCommandBinding
         return _defaultEventsToBind.Exists(static x =>
         {
             var ei = typeof(T).GetEvent(
-                x.name,
+                x.Name,
                 BindingFlags.Public | BindingFlags.FlattenHierarchy | BindingFlags.Instance);
             return ei is not null;
         })
@@ -120,12 +121,14 @@ public sealed class CreatesWinformsCommandBinding : ICreatesCommandBinding
         foreach (var (name, argType) in _defaultEventsToBind)
         {
             var candidate = type.GetEvent(name, BindingFlags);
-            if (candidate is not null)
+            if (candidate is null)
             {
-                matchedEvent = candidate;
-                matchedArgs = argType;
-                break;
+                continue;
             }
+
+            matchedEvent = candidate;
+            matchedArgs = argType;
+            break;
         }
 
         if (matchedEvent is null)

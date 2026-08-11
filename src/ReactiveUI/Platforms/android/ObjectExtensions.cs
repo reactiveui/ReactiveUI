@@ -29,13 +29,13 @@ internal static class ObjectExtensions
         /// Converts a Java.Lang.Object, previously created with .ToJavaObject(), back to its corresponding .NET object of
         /// the specified type.
         /// </summary>
-        /// <remarks>This method is intended for use with objects that were originally converted from .NET to Java
-        /// using .ToJavaObject(). Attempting to convert other Java.Lang.Object instances may result in an
-        /// exception.</remarks>
         /// <typeparam name="TObject">The type of the .NET object to return.</typeparam>
         /// <returns>The .NET object of type TObject represented by the specified Java.Lang.Object, or the default value of TObject
         /// if value is null.</returns>
         /// <exception cref="InvalidOperationException">Thrown if value is not a Java.Lang.Object created with .ToJavaObject().</exception>
+        /// <remarks>This method is intended for use with objects that were originally converted from .NET to Java
+        /// using .ToJavaObject(). Attempting to convert other Java.Lang.Object instances may result in an
+        /// exception.</remarks>
         internal TObject ToNetObject<TObject>()
         {
             if (value is null)

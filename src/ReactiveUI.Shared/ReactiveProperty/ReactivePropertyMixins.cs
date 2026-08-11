@@ -7,6 +7,8 @@ using System.Collections;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Runtime.CompilerServices;
+
 #if !XAMARINIOS && !XAMARINMAC && !XAMARINTVOS && !MONOANDROID
 using System.ComponentModel.DataAnnotations;
 #endif
@@ -32,13 +34,13 @@ public static class ReactivePropertyMixins
         /// Adds DataAnnotations-based validation to the specified reactive property using the validation attributes defined
         /// on the property.
         /// </summary>
+        /// <param name="selfSelector">An expression that selects the reactive property to be validated. This is used to discover validation attributes
+        /// and display metadata. Cannot be null.</param>
+        /// <returns>The same reactive property instance with validation enabled based on the discovered validation attributes.</returns>
         /// <remarks>This method uses reflection to discover DataAnnotations attributes and is not compatible with
         /// trimming or AOT scenarios. For environments where reflection is restricted, use manual validation instead. The
         /// validation logic is based on the attributes applied to the property referenced by the selector
         /// expression.</remarks>
-        /// <param name="selfSelector">An expression that selects the reactive property to be validated. This is used to discover validation attributes
-        /// and display metadata. Cannot be null.</param>
-        /// <returns>The same reactive property instance with validation enabled based on the discovered validation attributes.</returns>
         [RequiresUnreferencedCode(
             "DataAnnotations validation uses reflection to discover attributes and is not trim-safe. Use manual validation for AOT scenarios.")]
         public ReactiveProperty<T> AddValidation(
@@ -47,8 +49,7 @@ public static class ReactivePropertyMixins
             ArgumentExceptionHelper.ThrowIfNull(selfSelector);
             ArgumentExceptionHelper.ThrowIfNull(self);
 
-            var memberExpression = (MemberExpression)selfSelector.Body;
-            var propertyInfo = (PropertyInfo)memberExpression.Member;
+            var propertyInfo = (PropertyInfo)((MemberExpression)selfSelector.Body).Member;
             var display = propertyInfo.GetCustomAttribute<DisplayAttribute>();
             ValidationAttribute[] attrs = [.. propertyInfo.GetCustomAttributes<ValidationAttribute>()];
 
@@ -111,11 +112,13 @@ public static class ReactivePropertyMixins
                     {
                         foreach (var item in value)
                         {
-                            if (item is string text)
+                            if (item is not string text)
                             {
-                                message = text;
-                                break;
+                                continue;
                             }
+
+                            message = text;
+                            break;
                         }
                     }
                 }
@@ -129,9 +132,11 @@ public static class ReactivePropertyMixins
             }
 
             /// <inheritdoc/>
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public void OnError(Exception error) => downstream.OnError(error);
 
             /// <inheritdoc/>
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public void OnCompleted() => downstream.OnCompleted();
         }
     }

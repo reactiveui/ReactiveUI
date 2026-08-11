@@ -3,33 +3,39 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Runtime.CompilerServices;
+
 namespace ReactiveUI.Testing;
 
 /// <summary>Extension methods for the test based schedulers.</summary>
 public static class SchedulerExtensions
 {
-    /// <summary>
-    /// WithScheduler overrides the default Deferred and Taskpool schedulers
-    /// with the given scheduler until the return value is disposed. This
-    /// is useful in a unit test runner to force RxXaml objects to schedule
-    /// via a TestScheduler object.
-    /// </summary>
+    /// <summary>Provides testing extension members that override the ambient schedulers.</summary>
     /// <param name="scheduler">The scheduler to use.</param>
-    /// <returns>An object that when disposed, restores the previous default
-    /// schedulers.</returns>
-    public static IDisposable WithScheduler(ISequencer scheduler)
+    extension(ISequencer scheduler)
     {
-        var prevDef = RxSchedulers.MainThreadScheduler;
-        var prevTask = RxSchedulers.TaskpoolScheduler;
-
-        RxSchedulers.MainThreadScheduler = scheduler;
-        RxSchedulers.TaskpoolScheduler = scheduler;
-
-        return new ActionDisposable(() =>
+        /// <summary>
+        /// WithScheduler overrides the default Deferred and Taskpool schedulers
+        /// with the given scheduler until the return value is disposed. This
+        /// is useful in a unit test runner to force RxXaml objects to schedule
+        /// via a TestScheduler object.
+        /// </summary>
+        /// <returns>An object that when disposed, restores the previous default
+        /// schedulers.</returns>
+        public IDisposable WithScheduler()
         {
-            RxSchedulers.MainThreadScheduler = prevDef;
-            RxSchedulers.TaskpoolScheduler = prevTask;
-        });
+            var prevDef = RxSchedulers.MainThreadScheduler;
+            var prevTask = RxSchedulers.TaskpoolScheduler;
+
+            RxSchedulers.MainThreadScheduler = scheduler;
+            RxSchedulers.TaskpoolScheduler = scheduler;
+
+            return new ActionDisposable(() =>
+            {
+                RxSchedulers.MainThreadScheduler = prevDef;
+                RxSchedulers.TaskpoolScheduler = prevTask;
+            });
+        }
     }
 
     /// <summary>Provides testing extension members for schedulers.</summary>
@@ -65,6 +71,7 @@ public static class SchedulerExtensions
         /// default Deferred and Taskpool schedulers for the given Action.
         /// </summary>
         /// <param name="block">The action to execute.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void With(Action<T> block) =>
             scheduler.With(x =>
             {
@@ -100,6 +107,7 @@ public static class SchedulerExtensions
         /// </summary>
         /// <param name="block">The action to execute.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Task WithAsync(Func<T, Task> block) =>
             scheduler.WithAsync(async x =>
             {

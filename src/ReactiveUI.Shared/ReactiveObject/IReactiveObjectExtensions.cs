@@ -120,11 +120,11 @@ public static class IReactiveObjectExtensions
         }
 
         /// <summary>Returns an observable sequence that signals when a property on the specified reactive object has changed.</summary>
+        /// <returns>An observable sequence of property change event arguments for the specified reactive object. The sequence emits
+        /// a value each time a property changes.</returns>
         /// <remarks>The returned observable emits events for all property changes on the provided reactive
         /// object. Subscribers can use this to react to changes in any property. The observable completes only when the
         /// reactive object is disposed, if applicable.</remarks>
-        /// <returns>An observable sequence of property change event arguments for the specified reactive object. The sequence emits
-        /// a value each time a property changes.</returns>
         public IObservable<IReactivePropertyChangedEventArgs<TSender>> GetChangedObservable()
         {
             var val = GetState(reactiveObject);
@@ -132,11 +132,11 @@ public static class IReactiveObjectExtensions
         }
 
         /// <summary>Returns an observable sequence that signals before a property value changes on the specified reactive object.</summary>
+        /// <returns>An observable sequence of IReactivePropertyChangedEventArgs{TSender} that emits a value each time a property on
+        /// the reactive object is about to change.</returns>
         /// <remarks>Subscribers can use the returned observable to react to property changes before the values
         /// are updated. This is useful for scenarios where actions need to be taken prior to a property's value being
         /// modified.</remarks>
-        /// <returns>An observable sequence of IReactivePropertyChangedEventArgs{TSender} that emits a value each time a property on
-        /// the reactive object is about to change.</returns>
         public IObservable<IReactivePropertyChangedEventArgs<TSender>> GetChangingObservable()
         {
             var val = GetState(reactiveObject);
@@ -147,11 +147,11 @@ public static class IReactiveObjectExtensions
         /// Returns an observable sequence that emits exceptions thrown by the specified reactive object during property
         /// change notifications or command executions.
         /// </summary>
+        /// <returns>An observable sequence of Exception objects representing errors thrown by the reactive object. The sequence
+        /// completes when the reactive object is disposed.</returns>
         /// <remarks>Subscribers can use the returned observable to monitor and handle exceptions that occur
         /// within the reactive object's reactive operations. This is useful for centralized error handling in reactive UI
         /// or data models.</remarks>
-        /// <returns>An observable sequence of Exception objects representing errors thrown by the reactive object. The sequence
-        /// completes when the reactive object is disposed.</returns>
         public IObservable<Exception> GetThrownExceptionsObservable()
         {
             var s = GetState(reactiveObject);
@@ -159,10 +159,10 @@ public static class IReactiveObjectExtensions
         }
 
         /// <summary>Temporarily suppresses change notifications for the specified reactive object.</summary>
+        /// <returns>An <see cref="IDisposable"/> that, when disposed, restores change notifications for the specified object.</returns>
         /// <remarks>While change notifications are suppressed, property change and other reactive notifications
         /// will not be raised. Dispose the returned object to resume normal notification behavior. This method is typically
         /// used to batch multiple changes and avoid triggering notifications for each individual change.</remarks>
-        /// <returns>An <see cref="IDisposable"/> that, when disposed, restores change notifications for the specified object.</returns>
         public IDisposable SuppressChangeNotifications()
         {
             var s = GetState(reactiveObject);
@@ -180,11 +180,11 @@ public static class IReactiveObjectExtensions
         }
 
         /// <summary>Temporarily suspends change notifications for the specified reactive object until the returned disposable is disposed.</summary>
+        /// <returns>An <see cref="IDisposable"/> that, when disposed, resumes change notifications for the specified object.</returns>
         /// <remarks>Use this method to batch multiple changes to a reactive object and suppress intermediate
         /// change notifications. Change notifications are resumed automatically when the returned disposable is disposed.
         /// This is useful for improving performance or preventing unnecessary updates when making several changes in quick
         /// succession.</remarks>
-        /// <returns>An <see cref="IDisposable"/> that, when disposed, resumes change notifications for the specified object.</returns>
         internal IDisposable DelayChangeNotifications()
         {
             var s = GetState(reactiveObject);
@@ -266,13 +266,16 @@ public static class IReactiveObjectExtensions
         private sealed class Sink(IObserver<IReactivePropertyChangedEventArgs<TSender>> downstream) : IObserver<IReactivePropertyChangedEventArgs<IReactiveObject>>
         {
             /// <inheritdoc/>
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public void OnNext(IReactivePropertyChangedEventArgs<IReactiveObject> value) =>
                 downstream.OnNext((IReactivePropertyChangedEventArgs<TSender>)(object)value);
 
             /// <inheritdoc/>
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public void OnError(Exception error) => downstream.OnError(error);
 
             /// <inheritdoc/>
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public void OnCompleted() => downstream.OnCompleted();
         }
     }

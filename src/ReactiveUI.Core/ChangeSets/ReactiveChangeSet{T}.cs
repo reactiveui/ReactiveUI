@@ -4,6 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Collections;
+using System.Runtime.CompilerServices;
 
 namespace ReactiveUI;
 
@@ -54,11 +55,14 @@ public sealed class ReactiveChangeSet<T> : IReactiveChangeSet<T>
 
     /// <summary>Returns an enumerator over the changes.</summary>
     /// <returns>An enumerator over the changes.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public List<ReactiveChange<T>>.Enumerator GetEnumerator() => _changes.GetEnumerator();
 
     /// <inheritdoc/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     IEnumerator<ReactiveChange<T>> IEnumerable<ReactiveChange<T>>.GetEnumerator() => GetEnumerator();
 
     /// <inheritdoc/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable<ReactiveChange<T>>)this).GetEnumerator();
 }

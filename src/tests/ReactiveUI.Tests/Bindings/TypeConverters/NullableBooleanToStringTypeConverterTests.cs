@@ -24,9 +24,8 @@ public class NullableBooleanToStringTypeConverterTests
     public async Task TryConvert_True_ReturnsTrue()
     {
         var converter = new NullableBooleanToStringTypeConverter();
-        bool? value = true;
 
-        var result = converter.TryConvert(value, null, out var output);
+        var result = converter.TryConvert(true, null, out var output);
 
         await Assert.That(result).IsTrue();
         await Assert.That(output).IsEqualTo("True");
@@ -38,9 +37,8 @@ public class NullableBooleanToStringTypeConverterTests
     public async Task TryConvert_False_ReturnsFalse()
     {
         var converter = new NullableBooleanToStringTypeConverter();
-        bool? value = false;
 
-        var result = converter.TryConvert(value, null, out var output);
+        var result = converter.TryConvert(false, null, out var output);
 
         await Assert.That(result).IsTrue();
         await Assert.That(output).IsEqualTo("False");
@@ -52,9 +50,8 @@ public class NullableBooleanToStringTypeConverterTests
     public async Task TryConvert_Null_ReturnsNullString()
     {
         var converter = new NullableBooleanToStringTypeConverter();
-        bool? value = null;
 
-        var result = converter.TryConvert(value, null, out var output);
+        var result = converter.TryConvert(null, null, out var output);
 
         await Assert.That(result).IsTrue();
         await Assert.That(output).IsNull();

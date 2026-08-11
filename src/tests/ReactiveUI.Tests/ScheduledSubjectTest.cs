@@ -141,8 +141,7 @@ public class ScheduledSubjectTest
     [Test]
     public async Task Subscription_WhenDisposed_StopsReceivingValues()
     {
-        var scheduler = Sequencer.Immediate;
-        var subject = new ScheduledSubject<int>(scheduler);
+        var subject = new ScheduledSubject<int>(Sequencer.Immediate);
         var results = new List<int>();
 
         const int ValueAfterDispose = 2;

@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using ReactiveUI.Maui;
 using ReactiveUI.Primitives;
@@ -10,6 +11,7 @@ using ReactiveUI.Primitives;
 namespace ReactiveUI.Samples.Maui;
 
 /// <summary>A reactive login page demonstrating WhenActivated, Bind, BindCommand, and DisplayAlert for user feedback in MAUI.</summary>
+[DebuggerDisplay("LoginPage ViewModel={ViewModel}")]
 public partial class LoginPage : ReactiveContentPage<LoginViewModel>
 {
     /// <summary>Initializes a new instance of the <see cref="LoginPage"/> class.</summary>

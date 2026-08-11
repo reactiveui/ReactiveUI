@@ -5,6 +5,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using ReactiveUI.Internal;
 using ReactiveUI.Primitives.Disposables;
@@ -23,6 +24,7 @@ namespace ReactiveUI;
 /// specific types and control how commands are attached to UI elements or other objects. This class is intended for use
 /// in frameworks or libraries that require extensible command binding logic, such as MVVM platforms. Thread safety and
 /// binding lifetime management are the responsibility of the caller.</remarks>
+[System.Diagnostics.DebuggerDisplay("FlexibleCommandBinder")]
 public class FlexibleCommandBinder : ICreatesCommandBinding
 {
     /// <summary>Configuration map.</summary>
@@ -48,11 +50,13 @@ public class FlexibleCommandBinder : ICreatesCommandBinding
         var bestAffinity = int.MinValue;
         foreach (var key in _config.Keys)
         {
-            if (key.IsAssignableFrom(typeof(T)) && _config[key].Affinity > bestAffinity)
+            if (!key.IsAssignableFrom(typeof(T)) || _config[key].Affinity <= bestAffinity)
             {
-                bestAffinity = _config[key].Affinity;
-                match = key;
+                continue;
             }
+
+            bestAffinity = _config[key].Affinity;
+            match = key;
         }
 
         if (match is null)
@@ -81,11 +85,13 @@ public class FlexibleCommandBinder : ICreatesCommandBinding
         var bestAffinity = int.MinValue;
         foreach (var key in _config.Keys)
         {
-            if (key.IsAssignableFrom(type) && _config[key].Affinity > bestAffinity)
+            if (!key.IsAssignableFrom(type) || _config[key].Affinity <= bestAffinity)
             {
-                bestAffinity = _config[key].Affinity;
-                match = key;
+                continue;
             }
+
+            bestAffinity = _config[key].Affinity;
+            match = key;
         }
 
         if (match is null)
@@ -104,6 +110,7 @@ public class FlexibleCommandBinder : ICreatesCommandBinding
         "Design",
         "SST1452:A generic type parameter is never used",
         Justification = "'TEventArgs' is dictated by the ICreatesCommandBinding interface member this implicitly implements; its arity is fixed by the contract and cannot be changed here.")]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public IDisposable? BindCommandToObject<T, TEventArgs>(
         ICommand? command,
         T? target,
@@ -158,12 +165,12 @@ public class FlexibleCommandBinder : ICreatesCommandBinding
     }
 
     /// <summary>Creates a commands binding from event and a property.</summary>
-    /// <returns>The binding from event.</returns>
     /// <param name="command">Command.</param>
     /// <param name="target">Target.</param>
     /// <param name="commandParameter">Command parameter.</param>
     /// <param name="eventName">Event name.</param>
     /// <param name="enabledProperty">Enabled property name.</param>
+    /// <returns>The binding from event.</returns>
     [RequiresUnreferencedCode("String/reflection-based event binding may require members removed by trimming.")]
     protected static IDisposable ForEvent(
         ICommand? command,

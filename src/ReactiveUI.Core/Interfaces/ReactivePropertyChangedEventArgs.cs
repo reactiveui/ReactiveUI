@@ -9,11 +9,11 @@ namespace ReactiveUI;
 
 /// <summary>Event arguments for when a property has changed. Expands on the PropertyChangedEventArgs to add the Sender.</summary>
 /// <typeparam name="TSender">The sender type.</typeparam>
+/// <param name="sender">The sender.</param>
+/// <param name="propertyName">Name of the property.</param>
 /// <remarks>
 /// Initializes a new instance of the <see cref="ReactivePropertyChangedEventArgs{TSender}"/> class.
 /// </remarks>
-/// <param name="sender">The sender.</param>
-/// <param name="propertyName">Name of the property.</param>
 [System.Diagnostics.DebuggerDisplay("PropertyName = {PropertyName}, Sender = {Sender}")]
 public class ReactivePropertyChangedEventArgs<TSender>(TSender sender, string propertyName) : PropertyChangedEventArgs(propertyName), IReactivePropertyChangedEventArgs<TSender>
 {

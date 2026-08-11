@@ -4,6 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using Microsoft.AspNetCore.Components;
@@ -31,6 +32,7 @@ namespace ReactiveUI.Blazor;
 /// </para>
 /// </remarks>
 [SuppressMessage("Usage", "BL0007:Component parameters should be auto properties", Justification = "Needed for design of the properties")]
+[DebuggerDisplay("{ViewModel}, {Activated}")]
 public class ReactiveLayoutComponentBase<T> : LayoutComponentBase, IViewFor<T>, INotifyPropertyChanged, IDisposable, ICanActivate
     where T : class, INotifyPropertyChanged
 {

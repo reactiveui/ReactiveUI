@@ -2,9 +2,10 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
+using System.Runtime.CompilerServices;
+
 #if !NET
 using System.Diagnostics.CodeAnalysis;
-
 namespace System;
 
 /// <summary>
@@ -36,6 +37,7 @@ internal readonly struct Range : IEquatable<Range>
     /// <param name="left">The first range.</param>
     /// <param name="right">The second range.</param>
     /// <returns><see langword="true"/> if the ranges are equal; otherwise <see langword="false"/>.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool operator ==(Range left, Range right) => left.Equals(right);
 
     /// <summary>Determines whether two ranges are not equal.</summary>
@@ -66,6 +68,7 @@ internal readonly struct Range : IEquatable<Range>
     /// <summary>Calculates the start offset and length of the range for a collection of the supplied length.</summary>
     /// <param name="length">The length of the collection.</param>
     /// <returns>A tuple containing the start offset and the length of the range.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">The range falls outside a collection of <paramref name="length"/> elements.</exception>
     internal (int Offset, int Length) GetOffsetAndLength(int length)
     {
         var start = Start.GetOffset(length);

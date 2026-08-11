@@ -107,6 +107,7 @@ public sealed class CreatesCommandBindingViaCommandParameter : ICreatesCommandBi
         "Design",
         "SST1452:A generic type parameter is never used",
         Justification = "TEventArgs is part of the ICreatesCommandBinding contract; this binder ignores it because event-name binding is not applicable here.")]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public IDisposable? BindCommandToObject<T, TEventArgs>(
         ICommand? command,
         T? target,
@@ -119,6 +120,7 @@ public sealed class CreatesCommandBindingViaCommandParameter : ICreatesCommandBi
     /// This binder is for command-property based binding. If an event name is specified, event-based binders
     /// should be used. This method therefore returns <see cref="EmptyDisposable"/>.
     /// </remarks>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public IDisposable? BindCommandToObject<
         [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties
                                     | DynamicallyAccessedMemberTypes.PublicEvents

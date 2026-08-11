@@ -4,6 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.ComponentModel;
+using System.Diagnostics;
 
 #if REACTIVE_SHIM
 namespace ReactiveUI.Reactive.Winforms;
@@ -18,6 +19,7 @@ namespace ReactiveUI.Winforms;
 /// <typeparam name="TViewModel">The type of the view model.</typeparam>
 /// <seealso cref="UserControl" />
 /// <seealso cref="IViewFor{TViewModel}" />
+[DebuggerDisplay("{ViewModel}")]
 public partial class ReactiveUserControl<TViewModel> : UserControl, IViewFor<TViewModel>
     where TViewModel : class
 {

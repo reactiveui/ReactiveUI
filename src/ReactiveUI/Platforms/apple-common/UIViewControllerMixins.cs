@@ -15,7 +15,7 @@ namespace ReactiveUI.Reactive;
 #else
 namespace ReactiveUI;
 #endif
-/// <summary>Extension methods for activating and deactivating subviews on a view controller.</summary>
+/// <summary>Extension methods for raising activation on a view controller and cascading it through its subviews.</summary>
 internal static class UIViewControllerMixins
 {
     /// <summary>Provides subview activation extension members for a view.</summary>
@@ -46,6 +46,7 @@ internal static class UIViewControllerMixins
     {
         /// <summary>Recursively activates or deactivates all subviews of the given view controller's root view.</summary>
         /// <param name="activate"><see langword="true"/> to activate subviews; <see langword="false"/> to deactivate.</param>
+        /// <exception cref="ArgumentException">Thrown when the controller has not yet loaded a root view.</exception>
         internal void ActivateSubviews(bool activate)
         {
             ArgumentExceptionHelper.ThrowIfNull(controller);
@@ -56,6 +57,19 @@ internal static class UIViewControllerMixins
             }
 
             controller.View.ActivateSubviews(activate);
+        }
+
+        /// <summary>
+        /// Raises activation or deactivation on the controller and cascades it into the subview tree — the body
+        /// every reactive controller's appear/disappear overrides run after chaining to their platform base.
+        /// </summary>
+        /// <param name="activated">The activation signal.</param>
+        /// <param name="deactivated">The deactivation signal.</param>
+        /// <param name="isActivating"><see langword="true"/> when the controller is appearing; <see langword="false"/> when it has disappeared.</param>
+        internal void RaiseActivation(Signal<RxVoid> activated, Signal<RxVoid> deactivated, bool isActivating)
+        {
+            (isActivating ? activated : deactivated).OnNext(RxVoid.Default);
+            controller.ActivateSubviews(isActivating);
         }
     }
 }

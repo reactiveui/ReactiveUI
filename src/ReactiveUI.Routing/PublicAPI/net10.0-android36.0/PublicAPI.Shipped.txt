@@ -12,8 +12,6 @@ ReactiveUI.DynamicDataChangeSetMixins.extension<T>(System.IObservable<DynamicDat
 ReactiveUI.DynamicDataInteropMixins
 ReactiveUI.DynamicDataInteropMixins.extension<T>(System.IObservable<ReactiveUI.IReactiveChangeSet<T>!>!)
 ReactiveUI.DynamicDataInteropMixins.extension<T>(System.IObservable<ReactiveUI.IReactiveChangeSet<T>!>!).ToDynamicDataChangeSet() -> System.IObservable<DynamicData.IChangeSet<T>!>!
-ReactiveUI.Resource
-ReactiveUI.Resource.Resource() -> void
 ReactiveUI.RoutingStateDynamicDataMixins
 ReactiveUI.RoutingStateDynamicDataMixins.extension(ReactiveUI.RoutingState!)
 ReactiveUI.RoutingStateDynamicDataMixins.extension(ReactiveUI.RoutingState!).NavigationChanged() -> System.IObservable<DynamicData.IChangeSet<ReactiveUI.IRoutableViewModel!>!>!

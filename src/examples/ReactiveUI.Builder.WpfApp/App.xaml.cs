@@ -5,6 +5,7 @@
 
 using System.Diagnostics;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Windows;
 using ReactiveUI.Builder.WpfApp.Models;
 using ReactiveUI.Builder.WpfApp.Services;
@@ -13,6 +14,7 @@ using ReactiveUI.Builder.WpfApp.ViewModels;
 namespace ReactiveUI.Builder.WpfApp;
 
 /// <summary>Interaction logic for App.xaml.</summary>
+[DebuggerDisplay("App")]
 public partial class App : Application
 {
     /// <summary>The small object-cache size configured for ReactiveUI.</summary>
@@ -92,6 +94,7 @@ public partial class App : Application
         }
 
         /// <inheritdoc/>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void OnError(Exception error) => OnNext(error);
 
         /// <inheritdoc/>

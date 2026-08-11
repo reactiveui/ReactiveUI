@@ -43,9 +43,8 @@ public class TimeOnlyToStringTypeConverterTests
     public async Task TryConvert_MinValue_Succeeds()
     {
         var converter = new TimeOnlyToStringTypeConverter();
-        var value = TimeOnly.MinValue;
 
-        var result = converter.TryConvert(value, null, out var output);
+        var result = converter.TryConvert(TimeOnly.MinValue, null, out var output);
 
         await Assert.That(result).IsTrue();
         await Assert.That(output).IsEqualTo(TimeOnly.MinValue.ToString());
@@ -57,9 +56,8 @@ public class TimeOnlyToStringTypeConverterTests
     public async Task TryConvert_MaxValue_Succeeds()
     {
         var converter = new TimeOnlyToStringTypeConverter();
-        var value = TimeOnly.MaxValue;
 
-        var result = converter.TryConvert(value, null, out var output);
+        var result = converter.TryConvert(TimeOnly.MaxValue, null, out var output);
 
         await Assert.That(result).IsTrue();
         await Assert.That(output).IsEqualTo(TimeOnly.MaxValue.ToString());

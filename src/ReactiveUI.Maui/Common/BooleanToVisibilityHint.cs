@@ -20,5 +20,5 @@ public enum BooleanToVisibilityHint
     Inverse = 1 << 1,
 
     /// <summary>Use the hidden version rather than the Collapsed.</summary>
-    UseHidden = 1 << 2
+    UseHidden = 1 << 2,
 }

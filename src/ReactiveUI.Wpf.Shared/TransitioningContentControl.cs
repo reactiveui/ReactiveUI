@@ -3,6 +3,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -142,6 +144,7 @@ namespace ReactiveUI;
 [TemplatePart(Name = "PART_PreviousImageSite", Type = typeof(Image))]
 [TemplatePart(Name = "PART_CurrentContentPresentationSite", Type = typeof(ContentPresenter))]
 [TemplateVisualState(Name = NormalState, GroupName = PresentationGroup)]
+[DebuggerDisplay("{Transition}, {Direction}")]
 public class TransitioningContentControl : ContentControl
 {
     /// <summary>Identifies the <see cref="Transition"/> dependency property.</summary>
@@ -232,19 +235,19 @@ public class TransitioningContentControl : ContentControl
     public enum TransitionType
     {
         /// <summary>A simple fading transition (no directional variant).</summary>
-        Fade,
+        Fade = 0,
 
         /// <summary>A transition that slides old content out of view, and slides new content back in from the same direction.</summary>
-        Move,
+        Move = 1,
 
         /// <summary>A transition that keeps old content in view, and slides new content over it.</summary>
-        Slide,
+        Slide = 2,
 
         /// <summary>A transition that slides old content in view, and slides new content over it a short distance while changing opacity.</summary>
-        Drop,
+        Drop = 3,
 
         /// <summary>A transition that slides old content out of view, then slides new content back in from the opposite direction.</summary>
-        Bounce
+        Bounce = 4,
     }
 
     /// <summary>Specifies the directional variant of a transition (where applicable).</summary>
@@ -255,16 +258,16 @@ public class TransitioningContentControl : ContentControl
     public enum TransitionDirection
     {
         /// <summary>Up direction.</summary>
-        Up,
+        Up = 0,
 
         /// <summary>Down direction.</summary>
-        Down,
+        Down = 1,
 
         /// <summary>Left direction.</summary>
-        Left,
+        Left = 2,
 
         /// <summary>Right direction.</summary>
-        Right
+        Right = 3,
     }
 
     /// <summary>Gets or sets the transition type used when the content changes.</summary>
@@ -357,6 +360,9 @@ public class TransitioningContentControl : ContentControl
     private Image? PreviousImageSite { get; set; }
 
     /// <inheritdoc/>
+    /// <exception cref="InvalidOperationException">
+    /// Thrown if <c>PART_Container</c> or <c>PART_CurrentContentPresentationSite</c> cannot be found in the applied template.
+    /// </exception>
     /// <remarks>
     /// <para>
     /// When the template is applied, the control locates and caches the required template parts and the visual state
@@ -372,9 +378,6 @@ public class TransitioningContentControl : ContentControl
     /// behaves like a normal <see cref="ContentControl"/>.
     /// </para>
     /// </remarks>
-    /// <exception cref="InvalidOperationException">
-    /// Thrown if <c>PART_Container</c> or <c>PART_CurrentContentPresentationSite</c> cannot be found in the applied template.
-    /// </exception>
     public override void OnApplyTemplate()
     {
         // Wire up all of the various control parts.
@@ -401,11 +404,13 @@ public class TransitioningContentControl : ContentControl
             VisualStateGroup? matchedGroup = null;
             foreach (var group in groups)
             {
-                if (group.Name == PresentationGroup)
+                if (group.Name != PresentationGroup)
                 {
-                    matchedGroup = group;
-                    break;
+                    continue;
                 }
+
+                matchedGroup = group;
+                break;
             }
 
             PresentationStateGroup = matchedGroup;
@@ -475,6 +480,7 @@ public class TransitioningContentControl : ContentControl
     }
 
     /// <summary>Sets default values for slide transitions.</summary>
+    /// <exception cref="InvalidOperationException"><see cref="Direction"/> is not a supported transition direction.</exception>
     internal void SetSlideTransitionDefaults()
     {
         if (CompletingTransition is null)
@@ -496,6 +502,7 @@ public class TransitioningContentControl : ContentControl
     }
 
     /// <summary>Sets default values for move transitions.</summary>
+    /// <exception cref="InvalidOperationException"><see cref="Direction"/> is not a supported transition direction.</exception>
     internal void SetMoveTransitionDefaults()
     {
         if (CompletingTransition is null)
@@ -522,6 +529,7 @@ public class TransitioningContentControl : ContentControl
     }
 
     /// <summary>Sets default values for bounce transitions.</summary>
+    /// <exception cref="InvalidOperationException"><see cref="Direction"/> is not a supported transition direction.</exception>
     internal void SetBounceTransitionDefaults()
     {
         if (CompletingTransition is not null)
@@ -602,11 +610,13 @@ public class TransitioningContentControl : ContentControl
         Storyboard? transition = null;
         foreach (var state in states)
         {
-            if (state.Name == transitionName)
+            if (state.Name != transitionName)
             {
-                transition = state.Storyboard;
-                break;
+                continue;
             }
+
+            transition = state.Storyboard;
+            break;
         }
 
         return transition
@@ -614,6 +624,7 @@ public class TransitioningContentControl : ContentControl
     }
 
     /// <summary>Sets default values for certain transition types.</summary>
+    /// <exception cref="InvalidOperationException"><see cref="Direction"/> is not a supported transition direction for the selected transition.</exception>
     internal void SetTransitionDefaultValues()
     {
         // Do some special handling of particular transitions so that we get nice smooth transitions that utilize the size of the content.
@@ -698,13 +709,14 @@ public class TransitioningContentControl : ContentControl
     }
 
     /// <summary>Raises the TransitionStarted event to signal that a transition has begun.</summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void RaiseTransitionStarted() => TransitionStarted?.Invoke(this, new());
 
     /// <summary>Queues a visual transition to display the specified content, applying the configured transition effect if possible.</summary>
+    /// <param name="newContent">The new content object to be displayed during the transition.</param>
     /// <remarks>If a transition is already in progress or required visual elements are unavailable, the
     /// content is updated immediately without animation. Otherwise, the method prepares and initiates the appropriate
     /// transition effect based on the current configuration.</remarks>
-    /// <param name="newContent">The new content object to be displayed during the transition.</param>
     private void QueueTransition(object newContent)
     {
         // Both ContentPresenters must be available, otherwise a transition is useless.

@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics;
 using System.Windows;
 
 #if REACTIVE_SHIM
@@ -11,6 +12,9 @@ namespace ReactiveUI.Reactive;
 namespace ReactiveUI;
 #endif
 /// <summary>A <see cref="Window"/> that is reactive.</summary>
+/// <typeparam name="TViewModel">
+/// The type of the view model backing the view.
+/// </typeparam>
 /// <remarks>
 /// <para>
 /// This class is a <see cref="Window"/> that is also reactive. That is, it implements <see cref="IViewFor{TViewModel}"/>.
@@ -37,9 +41,7 @@ namespace ReactiveUI;
 /// </code>
 /// </para>
 /// </remarks>
-/// <typeparam name="TViewModel">
-/// The type of the view model backing the view.
-/// </typeparam>
+[DebuggerDisplay("{BindingRoot}, {ViewModel}")]
 public class ReactiveWindow<TViewModel> :
     Window, IViewFor<TViewModel>
     where TViewModel : class

@@ -5,6 +5,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 
 #if REACTIVE_SHIM
 namespace ReactiveUI.Reactive;
@@ -31,12 +32,13 @@ public static class ObservedChangedMixins
     extension<TSender, TValue>(IObservable<IObservedChange<TSender, TValue>> item)
     {
         /// <summary>Projects each observed change notification to the current value of the observed property or member chain.</summary>
+        /// <returns>An observable sequence that emits the current value of the observed property or member chain each time a change
+        /// notification is received.</returns>
         /// <remarks>This method uses reflection to evaluate expression-based member chains, which may be affected
         /// by trimming in some deployment scenarios. Use caution when linking against assemblies that may be trimmed, as
         /// required members may be removed.</remarks>
-        /// <returns>An observable sequence that emits the current value of the observed property or member chain each time a change
-        /// notification is received.</returns>
         [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IObservable<TValue>
             Value() =>
             new ValueObservable<TSender, TValue>(item);
@@ -60,12 +62,12 @@ public static class ObservedChangedMixins
         /// Retrieves the current value from the observed change, evaluating the property chain represented by the change
         /// notification.
         /// </summary>
+        /// <returns>The value obtained from the observed property chain. The value is of type TValue.</returns>
+        /// <exception cref="ArgumentNullException">Thrown if the item parameter is null.</exception>
+        /// <exception cref="InvalidOperationException">A property in the observed chain is null, so the value cannot be retrieved.</exception>
         /// <remarks>This method uses reflection to evaluate the property chain described by the observed change.
         /// If any property in the chain is null, an exception is thrown. Use with caution when members may be trimmed or
         /// unavailable at runtime.</remarks>
-        /// <returns>The value obtained from the observed property chain. The value is of type TValue.</returns>
-        /// <exception cref="ArgumentNullException">Thrown if the item parameter is null.</exception>
-        /// <exception cref="Exception">Thrown if any property in the observed property chain is null, preventing the value from being retrieved.</exception>
         [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
         public TValue GetValue()
         {
@@ -93,12 +95,12 @@ public static class ObservedChangedMixins
         /// Attempts to retrieve the value associated with the observed change, using the value directly if available or
         /// evaluating the expression chain if necessary.
         /// </summary>
-        /// <remarks>This method may use reflection to evaluate expression-based member chains if the value is not
-        /// directly available. Members accessed via reflection may be trimmed during linking, which can affect the ability
-        /// to retrieve the value in some scenarios.</remarks>
         /// <param name="changeValue">When this method returns, contains the value associated with the observed change if retrieval was successful;
         /// otherwise, the default value for the type.</param>
         /// <returns>true if the value was successfully retrieved; otherwise, false.</returns>
+        /// <remarks>This method may use reflection to evaluate expression-based member chains if the value is not
+        /// directly available. Members accessed via reflection may be trimmed during linking, which can affect the ability
+        /// to retrieve the value in some scenarios.</remarks>
         [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
         internal bool TryGetValue(
             out TValue changeValue)
@@ -119,12 +121,12 @@ public static class ObservedChangedMixins
         /// Sets the value from the observed change to the specified property on the target object using an expression-based
         /// property chain.
         /// </summary>
-        /// <remarks>This method uses reflection to evaluate the property expression and set the value, which may
-        /// be affected by trimming in some environments. The method does not throw if the target is null.</remarks>
         /// <typeparam name="TTarget">The type of the target object whose property will be set.</typeparam>
         /// <param name="target">The target object whose property will be updated. If null, no action is taken.</param>
         /// <param name="property">An expression that identifies the property on the target object to set. Must be a simple or nested property
         /// access expression.</param>
+        /// <remarks>This method uses reflection to evaluate the property expression and set the value, which may
+        /// be affected by trimming in some environments. The method does not throw if the target is null.</remarks>
         [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
         internal void SetValueToProperty<TTarget>(
             TTarget target,
@@ -179,9 +181,11 @@ public static class ObservedChangedMixins
             }
 
             /// <inheritdoc/>
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public void OnError(Exception error) => downstream.OnError(error);
 
             /// <inheritdoc/>
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public void OnCompleted() => downstream.OnCompleted();
         }
     }

@@ -35,19 +35,16 @@ namespace ReactiveUI;
 public interface IMessageBus : IEnableLogger
 {
     /// <summary>Registers a scheduler for the type, which may be specified at runtime, and the contract.</summary>
-    /// <remarks>If a scheduler is already registered for the specified
-    /// runtime and contract, this will overwrite the existing
-    /// registration.</remarks>
     /// <typeparam name="T">The type of the message to listen to.</typeparam>
     /// <param name="scheduler">The scheduler on which to post the
     /// notifications for the specified type and contract.
     /// CurrentThreadScheduler by default.</param>
-    void RegisterScheduler<T>(ISequencer scheduler);
-
-    /// <summary>Registers a scheduler for the type, which may be specified at runtime, and the contract.</summary>
     /// <remarks>If a scheduler is already registered for the specified
     /// runtime and contract, this will overwrite the existing
     /// registration.</remarks>
+    void RegisterScheduler<T>(ISequencer scheduler);
+
+    /// <summary>Registers a scheduler for the type, which may be specified at runtime, and the contract.</summary>
     /// <typeparam name="T">The type of the message to listen to.</typeparam>
     /// <param name="scheduler">The scheduler on which to post the
     /// notifications for the specified type and contract.
@@ -55,6 +52,9 @@ public interface IMessageBus : IEnableLogger
     /// <param name="contract">A unique string to distinguish messages with
     /// identical types (i.e. "MyCoolViewModel") - if the message type is
     /// only used for one purpose, leave this as null.</param>
+    /// <remarks>If a scheduler is already registered for the specified
+    /// runtime and contract, this will overwrite the existing
+    /// registration.</remarks>
     void RegisterScheduler<T>(ISequencer scheduler, string? contract);
 
     /// <summary>

@@ -5,6 +5,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using ReactiveUI.Primitives.Disposables;
 
 namespace ReactiveUI.Internal;
@@ -43,6 +44,7 @@ internal sealed class EventPatternObservable<TEventArgs>(object target, string e
         /// <summary>Creates a delegate of the event's handler type that forwards to <see cref="OnEvent"/>.</summary>
         /// <param name="handlerType">The event's handler delegate type.</param>
         /// <returns>A delegate compatible with the event.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Delegate CreateHandler(Type handlerType) =>
             typeof(Forwarder).GetMethod(nameof(OnEvent), BindingFlags.Instance | BindingFlags.Public)!.CreateDelegate(handlerType, this);
 
@@ -53,6 +55,7 @@ internal sealed class EventPatternObservable<TEventArgs>(object target, string e
             "Design",
             "SST2324:A member is declared more accessible than its containing type",
             Justification = "OnEvent is public so the reflection-created delegate binds by public lookup; Forwarder is a private nested detail.")]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void OnEvent(object? sender, TEventArgs args) => observer.OnNext(args);
     }
 }

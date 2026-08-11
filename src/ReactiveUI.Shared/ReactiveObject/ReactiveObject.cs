@@ -5,11 +5,14 @@
 
 using System.ComponentModel;
 
+using System.Diagnostics;
+
 #if !MONO
 using System.ComponentModel.DataAnnotations;
 #endif
 
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
 
@@ -24,6 +27,7 @@ namespace ReactiveUI;
 /// Changing and Changed Observables to monitor object changes.
 /// </summary>
 [DataContract]
+[DebuggerDisplay("{Changing}, {Changed}")]
 public class ReactiveObject : IReactiveNotifyPropertyChanged<IReactiveObject>, IHandleObservableErrors, IReactiveObject, IReactiveObjectStateSlot
 {
     /// <summary>Tracks whether PropertyChanging event subscriptions have been initialized.</summary>
@@ -97,22 +101,27 @@ public class ReactiveObject : IReactiveNotifyPropertyChanged<IReactiveObject>, I
         ReactiveNotificationHelpers.GetThrownExceptions(this, ref _thrownExceptions);
 
     /// <inheritdoc/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args) =>
         _propertyChangingHandler?.Invoke(this, args);
 
     /// <inheritdoc/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args) =>
         _propertyChangedHandler?.Invoke(this, args);
 
     /// <inheritdoc/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public IDisposable SuppressChangeNotifications() => IReactiveObjectExtensions.SuppressChangeNotifications(this);
 
     /// <summary>Determines if change notifications are enabled or not.</summary>
     /// <returns>A value indicating whether change notifications are enabled.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool AreChangeNotificationsEnabled() => IReactiveObjectExtensions.AreChangeNotificationsEnabled(this);
 
     /// <summary>Delays notifications until the return IDisposable is disposed.</summary>
     /// <returns>A disposable which when disposed will send delayed notifications.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public IDisposable DelayChangeNotifications() =>
         IReactiveObjectExtensions.DelayChangeNotifications(this);
 

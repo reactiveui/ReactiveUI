@@ -6,6 +6,7 @@
 using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
+using System.Runtime.CompilerServices;
 using Splat;
 
 namespace ReactiveUI;
@@ -67,6 +68,7 @@ public sealed class DefaultViewLocator : IViewLocator
         "Design",
         "SST2307:A generic method's type parameter appears in no parameter, so no caller can infer it",
         Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public DefaultViewLocator Map<TViewModel, TView>(Func<TView> factory)
         where TViewModel : class
         where TView : class, IViewFor<TViewModel> =>
@@ -111,6 +113,7 @@ public sealed class DefaultViewLocator : IViewLocator
         "Design",
         "SST2307:A generic method's type parameter appears in no parameter, so no caller can infer it",
         Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public DefaultViewLocator Unmap<TViewModel>()
         where TViewModel : class =>
         Unmap<TViewModel>(null);
@@ -147,6 +150,7 @@ public sealed class DefaultViewLocator : IViewLocator
     /// <summary>Resolves a view for a view model type using the default contract. Fully AOT-compatible.</summary>
     /// <typeparam name="TViewModel">The view model type to resolve a view for.</typeparam>
     /// <returns>The resolved view or null when no registration is available.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public IViewFor<TViewModel>? ResolveView<TViewModel>()
         where TViewModel : class =>
         ResolveView<TViewModel>(null);
@@ -175,7 +179,7 @@ public sealed class DefaultViewLocator : IViewLocator
             this.Log().Debug(
                 CultureInfo.InvariantCulture,
                 "Resolved IViewFor<{0}> from explicit mapping",
-                nameof(TViewModel));
+                typeof(TViewModel).Name);
             return (IViewFor<TViewModel>)factory();
         }
 
@@ -185,14 +189,14 @@ public sealed class DefaultViewLocator : IViewLocator
             this.Log().Debug(
                 CultureInfo.InvariantCulture,
                 "Resolved IViewFor<{0}> via service locator",
-                nameof(TViewModel));
+                typeof(TViewModel).Name);
             return view;
         }
 
         this.Log().Warn(
                 CultureInfo.InvariantCulture,
                 "Failed to resolve view for {0}. Use Map<TViewModel, TView>() or register IViewFor<TViewModel> in the service locator.",
-                nameof(TViewModel));
+                typeof(TViewModel).Name);
         return null;
     }
 
@@ -204,6 +208,7 @@ public sealed class DefaultViewLocator : IViewLocator
     [RequiresDynamicCode(
         "If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, "
         + "or generic constraints), trimming can't validate that the requirements of those annotations are met.")]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public IViewFor? ResolveView(object? instance) =>
         ResolveView(instance, null);
 
