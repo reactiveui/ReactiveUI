@@ -26,6 +26,18 @@
     <TargetPlatformMinVersion Condition="$(TargetFramework.Contains('-windows'))">10.0.19041.0</TargetPlatformMinVersion>
   </PropertyGroup>
 
+  <PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
+    <!-- Marshal methods turn JNI registration into native symbol lookup, but on the .NET 10 Android
+         band the release link (AndroidLinkMode=SdkOnly) strips the connector, the n_ native callback
+         and the delegate backing field out of Mono.Android.dll before the classifier looks for them.
+         It finds none of the pattern, so every one of the 470 methods falls back to dynamic
+         registration anyway - and says so, twice per method per ABI, as warnings the SDK logs with no
+         diagnostic code, which no NoWarn can reach and -warnaserror turns into a failed build. A stock
+         `dotnet new maui` app reproduces it identically, and the 37 band does not, so this states what
+         the band already does rather than changing how the app registers anything. -->
+    <AndroidEnableMarshalMethods>false</AndroidEnableMarshalMethods>
+  </PropertyGroup>
+
   <PropertyGroup Condition="$(TargetFramework.Contains('-windows'))">
     <WindowsPackageType>None</WindowsPackageType>
     <GenerateAppxPackageOnBuild>false</GenerateAppxPackageOnBuild>
