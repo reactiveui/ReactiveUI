@@ -68,8 +68,8 @@
   </ItemGroup>
 
   <ItemGroup Label="Akavache">
-    <PackageVersion Include="Akavache.Sqlite3" Version="12.1.1"/>
-    <PackageVersion Include="Akavache.SystemTextJson" Version="12.1.1"/>
+    <PackageVersion Include="Akavache.Sqlite3" Version="13.0.0"/>
+    <PackageVersion Include="Akavache.SystemTextJson" Version="13.0.0"/>
   </ItemGroup>
 
   <ItemGroup Label="Testing">
