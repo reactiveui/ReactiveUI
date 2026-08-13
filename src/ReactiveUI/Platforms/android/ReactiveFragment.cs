@@ -4,6 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Runtime.Versioning;
 using Android.Runtime;
 
@@ -13,6 +14,7 @@ namespace ReactiveUI.Reactive;
 namespace ReactiveUI;
 #endif
 /// <summary>This is a Fragment that is both an Activity and has ReactiveObject powers (i.e. you can call RaiseAndSetIfChanged).</summary>
+[System.Diagnostics.DebuggerDisplay("{Activated}, {Deactivated}")]
 public class ReactiveFragment : Fragment, IReactiveNotifyPropertyChanged<ReactiveFragment>, IReactiveObject,
     IHandleObservableErrors
 {
@@ -64,9 +66,11 @@ public class ReactiveFragment : Fragment, IReactiveNotifyPropertyChanged<Reactiv
     public IObservable<RxVoid> Deactivated => _deactivated;
 
     /// <inheritdoc/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args) => PropertyChanging?.Invoke(this, args);
 
     /// <inheritdoc/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args) => PropertyChanged?.Invoke(this, args);
 
     /// <summary>
@@ -76,6 +80,7 @@ public class ReactiveFragment : Fragment, IReactiveNotifyPropertyChanged<Reactiv
     /// </summary>
     /// <returns>An object that, when disposed, reenables change
     /// notifications.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public IDisposable SuppressChangeNotifications() => IReactiveObjectExtensions.SuppressChangeNotifications(this);
 
     /// <inheritdoc/>
@@ -97,12 +102,7 @@ public class ReactiveFragment : Fragment, IReactiveNotifyPropertyChanged<Reactiv
     /// <inheritdoc/>
     protected override void Dispose(bool disposing)
     {
-        if (disposing)
-        {
-            _activated?.Dispose();
-            _deactivated?.Dispose();
-        }
-
+        ActivationSignals.DisposeWhen(disposing, _activated, _deactivated);
         base.Dispose(disposing);
     }
 }

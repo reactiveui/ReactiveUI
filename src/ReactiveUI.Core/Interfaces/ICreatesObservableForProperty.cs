@@ -31,15 +31,6 @@ public interface ICreatesObservableForProperty : IEnableLogger
     /// Returns a positive integer when this instance supports GetNotificationForProperty for
     /// the specified type and propertyName.
     /// </summary>
-    /// <remarks>
-    /// <para>
-    /// If the method is not supported, return a non-positive integer.
-    /// When multiple implementations return a positive value, the host selects the highest value.
-    /// </para>
-    /// <para>
-    /// Implementations should avoid expensive work here; this is typically a hot-path query.
-    /// </para>
-    /// </remarks>
     /// <param name="type">The runtime type to query.</param>
     /// <param name="propertyName">The property name to query.</param>
     /// <param name="beforeChanged">
@@ -49,6 +40,15 @@ public interface ICreatesObservableForProperty : IEnableLogger
     /// <returns>
     /// A positive integer if supported; zero or a negative value otherwise.
     /// </returns>
+    /// <remarks>
+    /// <para>
+    /// If the method is not supported, return a non-positive integer.
+    /// When multiple implementations return a positive value, the host selects the highest value.
+    /// </para>
+    /// <para>
+    /// Implementations should avoid expensive work here; this is typically a hot-path query.
+    /// </para>
+    /// </remarks>
     [RequiresUnreferencedCode("Uses reflection over runtime types which is not trim- or AOT-safe.")]
     int GetAffinityForObject(Type? type, string propertyName, bool beforeChanged);
 

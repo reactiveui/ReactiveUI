@@ -37,6 +37,7 @@ public class PropertyBindingExpressionCompilerTests
 
     /// <summary>Verifies that CreateSetThenGet creates a working set-then-get function for a simple property.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+    /// <exception cref="InvalidOperationException">Thrown when no value fetcher can be resolved for the property under test.</exception>
     [Test]
     public async Task CreateSetThenGet_ForSimpleProperty_SetsAndGetsValue()
     {
@@ -63,6 +64,7 @@ public class PropertyBindingExpressionCompilerTests
 
     /// <summary>Verifies that CreateSetThenGet does not emit when value hasn't changed.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+    /// <exception cref="InvalidOperationException">Thrown when no value fetcher can be resolved for the property under test.</exception>
     [Test]
     public async Task CreateSetThenGet_WhenValueUnchanged_DoesNotEmit()
     {
@@ -88,6 +90,7 @@ public class PropertyBindingExpressionCompilerTests
 
     /// <summary>Verifies that CreateSetThenGet with a converter converts the value before setting.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+    /// <exception cref="InvalidOperationException">Thrown when no value fetcher can be resolved for the property under test.</exception>
     [Test]
     public async Task CreateSetThenGet_WithConverter_ConvertsAndSetsValue()
     {
@@ -116,6 +119,7 @@ public class PropertyBindingExpressionCompilerTests
 
     /// <summary>Verifies that CreateSetThenGet with a converter does not emit if the converted value matches existing.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+    /// <exception cref="InvalidOperationException">Thrown when no value fetcher can be resolved for the property under test.</exception>
     [Test]
     public async Task CreateSetThenGet_WithConverter_WhenConvertedValueUnchanged_DoesNotEmit()
     {
@@ -261,6 +265,7 @@ public class PropertyBindingExpressionCompilerTests
 
     /// <summary>Verifies that CreateDirectSetObservable emits changes when observable updates.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+    /// <exception cref="InvalidOperationException">Thrown when no value fetcher can be resolved for the property under test.</exception>
     [Test]
     public async Task CreateDirectSetObservable_EmitsChanges()
     {
@@ -302,6 +307,7 @@ public class PropertyBindingExpressionCompilerTests
 
     /// <summary>Verifies that CreateDirectSetObservable does not emit when values are unchanged.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+    /// <exception cref="InvalidOperationException">Thrown when no value fetcher can be resolved for the property under test.</exception>
     [Test]
     public async Task CreateDirectSetObservable_WhenValueUnchanged_DoesNotEmit()
     {
@@ -341,6 +347,7 @@ public class PropertyBindingExpressionCompilerTests
 
     /// <summary>Verifies that CreateDirectSetObservable applies converter before setting.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+    /// <exception cref="InvalidOperationException">Thrown when no value fetcher can be resolved for the property under test.</exception>
     [Test]
     public async Task CreateDirectSetObservable_WithConverter_ConvertsAndSetsValue()
     {
@@ -382,6 +389,7 @@ public class PropertyBindingExpressionCompilerTests
 
     /// <summary>Verifies that CreateChainedSetObservable emits changes when property chain updates.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+    /// <exception cref="InvalidOperationException">Thrown when no value fetcher can be resolved for the chained property under test.</exception>
     [Test]
     public async Task CreateChainedSetObservable_EmitsChanges()
     {

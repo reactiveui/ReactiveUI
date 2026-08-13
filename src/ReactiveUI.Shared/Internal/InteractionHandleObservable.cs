@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Runtime.CompilerServices;
 using ReactiveUI.Primitives.Disposables;
 
 #if REACTIVE_SHIM
@@ -41,13 +42,13 @@ internal sealed class InteractionHandleObservable<TInput, TOutput>(
     }
 
     /// <summary>Drives the sequential, scheduler-bound handler run for a single subscription.</summary>
-    /// <remarks>Internal so the disposed-during-step guard can be exercised directly in tests.</remarks>
     /// <param name="observer">The observer receiving the interaction output.</param>
     /// <param name="handlers">The registered handlers in registration order.</param>
     /// <param name="context">The interaction context.</param>
     /// <param name="scheduler">The scheduler each handler is invoked on.</param>
     /// <param name="interaction">The interaction, surfaced on the unhandled exception.</param>
     /// <param name="input">The interaction input, surfaced on the unhandled exception.</param>
+    /// <remarks>Internal so the disposed-during-step guard can be exercised directly in tests.</remarks>
     internal sealed class Sink(
         IObserver<TOutput> observer,
         Func<IInteractionContext<TInput, TOutput>, IObservable<RxVoid>>[] handlers,
@@ -92,6 +93,7 @@ internal sealed class InteractionHandleObservable<TInput, TOutput>(
         }
 
         /// <summary>Begins the run at the most-recently registered handler.</summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal void Start() => RunFrom(_handlers.Length - 1);
 
         /// <summary>Runs the handler at <paramref name="index"/>, or finishes when handled or exhausted.</summary>
@@ -200,10 +202,12 @@ internal sealed class InteractionHandleObservable<TInput, TOutput>(
 
         /// <summary>Advances to the next-older handler once the current one completes.</summary>
         /// <param name="index">The index of the handler that just completed.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void OnHandlerCompleted(int index) => RunFrom(index - 1);
 
         /// <summary>Forwards a handler error to the observer.</summary>
         /// <param name="error">The error to forward.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void OnHandlerError(Exception error) => _observer.OnError(error);
 
         /// <summary>Observes a single handler's completion, ignoring its values.</summary>

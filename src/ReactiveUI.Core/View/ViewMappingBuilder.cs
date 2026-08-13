@@ -3,12 +3,15 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using Splat;
 
 namespace ReactiveUI;
 
 /// <summary>Fluent builder for registering AOT-compatible view-to-viewmodel mappings.</summary>
+[DebuggerDisplay("ViewMappingBuilder")]
 public sealed class ViewMappingBuilder
 {
     /// <summary>The underlying view locator that receives the registered mappings.</summary>
@@ -33,6 +36,7 @@ public sealed class ViewMappingBuilder
         "Design",
         "SST2307:A generic method's type parameter appears in no parameter, so no caller can infer it",
         Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public ViewMappingBuilder Map<TViewModel, TView>()
         where TViewModel : class
         where TView : class, IViewFor<TViewModel>, new() =>
@@ -64,6 +68,7 @@ public sealed class ViewMappingBuilder
         "Design",
         "SST2307:A generic method's type parameter appears in no parameter, so no caller can infer it",
         Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public ViewMappingBuilder Map<TViewModel, TView>(Func<TView> factory)
         where TViewModel : class
         where TView : class, IViewFor<TViewModel> =>
@@ -99,6 +104,7 @@ public sealed class ViewMappingBuilder
         "Design",
         "SST2307:A generic method's type parameter appears in no parameter, so no caller can infer it",
         Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public ViewMappingBuilder MapFromServiceLocator<TViewModel, TView>()
         where TViewModel : class
         where TView : class, IViewFor<TViewModel> =>
@@ -122,7 +128,7 @@ public sealed class ViewMappingBuilder
     {
         _ = _locator.Map<TViewModel, TView>(
             static () => AppLocator.Current.GetService<TView>()
-                  ?? throw new InvalidOperationException($"View {nameof(TView)} not registered in service locator"),
+                  ?? throw new InvalidOperationException($"View {typeof(TView).Name} not registered in service locator"),
             contract);
         return this;
     }

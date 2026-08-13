@@ -5,6 +5,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using Splat;
 
@@ -52,6 +53,7 @@ public static class CommandBinderMixins
         /// <param name="withParameter">An observable that provides the parameter to pass to the command when it is executed.</param>
         /// <returns>An IReactiveBinding instance representing the active binding between the command and the control.</returns>
         [RequiresUnreferencedCode("Dynamic observation uses reflection over members that may be trimmed.")]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IReactiveBinding<TView, TProp> BindCommand<
             TViewModel,
             TProp,
@@ -73,9 +75,6 @@ public static class CommandBinderMixins
         /// Binds a command from the view model to a control on the view, enabling the control to execute the command with a
         /// parameter when triggered.
         /// </summary>
-        /// <remarks>This method uses reflection to dynamically observe events and properties on the control,
-        /// which may be affected by trimming in some deployment scenarios. The binding remains active until the returned
-        /// IReactiveBinding is disposed.</remarks>
         /// <typeparam name="TViewModel">The type of the view model containing the command property.</typeparam>
         /// <typeparam name="TProp">The type of the command property, which must implement ICommand.</typeparam>
         /// <typeparam name="TControl">The type of the control on the view to which the command will be bound.</typeparam>
@@ -89,6 +88,9 @@ public static class CommandBinderMixins
         /// control type.
         /// NOTE: If this parameter is used inside WhenActivated, it's important to dispose the binding when the view is deactivated.</param>
         /// <returns>An IReactiveBinding instance representing the active binding between the command and the control.</returns>
+        /// <remarks>This method uses reflection to dynamically observe events and properties on the control,
+        /// which may be affected by trimming in some deployment scenarios. The binding remains active until the returned
+        /// IReactiveBinding is disposed.</remarks>
         [RequiresUnreferencedCode("Dynamic observation uses reflection over members that may be trimmed.")]
         public IReactiveBinding<TView, TProp> BindCommand<
             TViewModel,
@@ -121,6 +123,7 @@ public static class CommandBinderMixins
         /// <param name="controlName">An expression identifying the control on the view to bind the command to.</param>
         /// <returns>An object representing the binding between the command and the control, which can be disposed to unbind.</returns>
         [RequiresUnreferencedCode("Dynamic observation uses reflection over members that may be trimmed.")]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IReactiveBinding<TView, TProp> BindCommand<
             TViewModel,
             TProp,
@@ -140,10 +143,6 @@ public static class CommandBinderMixins
         /// Binds a command from the view model to a control on the view, enabling the control to execute the specified
         /// command when triggered.
         /// </summary>
-        /// <remarks>This method uses reflection to observe events and properties on the control and may be
-        /// affected by trimming in environments that remove unused members. The binding enables the control to execute the
-        /// command when the specified event is raised, and automatically manages the enabled state of the control based on
-        /// the command's CanExecute state.</remarks>
         /// <typeparam name="TViewModel">The type of the view model containing the command property.</typeparam>
         /// <typeparam name="TProp">The type of the command property to bind, implementing ICommand.</typeparam>
         /// <typeparam name="TControl">The type of the control on the view to which the command will be bound.</typeparam>
@@ -154,6 +153,10 @@ public static class CommandBinderMixins
         /// control type.
         /// NOTE: If this parameter is used inside WhenActivated, it's important to dispose the binding when the view is deactivated.</param>
         /// <returns>An object representing the binding between the command and the control, which can be disposed to unbind.</returns>
+        /// <remarks>This method uses reflection to observe events and properties on the control and may be
+        /// affected by trimming in environments that remove unused members. The binding enables the control to execute the
+        /// command when the specified event is raised, and automatically manages the enabled state of the control based on
+        /// the command's CanExecute state.</remarks>
         [RequiresUnreferencedCode("Dynamic observation uses reflection over members that may be trimmed.")]
         public IReactiveBinding<TView, TProp> BindCommand<
             TViewModel,
@@ -186,6 +189,7 @@ public static class CommandBinderMixins
         /// <param name="withParameter">An expression specifying the parameter to pass to the command when it is executed.</param>
         /// <returns>An IReactiveBinding representing the established binding between the command and the control.</returns>
         [RequiresUnreferencedCode("Dynamic observation uses reflection over members that may be trimmed.")]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IReactiveBinding<TView, TProp> BindCommand<
             TViewModel,
             TProp,
@@ -207,9 +211,6 @@ public static class CommandBinderMixins
         /// Binds a command from the view model to a control on the view, enabling the control to execute the command with a
         /// specified parameter when triggered.
         /// </summary>
-        /// <remarks>This method uses reflection to observe events and properties on the control and view model,
-        /// which may be affected by trimming in some deployment scenarios. The binding remains active until the returned
-        /// IReactiveBinding is disposed.</remarks>
         /// <typeparam name="TViewModel">The type of the view model containing the command property.</typeparam>
         /// <typeparam name="TProp">The type of the command property, typically implementing ICommand.</typeparam>
         /// <typeparam name="TControl">The type of the control on the view to which the command will be bound.</typeparam>
@@ -223,6 +224,9 @@ public static class CommandBinderMixins
         /// on the control type.
         /// NOTE: If this parameter is used inside WhenActivated, it's important to dispose the binding when the view is deactivated.</param>
         /// <returns>An IReactiveBinding{TView, TProp} representing the established binding between the command and the control.</returns>
+        /// <remarks>This method uses reflection to observe events and properties on the control and view model,
+        /// which may be affected by trimming in some deployment scenarios. The binding remains active until the returned
+        /// IReactiveBinding is disposed.</remarks>
         [RequiresUnreferencedCode("Dynamic observation uses reflection over members that may be trimmed.")]
         public IReactiveBinding<TView, TProp> BindCommand<
             TViewModel,

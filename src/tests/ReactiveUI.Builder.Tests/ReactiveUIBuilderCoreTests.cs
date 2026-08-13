@@ -129,8 +129,7 @@ public class ReactiveUIBuilderCoreTests
     public async Task BuildApp_Should_Return_ReactiveInstance()
     {
         // The executor already called BuildApp; verify the state is correct.
-        var current = Locator.Current;
-        await Assert.That(current).IsNotNull();
+        await Assert.That(Locator.Current).IsNotNull();
     }
 
     /// <summary>Verifies that passing a null platform array throws <see cref="ArgumentNullException"/>.</summary>

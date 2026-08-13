@@ -125,9 +125,7 @@ public class ObservableTriggerTests
         trigger.Observable = subject.AsObservable();
 
         // Read the getter to cover that line
-        var observable = trigger.Observable;
-
-        await Assert.That(observable).IsNotNull();
+        await Assert.That(trigger.Observable).IsNotNull();
     }
 
     /// <summary>Tests that setting a new observable disposes the previous subscription.</summary>

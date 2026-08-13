@@ -108,8 +108,6 @@ ReactiveUI.Reactive.Maui.ReactiveWindow<TViewModel>.ViewModel.set -> void
 ReactiveUI.Reactive.Maui.Registrations
 ReactiveUI.Reactive.Maui.Registrations.Register(ReactiveUI.IRegistrar! registrar) -> void
 ReactiveUI.Reactive.Maui.Registrations.Registrations() -> void
-ReactiveUI.Reactive.Maui.Resource
-ReactiveUI.Reactive.Maui.Resource.Resource() -> void
 ReactiveUI.Reactive.Maui.RoutedViewHost
 ReactiveUI.Reactive.Maui.RoutedViewHost.InvalidateCurrentViewModel() -> void
 ReactiveUI.Reactive.Maui.RoutedViewHost.RoutedViewHost() -> void

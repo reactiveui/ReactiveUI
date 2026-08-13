@@ -3,8 +3,10 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using ReactiveUI.Primitives.Disposables;
 using Splat;
@@ -36,9 +38,6 @@ public class CommandBinderImplementation : ICommandBinderImplementation
     /// Binds a command from the view model to a control on the view, enabling the control to execute the command with
     /// an optional parameter when triggered by a specified event.
     /// </summary>
-    /// <remarks>This method uses reflection to observe properties and events, which may be affected by
-    /// trimming in some deployment scenarios. The binding is one-way, from the view model command to the view control.
-    /// If the specified event is not found on the control, an exception may be thrown at runtime.</remarks>
     /// <typeparam name="TView">The type of the view implementing the IViewFor interface.</typeparam>
     /// <typeparam name="TViewModel">The type of the view model containing the command property.</typeparam>
     /// <typeparam name="TProp">The type of the command property to bind, implementing ICommand.</typeparam>
@@ -55,6 +54,9 @@ public class CommandBinderImplementation : ICommandBinderImplementation
     /// on the control type.</param>
     /// <returns>An IReactiveBinding{TView, TProp} representing the established command binding. Disposing the returned object
     /// will remove the binding.</returns>
+    /// <remarks>This method uses reflection to observe properties and events, which may be affected by
+    /// trimming in some deployment scenarios. The binding is one-way, from the view model command to the view control.
+    /// If the specified event is not found on the control, an exception may be thrown at runtime.</remarks>
     [RequiresUnreferencedCode("Dynamic observation uses reflection over members that may be trimmed.")]
     public IReactiveBinding<TView, TProp> BindCommand<
         TView,
@@ -91,8 +93,6 @@ public class CommandBinderImplementation : ICommandBinderImplementation
     /// Binds a command from the view model to a control on the view, enabling the control to execute the command with
     /// a parameter using the default event for the control type.
     /// </summary>
-    /// <remarks>This method uses reflection to observe properties and events, which may be affected by
-    /// trimming in some deployment scenarios. The binding is one-way, from the view model command to the view control.</remarks>
     /// <typeparam name="TView">The type of the view implementing the IViewFor interface.</typeparam>
     /// <typeparam name="TViewModel">The type of the view model containing the command property.</typeparam>
     /// <typeparam name="TProp">The type of the command property to bind, implementing ICommand.</typeparam>
@@ -107,7 +107,10 @@ public class CommandBinderImplementation : ICommandBinderImplementation
     /// does not require a parameter.</param>
     /// <returns>An IReactiveBinding{TView, TProp} representing the established command binding. Disposing the returned object
     /// will remove the binding.</returns>
+    /// <remarks>This method uses reflection to observe properties and events, which may be affected by
+    /// trimming in some deployment scenarios. The binding is one-way, from the view model command to the view control.</remarks>
     [RequiresUnreferencedCode("Dynamic observation uses reflection over members that may be trimmed.")]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public IReactiveBinding<TView, TProp> BindCommand<
         TView,
         TViewModel,
@@ -132,11 +135,6 @@ public class CommandBinderImplementation : ICommandBinderImplementation
     /// Binds a command from the view model to a control on the view, enabling the control to execute the command with
     /// an optional parameter stream and event trigger.
     /// </summary>
-    /// <remarks>This method uses reflection to observe and bind to members, which may be affected by trimming
-    /// in some environments. The binding is one-way, from the view model command to the view control. If the control or
-    /// command property is not found, the binding will not be established. The method is suitable for scenarios where
-    /// commands need to be dynamically bound to controls with support for parameter streams and custom event
-    /// triggers.</remarks>
     /// <typeparam name="TView">The type of the view implementing the IViewFor interface.</typeparam>
     /// <typeparam name="TViewModel">The type of the view model containing the command property.</typeparam>
     /// <typeparam name="TProp">The type of the command property, which must implement ICommand.</typeparam>
@@ -153,6 +151,11 @@ public class CommandBinderImplementation : ICommandBinderImplementation
     /// control type.</param>
     /// <returns>An IReactiveBinding{TView, TProp} representing the established binding between the command and the control.
     /// Disposing the binding will remove the command association.</returns>
+    /// <remarks>This method uses reflection to observe and bind to members, which may be affected by trimming
+    /// in some environments. The binding is one-way, from the view model command to the view control. If the control or
+    /// command property is not found, the binding will not be established. The method is suitable for scenarios where
+    /// commands need to be dynamically bound to controls with support for parameter streams and custom event
+    /// triggers.</remarks>
     [RequiresUnreferencedCode("Dynamic observation uses reflection over members that may be trimmed.")]
     public IReactiveBinding<TView, TProp> BindCommand<
         TView,
@@ -202,9 +205,6 @@ public class CommandBinderImplementation : ICommandBinderImplementation
     /// Binds a command from the view model to a control on the view, enabling the control to execute the command with
     /// an parameter stream using the default event for the control type.
     /// </summary>
-    /// <remarks>This method uses reflection to observe and bind to members, which may be affected by trimming
-    /// in some environments. The binding is one-way, from the view model command to the view control. If the control or
-    /// command property is not found, the binding will not be established.</remarks>
     /// <typeparam name="TView">The type of the view implementing the IViewFor interface.</typeparam>
     /// <typeparam name="TViewModel">The type of the view model containing the command property.</typeparam>
     /// <typeparam name="TProp">The type of the command property, which must implement ICommand.</typeparam>
@@ -219,7 +219,11 @@ public class CommandBinderImplementation : ICommandBinderImplementation
     /// used for each command invocation.</param>
     /// <returns>An IReactiveBinding{TView, TProp} representing the established binding between the command and the control.
     /// Disposing the binding will remove the command association.</returns>
+    /// <remarks>This method uses reflection to observe and bind to members, which may be affected by trimming
+    /// in some environments. The binding is one-way, from the view model command to the view control. If the control or
+    /// command property is not found, the binding will not be established.</remarks>
     [RequiresUnreferencedCode("Dynamic observation uses reflection over members that may be trimmed.")]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public IReactiveBinding<TView, TProp> BindCommand<
         TView,
         TViewModel,
@@ -244,9 +248,6 @@ public class CommandBinderImplementation : ICommandBinderImplementation
     /// Binds an observable command to a control property or event on a view, updating the binding when the command or
     /// control instance changes.
     /// </summary>
-    /// <remarks>This method observes both the command and the control instance, rebinding as either changes.
-    /// It supports platform-specific command rebinding optimizations if available. The returned IDisposable should be
-    /// disposed to clean up the binding and prevent memory leaks.</remarks>
     /// <typeparam name="TView">The type of the view that implements IViewFor.</typeparam>
     /// <typeparam name="TProp">The type of the command to bind, which must implement ICommand.</typeparam>
     /// <typeparam name="TParam">The type of the parameter passed to the command.</typeparam>
@@ -259,6 +260,9 @@ public class CommandBinderImplementation : ICommandBinderImplementation
     /// be null.</param>
     /// <param name="toEvent">The name of the event on the control to bind the command to. If null or empty, the default event is used.</param>
     /// <returns>An IDisposable that can be used to unbind the command and release associated resources.</returns>
+    /// <remarks>This method observes both the command and the control instance, rebinding as either changes.
+    /// It supports platform-specific command rebinding optimizations if available. The returned IDisposable should be
+    /// disposed to clean up the binding and prevent memory leaks.</remarks>
     [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
     private static MultipleDisposable BindCommandInternal<
         TView,
@@ -295,9 +299,9 @@ public class CommandBinderImplementation : ICommandBinderImplementation
                 false,
                 false),
             static x => x.GetValue());
-        var bindInfo = new CombineLatest2Observable<TProp, object?, (TProp command, object? host)>(source, controlValues, static (command, host) => (command, host));
+        var bindInfo = new CombineLatest2Observable<TProp, object?, (TProp Command, object? Host)>(source, controlValues, static (command, host) => (command, host));
 
-        var subscription = bindInfo.Subscribe(new DelegateObserver<(TProp command, object? host)>(tuple =>
+        var subscription = bindInfo.Subscribe(new DelegateObserver<(TProp Command, object? Host)>(tuple =>
         {
             var (command, host) = tuple;
             if (host is null)
@@ -526,12 +530,15 @@ public class CommandBinderImplementation : ICommandBinderImplementation
             private sealed class FirstObserver(Sink parent) : IObserver<T1>
             {
                 /// <inheritdoc/>
+                [MethodImpl(MethodImplOptions.AggressiveInlining)]
                 public void OnNext(T1 value) => parent.OnNext1(value);
 
                 /// <inheritdoc/>
+                [MethodImpl(MethodImplOptions.AggressiveInlining)]
                 public void OnError(Exception error) => parent.OnErrorAny(error);
 
                 /// <inheritdoc/>
+                [MethodImpl(MethodImplOptions.AggressiveInlining)]
                 public void OnCompleted() => parent.OnCompletedAny();
             }
 
@@ -540,12 +547,15 @@ public class CommandBinderImplementation : ICommandBinderImplementation
             private sealed class SecondObserver(Sink parent) : IObserver<T2>
             {
                 /// <inheritdoc/>
+                [MethodImpl(MethodImplOptions.AggressiveInlining)]
                 public void OnNext(T2 value) => parent.OnNext2(value);
 
                 /// <inheritdoc/>
+                [MethodImpl(MethodImplOptions.AggressiveInlining)]
                 public void OnError(Exception error) => parent.OnErrorAny(error);
 
                 /// <inheritdoc/>
+                [MethodImpl(MethodImplOptions.AggressiveInlining)]
                 public void OnCompleted() => parent.OnCompletedAny();
             }
         }

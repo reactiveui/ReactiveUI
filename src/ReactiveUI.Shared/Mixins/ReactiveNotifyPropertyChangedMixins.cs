@@ -5,6 +5,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 using Splat;
 
 #if REACTIVE_SHIM
@@ -36,7 +37,7 @@ public static class ReactiveNotifyPropertyChangedMixins
 {
     /// <summary>Caches the best available property-notification factory for each sender type, property name, and change timing.</summary>
     private static readonly
-        MemoizingMRUCache<(Type? senderType, string propertyName, bool beforeChange), ICreatesObservableForProperty?>
+        MemoizingMRUCache<(Type? SenderType, string PropertyName, bool BeforeChange), ICreatesObservableForProperty?>
         _notifyFactoryCache =
             new(static (t, _) => ResolveNotifyFactory(t), RxCacheSize.BigCacheLimit);
 
@@ -46,18 +47,20 @@ public static class ReactiveNotifyPropertyChangedMixins
     /// <summary>Selects the registered property-notification factory with the highest affinity for the given key.</summary>
     /// <param name="key">The sender type, property name, and change timing to resolve a factory for.</param>
     /// <returns>The highest-affinity factory, or <see langword="null"/> when none have positive affinity.</returns>
-    private static ICreatesObservableForProperty? ResolveNotifyFactory((Type? senderType, string propertyName, bool beforeChange) key)
+    private static ICreatesObservableForProperty? ResolveNotifyFactory((Type? SenderType, string PropertyName, bool BeforeChange) key)
     {
         var bestScore = 0;
         ICreatesObservableForProperty? best = null;
         foreach (var factory in AppLocator.Current.GetServices<ICreatesObservableForProperty>())
         {
-            var score = factory.GetAffinityForObject(key.senderType, key.propertyName, key.beforeChange);
-            if (score > bestScore)
+            var score = factory.GetAffinityForObject(key.SenderType, key.PropertyName, key.BeforeChange);
+            if (score <= bestScore)
             {
-                bestScore = score;
-                best = factory;
+                continue;
             }
+
+            bestScore = score;
+            best = factory;
         }
 
         return best;
@@ -94,6 +97,7 @@ public static class ReactiveNotifyPropertyChangedMixins
         /// <param name="skipInitial">If true, the Observable will not notify with the initial value.</param>
         /// <param name="isDistinct">If set to <c>true</c>, values are filtered with DistinctUntilChanged.</param>
         /// <returns>An Observable representing the property change notifications for the given property name.</returns>
+        /// <exception cref="InvalidOperationException">No property-notification factory can be resolved for the sender.</exception>
         [RequiresUnreferencedCode(
             "Creating Expressions requires unreferenced code because the members being referenced by the Expression may be trimmed.")]
         public IObservable<IObservedChange<TSender, TValue>> ObservableForProperty<TValue>(
@@ -155,6 +159,7 @@ public static class ReactiveNotifyPropertyChangedMixins
         /// <returns>An observable sequence of observed changes for the given property name.</returns>
         [RequiresUnreferencedCode(
             "Creating Expressions requires unreferenced code because the members being referenced by the Expression may be trimmed.")]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IObservable<IObservedChange<TSender, TValue>> ObservableForProperty<TValue>(
             string propertyName) =>
             ObservableForProperty<TSender, TValue>(
@@ -171,6 +176,7 @@ public static class ReactiveNotifyPropertyChangedMixins
         /// <returns>An observable sequence of observed changes for the given property name.</returns>
         [RequiresUnreferencedCode(
             "Creating Expressions requires unreferenced code because the members being referenced by the Expression may be trimmed.")]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IObservable<IObservedChange<TSender, TValue>> ObservableForProperty<TValue>(
             string propertyName,
             bool beforeChange) =>
@@ -191,6 +197,7 @@ public static class ReactiveNotifyPropertyChangedMixins
         /// <returns>An observable sequence of observed changes for the given property name.</returns>
         [RequiresUnreferencedCode(
             "Creating Expressions requires unreferenced code because the members being referenced by the Expression may be trimmed.")]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IObservable<IObservedChange<TSender, TValue>> ObservableForProperty<TValue>(
             string propertyName,
             bool beforeChange,
@@ -217,6 +224,7 @@ public static class ReactiveNotifyPropertyChangedMixins
         /// notifications for the given property.
         /// </returns>
         [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IObservable<IObservedChange<TSender, TValue>> ObservableForProperty<TValue>(
             Expression<Func<TSender, TValue>> property) => ObservableForProperty(item, property, false, true, true);
 
@@ -237,6 +245,7 @@ public static class ReactiveNotifyPropertyChangedMixins
         /// notifications for the given property.
         /// </returns>
         [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IObservable<IObservedChange<TSender, TValue>> ObservableForProperty<TValue>(
             Expression<Func<TSender, TValue>> property,
             bool beforeChange) => ObservableForProperty(item, property, beforeChange, true, true);
@@ -260,6 +269,7 @@ public static class ReactiveNotifyPropertyChangedMixins
         /// notifications for the given property.
         /// </returns>
         [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IObservable<IObservedChange<TSender, TValue>> ObservableForProperty<TValue>(
             Expression<Func<TSender, TValue>> property,
             bool beforeChange,
@@ -328,6 +338,7 @@ public static class ReactiveNotifyPropertyChangedMixins
         /// </returns>
         /// <exception cref="InvalidCastException">If we cannot cast from the target value from the specified last property.</exception>
         [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IObservable<IObservedChange<TSender, TValue>> SubscribeToExpressionChain<TValue>(
             Expression? expression) =>
             SubscribeToExpressionChain<TSender, TValue>(item, expression, false, true, false, true);
@@ -345,6 +356,7 @@ public static class ReactiveNotifyPropertyChangedMixins
         /// </returns>
         /// <exception cref="InvalidCastException">If we cannot cast from the target value from the specified last property.</exception>
         [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IObservable<IObservedChange<TSender, TValue>> SubscribeToExpressionChain<TValue>(
             Expression? expression,
             bool beforeChange) =>
@@ -364,6 +376,7 @@ public static class ReactiveNotifyPropertyChangedMixins
         /// </returns>
         /// <exception cref="InvalidCastException">If we cannot cast from the target value from the specified last property.</exception>
         [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IObservable<IObservedChange<TSender, TValue>> SubscribeToExpressionChain<TValue>(
             Expression? expression,
             bool beforeChange,
@@ -385,6 +398,7 @@ public static class ReactiveNotifyPropertyChangedMixins
         /// </returns>
         /// <exception cref="InvalidCastException">If we cannot cast from the target value from the specified last property.</exception>
         [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IObservable<IObservedChange<TSender, TValue>> SubscribeToExpressionChain<TValue>(
             Expression? expression,
             bool beforeChange,
@@ -499,10 +513,6 @@ public static class ReactiveNotifyPropertyChangedMixins
     /// Creates an observable that signals when a specified property on an object changes, using an expression to
     /// identify the property.
     /// </summary>
-    /// <remarks>This method uses reflection to evaluate the property specified by the expression. Members
-    /// referenced in the expression may be trimmed when using certain linking or trimming tools, which can affect
-    /// runtime behavior. The observable returned emits IObservedChange notifications for the specified
-    /// property.</remarks>
     /// <param name="sender">The object whose property changes are to be observed. Cannot be null.</param>
     /// <param name="expression">An expression that identifies the property to observe. Must represent a valid property member.</param>
     /// <param name="beforeChange">true to observe notifications before the property value changes; otherwise, false to observe after the change.</param>
@@ -510,6 +520,10 @@ public static class ReactiveNotifyPropertyChangedMixins
     /// <returns>An observable sequence that produces notifications when the specified property changes on the sender object.</returns>
     /// <exception cref="ArgumentException">Thrown if expression does not represent a valid property member.</exception>
     /// <exception cref="InvalidOperationException">Thrown if no suitable property change observable factory is found for the specified property and sender type.</exception>
+    /// <remarks>This method uses reflection to evaluate the property specified by the expression. Members
+    /// referenced in the expression may be trimmed when using certain linking or trimming tools, which can affect
+    /// runtime behavior. The observable returned emits IObservedChange notifications for the specified
+    /// property.</remarks>
     [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
     private static IObservable<IObservedChange<object?, object?>> NotifyForProperty(
         object sender,

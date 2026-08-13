@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Runtime.CompilerServices;
 using System.Runtime.Versioning;
 using Android.Content;
 using Android.Hardware.Usb;
@@ -27,9 +28,10 @@ public static class UsbManagerExtensions
         /// Requests temporary permission for the given package to access the device.
         /// This may result in a system dialog being displayed to the user if permission had not already been granted.
         /// </summary>
-        /// <returns>The observable sequence of permission values.</returns>
         /// <param name="context">The Context to request the permission from.</param>
         /// <param name="device">The UsbDevice to request permission for.</param>
+        /// <returns>The observable sequence of permission values.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IObservable<bool> PermissionRequested(Context context, UsbDevice device) =>
             new DevicePermissionObservable(manager, context, device);
 
@@ -37,9 +39,10 @@ public static class UsbManagerExtensions
         /// Requests temporary permission for the given package to access the accessory.
         /// This may result in a system dialog being displayed to the user if permission had not already been granted.
         /// </summary>
-        /// <returns>The observable sequence of permission values.</returns>
         /// <param name="context">The Context to request the permission from.</param>
         /// <param name="accessory">The UsbAccessory to request permission for.</param>
+        /// <returns>The observable sequence of permission values.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IObservable<bool> PermissionRequested(Context context, UsbAccessory accessory) =>
             new AccessoryPermissionObservable(manager, context, accessory);
     }

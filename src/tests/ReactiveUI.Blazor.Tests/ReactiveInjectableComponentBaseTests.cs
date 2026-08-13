@@ -79,8 +79,7 @@ public class ReactiveInjectableComponentBaseTests : BlazorTestContext
         IViewFor viewFor = cut.Instance;
 
         // Get through explicit interface
-        var vm = viewFor.ViewModel;
-        await Assert.That(vm).IsEqualTo(viewModel);
+        await Assert.That(viewFor.ViewModel).IsEqualTo(viewModel);
 
         // Set through explicit interface
         var newViewModel = new TestViewModel { SomeProperty = "New" };

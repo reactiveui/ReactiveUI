@@ -180,8 +180,7 @@ public class ViewModelViewHostGenericTests
     {
         var viewModel = new TestViewModel();
         var host = new ViewModelViewHost<TestViewModel> { ViewModel = viewModel };
-        IViewFor viewForHost = host;
-        await Assert.That(viewForHost.ViewModel).IsSameReferenceAs(viewModel);
+        await Assert.That(((IViewFor)host).ViewModel).IsSameReferenceAs(viewModel);
         await Assert.That(host.ViewModel).IsSameReferenceAs(viewModel);
     }
 

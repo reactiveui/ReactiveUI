@@ -3,13 +3,16 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics;
+
 namespace ReactiveUI;
 
 /// <summary>Represents a reference to an object that is always considered alive and is not subject to garbage collection tracking.</summary>
+/// <param name="target">The object to reference. Cannot be null.</param>
 /// <remarks>Unlike a standard weak reference, this class always reports the target as alive and does not allow
 /// the referenced object to be collected by the garbage collector. Use this class when a strong reference is required
 /// but an API expects a weak reference-like interface.</remarks>
-/// <param name="target">The object to reference. Cannot be null.</param>
+[DebuggerDisplay("{Target}, {IsAlive}")]
 public class NotAWeakReference(object target)
 {
     /// <summary>Gets the underlying object associated with this instance.</summary>

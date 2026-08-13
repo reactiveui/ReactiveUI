@@ -3,6 +3,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using Splat;
 using Application = Microsoft.Maui.Controls.Application;
 
@@ -45,6 +47,7 @@ namespace ReactiveUI.Maui;
 /// </code>
 /// </para>
 /// </remarks>
+[DebuggerDisplay("AutoSuspendHelper")]
 public class AutoSuspendHelper : IEnableLogger, IDisposable
 {
     /// <summary>Signals that the application is going to the background.</summary>
@@ -60,7 +63,7 @@ public class AutoSuspendHelper : IEnableLogger, IDisposable
     private readonly Signal<RxVoid> _onStart = new();
 
     /// <summary>To detect redundant calls.</summary>
-    private bool _disposedValue;
+    private int _disposedValue;
 
     /// <summary>Initializes static members of the <see cref="AutoSuspendHelper"/> class.</summary>
     static AutoSuspendHelper() => AppDomain.CurrentDomain.UnhandledException +=
@@ -80,15 +83,19 @@ public class AutoSuspendHelper : IEnableLogger, IDisposable
     public static ISignal<RxVoid> UntimelyDemise { get; } = new Signal<RxVoid>();
 
     /// <summary>Call this method in the constructor of your .NET MAUI <see cref="Application" />.</summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void OnCreate() => _onLaunchingNew.OnNext(RxVoid.Default);
 
     /// <summary>Call this method in <see cref="Application.OnStart" /> to relay MAUI's start notification.</summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void OnStart() => _onStart.OnNext(RxVoid.Default);
 
     /// <summary>Call this method in <see cref="Application.OnSleep" /> when the app is going to the background.</summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void OnSleep() => _onSleep.OnNext(EmptyDisposable.Instance);
 
     /// <summary>Call this method in <see cref="Application.OnResume" /> when the app returns to the foreground.</summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void OnResume() => _onResume.OnNext(RxVoid.Default);
 
     /// <inheritdoc />
@@ -103,19 +110,14 @@ public class AutoSuspendHelper : IEnableLogger, IDisposable
     /// <param name="disposing">If we are disposing of managed objects or not.</param>
     protected virtual void Dispose(bool disposing)
     {
-        if (_disposedValue)
+        if (Interlocked.Exchange(ref _disposedValue, 1) != 0 || !disposing)
         {
             return;
         }
 
-        if (disposing)
-        {
-            _onLaunchingNew.Dispose();
-            _onResume.Dispose();
-            _onStart.Dispose();
-            _onSleep.Dispose();
-        }
-
-        _disposedValue = true;
+        _onLaunchingNew.Dispose();
+        _onResume.Dispose();
+        _onStart.Dispose();
+        _onSleep.Dispose();
     }
 }

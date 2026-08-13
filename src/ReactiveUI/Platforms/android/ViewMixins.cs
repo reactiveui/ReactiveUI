@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Runtime.CompilerServices;
 using Android.Views;
 
 #if REACTIVE_SHIM
@@ -41,6 +42,7 @@ public static class ViewMixins
         /// <summary>Retrieves the layout view host associated with the specified view, if one exists.</summary>
         /// <returns>An object that implements <see cref="ILayoutViewHost"/> if the view has an associated host; otherwise, <see
         /// langword="null"/>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ILayoutViewHost? GetViewHost() => item?.GetTag(ViewHostTag)?.ToNetObject<ILayoutViewHost>();
     }
 }

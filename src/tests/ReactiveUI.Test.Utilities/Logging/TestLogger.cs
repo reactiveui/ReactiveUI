@@ -30,7 +30,7 @@ public class TestLogger : ILogger
     ///     level. The collection is read-only; to add messages, use the appropriate logging methods provided by the
     ///     class.
     /// </remarks>
-    public List<(string message, Type type, LogLevel logLevel)> Messages { get; }
+    public List<(string Message, Type Type, LogLevel LogLevel)> Messages { get; }
 
     /// <inheritdoc />
     public LogLevel Level { get; set; }

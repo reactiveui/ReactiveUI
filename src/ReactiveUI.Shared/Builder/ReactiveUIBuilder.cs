@@ -5,6 +5,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using ReactiveUI.Helpers;
 using Splat;
 using Splat.Builder;
@@ -35,7 +36,7 @@ public sealed partial class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, 
 #endif
 
     /// <summary>Tracks whether platform registrations have been applied.</summary>
-    private bool _platformRegistered;
+    private int _platformRegistered;
 
     /// <summary>Tracks whether core registrations have been applied.</summary>
     private bool _coreRegistered;
@@ -105,6 +106,7 @@ public sealed partial class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, 
     /// <returns>
     /// The builder instance for chaining.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public IReactiveUIBuilder WithMainThreadScheduler(ISequencer scheduler) =>
         WithMainThreadScheduler(scheduler, true);
 
@@ -126,6 +128,7 @@ public sealed partial class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, 
     /// <returns>
     /// The builder instance for chaining.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public IReactiveUIBuilder WithTaskPoolScheduler(ISequencer scheduler) =>
         WithTaskPoolScheduler(scheduler, true);
 
@@ -183,14 +186,13 @@ public sealed partial class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, 
     /// <returns>The builder instance for method chaining.</returns>
     public IReactiveUIBuilder WithPlatformServices()
     {
-        if (_platformRegistered)
+        if (Interlocked.Exchange(ref _platformRegistered, 1) != 0)
         {
             return this;
         }
 
         _ = WithPlatformModule<PlatformRegistrations>();
 
-        _platformRegistered = true;
         return this;
     }
 
@@ -264,6 +266,7 @@ public sealed partial class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, 
     /// <param name="mainThreadScheduler">The main thread scheduler for the platform.</param>
     /// <param name="platformServices">The platform-specific service registrations.</param>
     /// <returns>The builder instance for chaining.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public IReactiveUIBuilder ForCustomPlatform(
         ISequencer mainThreadScheduler,
         Action<IMutableDependencyResolver> platformServices) =>
@@ -287,6 +290,7 @@ public sealed partial class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, 
 
     /// <summary>Configures the ReactiveUI message bus.</summary>
     /// <returns>The builder instance for chaining.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public IReactiveUIBuilder WithMessageBus() =>
         WithRegistrationOnBuild(resolver =>
         {
@@ -297,6 +301,7 @@ public sealed partial class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, 
     /// <summary>Configures the ReactiveUI message bus.</summary>
     /// <param name="configure">The configuration action.</param>
     /// <returns>The builder instance for chaining.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public IReactiveUIBuilder WithMessageBus(Action<IMessageBus> configure) =>
         WithRegistrationOnBuild(resolver =>
         {
@@ -319,6 +324,7 @@ public sealed partial class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, 
     /// <summary>Configures the ReactiveUI view locator.</summary>
     /// <param name="configure">The configuration action.</param>
     /// <returns>The builder instance for chaining.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public IReactiveUIBuilder ConfigureViewLocator(Action<DefaultViewLocator> configure) =>
         WithRegistrationOnBuild(resolver =>
             resolver.Register<IViewLocator>(() =>
@@ -331,6 +337,7 @@ public sealed partial class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, 
     /// <summary>Configures the ReactiveUI suspension driver.</summary>
     /// <param name="configure">The configuration action.</param>
     /// <returns>The builder instance for chaining.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public IReactiveUIBuilder ConfigureSuspensionDriver(Action<ISuspensionDriver> configure) =>
         WithRegistrationOnBuild(resolver =>
         {
@@ -602,16 +609,18 @@ public sealed partial class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, 
     /// <summary>Registers a custom view model with the dependency resolver.</summary>
     /// <typeparam name="TViewModel">The view model type.</typeparam>
     /// <returns>The builder instance for chaining.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public IReactiveUIBuilder RegisterViewModel<TViewModel>()
         where TViewModel : class, IReactiveObject, new() =>
         WithRegistration(static resolver => resolver.Register<TViewModel>(static () => new()));
 
     /// <summary>Registers a constant instance of the specified view model type in the dependency resolver.</summary>
-    /// <remarks>This method creates a single instance of the specified view model type and registers it as a
-    /// constant in the resolver. All requests for this view model type will return the same instance.</remarks>
     /// <typeparam name="TViewModel">The type of the view model to register. Must be a class that implements IReactiveObject and has a parameterless
     /// constructor.</typeparam>
     /// <returns>The current builder instance, enabling further configuration of the dependency resolver.</returns>
+    /// <remarks>This method creates a single instance of the specified view model type and registers it as a
+    /// constant in the resolver. All requests for this view model type will return the same instance.</remarks>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public IReactiveUIBuilder RegisterConstantViewModel<TViewModel>()
         where TViewModel : class, IReactiveObject, new() =>
         WithRegistration(static resolver => resolver.RegisterConstant(new TViewModel()));
@@ -632,6 +641,7 @@ public sealed partial class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, 
     /// <typeparam name="TView">The view type.</typeparam>
     /// <typeparam name="TViewModel">The view model type.</typeparam>
     /// <returns>The builder instance for chaining.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public IReactiveUIBuilder RegisterView<TView, TViewModel>()
         where TView : class, IViewFor<TViewModel>, new()
         where TViewModel : class, IReactiveObject =>
@@ -641,6 +651,7 @@ public sealed partial class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, 
     /// <typeparam name="TView">The view type.</typeparam>
     /// <typeparam name="TViewModel">The view model type.</typeparam>
     /// <returns>The builder instance for chaining.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public IReactiveUIBuilder RegisterSingletonView<TView, TViewModel>()
         where TView : class, IViewFor<TViewModel>, new()
         where TViewModel : class, IReactiveObject =>
@@ -764,9 +775,7 @@ public sealed partial class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, 
     /// </summary>
     private void InitializeStaticState()
     {
-        var smallCache = _smallCacheLimit ?? DefaultSmallCacheLimit;
-        var bigCache = _bigCacheLimit ?? DefaultBigCacheLimit;
-        RxCacheSize.Initialize(smallCache, bigCache);
+        RxCacheSize.Initialize(_smallCacheLimit ?? DefaultSmallCacheLimit, _bigCacheLimit ?? DefaultBigCacheLimit);
 
         if (_exceptionHandler is not null)
         {
@@ -782,6 +791,7 @@ public sealed partial class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, 
     }
 
     /// <summary>Registers a deferred action that applies configured schedulers to RxApp during build.</summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void ConfigureSchedulers() =>
         WithCustomRegistration(_ =>
         {

@@ -503,9 +503,9 @@ public class ObservableLoggingMixinTests
     private sealed class TestEnableLogger(TestLogger logger) : IEnableLogger
     {
         /// <summary>Gets the number of captured Info-level messages.</summary>
-        public int InfoCount => logger.Messages.Count(static m => m.logLevel == LogLevel.Info);
+        public int InfoCount => logger.Messages.Count(static m => m.LogLevel == LogLevel.Info);
 
         /// <summary>Gets the number of captured Warn-level messages.</summary>
-        public int WarnCount => logger.Messages.Count(static m => m.logLevel == LogLevel.Warn);
+        public int WarnCount => logger.Messages.Count(static m => m.LogLevel == LogLevel.Warn);
     }
 }

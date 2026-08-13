@@ -3,6 +3,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Windows.Input;
 
 #if REACTIVE_SHIM
@@ -11,6 +13,12 @@ namespace ReactiveUI.Reactive;
 namespace ReactiveUI;
 #endif
 /// <summary>A base class for generic reactive commands.</summary>
+/// <typeparam name="TParam">
+/// The type of parameter values passed in during command execution.
+/// </typeparam>
+/// <typeparam name="TResult">
+/// The type of the values that are the result of command execution.
+/// </typeparam>
 /// <remarks>
 /// <para>
 /// This class extends <see cref="ReactiveCommand"/> and adds generic type parameters for the parameter values passed
@@ -62,12 +70,7 @@ namespace ReactiveUI;
 /// natively (such as WPF and UWP).
 /// </para>
 /// </remarks>
-/// <typeparam name="TParam">
-/// The type of parameter values passed in during command execution.
-/// </typeparam>
-/// <typeparam name="TResult">
-/// The type of the values that are the result of command execution.
-/// </typeparam>
+[DebuggerDisplay("{CanExecute}, {IsExecuting}")]
 public abstract class ReactiveCommandBase<TParam, TResult> : IReactiveCommand<TParam, TResult>, ICommand
 {
     /// <summary>Backing field for the CanExecuteChanged event.</summary>
@@ -100,9 +103,11 @@ public abstract class ReactiveCommandBase<TParam, TResult> : IReactiveCommand<TP
     }
 
     /// <inheritdoc/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     bool ICommand.CanExecute(object? parameter) => ICommandCanExecute(parameter);
 
     /// <inheritdoc/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     void ICommand.Execute(object? parameter) => ICommandExecute(parameter);
 
     /// <summary>Subscribes to execution results from this command.</summary>
@@ -142,6 +147,7 @@ public abstract class ReactiveCommandBase<TParam, TResult> : IReactiveCommand<TP
 
     /// <summary>Will be called by the methods from the ICommand interface. This method is called when the Command should execute.</summary>
     /// <param name="parameter">The parameter being passed to the ICommand.</param>
+    /// <exception cref="InvalidOperationException"><paramref name="parameter"/> is not of type <typeparamref name="TParam"/>.</exception>
     protected virtual void ICommandExecute(object? parameter)
     {
         parameter ??= default(TParam);

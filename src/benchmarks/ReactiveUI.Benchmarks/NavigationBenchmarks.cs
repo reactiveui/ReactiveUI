@@ -3,6 +3,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using BenchmarkDotNet.Attributes;
 using DynamicData;
 
@@ -14,6 +16,7 @@ namespace ReactiveUI.Benchmarks;
 /// </summary>
 [MemoryDiagnoser]
 [MarkdownExporterAttribute.GitHub]
+[DebuggerDisplay("NavigationBenchmarks")]
 public class NavigationBenchmarks
 {
     /// <summary>The number of navigations pushed per benchmark invocation.</summary>
@@ -50,6 +53,7 @@ public class NavigationBenchmarks
 
     /// <summary>Clears the navigation stack between invocations so it does not grow unbounded.</summary>
     [IterationCleanup]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ResetStack() => _router.NavigationStack.Clear();
 
     /// <summary>Measures repeated pushes, exercising the change-set pipeline once per navigation.</summary>

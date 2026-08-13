@@ -3,7 +3,9 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 
 namespace ReactiveUI;
 
@@ -18,6 +20,7 @@ namespace ReactiveUI;
 /// Example: Convert an enum value to bool by comparing with a specific enum member.
 /// </para>
 /// </remarks>
+[DebuggerDisplay("{FromType}, {ToType}")]
 public sealed class EqualityTypeConverter : IBindingTypeConverter
 {
     /// <inheritdoc/>
@@ -27,6 +30,7 @@ public sealed class EqualityTypeConverter : IBindingTypeConverter
     public Type ToType => typeof(bool);
 
     /// <inheritdoc/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public int GetAffinityForObjects() => 1;
 
     /// <inheritdoc/>

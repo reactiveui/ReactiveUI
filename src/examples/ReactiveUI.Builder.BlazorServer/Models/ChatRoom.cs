@@ -4,10 +4,12 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 
 namespace ReactiveUI.Builder.BlazorServer.Models;
 
 /// <summary>Represents a chat room with messages and members.</summary>
+[DebuggerDisplay("ChatRoom Name={Name}, Id={Id}")]
 public class ChatRoom
 {
     /// <summary>Gets or sets the room id.</summary>

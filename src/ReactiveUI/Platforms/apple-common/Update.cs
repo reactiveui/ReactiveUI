@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics;
 using System.Globalization;
 
 #if REACTIVE_SHIM
@@ -11,6 +12,7 @@ namespace ReactiveUI.Reactive;
 namespace ReactiveUI;
 #endif
 /// <summary>An update for the index normalizer.</summary>
+[DebuggerDisplay("{Type}, {Index}, {IsDuplicate}")]
 public sealed class Update
 {
     /// <summary>Initializes a new instance of the <see cref="Update"/> class.</summary>

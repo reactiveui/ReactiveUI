@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using Foundation;
@@ -28,6 +29,7 @@ namespace ReactiveUI;
 /// application state.
 /// </para>
 /// </remarks>
+[DebuggerDisplay("AutoSuspendHelper")]
 public class AutoSuspendHelper<
     [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicMethods | DynamicallyAccessedMemberTypes.NonPublicMethods)] T> : IEnableLogger, IDisposable
         where T : UIApplicationDelegate
@@ -47,8 +49,8 @@ public class AutoSuspendHelper<
     /// <summary>The cached handler used to subscribe and later unsubscribe from <see cref="AppDomain.UnhandledException"/>.</summary>
     private readonly UnhandledExceptionEventHandler _unhandledExceptionHandler;
 
-    /// <summary>Whether this instance has already been disposed.</summary>
-    private bool _isDisposed;
+    /// <summary>Whether this instance has already been disposed. Non-zero once disposal has begun.</summary>
+    private int _isDisposed;
 
     /// <summary>Initializes static members of the <see cref="AutoSuspendHelper{T}"/> class.</summary>
     /// <remarks>
@@ -174,14 +176,7 @@ public class AutoSuspendHelper<
     /// <param name="isDisposing">Whether to release managed resources.</param>
     protected virtual void Dispose(bool isDisposing)
     {
-        if (_isDisposed)
-        {
-            return;
-        }
-
-        _isDisposed = true;
-
-        if (!isDisposing)
+        if (Interlocked.Exchange(ref _isDisposed, 1) != 0 || !isDisposing)
         {
             return;
         }
@@ -201,7 +196,7 @@ public class AutoSuspendHelper<
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void ThrowIfDisposed()
     {
-        if (!_isDisposed)
+        if (Volatile.Read(ref _isDisposed) == 0)
         {
             return;
         }

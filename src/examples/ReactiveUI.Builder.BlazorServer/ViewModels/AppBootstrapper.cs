@@ -3,11 +3,14 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics;
+
 namespace ReactiveUI.Builder.BlazorServer.ViewModels;
 
 /// <summary>The root screen that hosts the router and bootstraps navigation for a Blazor circuit.</summary>
 /// <seealso cref="ReactiveObject" />
 /// <seealso cref="IScreen" />
+[DebuggerDisplay("AppBootstrapper Circuit={CircuitId}")]
 public class AppBootstrapper : ReactiveObject, IScreen
 {
     /// <summary>Initializes a new instance of the <see cref="AppBootstrapper"/> class.</summary>

@@ -3,6 +3,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
 using Microsoft.Xaml.Behaviors;
@@ -15,6 +17,7 @@ namespace ReactiveUI.Blend;
 #endif
 
 /// <summary>Behavior that tracks the state of an observable.</summary>
+[DebuggerDisplay("{StateObservable}, {TargetObject}")]
 public class FollowObservableStateBehavior : Behavior<FrameworkElement>
 {
     /// <summary>The state observable dependency property.</summary>
@@ -62,6 +65,7 @@ public class FollowObservableStateBehavior : Behavior<FrameworkElement>
     /// <summary>Internal method for testing purposes that calls OnStateObservableChanged.</summary>
     /// <param name="sender">The sender.</param>
     /// <param name="e">The event args.</param>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static void InternalOnStateObservableChangedForTesting(
         DependencyObject? sender,
         DependencyPropertyChangedEventArgs e) =>
@@ -70,6 +74,7 @@ public class FollowObservableStateBehavior : Behavior<FrameworkElement>
     /// <summary>Called when [state observable changed].</summary>
     /// <param name="sender">The sender.</param>
     /// <param name="e">The <see cref="DependencyPropertyChangedEventArgs"/> instance containing the event data.</param>
+    /// <exception cref="ArgumentNullException"><paramref name="e"/> carries no event data.</exception>
     protected static void OnStateObservableChanged(DependencyObject? sender, DependencyPropertyChangedEventArgs e)
     {
         ArgumentValidation.ThrowIfNotOfType<FollowObservableStateBehavior>(sender);
@@ -86,11 +91,9 @@ public class FollowObservableStateBehavior : Behavior<FrameworkElement>
             throw new ArgumentNullException(nameof(e));
         }
 
-        var newValue = (IObservable<string>)e.NewValue;
-        var scheduler = item.SchedulerOverride ?? RxSchedulers.MainThreadScheduler;
         item._watcher = ScheduledObserver<string>.Subscribe(
-            newValue,
-            scheduler,
+            (IObservable<string>)e.NewValue,
+            item.SchedulerOverride ?? RxSchedulers.MainThreadScheduler,
             x =>
             {
                 var target = item.TargetObject ?? item.AssociatedObject;

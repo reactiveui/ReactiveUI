@@ -3,6 +3,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Runtime.CompilerServices;
+
 namespace ReactiveUI;
 
 /// <summary>Convenience class providing a starting point for chaining comparers.</summary>
@@ -18,6 +20,7 @@ public static class OrderedComparer<T>
     /// A function supplying the values for the comparer.
     /// </param>
     /// <returns>A comparer.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static IComparer<T> OrderBy<TValue>(Func<T, TValue> selector) =>
         ComparerChainingExtensions.ThenBy(null, selector);
 
@@ -35,6 +38,7 @@ public static class OrderedComparer<T>
     /// The default comparer for that type will be used if this parameter is null.
     /// </param>
     /// <returns>A comparer.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static IComparer<T> OrderBy<TValue>(Func<T, TValue> selector, IComparer<TValue> comparer) =>
         ComparerChainingExtensions.ThenBy(null, selector, comparer);
 
@@ -47,6 +51,7 @@ public static class OrderedComparer<T>
     /// A function supplying the values for the comparer.
     /// </param>
     /// <returns>A comparer.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static IComparer<T> OrderByDescending<TValue>(Func<T, TValue> selector) =>
         ComparerChainingExtensions.ThenByDescending(null, selector);
 
@@ -64,6 +69,7 @@ public static class OrderedComparer<T>
     /// The default comparer for that type will be used if this parameter is null.
     /// </param>
     /// <returns>A comparer.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static IComparer<T> OrderByDescending<TValue>(Func<T, TValue> selector, IComparer<TValue> comparer) =>
         ComparerChainingExtensions.ThenByDescending(null, selector, comparer);
 }

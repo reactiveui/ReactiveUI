@@ -5,6 +5,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 
 #if REACTIVE_SHIM
 namespace ReactiveUI.Reactive;
@@ -34,6 +35,7 @@ public static partial class WhenAnyMixins
         /// <param name="property4">An expression pointing to property 4.</param>
         /// <returns>An observable that emits a tuple of the observed property values.</returns>
         [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IObservable<(T1 Value1, T2 Value2, T3 Value3, T4 Value4)> WhenAnyValue<T1, T2, T3, T4>(
             Expression<Func<TSender, T1>> property1,
             Expression<Func<TSender, T2>> property2,
@@ -87,6 +89,7 @@ public static partial class WhenAnyMixins
         /// <param name="isDistinct">Whether to emit only when the combined value changes.</param>
         /// <returns>An observable that emits a tuple of the observed property values.</returns>
         [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IObservable<(T1 Value1, T2 Value2, T3 Value3, T4 Value4)> WhenAnyValue<T1, T2, T3, T4>(
             Expression<Func<TSender, T1>> property1,
             Expression<Func<TSender, T2>> property2,
@@ -145,6 +148,7 @@ public static partial class WhenAnyMixins
         /// <param name="selector">Combines the observed property values into a result.</param>
         /// <returns>An observable that emits the projected result on each change.</returns>
         [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IObservable<TRet> WhenAnyValue<TRet, T1, T2, T3, T4>(
             Expression<Func<TSender, T1>> property1,
             Expression<Func<TSender, T2>> property2,
@@ -204,6 +208,7 @@ public static partial class WhenAnyMixins
         /// <param name="isDistinct">Whether to emit only when the combined value changes.</param>
         /// <returns>An observable that emits the projected result on each change.</returns>
         [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IObservable<TRet> WhenAnyValue<TRet, T1, T2, T3, T4>(
             Expression<Func<TSender, T1>> property1,
             Expression<Func<TSender, T2>> property2,
@@ -266,6 +271,7 @@ public static partial class WhenAnyMixins
         /// <param name="selector">Combines the observed change notifications into a result.</param>
         /// <returns>An observable that emits the projected result on each change.</returns>
         [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IObservable<TRet> WhenAny<TRet, T1, T2, T3, T4>(
             Expression<Func<TSender, T1>> property1,
             Expression<Func<TSender, T2>> property2,
@@ -292,6 +298,7 @@ public static partial class WhenAnyMixins
         /// <param name="selector">Combines the observed change notifications into a result.</param>
         /// <returns>An observable that emits the projected result on each change.</returns>
         [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IObservable<TRet> WhenAny<TRet, T1, T2, T3, T4>(
             string property1Name,
             string property2Name,
@@ -319,6 +326,7 @@ public static partial class WhenAnyMixins
         /// <param name="isDistinct">Whether to emit only when the combined value changes.</param>
         /// <returns>An observable that emits the projected result on each change.</returns>
         [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IObservable<TRet> WhenAny<TRet, T1, T2, T3, T4>(
             Expression<Func<TSender, T1>> property1,
             Expression<Func<TSender, T2>> property2,
@@ -347,6 +355,7 @@ public static partial class WhenAnyMixins
         /// <param name="isDistinct">Whether to emit only when the combined value changes.</param>
         /// <returns>An observable that emits the projected result on each change.</returns>
         [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IObservable<TRet> WhenAny<TRet, T1, T2, T3, T4>(
             string property1Name,
             string property2Name,
@@ -370,6 +379,7 @@ public static partial class WhenAnyMixins
         /// <param name="selector">Combines the observed change notifications into a result.</param>
         /// <returns>An observable that emits the projected result on each change.</returns>
         [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IObservable<TRet> WhenAnyDynamic<TRet>(
             Expression? property1,
             Expression? property2,
@@ -393,6 +403,7 @@ public static partial class WhenAnyMixins
         /// <param name="isDistinct">Whether to emit only when the combined value changes.</param>
         /// <returns>An observable that emits the projected result on each change.</returns>
         [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IObservable<TRet> WhenAnyDynamic<TRet>(
             Expression? property1,
             Expression? property2,

@@ -13,6 +13,7 @@ namespace ReactiveUI.AndroidX;
 #endif
 /// <summary>An adapter for the Android <see cref="RecyclerView"/>.</summary>
 /// <typeparam name="TViewModel">The type of ViewModel that this adapter holds.</typeparam>
+[System.Diagnostics.DebuggerDisplay("ItemCount = {ItemCount}")]
 public abstract class ReactiveRecyclerViewAdapter<TViewModel> : RecyclerView.Adapter
     where TViewModel : class, IReactiveObject
 {

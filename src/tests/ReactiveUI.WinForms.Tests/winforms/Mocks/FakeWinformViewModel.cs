@@ -8,10 +8,10 @@ using ReactiveUI.TestGuiMocks.CommonGuiMocks.Mocks;
 namespace ReactiveUI.WinForms.Tests.Winforms.Mocks;
 
 /// <summary>A fake view model.</summary>
+/// <param name="screen">The screen.</param>
 /// <remarks>
 /// Initializes a new instance of the <see cref="FakeWinformViewModel"/> class.
 /// </remarks>
-/// <param name="screen">The screen.</param>
 public class FakeWinformViewModel(IScreen? screen = null) : ReactiveObject, IRoutableViewModel
 {
     /// <inheritdoc/>

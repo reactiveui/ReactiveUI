@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics;
 using BenchmarkDotNet.Attributes;
 
 namespace ReactiveUI.Benchmarks;
@@ -10,6 +11,7 @@ namespace ReactiveUI.Benchmarks;
 /// <summary>Benchmarks <see cref="ReactiveProperty{T}"/> on the immediate scheduler: value propagation through a live subscription and cold construction.</summary>
 [MemoryDiagnoser]
 [MarkdownExporterAttribute.GitHub]
+[DebuggerDisplay("ReactivePropertyBenchmarks")]
 public class ReactivePropertyBenchmarks
 {
     /// <summary>The number of value changes pushed per emission benchmark.</summary>

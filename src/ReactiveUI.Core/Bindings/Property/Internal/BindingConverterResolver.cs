@@ -5,6 +5,7 @@
 
 using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using Splat;
 
 namespace ReactiveUI;
@@ -18,12 +19,13 @@ namespace ReactiveUI;
 [RequiresUnreferencedCode("Uses RxConverters and Splat which may require dynamic type resolution")]
 public class BindingConverterResolver : IBindingConverterResolver
 {
-    /// <summary>Cache of resolved set-method converter delegates, keyed by (fromType, toType) pair.</summary>
+    /// <summary>Cache of resolved set-method converter delegates, keyed by (FromType, ToType) pair.</summary>
     private static readonly
-        ConcurrentDictionary<(Type fromType, Type? toType), Func<object?, object?, object?[]?, object?>?>
+        ConcurrentDictionary<(Type FromType, Type? ToType), Func<object?, object?, object?[]?, object?>?>
         _setMethodCache = new();
 
     /// <inheritdoc/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public object? GetBindingConverter(Type fromType, Type toType) =>
         ResolveBestConverter(fromType, toType);
 
@@ -35,7 +37,7 @@ public class BindingConverterResolver : IBindingConverterResolver
                 (fromType, toType),
                 static key =>
                 {
-                    var converter = ResolveBestSetMethodConverter(key.fromType, key.toType);
+                    var converter = ResolveBestSetMethodConverter(key.FromType, key.ToType);
                     return converter is null
                         ? null
                         : converter.PerformSet;
@@ -105,11 +107,13 @@ public class BindingConverterResolver : IBindingConverterResolver
             }
 
             var score = scoreSelector(candidate);
-            if (score > bestScore && score > 0)
+            if (score <= bestScore || score <= 0)
             {
-                bestScore = score;
-                best = candidate;
+                continue;
             }
+
+            bestScore = score;
+            best = candidate;
         }
 
         return best;
@@ -119,6 +123,7 @@ public class BindingConverterResolver : IBindingConverterResolver
     /// <param name="fromType">The inbound runtime type.</param>
     /// <param name="toType">The target type.</param>
     /// <returns>The selected converter, or <see langword="null"/> if none matches.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static ISetMethodBindingConverter? ResolveBestSetMethodConverter(Type fromType, Type? toType) =>
         SelectByHighestAffinity(
             AppLocator.Current.GetServices<ISetMethodBindingConverter>(),

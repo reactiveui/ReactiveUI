@@ -4,6 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using ReactiveUI.Builder.WpfApp.Models;
@@ -16,6 +17,7 @@ namespace ReactiveUI.Builder.WpfApp.ViewModels;
 /// <see cref="PayCommand"/> (a <c>ReactiveCommand.CreateFromTask</c>) authorizes a mock payment, records it in the
 /// persisted journal and surfaces the result.
 /// </summary>
+[DebuggerDisplay("TerminalViewModel AmountCents={AmountCents}, IsBusy={IsBusy}")]
 public sealed class TerminalViewModel : ReactiveObject, IRoutableViewModel
 {
     /// <summary>The largest amount, in cents, the keypad will accept ($99,999.99).</summary>

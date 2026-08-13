@@ -4,6 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using BenchmarkDotNet.Running;
 
 namespace ReactiveUI.Benchmarks;
@@ -14,6 +15,7 @@ public static class Program
 {
     /// <summary>The entry point. Forwards command-line arguments (filters, exporters, profilers) to the benchmark switcher.</summary>
     /// <param name="args">The command-line arguments forwarded to BenchmarkDotNet.</param>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void Main(string[] args) =>
         BenchmarkSwitcher.FromAssembly(typeof(Program).Assembly).Run(args);
 }

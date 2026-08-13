@@ -21,5 +21,11 @@ jobs:
       configuration: Release
       productNamespacePrefix: "ReactiveUI"
       installWorkloads: true
+      # ReactiveUI.WinUI.Tests hosts a real WinUI application, which needs the Windows App SDK runtime on the
+      # agent. That is a machine-level MSIX framework package, not an SDK workload, so installWorkloads does not
+      # cover it and the tests skip themselves without it. Keep the version in step with the
+      # Microsoft.WindowsAppSDK package pinned in src/Directory.Packages.props.
+      installWindowsAppRuntime: true
+      windowsAppRuntimeVersion: '2.3'
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}

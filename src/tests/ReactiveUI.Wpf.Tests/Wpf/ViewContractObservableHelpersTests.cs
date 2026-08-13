@@ -64,6 +64,7 @@ public class ViewContractObservableHelpersTests
 
     /// <summary>Verifies that a missing platform is logged and represented by a null orientation callback.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
+    /// <exception cref="InvalidOperationException">The logging executor did not provide a test logger.</exception>
     [Test]
     [TestExecutor<LoggingRegistrationExecutor>]
     public async Task GetPlatformOrientation_MissingPlatform_LogsErrorAndReturnsNullCallback()
@@ -76,7 +77,7 @@ public class ViewContractObservableHelpersTests
         using (Assert.Multiple())
         {
             await Assert.That(getOrientation()).IsNull();
-            await Assert.That(logger.Messages.Exists(static message => message.logLevel == LogLevel.Error)).IsTrue();
+            await Assert.That(logger.Messages.Exists(static message => message.LogLevel == LogLevel.Error)).IsTrue();
         }
     }
 

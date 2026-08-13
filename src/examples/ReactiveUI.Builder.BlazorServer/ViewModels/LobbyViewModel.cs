@@ -5,11 +5,13 @@
 
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using ReactiveUI.Builder.BlazorServer.Models;
 
 namespace ReactiveUI.Builder.BlazorServer.ViewModels;
 
 /// <summary>The lobby view model which lists rooms and allows creating/joining rooms.</summary>
+[DebuggerDisplay("LobbyViewModel DisplayName={DisplayName}, RoomName={RoomName}")]
 public class LobbyViewModel : ReactiveObject, IRoutableViewModel
 {
     /// <summary>The message bus contract used for room events.</summary>
@@ -157,6 +159,7 @@ public class LobbyViewModel : ReactiveObject, IRoutableViewModel
 
     /// <summary>Gets the current application chat state.</summary>
     /// <returns>The current <see cref="ChatState"/>.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static ChatState GetState() => RxSuspension.SuspensionHost.GetAppState<ChatState>();
 
     /// <summary>Handles an incoming remote room event by answering sync requests or applying room changes.</summary>
@@ -253,11 +256,13 @@ public class LobbyViewModel : ReactiveObject, IRoutableViewModel
         ChatRoom? existing = null;
         foreach (var room in state.Rooms)
         {
-            if (string.Equals(room.Name, name, StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(room.Name, name, StringComparison.OrdinalIgnoreCase))
             {
-                existing = room;
-                break;
+                continue;
             }
+
+            existing = room;
+            break;
         }
 
         if (existing is null)

@@ -3,6 +3,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Windows;
 using Microsoft.Xaml.Behaviors;
 using ReactiveUI.Helpers;
@@ -14,6 +16,7 @@ namespace ReactiveUI.Blend;
 #endif
 
 /// <summary>A blend based trigger which will be activated when a IObservable triggers.</summary>
+[DebuggerDisplay("{Observable}, {AutoResubscribeOnError}")]
 public class ObservableTrigger : TriggerBase<FrameworkElement>
 {
     /// <summary>The dependency property registration for the Observable property.</summary>
@@ -46,6 +49,7 @@ public class ObservableTrigger : TriggerBase<FrameworkElement>
     /// <summary>Internal method for testing purposes that calls OnObservableChanged.</summary>
     /// <param name="sender">The sender.</param>
     /// <param name="e">The event args.</param>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static void InternalOnObservableChangedForTesting(
         DependencyObject sender,
         DependencyPropertyChangedEventArgs e) =>
@@ -54,6 +58,7 @@ public class ObservableTrigger : TriggerBase<FrameworkElement>
     /// <summary>Called when [observable changed].</summary>
     /// <param name="sender">The sender.</param>
     /// <param name="e">The <see cref="DependencyPropertyChangedEventArgs"/> instance containing the event data.</param>
+    /// <exception cref="ArgumentNullException"><paramref name="e"/> carries no event data.</exception>
     protected static void OnObservableChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
     {
         ArgumentValidation.ThrowIfNotOfType<ObservableTrigger>(sender);
@@ -70,11 +75,9 @@ public class ObservableTrigger : TriggerBase<FrameworkElement>
             throw new ArgumentNullException(nameof(e));
         }
 
-        var newValue = (IObservable<object>)e.NewValue;
-        var scheduler = triggerItem.SchedulerOverride ?? RxSchedulers.MainThreadScheduler;
         triggerItem._watcher = ScheduledObserver<object>.Subscribe(
-            newValue,
-            scheduler,
+            (IObservable<object>)e.NewValue,
+            triggerItem.SchedulerOverride ?? RxSchedulers.MainThreadScheduler,
             triggerItem.InvokeActions,
             _ =>
             {

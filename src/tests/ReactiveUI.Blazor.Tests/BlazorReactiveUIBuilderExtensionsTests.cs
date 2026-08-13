@@ -18,22 +18,14 @@ public class BlazorReactiveUIBuilderExtensionsTests
     /// <summary>Verifies that BlazorMainThreadScheduler returns the current-thread sequencer.</summary>
     /// <returns>A Task representing the asynchronous test operation.</returns>
     [Test]
-    public async Task BlazorMainThreadScheduler_ReturnsCurrentThreadSequencer()
-    {
-        var scheduler = BlazorReactiveUIBuilderExtensions.BlazorMainThreadScheduler;
-
-        await Assert.That(scheduler).IsSameReferenceAs(Sequencer.CurrentThread);
-    }
+    public async Task BlazorMainThreadScheduler_ReturnsCurrentThreadSequencer() =>
+        await Assert.That(BlazorReactiveUIBuilderExtensions.BlazorMainThreadScheduler).IsSameReferenceAs(Sequencer.CurrentThread);
 
     /// <summary>Verifies that BlazorWasmScheduler returns the configured WASM sequencer.</summary>
     /// <returns>A Task representing the asynchronous test operation.</returns>
     [Test]
-    public async Task BlazorWasmScheduler_ReturnsConfiguredSequencer()
-    {
-        var scheduler = BlazorReactiveUIBuilderExtensions.BlazorWasmScheduler;
-
-        await Assert.That(scheduler).IsSameReferenceAs(BlazorReactiveUIBuilderExtensions.BlazorWasmScheduler);
-    }
+    public async Task BlazorWasmScheduler_ReturnsConfiguredSequencer() =>
+        await Assert.That(BlazorReactiveUIBuilderExtensions.BlazorWasmScheduler).IsSameReferenceAs(BlazorReactiveUIBuilderExtensions.BlazorWasmScheduler);
 
     /// <summary>Verifies that WithBlazor calls WithBlazorScheduler and WithPlatformModule.</summary>
     /// <returns>A Task representing the asynchronous test operation.</returns>

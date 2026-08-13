@@ -4,6 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
@@ -40,6 +41,7 @@ public sealed class POCOObservableForProperty : ICreatesObservableForProperty
 
     /// <inheritdoc />
     [RequiresUnreferencedCode("Uses reflection over runtime types which is not trim- or AOT-safe.")]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public int GetAffinityForObject(Type type, string propertyName) =>
         GetAffinityForObject(type, propertyName, false);
 
@@ -57,6 +59,7 @@ public sealed class POCOObservableForProperty : ICreatesObservableForProperty
 
     /// <inheritdoc />
     [RequiresUnreferencedCode("Uses reflection over runtime types which is not trim- or AOT-safe.")]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public IObservable<IObservedChange<object, object?>> GetNotificationForProperty(
         object sender,
         Expression expression,
@@ -65,6 +68,7 @@ public sealed class POCOObservableForProperty : ICreatesObservableForProperty
 
     /// <inheritdoc />
     [RequiresUnreferencedCode("Uses reflection over runtime types which is not trim- or AOT-safe.")]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public IObservable<IObservedChange<object, object?>> GetNotificationForProperty(
         object sender,
         Expression expression,

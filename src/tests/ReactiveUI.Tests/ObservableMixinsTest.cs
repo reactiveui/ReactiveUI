@@ -303,6 +303,7 @@ public class ObservableMixinsTest
     /// <typeparam name="TResult">The result type produced by the inner observable.</typeparam>
     /// <param name="source">The deferred source to materialize.</param>
     /// <returns>The result observable and its cancellation delegate.</returns>
+    /// <exception cref="InvalidOperationException">The source did not emit a tuple synchronously during subscription.</exception>
     private static (IObservable<TResult> Result, Action Cancel) Materialize<TResult>(
         IObservable<(IObservable<TResult> Result, Action Cancel)> source)
     {

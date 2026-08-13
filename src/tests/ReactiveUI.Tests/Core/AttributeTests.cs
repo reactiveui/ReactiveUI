@@ -53,11 +53,8 @@ public class AttributeTests
     [Test]
     public async Task SingleInstanceViewAttribute_AttributeUsage_IsClass()
     {
-        // Arrange
-        var attributeType = typeof(SingleInstanceViewAttribute);
-
         // Act
-        var attributeUsage = attributeType.GetCustomAttribute<AttributeUsageAttribute>();
+        var attributeUsage = (typeof(SingleInstanceViewAttribute)).GetCustomAttribute<AttributeUsageAttribute>();
 
         // Assert
         await Assert.That(attributeUsage).IsNotNull();
@@ -82,11 +79,8 @@ public class AttributeTests
     [Test]
     public async Task ViewContractAttribute_AttributeUsage_IsClass()
     {
-        // Arrange
-        var attributeType = typeof(ViewContractAttribute);
-
         // Act
-        var attributeUsage = attributeType.GetCustomAttribute<AttributeUsageAttribute>();
+        var attributeUsage = (typeof(ViewContractAttribute)).GetCustomAttribute<AttributeUsageAttribute>();
 
         // Assert
         await Assert.That(attributeUsage).IsNotNull();

@@ -4,7 +4,9 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Collections.Specialized;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using ReactiveUI.Internal;
 
 using NSViewController = UIKit.UIViewController;
@@ -51,6 +53,7 @@ namespace ReactiveUI;
 [RequiresDynamicCode(
     "If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, "
     + "or generic constraints), trimming can't validate that the requirements of those annotations are met.")]
+[DebuggerDisplay("{Router}, {ViewLocator}")]
 public class RoutedViewHost : ReactiveNavigationController
 {
     /// <summary>The disposable that tracks the current title-update subscription.</summary>
@@ -115,8 +118,7 @@ public class RoutedViewHost : ReactiveNavigationController
         // A view is being pushed directly against the nav controller rather than via the router, so
         // sync the router state to keep the two stacks aligned. Views that don't implement
         // IViewFor of IRoutableViewModel are silently ignored.
-        var view = (IViewFor)viewController;
-        var viewModel = (IRoutableViewModel?)view.ViewModel;
+        var viewModel = (IRoutableViewModel?)((IViewFor)viewController).ViewModel;
         if (viewModel is null)
         {
             return;
@@ -152,6 +154,7 @@ public class RoutedViewHost : ReactiveNavigationController
     /// <param name="router">The routing state providing the current view model.</param>
     /// <param name="viewController">The view controller whose title is updated.</param>
     /// <returns>A disposable that represents the title-update subscription.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static IDisposable SubscribeToTitleUpdates(RoutingState router, NSViewController viewController) =>
         router
             .WhenAnyValue(y => y.GetCurrentViewModel())
@@ -161,12 +164,14 @@ public class RoutedViewHost : ReactiveNavigationController
 
     /// <summary>Builds the observable that emits collection-change events for the active navigation stack.</summary>
     /// <returns>An observable of collection-changed notifications for the router's navigation stack.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private IObservable<CollectionChanged> BuildNavigationStackChangedObservable() =>
         this.WhenAnyValue<RoutedViewHost, RoutingState?>(nameof(Router))
             .SwitchSelect(static router => router.NavigationStack.ObserveCollectionChanges());
 
     /// <summary>Subscribes to the initial router state and pushes any pre-existing view models onto the navigation stack.</summary>
     /// <returns>A disposable that represents the subscription.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private IDisposable SubscribeToInitialStack() =>
         this.WhenAnyValue<RoutedViewHost, RoutingState?>(nameof(Router))
             .Subscribe(new DelegateObserver<RoutingState?>(x =>
@@ -181,7 +186,7 @@ public class RoutedViewHost : ReactiveNavigationController
 
                 foreach (var viewModel in x.NavigationStack)
                 {
-                    view = ResolveView(Router.GetCurrentViewModel(), null) ?? throw new InvalidOperationException(nameof(view));
+                    view = ResolveView(viewModel, null) ?? throw new InvalidOperationException(nameof(view));
 
                     PushViewController(view, false);
                 }
@@ -197,6 +202,7 @@ public class RoutedViewHost : ReactiveNavigationController
     /// <summary>Subscribes to stack-add events and pushes the resolved view controller.</summary>
     /// <param name="navigationStackChanged">The observable that emits navigation-stack change events.</param>
     /// <returns>A disposable that represents the subscription.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private IDisposable SubscribeToStackAdded(
         IObservable<CollectionChanged> navigationStackChanged) =>
         navigationStackChanged
@@ -231,6 +237,7 @@ public class RoutedViewHost : ReactiveNavigationController
     /// <summary>Subscribes to stack-reset events and pops to the root view controller.</summary>
     /// <param name="navigationStackChanged">The observable that emits navigation-stack change events.</param>
     /// <returns>A disposable that represents the subscription.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private IDisposable SubscribeToStackReset(
         IObservable<CollectionChanged> navigationStackChanged) =>
         navigationStackChanged
@@ -248,6 +255,7 @@ public class RoutedViewHost : ReactiveNavigationController
 
     /// <summary>Subscribes to the router's <see cref="RoutingState.NavigateBack"/> signal and pops the top view controller.</summary>
     /// <returns>A disposable that represents the subscription.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private IDisposable SubscribeToNavigateBack() =>
         this.WhenAnyObservable(x => x.Router!.NavigateBack!)
             .Subscribe(new DelegateObserver<IRoutableViewModel>(navigateBack =>
@@ -262,6 +270,9 @@ public class RoutedViewHost : ReactiveNavigationController
     /// <param name="viewModel">The view model to resolve a view for; returns <see langword="null"/> when <see langword="null"/>.</param>
     /// <param name="contract">An optional contract string passed to the view locator.</param>
     /// <returns>The resolved <see cref="NSViewController"/>, or <see langword="null"/> when <paramref name="viewModel"/> is <see langword="null"/>.</returns>
+    /// <exception cref="InvalidOperationException">Thrown when no view is registered for <paramref name="viewModel"/> under
+    /// <paramref name="contract"/>, or when the resolved view is not a <see cref="NSViewController"/> and so cannot be pushed
+    /// onto the navigation stack.</exception>
     private NSViewController? ResolveView(IRoutableViewModel? viewModel, string? contract)
     {
         if (viewModel is null)
@@ -269,8 +280,7 @@ public class RoutedViewHost : ReactiveNavigationController
             return null;
         }
 
-        var viewLocator = ViewLocator ?? ReactiveUI.ViewLocator.Current;
-        var view = viewLocator.ResolveView(viewModel, contract)
+        var view = (ViewLocator ?? ReactiveUI.ViewLocator.Current).ResolveView(viewModel, contract)
             ?? throw new InvalidOperationException($"Couldn't find a view for view model. You probably need to register an IViewFor<{viewModel.GetType().Name}>");
         view.ViewModel = viewModel;
 

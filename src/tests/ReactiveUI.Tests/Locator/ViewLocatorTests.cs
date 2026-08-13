@@ -38,8 +38,7 @@ public class ViewLocatorTests
         _ = builder.ConfigureViewLocator(static locator => locator.Map<TestViewModel, TestView>(static () => new()));
         _ = builder.WithCoreServices().BuildApp();
 
-        var current = ViewLocator.Current;
-        var view = current.ResolveView<TestViewModel>();
+        var view = ViewLocator.Current.ResolveView<TestViewModel>();
 
         await Assert.That(view).IsNotNull();
         await Assert.That(view).IsTypeOf<TestView>();
@@ -56,8 +55,7 @@ public class ViewLocatorTests
         // Register a view in the service locator
         resolver.Register(static () => new TestView(), typeof(IViewFor<TestViewModel>));
 
-        var locator = ViewLocator.Current;
-        var view = locator.ResolveView<TestViewModel>();
+        var view = ViewLocator.Current.ResolveView<TestViewModel>();
 
         await Assert.That(view).IsNotNull();
         await Assert.That(view).IsTypeOf<TestView>();
@@ -98,13 +96,8 @@ public class ViewLocatorTests
     /// <summary>Verifies that <see cref="ViewLocator.Current" /> returns the same instance when called multiple times (singleton behavior).</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
     [Test]
-    public async Task Current_ReturnsSameInstance_WhenCalledMultipleTimes()
-    {
-        var current1 = ViewLocator.Current;
-        var current2 = ViewLocator.Current;
-
-        await Assert.That(ReferenceEquals(current1, current2)).IsTrue();
-    }
+    public async Task Current_ReturnsSameInstance_WhenCalledMultipleTimes() =>
+        await Assert.That(ReferenceEquals(ViewLocator.Current, ViewLocator.Current)).IsTrue();
 
     /// <summary>Verifies that <see cref="ViewLocator.Current" /> returns a valid locator when ReactiveUI is properly initialized.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>

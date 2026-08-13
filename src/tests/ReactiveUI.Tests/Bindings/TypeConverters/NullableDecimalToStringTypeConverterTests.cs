@@ -109,9 +109,8 @@ public class NullableDecimalToStringTypeConverterTests
     public async Task TryConvert_Zero_Succeeds()
     {
         var converter = new NullableDecimalToStringTypeConverter();
-        decimal? value = 0M;
 
-        var result = converter.TryConvert(value, null, out var output);
+        var result = converter.TryConvert(0M, null, out var output);
 
         await Assert.That(result).IsTrue();
         await Assert.That(output).IsEqualTo("0");

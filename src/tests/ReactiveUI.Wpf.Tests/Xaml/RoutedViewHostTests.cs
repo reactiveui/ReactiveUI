@@ -121,8 +121,7 @@ public class RoutedViewHostTests
                 // Configure WPF scheduler for test execution
                 // Note: WithWpf() skips scheduler setup when InUnitTestRunner() is true,
                 // so we must manually configure it for tests that need WPF controls
-                var dispatcher = Dispatcher.CurrentDispatcher;
-                RxSchedulers.MainThreadScheduler = new DispatcherSequencer(dispatcher);
+                RxSchedulers.MainThreadScheduler = new DispatcherSequencer(Dispatcher.CurrentDispatcher);
                 RxSchedulers.TaskpoolScheduler = TaskPoolSequencer.Default;
             });
         }

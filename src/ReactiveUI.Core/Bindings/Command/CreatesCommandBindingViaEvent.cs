@@ -47,8 +47,8 @@ public sealed class CreatesCommandBindingViaEvent : ICreatesCommandBinding
     /// <param name="commandParameter">An observable that supplies command parameter values.</param>
     /// <returns>A disposable that unbinds the command.</returns>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="target"/> is <see langword="null"/>.</exception>
-    /// <exception cref="Exception">
-    /// Thrown when no default event exists on <typeparamref name="T"/> and the caller did not specify an event explicitly.
+    /// <exception cref="InvalidOperationException">
+    /// No default event exists on <typeparamref name="T"/> and the caller did not specify an event explicitly.
     /// </exception>
     [RequiresUnreferencedCode("String/reflection-based event binding may require members removed by trimming.")]
     public IDisposable? BindCommandToObject<

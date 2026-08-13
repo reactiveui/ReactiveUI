@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics;
 using ReactiveUI.Primitives;
 using Splat;
 
@@ -34,6 +35,7 @@ namespace ReactiveUI;
 /// the View and wire up the ViewModel whenever a new ViewModel is
 /// navigated to. Put this control as the only control in your Window.
 /// </summary>
+[DebuggerDisplay("{Router}, {DefaultContent}")]
 public
 #if HAS_UNO
     partial
@@ -90,7 +92,7 @@ public
         // the RoutedViewHost's ViewModel, and once on load via SizeChanged
         _ = this.WhenActivated(d =>
             d(viewModelAndContract.DistinctUntilChanged()
-                .Subscribe(new DelegateObserver<(IRoutableViewModel? viewModel, string? contract)>(
+                .Subscribe(new DelegateObserver<(IRoutableViewModel? ViewModel, string? Contract)>(
                     ResolveViewForViewModel,
                     RxState.DefaultExceptionHandler.OnNext))));
     }
@@ -134,18 +136,19 @@ public
 
     /// <summary>Resolves and displays the view for the supplied view model and contract.</summary>
     /// <param name="x">The view model and contract to resolve a view for.</param>
-    private void ResolveViewForViewModel((IRoutableViewModel? viewModel, string? contract) x)
+    /// <exception cref="InvalidOperationException">No view is registered for the routed view model.</exception>
+    private void ResolveViewForViewModel((IRoutableViewModel? ViewModel, string? Contract) x)
     {
-        if (x.viewModel is null)
+        if (x.ViewModel is null)
         {
             Content = DefaultContent;
             return;
         }
 
         var viewLocator = ViewLocator ?? ReactiveUI.ViewLocator.Current;
-        var view = (viewLocator.ResolveView(x.viewModel, x.contract) ?? viewLocator.ResolveView(x.viewModel))
-                   ?? throw new InvalidOperationException($"Couldn't find view for '{x.viewModel}'.");
-        view.ViewModel = x.viewModel;
+        var view = (viewLocator.ResolveView(x.ViewModel, x.Contract) ?? viewLocator.ResolveView(x.ViewModel))
+                   ?? throw new InvalidOperationException($"Couldn't find view for '{x.ViewModel}'.");
+        view.ViewModel = x.ViewModel;
         Content = view;
     }
 }

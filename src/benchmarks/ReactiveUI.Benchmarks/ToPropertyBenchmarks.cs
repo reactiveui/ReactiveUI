@@ -3,6 +3,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using BenchmarkDotNet.Attributes;
 
 namespace ReactiveUI.Benchmarks;
@@ -10,6 +12,7 @@ namespace ReactiveUI.Benchmarks;
 /// <summary>Benchmarks the <c>ToProperty</c> / <see cref="ObservableAsPropertyHelper{T}"/> pipeline: helper construction and per-change value propagation into the derived property.</summary>
 [MemoryDiagnoser]
 [MarkdownExporterAttribute.GitHub]
+[DebuggerDisplay("ToPropertyBenchmarks")]
 public class ToPropertyBenchmarks
 {
     /// <summary>The number of source changes pushed per propagation benchmark.</summary>
@@ -40,6 +43,7 @@ public class ToPropertyBenchmarks
 
     /// <summary>Disposes the live OAPH.</summary>
     [GlobalCleanup]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Cleanup() => _doubled.Dispose();
 
     /// <summary>Measures wiring + disposing a fresh OAPH against the source view model.</summary>

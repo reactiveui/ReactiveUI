@@ -4,6 +4,8 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.ComponentModel;
+using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using Foundation;
 using UIKit;
 
@@ -16,6 +18,7 @@ namespace ReactiveUI;
 /// This is a UIPageViewController that is both an UIPageViewController and has ReactiveObject powers
 /// (i.e. you can call RaiseAndSetIfChanged).
 /// </summary>
+[DebuggerDisplay("{Activated}, {Deactivated}")]
 public class ReactivePageViewController : UIPageViewController, IReactiveNotifyPropertyChanged<ReactivePageViewController>,
     IHandleObservableErrors, IReactiveObject, ICanActivate
 {
@@ -121,9 +124,11 @@ public class ReactivePageViewController : UIPageViewController, IReactiveNotifyP
     public IObservable<RxVoid> Deactivated => _deactivated;
 
     /// <inheritdoc/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args) => PropertyChanging?.Invoke(this, args);
 
     /// <inheritdoc/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args) => PropertyChanged?.Invoke(this, args);
 
     /// <summary>
@@ -133,33 +138,27 @@ public class ReactivePageViewController : UIPageViewController, IReactiveNotifyP
     /// </summary>
     /// <returns>An object that, when disposed, reenables change
     /// notifications.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public IDisposable SuppressChangeNotifications() => IReactiveObjectExtensions.SuppressChangeNotifications(this);
 
     /// <inheritdoc/>
     public override void ViewWillAppear(bool animated)
     {
         base.ViewWillAppear(animated);
-        _activated.OnNext(RxVoid.Default);
-        this.ActivateSubviews(true);
+        this.RaiseActivation(_activated, _deactivated, true);
     }
 
     /// <inheritdoc/>
     public override void ViewDidDisappear(bool animated)
     {
         base.ViewDidDisappear(animated);
-        _deactivated.OnNext(RxVoid.Default);
-        this.ActivateSubviews(false);
+        this.RaiseActivation(_activated, _deactivated, false);
     }
 
     /// <inheritdoc/>
     protected override void Dispose(bool disposing)
     {
-        if (disposing)
-        {
-            _activated?.Dispose();
-            _deactivated?.Dispose();
-        }
-
+        ActivationSignals.DisposeWhen(disposing, _activated, _deactivated);
         base.Dispose(disposing);
     }
 }

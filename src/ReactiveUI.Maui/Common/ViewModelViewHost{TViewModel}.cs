@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.UI.Xaml;
 #if REACTIVE_SHIM
@@ -25,6 +26,7 @@ namespace ReactiveUI;
 /// This generic version provides AOT-compatibility by using compile-time type information.
 /// </summary>
 /// <typeparam name="TViewModel">The type of the view model. Must have a public parameterless constructor.</typeparam>
+[DebuggerDisplay("{DefaultContent}, {ViewModel}")]
 public partial class ViewModelViewHost<
     [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)] TViewModel> : TransitioningContentControl, IViewFor<TViewModel>, IEnableLogger
     where TViewModel : class
@@ -56,15 +58,13 @@ public partial class ViewModelViewHost<
         "Design",
         "SST2403:'this' escapes before construction finishes",
         Justification = "The single-threaded UI control hands 'this' to MauiReactiveHelpers to observe its own dependency-property changes; it is never published to another thread.")]
-    public ViewModelViewHost()
-    {
+    public ViewModelViewHost() =>
         MauiReactiveHelpers.InitializeViewModelViewHost(
             (this, this.Log(), observable => ViewContractObservable = observable),
             (nameof(ViewModel), ViewModelProperty, () => ViewModel),
             contract => _viewContract = contract,
             ResolveViewForViewModel,
             _subscriptions);
-    }
 
     /// <summary>Gets or sets the content displayed by default when no content is set.</summary>
     public object DefaultContent

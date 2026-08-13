@@ -4,6 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using Android.Content;
 using Android.Runtime;
 using ReactiveUI.Primitives.Disposables;
@@ -14,6 +15,7 @@ namespace ReactiveUI.Reactive;
 namespace ReactiveUI;
 #endif
 /// <summary>This is an Activity that is both an Activity and has ReactiveObject powers (i.e. you can call RaiseAndSetIfChanged).</summary>
+[System.Diagnostics.DebuggerDisplay("{Activated}, {Deactivated}")]
 public class ReactiveActivity : Activity, IReactiveObject, IReactiveNotifyPropertyChanged<ReactiveActivity>,
     IHandleObservableErrors
 {
@@ -24,7 +26,7 @@ public class ReactiveActivity : Activity, IReactiveObject, IReactiveNotifyProper
     private readonly Signal<RxVoid> _deactivated = new();
 
     /// <summary>The subject that signals activity results.</summary>
-    private readonly Signal<(int requestCode, Result resultCode, Intent? intent)> _activityResult = new();
+    private readonly Signal<(int RequestCode, Result ResultCode, Intent? Intent)> _activityResult = new();
 
     /// <summary>Initializes a new instance of the <see cref="ReactiveActivity"/> class.</summary>
     protected ReactiveActivity()
@@ -64,7 +66,7 @@ public class ReactiveActivity : Activity, IReactiveObject, IReactiveNotifyProper
     /// <value>
     /// The activity result.
     /// </value>
-    public IObservable<(int requestCode, Result resultCode, Intent? intent)> ActivityResult => _activityResult;
+    public IObservable<(int RequestCode, Result ResultCode, Intent? Intent)> ActivityResult => _activityResult;
 
     /// <summary>
     /// When this method is called, an object will not fire change
@@ -73,19 +75,22 @@ public class ReactiveActivity : Activity, IReactiveObject, IReactiveNotifyProper
     /// </summary>
     /// <returns>An object that, when disposed, reenables change
     /// notifications.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public IDisposable SuppressChangeNotifications() => IReactiveObjectExtensions.SuppressChangeNotifications(this);
 
     /// <inheritdoc/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args) => PropertyChanging?.Invoke(this, args);
 
     /// <inheritdoc/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args) => PropertyChanged?.Invoke(this, args);
 
     /// <summary>Starts the activity for result asynchronously.</summary>
     /// <param name="intent">The intent.</param>
     /// <param name="requestCode">The request code.</param>
     /// <returns>A task with the result and the intent.</returns>
-    public Task<(Result resultCode, Intent? intent)>
+    public Task<(Result ResultCode, Intent? Intent)>
         StartActivityForResultAsync(Intent? intent, int requestCode)
     {
         var ret = ActivityResultAwaiter.Await(ActivityResult, requestCode);
@@ -98,7 +103,7 @@ public class ReactiveActivity : Activity, IReactiveObject, IReactiveNotifyProper
     /// <param name="type">The type.</param>
     /// <param name="requestCode">The request code.</param>
     /// <returns>A task with the result and intent.</returns>
-    public Task<(Result resultCode, Intent? intent)>
+    public Task<(Result ResultCode, Intent? Intent)>
         StartActivityForResultAsync(Type type, int requestCode)
     {
         var ret = ActivityResultAwaiter.Await(ActivityResult, requestCode);
@@ -131,13 +136,7 @@ public class ReactiveActivity : Activity, IReactiveObject, IReactiveNotifyProper
     /// <inheritdoc/>
     protected override void Dispose(bool disposing)
     {
-        if (disposing)
-        {
-            _activated?.Dispose();
-            _deactivated?.Dispose();
-            _activityResult?.Dispose();
-        }
-
+        ActivationSignals.DisposeWhen(disposing, _activated, _deactivated, _activityResult);
         base.Dispose(disposing);
     }
 
@@ -145,13 +144,13 @@ public class ReactiveActivity : Activity, IReactiveObject, IReactiveNotifyProper
     /// Completes a task with the first activity result matching a request code, then unsubscribes — replacing
     /// <c>ActivityResult.Where(matching).Select(...).FirstAsync().ToTask()</c>.
     /// </summary>
-    private sealed class ActivityResultAwaiter : IObserver<(int requestCode, Result resultCode, Intent? intent)>, IDisposable
+    private sealed class ActivityResultAwaiter : IObserver<(int RequestCode, Result ResultCode, Intent? Intent)>, IDisposable
     {
         /// <summary>The request code this awaiter is waiting for.</summary>
         private readonly int _requestCode;
 
         /// <summary>Completes when the first matching activity result arrives.</summary>
-        private readonly TaskCompletionSource<(Result resultCode, Intent? intent)> _completion =
+        private readonly TaskCompletionSource<(Result ResultCode, Intent? Intent)> _completion =
             new(TaskCreationOptions.RunContinuationsAsynchronously);
 
         /// <summary>The subscription to the activity-result stream.</summary>
@@ -168,8 +167,8 @@ public class ReactiveActivity : Activity, IReactiveObject, IReactiveNotifyProper
         /// <param name="source">The activity-result stream.</param>
         /// <param name="requestCode">The request code to wait for.</param>
         /// <returns>A task carrying the matching result and intent.</returns>
-        public static Task<(Result resultCode, Intent? intent)> Await(
-            IObservable<(int requestCode, Result resultCode, Intent? intent)> source,
+        public static Task<(Result ResultCode, Intent? Intent)> Await(
+            IObservable<(int RequestCode, Result ResultCode, Intent? Intent)> source,
             int requestCode)
         {
             var awaiter = new ActivityResultAwaiter(requestCode);
@@ -178,14 +177,14 @@ public class ReactiveActivity : Activity, IReactiveObject, IReactiveNotifyProper
         }
 
         /// <inheritdoc/>
-        public void OnNext((int requestCode, Result resultCode, Intent? intent) value)
+        public void OnNext((int RequestCode, Result ResultCode, Intent? Intent) value)
         {
-            if (value.requestCode != _requestCode || Interlocked.Exchange(ref _settled, 1) != 0)
+            if (value.RequestCode != _requestCode || Interlocked.Exchange(ref _settled, 1) != 0)
             {
                 return;
             }
 
-            _ = _completion.TrySetResult((value.resultCode, value.intent));
+            _ = _completion.TrySetResult((value.ResultCode, value.Intent));
             Dispose();
         }
 
@@ -214,6 +213,7 @@ public class ReactiveActivity : Activity, IReactiveObject, IReactiveNotifyProper
         }
 
         /// <inheritdoc/>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Dispose() => _subscription.Dispose();
     }
 }

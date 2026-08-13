@@ -40,9 +40,8 @@ public class TimeSpanToStringTypeConverterTests
     public async Task TryConvert_ZeroTimeSpan_Succeeds()
     {
         var converter = new TimeSpanToStringTypeConverter();
-        var value = TimeSpan.Zero;
 
-        var result = converter.TryConvert(value, null, out var output);
+        var result = converter.TryConvert(TimeSpan.Zero, null, out var output);
 
         await Assert.That(result).IsTrue();
         await Assert.That(output).IsEqualTo("00:00:00");

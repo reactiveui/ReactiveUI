@@ -15,15 +15,8 @@ namespace ReactiveUI;
 public class PlatformOperations : IPlatformOperations
 {
     /// <inheritdoc/>
-    public string? GetOrientation()
-    {
-        if (Application.Context.GetSystemService(Context.WindowService) is not IWindowManager wm)
-        {
-            return null;
-        }
-
-        var disp = wm.DefaultDisplay;
-
-        return disp?.Rotation.ToString();
-    }
+    public string? GetOrientation() =>
+        Application.Context.GetSystemService(Context.WindowService) is IWindowManager wm
+            ? wm.DefaultDisplay?.Rotation.ToString()
+            : null;
 }

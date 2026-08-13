@@ -14,6 +14,7 @@ public static class ObservableTestCollectorExtensions
     extension<T>(IObservable<T> source)
     {
         /// <summary>Collects every value an observable emits into a live-updating list for assertion.</summary>
+        /// <returns>A collection that appends each emitted value as it arrives.</returns>
         /// <remarks>
         /// Replaces the heavyweight <c>source.ToObservableChangeSet(...).Bind(out var xs).Subscribe()</c> idiom:
         /// the change-set + collection-binding pipeline is overkill when a test only needs to accumulate
@@ -21,7 +22,6 @@ public static class ObservableTestCollectorExtensions
         /// Uses the <see cref="IObservable{T}"/> interface <c>Subscribe</c> directly to stay agnostic of which
         /// (Primitives vs System.Reactive) operator surface is in scope.
         /// </remarks>
-        /// <returns>A collection that appends each emitted value as it arrives.</returns>
         public Collection<T> Collect()
         {
             ArgumentExceptionHelper.ThrowIfNull(source);

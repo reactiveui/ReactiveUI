@@ -4,6 +4,8 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.ComponentModel;
+using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using CoreGraphics;
 using Foundation;
 
@@ -19,6 +21,7 @@ namespace ReactiveUI.Reactive;
 namespace ReactiveUI;
 #endif
 /// <summary>This is a View that is both a NSView and has ReactiveObject powers (i.e. you can call RaiseAndSetIfChanged).</summary>
+[DebuggerDisplay("{Activated}, {Deactivated}")]
 public class ReactiveView : NSView, IReactiveNotifyPropertyChanged<ReactiveView>, IHandleObservableErrors, IReactiveObject, ICanActivate, ICanForceManualActivation
 {
     /// <summary>The subject that signals when the view is activated (moved to a superview).</summary>
@@ -82,9 +85,11 @@ public class ReactiveView : NSView, IReactiveNotifyPropertyChanged<ReactiveView>
     public IObservable<IReactivePropertyChangedEventArgs<ReactiveView>> Changed => this.GetChangedObservable();
 
     /// <inheritdoc/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args) => PropertyChanging?.Invoke(this, args);
 
     /// <inheritdoc/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args) => PropertyChanged?.Invoke(this, args);
 
     /// <summary>
@@ -94,6 +99,7 @@ public class ReactiveView : NSView, IReactiveNotifyPropertyChanged<ReactiveView>
     /// </summary>
     /// <returns>An object that, when disposed, reenables change
     /// notifications.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public IDisposable SuppressChangeNotifications() => IReactiveObjectExtensions.SuppressChangeNotifications(this);
 
 #if UIKIT
@@ -120,24 +126,14 @@ public class ReactiveView : NSView, IReactiveNotifyPropertyChanged<ReactiveView>
     }
 
     /// <inheritdoc/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     void ICanForceManualActivation.Activate(bool isActivating) =>
-        RxSchedulers.MainThreadScheduler.Schedule(
-            (Owner: this, IsActivating: isActivating),
-            static (_, state) =>
-            {
-                (state.IsActivating ? state.Owner._activated : state.Owner._deactivated).OnNext(RxVoid.Default);
-                return EmptyDisposable.Instance;
-            });
+        ActivationSignals.ScheduleActivation(isActivating, _activated, _deactivated);
 
     /// <inheritdoc/>
     protected override void Dispose(bool disposing)
     {
-        if (disposing)
-        {
-            _activated?.Dispose();
-            _deactivated?.Dispose();
-        }
-
+        ActivationSignals.DisposeWhen(disposing, _activated, _deactivated);
         base.Dispose(disposing);
     }
 }

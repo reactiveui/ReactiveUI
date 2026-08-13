@@ -52,7 +52,7 @@ public partial class SuspensionHostExtensionsAotTests
             IsLaunchingNew = Signal.Silent<RxVoid>(),
             IsResuming = Signal.Silent<RxVoid>(),
             ShouldPersistState = Signal.Silent<IDisposable>(),
-            ShouldInvalidateState = Signal.Silent<RxVoid>()
+            ShouldInvalidateState = Signal.Silent<RxVoid>(),
         };
 
         var result = host.GetAppState();
@@ -82,7 +82,7 @@ public partial class SuspensionHostExtensionsAotTests
             IsLaunchingNew = Signal.Silent<RxVoid>(),
             IsResuming = Signal.Silent<RxVoid>(),
             ShouldPersistState = Signal.Silent<IDisposable>(),
-            ShouldInvalidateState = Signal.Silent<RxVoid>()
+            ShouldInvalidateState = Signal.Silent<RxVoid>(),
         };
 
         var driver = new TestSuspensionDriver<TestAppState> { StateToLoad = new() { Value = LoadedStateValue } };
@@ -113,7 +113,7 @@ public partial class SuspensionHostExtensionsAotTests
             IsLaunchingNew = Signal.Silent<RxVoid>(),
             IsResuming = Signal.Silent<RxVoid>(),
             ShouldPersistState = Signal.Silent<IDisposable>(),
-            ShouldInvalidateState = Signal.Silent<RxVoid>()
+            ShouldInvalidateState = Signal.Silent<RxVoid>(),
         };
 
         var driver = new TestSuspensionDriver<TestAppState>();
@@ -140,7 +140,7 @@ public partial class SuspensionHostExtensionsAotTests
             IsLaunchingNew = Signal.Silent<RxVoid>(),
             IsResuming = Signal.Silent<RxVoid>(),
             ShouldPersistState = Signal.Silent<IDisposable>(),
-            ShouldInvalidateState = Signal.Silent<RxVoid>()
+            ShouldInvalidateState = Signal.Silent<RxVoid>(),
         };
 
         var receivedStates = new List<TestAppState>();
@@ -161,7 +161,7 @@ public partial class SuspensionHostExtensionsAotTests
             IsLaunchingNew = Signal.Silent<RxVoid>(),
             IsResuming = Signal.Silent<RxVoid>(),
             ShouldPersistState = Signal.Silent<IDisposable>(),
-            ShouldInvalidateState = Signal.Silent<RxVoid>()
+            ShouldInvalidateState = Signal.Silent<RxVoid>(),
         };
 
         var receivedStates = new List<TestAppState>();
@@ -189,7 +189,7 @@ public partial class SuspensionHostExtensionsAotTests
             IsLaunchingNew = Signal.Silent<RxVoid>(),
             IsResuming = Signal.Silent<RxVoid>(),
             ShouldPersistState = Signal.Silent<IDisposable>(),
-            ShouldInvalidateState = Signal.Silent<RxVoid>()
+            ShouldInvalidateState = Signal.Silent<RxVoid>(),
         };
 
         var receivedStates = new List<TestAppState>();
@@ -237,7 +237,7 @@ public partial class SuspensionHostExtensionsAotTests
             IsLaunchingNew = Signal.Silent<RxVoid>(),
             IsResuming = Signal.Silent<RxVoid>(),
             ShouldPersistState = Signal.Silent<IDisposable>(),
-            ShouldInvalidateState = Signal.Silent<RxVoid>()
+            ShouldInvalidateState = Signal.Silent<RxVoid>(),
         };
 
         await Assert.That(() => host.SetupDefaultSuspendResume(null!))
@@ -255,7 +255,7 @@ public partial class SuspensionHostExtensionsAotTests
             IsResuming = Signal.Silent<RxVoid>(),
             ShouldPersistState = Signal.Silent<IDisposable>(),
             ShouldInvalidateState = Signal.Silent<RxVoid>(),
-            CreateNewAppStateTyped = static () => new()
+            CreateNewAppStateTyped = static () => new(),
         };
 
         var driver = new TestSuspensionDriver<TestAppState> { StateToLoad = new() { Value = SampleStateValue } };
@@ -276,7 +276,7 @@ public partial class SuspensionHostExtensionsAotTests
             AppStateValue = appState,
             IsLaunchingNew = Signal.Silent<RxVoid>(),
             IsResuming = Signal.Silent<RxVoid>(),
-            ShouldInvalidateState = Signal.Silent<RxVoid>()
+            ShouldInvalidateState = Signal.Silent<RxVoid>(),
         };
 
         var driver = new TestSuspensionDriver<TestAppState>();
@@ -285,8 +285,7 @@ public partial class SuspensionHostExtensionsAotTests
 
         using var disposable = host.SetupDefaultSuspendResume(TestAppStateContext.Default.TestAppState, driver);
 
-        var token = Scope.Empty;
-        persistSubject.OnNext(token);
+        persistSubject.OnNext(Scope.Empty);
 
         await Assert.That(driver.SaveStateCallCount).IsEqualTo(1);
         await Assert.That(driver.LastSavedState).IsSameReferenceAs(appState);
@@ -315,7 +314,7 @@ public partial class SuspensionHostExtensionsAotTests
             },
             IsLaunchingNew = Signal.Silent<RxVoid>(),
             IsResuming = Signal.Silent<RxVoid>(),
-            ShouldInvalidateState = Signal.Silent<RxVoid>()
+            ShouldInvalidateState = Signal.Silent<RxVoid>(),
         };
 
         var driver = new TestSuspensionDriver<TestAppState>();

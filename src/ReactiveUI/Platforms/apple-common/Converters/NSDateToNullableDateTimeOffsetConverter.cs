@@ -4,12 +4,14 @@
 // See the LICENSE file in the project root for full license information.
 
 #if UIKIT || MACOS
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using Foundation;
 
 namespace ReactiveUI;
 
 /// <summary>Converts <see cref="NSDate"/> to nullable <see cref="DateTimeOffset"/>.</summary>
+[DebuggerDisplay("NSDateToNullableDateTimeOffsetConverter")]
 public sealed class NSDateToNullableDateTimeOffsetConverter : BindingTypeConverter<NSDate, DateTimeOffset?>
 {
     /// <summary>The affinity score returned for supported type pairs.</summary>

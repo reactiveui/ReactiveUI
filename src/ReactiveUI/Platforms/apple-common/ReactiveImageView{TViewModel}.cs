@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics;
 using CoreGraphics;
 
 #if UIKIT
@@ -21,6 +22,7 @@ namespace ReactiveUI;
 /// (i.e. you can call RaiseAndSetIfChanged).
 /// </summary>
 /// <typeparam name="TViewModel">The view model type.</typeparam>
+[DebuggerDisplay("{ViewModel}")]
 public class ReactiveImageView<TViewModel> : ReactiveImageView, IViewFor<TViewModel>
     where TViewModel : class
 {

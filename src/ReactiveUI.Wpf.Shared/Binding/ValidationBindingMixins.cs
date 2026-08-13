@@ -19,8 +19,8 @@ namespace ReactiveUI;
 public static class ValidationBindingMixins
 {
     /// <summary>Provides validation-aware binding extension methods for WPF views.</summary>
-    /// <param name="view">The view.</param>
     /// <typeparam name="TView">The type of the view.</typeparam>
+    /// <param name="view">The view.</param>
     extension<TView>(TView view)
         where TView : class, IViewFor
     {

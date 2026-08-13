@@ -25,7 +25,7 @@ public interface IPropertyBinderImplementation : IEnableLogger
     /// <param name="signalViewUpdate">An observable that signals when the view property has changed.</param>
     /// <param name="conversionHint">An object that can provide a hint for the converter.</param>
     /// <returns>An instance of IDisposable that, when disposed, disconnects the binding.</returns>
-    IReactiveBinding<TView, (object? view, bool isViewModel)> Bind<TViewModel, TView, TViewModelPropertyType, TViewPropertyType, TDontCare>(
+    IReactiveBinding<TView, (object? View, bool IsViewModel)> Bind<TViewModel, TView, TViewModelPropertyType, TViewPropertyType, TDontCare>(
         TViewModel? viewModel,
         TView view,
         Expression<Func<TViewModel, TViewModelPropertyType?>> viewModelProperty,
@@ -51,7 +51,7 @@ public interface IPropertyBinderImplementation : IEnableLogger
     /// <param name="conversionHint">An object that can provide a hint for the converter.</param>
     /// <param name="viewModelToViewConverterOverride">An optional converter to use when converting from view model to view property.</param>
     /// <returns>An instance of IDisposable that, when disposed, disconnects the binding.</returns>
-    IReactiveBinding<TView, (object? view, bool isViewModel)> Bind<TViewModel, TView, TViewModelPropertyType, TViewPropertyType, TDontCare>(
+    IReactiveBinding<TView, (object? View, bool IsViewModel)> Bind<TViewModel, TView, TViewModelPropertyType, TViewPropertyType, TDontCare>(
         TViewModel? viewModel,
         TView view,
         Expression<Func<TViewModel, TViewModelPropertyType?>> viewModelProperty,
@@ -81,7 +81,7 @@ public interface IPropertyBinderImplementation : IEnableLogger
         "Design",
         "SST1472:Signatures should not declare too many parameters",
         Justification = "This overload is part of the public binding API surface; the parameter count is intentional.")]
-    IReactiveBinding<TView, (object? view, bool isViewModel)> Bind<TViewModel, TView, TViewModelPropertyType, TViewPropertyType, TDontCare>(
+    IReactiveBinding<TView, (object? View, bool IsViewModel)> Bind<TViewModel, TView, TViewModelPropertyType, TViewPropertyType, TDontCare>(
         TViewModel? viewModel,
         TView view,
         Expression<Func<TViewModel, TViewModelPropertyType?>> viewModelProperty,
@@ -115,7 +115,7 @@ public interface IPropertyBinderImplementation : IEnableLogger
         "Design",
         "SST1472:Signatures should not declare too many parameters",
         Justification = "This overload is part of the public binding API surface; the parameter count is intentional.")]
-    IReactiveBinding<TView, (object? view, bool isViewModel)> Bind<TViewModel, TView, TViewModelPropertyType, TViewPropertyType, TDontCare>(
+    IReactiveBinding<TView, (object? View, bool IsViewModel)> Bind<TViewModel, TView, TViewModelPropertyType, TViewPropertyType, TDontCare>(
         TViewModel? viewModel,
         TView view,
         Expression<Func<TViewModel, TViewModelPropertyType?>> viewModelProperty,
@@ -144,7 +144,7 @@ public interface IPropertyBinderImplementation : IEnableLogger
     /// <param name="viewModelToViewConverter">Delegate to convert the view model property value to the view property type.</param>
     /// <param name="viewToViewModelConverter">Delegate to convert the view property value to the view model property type.</param>
     /// <returns>An instance of IDisposable that, when disposed, disconnects the binding.</returns>
-    IReactiveBinding<TView, (object? view, bool isViewModel)> Bind<TViewModel, TView, TViewModelPropertyType, TViewPropertyType, TDontCare>(
+    IReactiveBinding<TView, (object? View, bool IsViewModel)> Bind<TViewModel, TView, TViewModelPropertyType, TViewPropertyType, TDontCare>(
         TViewModel? viewModel,
         TView view,
         Expression<Func<TViewModel, TViewModelPropertyType?>> viewModelProperty,
@@ -176,7 +176,7 @@ public interface IPropertyBinderImplementation : IEnableLogger
         "Design",
         "SST1472:Signatures should not declare too many parameters",
         Justification = "This overload is part of the public binding API surface; the parameter count is intentional.")]
-    IReactiveBinding<TView, (object? view, bool isViewModel)> Bind<TViewModel, TView, TViewModelPropertyType, TViewPropertyType, TDontCare>(
+    IReactiveBinding<TView, (object? View, bool IsViewModel)> Bind<TViewModel, TView, TViewModelPropertyType, TViewPropertyType, TDontCare>(
         TViewModel? viewModel,
         TView view,
         Expression<Func<TViewModel, TViewModelPropertyType?>> viewModelProperty,

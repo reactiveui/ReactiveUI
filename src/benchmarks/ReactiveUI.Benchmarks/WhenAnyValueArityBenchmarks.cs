@@ -3,6 +3,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using BenchmarkDotNet.Attributes;
 
 namespace ReactiveUI.Benchmarks;
@@ -13,6 +15,7 @@ namespace ReactiveUI.Benchmarks;
 /// </summary>
 [MemoryDiagnoser]
 [MarkdownExporterAttribute.GitHub]
+[DebuggerDisplay("WhenAnyValueArityBenchmarks")]
 public class WhenAnyValueArityBenchmarks
 {
     /// <summary>The number of property changes pushed per emission benchmark.</summary>
@@ -37,6 +40,7 @@ public class WhenAnyValueArityBenchmarks
 
     /// <summary>Disposes the live subscription.</summary>
     [GlobalCleanup]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Cleanup() => _subscription.Dispose();
 
     /// <summary>Measures cold subscribe + dispose of a five-property <c>WhenAnyValue</c>.</summary>
@@ -59,6 +63,7 @@ public class WhenAnyValueArityBenchmarks
     /// <summary>Builds the arity-5 projection observed by the benchmarks.</summary>
     /// <param name="viewModel">The view model to observe.</param>
     /// <returns>An observable of the combined projection.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static IObservable<int> Observe(BenchmarkViewModel viewModel) =>
         viewModel.WhenAnyValue(
             x => x.First,

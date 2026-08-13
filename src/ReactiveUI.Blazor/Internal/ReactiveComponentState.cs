@@ -3,6 +3,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Runtime.CompilerServices;
+
 #if REACTIVE_SHIM
 namespace ReactiveUI.Reactive.Blazor.Internal;
 #else
@@ -45,7 +47,7 @@ internal sealed class ReactiveComponentState : IDisposable
     private IDisposable? _firstRenderSubscriptions;
 
     /// <summary>Indicates whether the state has been disposed. Prevents double disposal.</summary>
-    private bool _disposed;
+    private int _disposed;
 
     /// <summary>Gets an observable that emits when the component is activated.</summary>
     /// <remarks>
@@ -103,7 +105,7 @@ internal sealed class ReactiveComponentState : IDisposable
     /// </remarks>
     public void Dispose()
     {
-        if (_disposed)
+        if (Interlocked.Exchange(ref _disposed, 1) != 0)
         {
             return;
         }
@@ -112,8 +114,6 @@ internal sealed class ReactiveComponentState : IDisposable
         _lifetimeDisposables.Dispose();
         _initSubject.Dispose();
         _deactivateSubject.Dispose();
-
-        _disposed = true;
     }
 
     /// <summary>Notifies observers that the component has been activated.</summary>
@@ -121,6 +121,7 @@ internal sealed class ReactiveComponentState : IDisposable
     /// Call this method during component initialization (typically in OnInitialized) to signal
     /// that the component is now active and ready for reactive operations.
     /// </remarks>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal void NotifyActivated() => _initSubject.OnNext(RxVoid.Default);
 
     /// <summary>Notifies observers that the component is being deactivated.</summary>
@@ -134,5 +135,6 @@ internal sealed class ReactiveComponentState : IDisposable
     /// Performance: This method is typically called once during disposal and incurs minimal overhead.
     /// </para>
     /// </remarks>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal void NotifyDeactivated() => _deactivateSubject.OnNext(RxVoid.Default);
 }

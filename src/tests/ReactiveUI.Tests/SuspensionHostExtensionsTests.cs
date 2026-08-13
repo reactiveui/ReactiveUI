@@ -74,7 +74,7 @@ public class SuspensionHostExtensionsTests
             IsLaunchingNew = Signal.Silent<RxVoid>(),
             IsResuming = Signal.Silent<RxVoid>(),
             ShouldPersistState = Signal.Silent<IDisposable>(),
-            ShouldInvalidateState = Signal.Silent<RxVoid>()
+            ShouldInvalidateState = Signal.Silent<RxVoid>(),
         };
 
         var driver = new TestSuspensionDriver { StateToLoad = new DummyAppState() };
@@ -116,7 +116,7 @@ public class SuspensionHostExtensionsTests
             IsLaunchingNew = Signal.Silent<RxVoid>(),
             IsResuming = Signal.Silent<RxVoid>(),
             ShouldPersistState = Signal.Silent<IDisposable>(),
-            ShouldInvalidateState = Signal.Silent<RxVoid>()
+            ShouldInvalidateState = Signal.Silent<RxVoid>(),
         };
 
         var driver = new TestSuspensionDriver { ShouldThrowOnLoad = true };
@@ -141,7 +141,7 @@ public class SuspensionHostExtensionsTests
             IsLaunchingNew = Signal.Silent<RxVoid>(),
             IsResuming = Signal.Silent<RxVoid>(),
             ShouldPersistState = Signal.Silent<IDisposable>(),
-            ShouldInvalidateState = Signal.Silent<RxVoid>()
+            ShouldInvalidateState = Signal.Silent<RxVoid>(),
         };
 
         var driver = new TestSuspensionDriver();
@@ -165,7 +165,7 @@ public class SuspensionHostExtensionsTests
             IsLaunchingNew = Signal.Silent<RxVoid>(),
             IsResuming = Signal.Silent<RxVoid>(),
             ShouldPersistState = Signal.Silent<IDisposable>(),
-            ShouldInvalidateState = Signal.Silent<RxVoid>()
+            ShouldInvalidateState = Signal.Silent<RxVoid>(),
         };
 
         var driver = new TestSuspensionDriver { ShouldThrowOnLoad = true };
@@ -188,7 +188,7 @@ public class SuspensionHostExtensionsTests
             IsLaunchingNew = Signal.Silent<RxVoid>(),
             IsResuming = Signal.Silent<RxVoid>(),
             ShouldPersistState = Signal.Silent<IDisposable>(),
-            ShouldInvalidateState = Signal.Silent<RxVoid>()
+            ShouldInvalidateState = Signal.Silent<RxVoid>(),
         };
 
         var driver = new TestSuspensionDriver { StateToLoad = new DummyAppState() };
@@ -213,7 +213,7 @@ public class SuspensionHostExtensionsTests
             IsLaunchingNew = Signal.Silent<RxVoid>(),
             IsResuming = Signal.Silent<RxVoid>(),
             ShouldPersistState = Signal.Silent<IDisposable>(),
-            ShouldInvalidateState = Signal.Silent<RxVoid>()
+            ShouldInvalidateState = Signal.Silent<RxVoid>(),
         };
 
         var driver = new TestSuspensionDriver { StateToLoad = new DummyAppState() };
@@ -375,8 +375,7 @@ public class SuspensionHostExtensionsTests
 
         using var disposable = host.SetupDefaultSuspendResume(driver);
 
-        var token = Scope.Empty;
-        persistSubject.OnNext(token);
+        persistSubject.OnNext(Scope.Empty);
 
         await Assert.That(driver.SaveStateCallCount).IsEqualTo(1);
         await Assert.That(driver.LastSavedState).IsSameReferenceAs(appState);
@@ -392,7 +391,7 @@ public class SuspensionHostExtensionsTests
             IsLaunchingNew = Signal.Silent<RxVoid>(),
             IsResuming = Signal.Silent<RxVoid>(),
             ShouldPersistState = Signal.Silent<IDisposable>(),
-            ShouldInvalidateState = Signal.Silent<RxVoid>()
+            ShouldInvalidateState = Signal.Silent<RxVoid>(),
         };
 
         var previousDrivers = Splat.Locator.Current.GetServices<ISuspensionDriver>().ToList();
@@ -425,7 +424,7 @@ public class SuspensionHostExtensionsTests
             IsResuming = Signal.Silent<RxVoid>(),
             ShouldPersistState = Signal.Silent<IDisposable>(),
             ShouldInvalidateState = Signal.Silent<RxVoid>(),
-            CreateNewAppState = static () => new DummyAppState()
+            CreateNewAppState = static () => new DummyAppState(),
         };
 
         var driver = new TestSuspensionDriver { StateToLoad = new DummyAppState() };

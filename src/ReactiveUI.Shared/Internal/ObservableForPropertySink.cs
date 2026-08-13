@@ -4,6 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 
 #if REACTIVE_SHIM
 namespace ReactiveUI.Reactive.Internal;
@@ -95,12 +96,15 @@ internal sealed class ObservableForPropertySink<TSender, TValue>(
         }
 
         /// <inheritdoc/>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void OnNext(IObservedChange<object?, object?> value) => Emit();
 
         /// <inheritdoc/>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void OnError(Exception error) => _downstream.OnError(error);
 
         /// <inheritdoc/>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void OnCompleted() => _downstream.OnCompleted();
 
         /// <summary>Reads the current property value and forwards it as an observed change, honoring the distinct gate.</summary>

@@ -3,7 +3,9 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 
 namespace ReactiveUI;
 
@@ -11,6 +13,7 @@ namespace ReactiveUI;
 /// <remarks>
 /// When the nullable value is null, the conversion fails and returns false.
 /// </remarks>
+[DebuggerDisplay("{FromType}, {ToType}")]
 public sealed class NullableDecimalToDecimalTypeConverter : IBindingTypeConverter<decimal?, decimal>
 {
     /// <inheritdoc/>
@@ -20,6 +23,7 @@ public sealed class NullableDecimalToDecimalTypeConverter : IBindingTypeConverte
     public Type ToType => typeof(decimal);
 
     /// <inheritdoc/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public int GetAffinityForObjects() => BindingAffinity.DefaultInternalTypeConverter;
 
     /// <inheritdoc/>

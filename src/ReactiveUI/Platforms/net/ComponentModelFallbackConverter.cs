@@ -3,9 +3,15 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 
+#if REACTIVE_SHIM
+namespace ReactiveUI.Reactive;
+#else
 namespace ReactiveUI;
+#endif
 
 /// <summary>
 /// Fallback converter using System.ComponentModel.TypeDescriptor for reflection-based type conversion.
@@ -18,12 +24,14 @@ namespace ReactiveUI;
 public sealed class ComponentModelFallbackConverter : IBindingFallbackConverter
 {
     /// <inheritdoc/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public int GetAffinityForObjects(
         [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] Type fromType,
         [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] Type toType) =>
         ComponentModelConversion.GetAffinity(fromType, toType);
 
     /// <inheritdoc/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool TryConvert(
         [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] Type fromType,
         object from,

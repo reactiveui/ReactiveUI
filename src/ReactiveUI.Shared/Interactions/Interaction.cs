@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics;
 using ReactiveUI.Primitives.Disposables;
 
 #if REACTIVE_SHIM
@@ -11,6 +12,15 @@ namespace ReactiveUI.Reactive;
 namespace ReactiveUI;
 #endif
 /// <summary>Represents an interaction between collaborating application components.</summary>
+/// <typeparam name="TInput">
+/// The interaction's input type.
+/// </typeparam>
+/// <typeparam name="TOutput">
+/// The interaction's output type.
+/// </typeparam>
+/// <param name="handlerScheduler">
+/// The scheduler to use when invoking handlers, which defaults to <c>Sequencer.CurrentThread</c> if <see langword="null"/>.
+/// </param>
 /// <remarks>
 /// <para>
 /// Interactions allow collaborating components in an application to ask each other questions. Typically,
@@ -70,15 +80,7 @@ namespace ReactiveUI;
 /// ]]>
 /// </code>
 /// </example>
-/// <typeparam name="TInput">
-/// The interaction's input type.
-/// </typeparam>
-/// <typeparam name="TOutput">
-/// The interaction's output type.
-/// </typeparam>
-/// <param name="handlerScheduler">
-/// The scheduler to use when invoking handlers, which defaults to <c>Sequencer.CurrentThread</c> if <see langword="null"/>.
-/// </param>
+[DebuggerDisplay("Interaction")]
 public class Interaction<TInput, TOutput>(ISequencer? handlerScheduler = null) : IInteraction<TInput, TOutput>
 {
     /// <summary>The ordered list of registered interaction handlers.</summary>

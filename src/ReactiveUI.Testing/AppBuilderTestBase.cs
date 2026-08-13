@@ -4,6 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 
 namespace ReactiveUI.Testing;
 
@@ -17,12 +18,14 @@ public abstract class AppBuilderTestBase
     /// <summary>Runs the application builder test asynchronous.</summary>
     /// <param name="testBody">The test body.</param>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     protected static Task RunAppBuilderTestAsync(Func<Task> testBody) =>
         RxTest.AppBuilderTestAsync(testBody);
 
     /// <summary>Runs the application builder test asynchronous.</summary>
     /// <param name="testBody">The test body.</param>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     protected static Task RunAppBuilderTestAsync(Action testBody) =>
         RxTest.AppBuilderTestAsync(() =>
         {

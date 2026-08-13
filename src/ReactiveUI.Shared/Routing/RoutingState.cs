@@ -5,6 +5,7 @@
 
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
 
@@ -64,7 +65,6 @@ public class RoutingState : ReactiveObject
     private readonly ISequencer _scheduler;
 
     /// <summary>Initializes a new instance of the <see cref="RoutingState"/> class using the default main thread scheduler.</summary>
-#pragma warning disable CS8618
     public RoutingState()
         : this(null)
     {
@@ -130,6 +130,7 @@ public class RoutingState : ReactiveObject
         nameof(Navigate),
         nameof(NavigateAndReset),
         nameof(CurrentViewModel))]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #if NET6_0_OR_GREATER
     private void SetupRx(in StreamingContext sc) => SetupRx();
 #else
@@ -143,6 +144,7 @@ public class RoutingState : ReactiveObject
         nameof(Navigate),
         nameof(NavigateAndReset),
         nameof(CurrentViewModel))]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void SetupRx()
     {
         var navigateScheduler = _scheduler;

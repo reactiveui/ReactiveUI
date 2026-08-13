@@ -2,9 +2,10 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
+using System.Runtime.CompilerServices;
+
 #if !NET
 using System.Diagnostics.CodeAnalysis;
-
 namespace System;
 
 /// <summary>
@@ -20,6 +21,7 @@ internal readonly struct Index : IEquatable<Index>
     /// <summary>Initializes a new instance of the <see cref="Index"/> struct.</summary>
     /// <param name="value">The index value. Must be zero or positive.</param>
     /// <param name="fromEnd">Indicates whether the index is counted from the start or the end.</param>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="value"/> is negative.</exception>
     public Index(int value, bool fromEnd = false)
     {
         if (value < 0)
@@ -46,6 +48,7 @@ internal readonly struct Index : IEquatable<Index>
     /// <param name="left">The first index.</param>
     /// <param name="right">The second index.</param>
     /// <returns><see langword="true"/> if the indexes are equal; otherwise <see langword="false"/>.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool operator ==(Index left, Index right) => left.Equals(right);
 
     /// <summary>Determines whether two indexes are not equal.</summary>

@@ -4,6 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Collections.Specialized;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using Foundation;
 using UIKit;
@@ -16,6 +17,7 @@ namespace ReactiveUI;
 /// <summary>Class used to extract a common API between <see cref="UICollectionView"/> and <see cref="UICollectionViewCell"/>.</summary>
 /// <typeparam name="TSource">The type of the source.</typeparam>
 [SuppressMessage("Design", "SST1452:Remove unused type parameters", Justification = "TSource is part of the public generic API and preserves call-site type safety for consumers.")]
+[DebuggerDisplay("{Collection}")]
 public class CollectionViewSectionInformation<TSource> : ISectionInformation<UICollectionViewCell>
 {
     /// <inheritdoc/>

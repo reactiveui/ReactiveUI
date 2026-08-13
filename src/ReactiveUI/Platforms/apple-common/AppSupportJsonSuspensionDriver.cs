@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Runtime.CompilerServices;
@@ -37,6 +38,7 @@ namespace ReactiveUI;
 /// The persisted file name is <c>state.dat</c>.
 /// </para>
 /// </remarks>
+[DebuggerDisplay("AppSupportJsonSuspensionDriver")]
 public sealed class AppSupportJsonSuspensionDriver : ISuspensionDriver
 {
     /// <summary>The default subdirectory used beneath Application Support.</summary>

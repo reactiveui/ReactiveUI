@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Maui.Controls;
 using Splat;
@@ -28,6 +29,7 @@ namespace ReactiveUI.Maui;
 [RequiresDynamicCode(
     "If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, or generic "
     + "constraints), trimming can't validate that the requirements of those annotations are met.")]
+[DebuggerDisplay("{ViewModel}")]
 public class ViewModelViewHost<
     [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes
         .PublicParameterlessConstructor)]
@@ -54,6 +56,7 @@ TViewModel> : ViewModelViewHost, IViewFor<TViewModel>
     /// </summary>
     /// <param name="viewModel">The view model to resolve a view for.</param>
     /// <param name="contract">The contract to use when resolving the view.</param>
+    /// <exception cref="InvalidOperationException"><paramref name="viewModel"/> is not assignable to <typeparamref name="TViewModel"/>, or no view is registered for it.</exception>
     /// <remarks>
     /// This method is excluded from code coverage because it is only exercised by the inherited runtime subscription wiring,
     /// which is skipped during unit tests due to the <see cref="ModeDetector.InUnitTestRunner"/> check.

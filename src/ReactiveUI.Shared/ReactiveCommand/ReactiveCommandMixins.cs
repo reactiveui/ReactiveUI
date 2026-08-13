@@ -5,6 +5,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using ReactiveUI.Primitives.Disposables;
 
@@ -36,6 +37,7 @@ public static class ReactiveCommandMixins
         /// </summary>
         /// <param name="command">The command to invoke for each element. Executed only if its <see cref="ICommand.CanExecute(object?)"/> returns true. May be null.</param>
         /// <returns>An <see cref="IDisposable"/> that unsubscribes from the sequence and stops invoking the command.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IDisposable InvokeCommand(ICommand? command) =>
             item.Subscribe(new DelegateObserver<T>(value =>
             {
@@ -70,6 +72,7 @@ public static class ReactiveCommandMixins
         /// <param name="commandProperty">An expression identifying the command property on the target object.</param>
         /// <returns>An <see cref="IDisposable"/> that unsubscribes from the sequence and stops invoking the command.</returns>
         [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IDisposable InvokeCommand<TTarget>(
             TTarget? target,
             Expression<Func<TTarget, ICommand?>> commandProperty)
@@ -86,6 +89,7 @@ public static class ReactiveCommandMixins
         /// <param name="commandProperty">An expression identifying the reactive command property on the target object.</param>
         /// <returns>An <see cref="IDisposable"/> that unsubscribes from the sequence and stops invoking the command.</returns>
         [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IDisposable InvokeCommand<TResult, TTarget>(
             TTarget? target,
             Expression<Func<TTarget, ReactiveCommandBase<T, TResult>?>> commandProperty)

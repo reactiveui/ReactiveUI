@@ -3,6 +3,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics;
+
 #if HAS_WINUI
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -25,6 +27,9 @@ namespace ReactiveUI;
 #endif
 
 /// <summary>A <see cref="UserControl"/> that is reactive.</summary>
+/// <typeparam name="TViewModel">
+/// The type of the view model backing the view.
+/// </typeparam>
 /// <remarks>
 /// <para>
 /// This class is a <see cref="UserControl"/> that is also reactive. That is, it implements <see cref="IViewFor{TViewModel}"/>.
@@ -81,12 +86,10 @@ namespace ReactiveUI;
 /// </code>
 /// </para>
 /// </remarks>
-/// <typeparam name="TViewModel">
-/// The type of the view model backing the view.
-/// </typeparam>
 #if HAS_UNO && IOS
 [global::Foundation.Register]
 #endif
+[DebuggerDisplay("{BindingRoot}, {ViewModel}")]
 public
 #if HAS_UNO
     partial
@@ -117,12 +120,12 @@ public
     /// Initializes a new instance of the <see cref="ReactiveUserControl{TViewModel}"/> class.
     /// Native constructor, do not use explicitly.
     /// </summary>
+    /// <param name="javaReference">A <see cref="IntPtr"/> containing a Java Native Interface (JNI) object reference.</param>
+    /// <param name="transfer">A <see cref="JniHandleOwnership"/> indicating how to handle handle.</param>
     /// <remarks>
     /// Used by the Xamarin Runtime to materialize native
     /// objects that may have been collected in the managed world.
     /// </remarks>
-    /// <param name="javaReference">A <see cref="IntPtr"/> containing a Java Native Interface (JNI) object reference.</param>
-    /// <param name="transfer">A <see cref="JniHandleOwnership"/> indicating how to handle handle.</param>
     protected ReactiveUserControl(IntPtr javaReference, global::Android.Runtime.JniHandleOwnership transfer)
         : base(javaReference, transfer)
     {

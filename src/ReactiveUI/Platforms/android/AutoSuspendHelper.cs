@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Runtime.CompilerServices;
 using ReactiveUI.Internal;
 using ReactiveUI.Primitives.Disposables;
 using Splat;
@@ -44,6 +45,7 @@ namespace ReactiveUI;
 /// </code>
 /// </para>
 /// </remarks>
+[System.Diagnostics.DebuggerDisplay("AutoSuspendHelper")]
 public class AutoSuspendHelper : IEnableLogger, IDisposable
 {
     /// <summary>Relays Activity create callbacks along with the saved-state bundle.</summary>
@@ -59,7 +61,7 @@ public class AutoSuspendHelper : IEnableLogger, IDisposable
     private readonly Signal<Bundle?> _onSaveInstanceState = new();
 
     /// <summary>Tracks whether this instance has already been disposed.</summary>
-    private bool _disposedValue;
+    private int _disposedValue;
 
     /// <summary>Initializes static members of the <see cref="AutoSuspendHelper"/> class.</summary>
     static AutoSuspendHelper() => AppDomain.CurrentDomain.UnhandledException +=
@@ -106,20 +108,15 @@ public class AutoSuspendHelper : IEnableLogger, IDisposable
     /// <param name="disposing">If we are disposing of managed objects or not.</param>
     protected virtual void Dispose(bool disposing)
     {
-        if (_disposedValue)
+        if (Interlocked.Exchange(ref _disposedValue, 1) != 0 || !disposing)
         {
             return;
         }
 
-        if (disposing)
-        {
-            _onCreate.Dispose();
-            _onPause.Dispose();
-            _onRestart.Dispose();
-            _onSaveInstanceState.Dispose();
-        }
-
-        _disposedValue = true;
+        _onCreate.Dispose();
+        _onPause.Dispose();
+        _onRestart.Dispose();
+        _onSaveInstanceState.Dispose();
     }
 
     /// <summary>
@@ -154,9 +151,11 @@ public class AutoSuspendHelper : IEnableLogger, IDisposable
             }
 
             /// <inheritdoc/>
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public void OnError(Exception error) => downstream.OnError(error);
 
             /// <inheritdoc/>
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public void OnCompleted() => downstream.OnCompleted();
         }
     }
@@ -177,12 +176,15 @@ public class AutoSuspendHelper : IEnableLogger, IDisposable
         private sealed class Sink(IObserver<IDisposable> downstream) : IObserver<RxVoid>
         {
             /// <inheritdoc/>
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public void OnNext(RxVoid value) => downstream.OnNext(EmptyDisposable.Instance);
 
             /// <inheritdoc/>
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public void OnError(Exception error) => downstream.OnError(error);
 
             /// <inheritdoc/>
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public void OnCompleted() => downstream.OnCompleted();
         }
     }
@@ -191,13 +193,13 @@ public class AutoSuspendHelper : IEnableLogger, IDisposable
     /// Handles Android activity lifecycle events and forwards them to the associated AutoSuspendHelper instance for
     /// reactive processing.
     /// </summary>
-    /// <remarks>This class implements the Application.IActivityLifecycleCallbacks interface to observe
-    /// activity lifecycle changes. It is intended for internal use to bridge Android lifecycle events to reactive
-    /// streams managed by AutoSuspendHelper.</remarks>
     /// <param name="onCreate">Relays Activity create callbacks along with the saved-state bundle.</param>
     /// <param name="onRestart">Relays Activity resume callbacks.</param>
     /// <param name="onPause">Relays Activity pause callbacks.</param>
     /// <param name="onSaveInstanceState">Relays Activity save-instance-state callbacks along with the out bundle.</param>
+    /// <remarks>This class implements the Application.IActivityLifecycleCallbacks interface to observe
+    /// activity lifecycle changes. It is intended for internal use to bridge Android lifecycle events to reactive
+    /// streams managed by AutoSuspendHelper.</remarks>
     private sealed class ObservableLifecycle(
         Signal<Bundle?> onCreate,
         Signal<RxVoid> onRestart,
@@ -205,10 +207,12 @@ public class AutoSuspendHelper : IEnableLogger, IDisposable
         Signal<Bundle?> onSaveInstanceState) : Java.Lang.Object, Application.IActivityLifecycleCallbacks
     {
         /// <inheritdoc/>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void OnActivityCreated(Activity? activity, Bundle? savedInstanceState) =>
             onCreate.OnNext(savedInstanceState);
 
         /// <inheritdoc/>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void OnActivityResumed(Activity? activity) => onRestart.OnNext(RxVoid.Default);
 
         /// <inheritdoc/>
@@ -220,6 +224,7 @@ public class AutoSuspendHelper : IEnableLogger, IDisposable
         }
 
         /// <inheritdoc/>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void OnActivityPaused(Activity? activity) => onPause.OnNext(RxVoid.Default);
 
         /// <inheritdoc/>

@@ -27,8 +27,8 @@ public class BlazorTestContext : IDisposable
     /// <summary>The renderer that hosts the components, created lazily on the first render.</summary>
     private BlazorTestRenderer? _renderer;
 
-    /// <summary>Indicates whether this context has been disposed.</summary>
-    private bool _disposed;
+    /// <summary>Set to 1 by the first thread to dispose this context; 0 while it is still live.</summary>
+    private int _disposed;
 
     /// <summary>Gets the service collection used to build the component service provider. Configure it before the first render.</summary>
     protected IServiceCollection Services => _services;
@@ -64,17 +64,12 @@ public class BlazorTestContext : IDisposable
     /// <param name="disposing"><see langword="true"/> to release managed resources.</param>
     protected virtual void Dispose(bool disposing)
     {
-        if (_disposed)
+        if (Interlocked.Exchange(ref _disposed, 1) != 0 || !disposing)
         {
             return;
         }
 
-        if (disposing)
-        {
-            _renderer?.Dispose();
-            (_serviceProvider as IDisposable)?.Dispose();
-        }
-
-        _disposed = true;
+        _renderer?.Dispose();
+        (_serviceProvider as IDisposable)?.Dispose();
     }
 }

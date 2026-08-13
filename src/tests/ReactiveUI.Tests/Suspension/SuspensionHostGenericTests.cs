@@ -161,9 +161,8 @@ public class SuspensionHostGenericTests
     {
         using var host = new SuspensionHost<DummyAppState>();
         var wasTriggered = false;
-        var disposable = Scope.Empty;
 
-        host.ShouldPersistState = Signal.Emit(disposable, Sequencer.Immediate);
+        host.ShouldPersistState = Signal.Emit(Scope.Empty, Sequencer.Immediate);
 
         using var subscription = host.ShouldPersistState.Subscribe(_ => wasTriggered = true);
 
@@ -326,9 +325,7 @@ public class SuspensionHostGenericTests
         var state = new DummyAppState { Value = SampleStateValue };
         host.AppStateValue = state;
 
-        var untypedHost = (ISuspensionHost)host;
-
-        await Assert.That(untypedHost.AppState).IsSameReferenceAs(state);
+        await Assert.That(((ISuspensionHost)host).AppState).IsSameReferenceAs(state);
     }
 
     /// <summary>Verifies the ISuspensionHost.AppState setter updates the typed property for a valid value.</summary>
@@ -338,9 +335,8 @@ public class SuspensionHostGenericTests
     {
         using var host = new SuspensionHost<DummyAppState>();
         var state = new DummyAppState { Value = SampleStateValue };
-        var untypedHost = (ISuspensionHost)host;
 
-        untypedHost.AppState = state;
+        ((ISuspensionHost)host).AppState = state;
 
         await Assert.That(host.AppStateValue).IsSameReferenceAs(state);
     }
@@ -351,9 +347,8 @@ public class SuspensionHostGenericTests
     public async Task ISuspensionHost_AppState_SetNull_SetsTypedPropertyToDefault()
     {
         using var host = new SuspensionHost<DummyAppState> { AppStateValue = new() };
-        var untypedHost = (ISuspensionHost)host;
 
-        untypedHost.AppState = null;
+        ((ISuspensionHost)host).AppState = null;
 
         await Assert.That(host.AppStateValue).IsNull();
     }
@@ -379,8 +374,7 @@ public class SuspensionHostGenericTests
         var expectedState = new DummyAppState { Value = FactoryStateValue };
         host.CreateNewAppStateTyped = () => expectedState;
 
-        var untypedHost = (ISuspensionHost)host;
-        var factory = untypedHost.CreateNewAppState;
+        var factory = ((ISuspensionHost)host).CreateNewAppState;
 
         await Assert.That(factory).IsNotNull();
         await Assert.That(factory()).IsSameReferenceAs(expectedState);
@@ -392,10 +386,8 @@ public class SuspensionHostGenericTests
     public async Task ISuspensionHost_CreateNewAppState_GetWhenTypedIsNull_ReturnsNull()
     {
         using var host = new SuspensionHost<DummyAppState> { CreateNewAppStateTyped = null };
-        var untypedHost = (ISuspensionHost)host;
-        var factory = untypedHost.CreateNewAppState;
 
-        await Assert.That((object?)factory).IsNull();
+        await Assert.That((object?)((ISuspensionHost)host).CreateNewAppState).IsNull();
     }
 
     /// <summary>Verifies the ISuspensionHost.CreateNewAppState setter updates the typed factory for a valid factory.</summary>
@@ -405,9 +397,8 @@ public class SuspensionHostGenericTests
     {
         using var host = new SuspensionHost<DummyAppState>();
         var expectedState = new DummyAppState { Value = FactoryStateValue };
-        var untypedHost = (ISuspensionHost)host;
 
-        untypedHost.CreateNewAppState = () => expectedState;
+        ((ISuspensionHost)host).CreateNewAppState = () => expectedState;
 
         var typedFactory = host.CreateNewAppStateTyped;
         await Assert.That(typedFactory).IsNotNull();
@@ -420,9 +411,8 @@ public class SuspensionHostGenericTests
     public async Task ISuspensionHost_CreateNewAppState_SetNull_SetsTypedPropertyToNull()
     {
         using var host = new SuspensionHost<DummyAppState> { CreateNewAppStateTyped = static () => new() };
-        var untypedHost = (ISuspensionHost)host;
 
-        untypedHost.CreateNewAppState = null;
+        ((ISuspensionHost)host).CreateNewAppState = null;
 
         await Assert.That(host.CreateNewAppStateTyped is null).IsTrue();
     }
@@ -466,7 +456,7 @@ public class SuspensionHostGenericTests
             IsUnpausing = Signal.Emit(RxVoid.Default, Sequencer.Immediate),
             IsContinuing = Signal.Emit(RxVoid.Default, Sequencer.Immediate),
             ShouldPersistState = Signal.Emit(Scope.Empty, Sequencer.Immediate),
-            ShouldInvalidateState = Signal.Emit(RxVoid.Default, Sequencer.Immediate)
+            ShouldInvalidateState = Signal.Emit(RxVoid.Default, Sequencer.Immediate),
         };
 
         host.Dispose();

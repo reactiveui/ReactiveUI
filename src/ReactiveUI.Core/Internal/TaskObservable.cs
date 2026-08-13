@@ -3,7 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using ReactiveUI.Primitives.Disposables;
+using System.Runtime.CompilerServices;
 
 namespace ReactiveUI.Internal;
 
@@ -16,31 +16,6 @@ namespace ReactiveUI.Internal;
 public sealed class TaskObservable<T>(Task<T> task) : IObservable<T>
 {
     /// <inheritdoc/>
-    public IDisposable Subscribe(IObserver<T> observer)
-    {
-        ArgumentExceptionHelper.ThrowIfNull(observer);
-        _ = task.ContinueWith(
-            static (completed, state) =>
-            {
-                var observer = (IObserver<T>)state!;
-                if (completed.IsFaulted)
-                {
-                    observer.OnError(completed.Exception?.InnerException ?? completed.Exception!);
-                }
-                else if (completed.IsCanceled)
-                {
-                    observer.OnError(new TaskCanceledException(completed));
-                }
-                else
-                {
-                    observer.OnNext(completed.Result);
-                    observer.OnCompleted();
-                }
-            },
-            observer,
-            CancellationToken.None,
-            TaskContinuationOptions.ExecuteSynchronously,
-            TaskScheduler.Default);
-        return EmptyDisposable.Instance;
-    }
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public IDisposable Subscribe(IObserver<T> observer) => TaskObserverBridge.Subscribe(task, observer);
 }

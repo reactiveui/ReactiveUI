@@ -9,11 +9,11 @@ namespace ReactiveUI;
 public enum BindingDirection
 {
     /// <summary>The binding is updated only one way from the ViewModel.</summary>
-    OneWay,
+    OneWay = 0,
 
     /// <summary>The binding is updated from both the View and the ViewModel.</summary>
-    TwoWay,
+    TwoWay = 1,
 
     /// <summary>The binding is updated asynchronously one way from the ViewModel.</summary>
-    AsyncOneWay
+    AsyncOneWay = 2,
 }

@@ -3,11 +3,13 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics;
 using ReactiveUI.Builder.BlazorServer.Services;
 
 namespace ReactiveUI.Builder.BlazorServer.Models;
 
 /// <summary>Network event describing a change in the rooms list.</summary>
+[DebuggerDisplay("RoomEventMessage Kind={Kind}, RoomName={RoomName}")]
 public sealed class RoomEventMessage
 {
     /// <summary>Initializes a new instance of the <see cref="RoomEventMessage"/> class.</summary>

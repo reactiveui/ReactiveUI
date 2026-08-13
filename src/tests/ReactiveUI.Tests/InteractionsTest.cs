@@ -108,20 +108,22 @@ public class InteractionsTest
                 .Do(_ => x.SetOutput(OutputB)));
 
         using (handler1A)
-        using (handler1B)
         {
-            var result = interaction
-                .Handle(RxVoid.Default).Collect();
+            using (handler1B)
+            {
+                var result = interaction
+                    .Handle(RxVoid.Default).Collect();
 
-            const double PartialAdvanceSeconds = 0.5;
-            const double RemainingAdvanceSeconds = 0.6;
+                const double PartialAdvanceSeconds = 0.5;
+                const double RemainingAdvanceSeconds = 0.6;
 
-            await Assert.That(result).IsEmpty();
-            scheduler.AdvanceBy(TimeSpan.FromSeconds(PartialAdvanceSeconds));
-            await Assert.That(result).IsEmpty();
-            scheduler.AdvanceBy(TimeSpan.FromSeconds(RemainingAdvanceSeconds));
-            await Assert.That(result).Count().IsEqualTo(1);
-            await Assert.That(result[0]).IsEqualTo(OutputB);
+                await Assert.That(result).IsEmpty();
+                scheduler.AdvanceBy(TimeSpan.FromSeconds(PartialAdvanceSeconds));
+                await Assert.That(result).IsEmpty();
+                scheduler.AdvanceBy(TimeSpan.FromSeconds(RemainingAdvanceSeconds));
+                await Assert.That(result).Count().IsEqualTo(1);
+                await Assert.That(result[0]).IsEqualTo(OutputB);
+            }
         }
 
         await Assert.That(handler1AWasCalled).IsFalse();
@@ -172,10 +174,12 @@ public class InteractionsTest
             using (handler1B)
             {
                 using (handler1C)
-                using (Assert.Multiple())
                 {
-                    await Assert.That(await interaction.Handle(false).FirstAsync()).IsEqualTo(OutputC);
-                    await Assert.That(await interaction.Handle(true).FirstAsync()).IsEqualTo(OutputC);
+                    using (Assert.Multiple())
+                    {
+                        await Assert.That(await interaction.Handle(false).FirstAsync()).IsEqualTo(OutputC);
+                        await Assert.That(await interaction.Handle(true).FirstAsync()).IsEqualTo(OutputC);
+                    }
                 }
 
                 using (Assert.Multiple())

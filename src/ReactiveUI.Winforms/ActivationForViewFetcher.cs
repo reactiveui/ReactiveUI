@@ -4,6 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Globalization;
 using System.Reflection;
 using ReactiveUI.Internal;
@@ -20,6 +21,7 @@ namespace ReactiveUI.Winforms;
 /// View is activated or deactivated. This is usually only used when porting
 /// ReactiveUI to a new UI framework.
 /// </summary>
+[DebuggerDisplay("ActivationForViewFetcher")]
 public class ActivationForViewFetcher : IActivationForViewFetcher, IEnableLogger
 {
     /// <summary>Caches whether the control is being used at design time.</summary>

@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Runtime.CompilerServices;
 using Android.Content;
 using Android.OS;
 using Context = Android.Content.Context;
@@ -24,54 +25,58 @@ public static class ContextExtensions
     extension(Context context)
     {
         /// <summary>Binds the service using <see cref="Bind.None"/> and exposes the <see cref="IBinder"/> as an observable sequence.</summary>
-        /// <returns>An observable sequence of <see cref="IBinder"/> instances for the bound service.</returns>
         /// <param name="intent">
         /// Identifies the service to connect to, either by an explicit component name or by a logical
         /// description (action, category, etc) matching an IntentFilter; bound here with default options.
         /// </param>
+        /// <returns>An observable sequence of <see cref="IBinder"/> instances for the bound service.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IObservable<IBinder?>
             ServiceBound(Intent intent) =>
             context.ServiceBound<IBinder>(intent, Bind.None);
 
         /// <summary>Binds the service using the supplied <paramref name="flags"/> and exposes the <see cref="IBinder"/> as an observable sequence.</summary>
-        /// <returns>An observable sequence of <see cref="IBinder"/> instances for the service bound with the given flags.</returns>
         /// <param name="intent">
         /// Identifies the service to connect to, either by an explicit component name or by a logical
         /// description (action, category, etc) matching an IntentFilter; bound here with the supplied flags.
         /// </param>
         /// <param name="flags">The bind options applied when connecting to the weakly-typed service.</param>
+        /// <returns>An observable sequence of <see cref="IBinder"/> instances for the service bound with the given flags.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IObservable<IBinder?>
             ServiceBound(Intent intent, Bind flags) =>
             context.ServiceBound<IBinder>(intent, flags);
 
         /// <summary>Binds the service using <see cref="Bind.None"/> and exposes a strongly-typed <typeparamref name="TBinder"/> as an observable sequence.</summary>
-        /// <returns>An observable sequence of <typeparamref name="TBinder"/> instances for the bound service.</returns>
+        /// <typeparam name="TBinder">The binder type to cast each connected service binder to (bound with default options).</typeparam>
         /// <param name="intent">
         /// Identifies the typed service to connect to, either by an explicit component name or by a logical
         /// description (action, category, etc) matching an IntentFilter; bound here with default options.
         /// </param>
-        /// <typeparam name="TBinder">The binder type to cast each connected service binder to (bound with default options).</typeparam>
+        /// <returns>An observable sequence of <typeparamref name="TBinder"/> instances for the bound service.</returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage(
             "Design",
             "SST2307:A generic method's type parameter appears in no parameter, so no caller can infer it",
             Justification = "'TBinder' is the binder contract the caller names explicitly to identify and cast the bound service; there is no argument it could be inferred from.")]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IObservable<TBinder?> ServiceBound<TBinder>(
             Intent intent)
             where TBinder : class, IBinder =>
             context.ServiceBound<TBinder>(intent, Bind.None);
 
         /// <summary>Binds the service using the supplied <paramref name="flags"/> and exposes a strongly-typed <typeparamref name="TBinder"/> as an observable sequence.</summary>
-        /// <returns>An observable sequence of <typeparamref name="TBinder"/> instances for the service bound with the given flags.</returns>
+        /// <typeparam name="TBinder">The binder type to cast each connected service binder to (bound with the supplied flags).</typeparam>
         /// <param name="intent">
         /// Identifies the typed service to connect to, either by an explicit component name or by a logical
         /// description (action, category, etc) matching an IntentFilter; bound here with the supplied flags.
         /// </param>
         /// <param name="flags">The bind options applied when connecting to the strongly-typed service.</param>
-        /// <typeparam name="TBinder">The binder type to cast each connected service binder to (bound with the supplied flags).</typeparam>
+        /// <returns>An observable sequence of <typeparamref name="TBinder"/> instances for the service bound with the given flags.</returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage(
             "Design",
             "SST2307:A generic method's type parameter appears in no parameter, so no caller can infer it",
             Justification = "'TBinder' is the binder contract the caller names explicitly to identify and cast the bound service; there is no argument it could be inferred from.")]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IObservable<TBinder?> ServiceBound<TBinder>(
             Intent intent,
             Bind flags)
@@ -129,10 +134,12 @@ public static class ContextExtensions
         private bool _disposed;
 
         /// <inheritdoc/>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         void IServiceConnection.OnServiceConnected(ComponentName? name, IBinder? service) =>
             _observer.OnNext((TBinder?)service);
 
         /// <inheritdoc/>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         void IServiceConnection.OnServiceDisconnected(ComponentName? name) => _observer.OnNext(null);
 
         /// <inheritdoc/>

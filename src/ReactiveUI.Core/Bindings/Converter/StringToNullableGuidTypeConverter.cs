@@ -12,21 +12,6 @@ public sealed class StringToNullableGuidTypeConverter : BindingTypeConverter<str
     public override int GetAffinityForObjects() => BindingAffinity.DefaultInternalTypeConverter;
 
     /// <inheritdoc/>
-    public override bool TryConvert(string? from, object? conversionHint, out Guid? result)
-    {
-        if (string.IsNullOrEmpty(from))
-        {
-            result = null;
-            return true;
-        }
-
-        if (Guid.TryParse(from, out var value))
-        {
-            result = value;
-            return true;
-        }
-
-        result = null;
-        return false;
-    }
+    public override bool TryConvert(string? from, object? conversionHint, out Guid? result) =>
+        NullableValueConversion.TryConvert(from, Guid.TryParse, out result);
 }

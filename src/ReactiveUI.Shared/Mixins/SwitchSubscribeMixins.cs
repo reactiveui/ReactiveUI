@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Runtime.CompilerServices;
 using ReactiveUI.Primitives.Disposables;
 
 #if REACTIVE_SHIM
@@ -530,12 +531,15 @@ public static class SwitchSubscribeMixins
             private sealed class InnerObserver(Sink parent, ulong id) : IObserver<TResult>
             {
                 /// <inheritdoc/>
+                [MethodImpl(MethodImplOptions.AggressiveInlining)]
                 public void OnNext(TResult value) => parent.InnerOnNext(id, value);
 
                 /// <inheritdoc/>
+                [MethodImpl(MethodImplOptions.AggressiveInlining)]
                 public void OnError(Exception error) => parent.InnerOnError(id, error);
 
                 /// <inheritdoc/>
+                [MethodImpl(MethodImplOptions.AggressiveInlining)]
                 public void OnCompleted() => parent.InnerOnCompleted(id);
             }
         }

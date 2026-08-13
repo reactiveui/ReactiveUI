@@ -3,6 +3,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Runtime.CompilerServices;
+
 #if REACTIVE_SHIM
 namespace ReactiveUI.Reactive;
 #else
@@ -62,6 +64,7 @@ public static class ReactiveCommand
     /// <param name="execute">The action to execute whenever the command is executed.</param>
     /// <returns>The ReactiveCommand instance.</returns>
     /// <exception cref="ArgumentNullException">execute.</exception>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ReactiveCommand<RxVoid, RxVoid> Create(Action execute) =>
         Create(execute, null, null);
 
@@ -70,6 +73,7 @@ public static class ReactiveCommand
     /// <param name="canExecute">An optional observable that dictates the availability of the command for execution.</param>
     /// <returns>The ReactiveCommand instance.</returns>
     /// <exception cref="ArgumentNullException">execute.</exception>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ReactiveCommand<RxVoid, RxVoid> Create(
         Action execute,
         IObservable<bool>? canExecute) =>
@@ -80,6 +84,7 @@ public static class ReactiveCommand
     /// <param name="outputScheduler">An optional scheduler that is used to surface events. Defaults to <c>RxSchedulers.MainThreadScheduler</c>.</param>
     /// <returns>The ReactiveCommand instance.</returns>
     /// <exception cref="ArgumentNullException">execute.</exception>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ReactiveCommand<RxVoid, RxVoid> Create(
         Action execute,
         ISequencer? outputScheduler) =>
@@ -117,6 +122,7 @@ public static class ReactiveCommand
     /// <param name="execute">The function to execute whenever the command is executed.</param>
     /// <returns>The ReactiveCommand instance.</returns>
     /// <exception cref="ArgumentNullException">execute.</exception>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ReactiveCommand<RxVoid, TResult> Create<TResult>(Func<TResult> execute) =>
         Create((Func<TResult>)execute, null, null);
 
@@ -126,6 +132,7 @@ public static class ReactiveCommand
     /// <param name="canExecute">An optional observable that dictates the availability of the command for execution.</param>
     /// <returns>The ReactiveCommand instance.</returns>
     /// <exception cref="ArgumentNullException">execute.</exception>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ReactiveCommand<RxVoid, TResult> Create<TResult>(
         Func<TResult> execute,
         IObservable<bool>? canExecute) =>
@@ -137,6 +144,7 @@ public static class ReactiveCommand
     /// <param name="outputScheduler">An optional scheduler that is used to surface events. Defaults to <c>RxSchedulers.MainThreadScheduler</c>.</param>
     /// <returns>The ReactiveCommand instance.</returns>
     /// <exception cref="ArgumentNullException">execute.</exception>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ReactiveCommand<RxVoid, TResult> Create<TResult>(
         Func<TResult> execute,
         ISequencer? outputScheduler) =>
@@ -169,6 +177,7 @@ public static class ReactiveCommand
     /// <param name="execute">The action to execute whenever the command is executed.</param>
     /// <returns>The ReactiveCommand instance.</returns>
     /// <exception cref="ArgumentNullException">execute.</exception>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ReactiveCommand<TParam, RxVoid> Create<TParam>(Action<TParam> execute) =>
         Create((Action<TParam>)execute, null, null);
 
@@ -178,6 +187,7 @@ public static class ReactiveCommand
     /// <param name="canExecute">An optional observable that dictates the availability of the command for execution.</param>
     /// <returns>The ReactiveCommand instance.</returns>
     /// <exception cref="ArgumentNullException">execute.</exception>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ReactiveCommand<TParam, RxVoid> Create<TParam>(
         Action<TParam> execute,
         IObservable<bool>? canExecute) =>
@@ -189,6 +199,7 @@ public static class ReactiveCommand
     /// <param name="outputScheduler">An optional scheduler that is used to surface events. Defaults to <c>RxSchedulers.MainThreadScheduler</c>.</param>
     /// <returns>The ReactiveCommand instance.</returns>
     /// <exception cref="ArgumentNullException">execute.</exception>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ReactiveCommand<TParam, RxVoid> Create<TParam>(
         Action<TParam> execute,
         ISequencer? outputScheduler) =>
@@ -230,6 +241,7 @@ public static class ReactiveCommand
     /// <param name="execute">The function to execute whenever the command is executed.</param>
     /// <returns>The ReactiveCommand instance.</returns>
     /// <exception cref="ArgumentNullException">execute.</exception>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ReactiveCommand<TParam, TResult> Create<TParam, TResult>(Func<TParam, TResult> execute) =>
         Create((Func<TParam, TResult>)execute, null, null);
 
@@ -242,6 +254,7 @@ public static class ReactiveCommand
     /// <param name="canExecute">An optional observable that dictates the availability of the command for execution.</param>
     /// <returns>The ReactiveCommand instance.</returns>
     /// <exception cref="ArgumentNullException">execute.</exception>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ReactiveCommand<TParam, TResult> Create<TParam, TResult>(
         Func<TParam, TResult> execute,
         IObservable<bool>? canExecute) =>
@@ -256,6 +269,7 @@ public static class ReactiveCommand
     /// <param name="outputScheduler">An optional scheduler that is used to surface events. Defaults to <c>RxSchedulers.MainThreadScheduler</c>.</param>
     /// <returns>The ReactiveCommand instance.</returns>
     /// <exception cref="ArgumentNullException">execute.</exception>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ReactiveCommand<TParam, TResult> Create<TParam, TResult>(
         Func<TParam, TResult> execute,
         ISequencer? outputScheduler) =>
@@ -288,6 +302,7 @@ public static class ReactiveCommand
     /// <param name="execute">The action to execute whenever the command is executed.</param>
     /// <returns>The ReactiveCommand instance.</returns>
     /// <exception cref="ArgumentNullException">execute.</exception>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ReactiveCommand<RxVoid, RxVoid> CreateRunInBackground(Action execute) =>
         CreateRunInBackground(execute, null, null, null);
 
@@ -296,6 +311,7 @@ public static class ReactiveCommand
     /// <param name="canExecute">An optional observable that dictates the availability of the command for execution.</param>
     /// <returns>The ReactiveCommand instance.</returns>
     /// <exception cref="ArgumentNullException">execute.</exception>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ReactiveCommand<RxVoid, RxVoid> CreateRunInBackground(
         Action execute,
         IObservable<bool>? canExecute) =>
@@ -307,6 +323,7 @@ public static class ReactiveCommand
     /// <param name="backgroundScheduler">The background scheduler.</param>
     /// <returns>The ReactiveCommand instance.</returns>
     /// <exception cref="ArgumentNullException">execute.</exception>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ReactiveCommand<RxVoid, RxVoid> CreateRunInBackground(
         Action execute,
         IObservable<bool>? canExecute,
@@ -319,6 +336,7 @@ public static class ReactiveCommand
     /// <param name="outputScheduler">An optional scheduler that is used to surface events. Defaults to <c>RxSchedulers.MainThreadScheduler</c>.</param>
     /// <returns>The ReactiveCommand instance.</returns>
     /// <exception cref="ArgumentNullException">execute.</exception>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ReactiveCommand<RxVoid, RxVoid> CreateRunInBackground(
         Action execute,
         ISequencer? backgroundScheduler,
@@ -361,6 +379,7 @@ public static class ReactiveCommand
     /// <param name="execute">The function to execute whenever the command is executed.</param>
     /// <returns>The ReactiveCommand instance.</returns>
     /// <exception cref="ArgumentNullException">execute.</exception>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ReactiveCommand<RxVoid, TResult> CreateRunInBackground<TResult>(Func<TResult> execute) =>
         CreateRunInBackground((Func<TResult>)execute, null, null, null);
 
@@ -372,6 +391,7 @@ public static class ReactiveCommand
     /// <param name="canExecute">An optional observable that dictates the availability of the command for execution.</param>
     /// <returns>The ReactiveCommand instance.</returns>
     /// <exception cref="ArgumentNullException">execute.</exception>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ReactiveCommand<RxVoid, TResult> CreateRunInBackground<TResult>(
         Func<TResult> execute,
         IObservable<bool>? canExecute) =>
@@ -386,6 +406,7 @@ public static class ReactiveCommand
     /// <param name="backgroundScheduler">The background scheduler.</param>
     /// <returns>The ReactiveCommand instance.</returns>
     /// <exception cref="ArgumentNullException">execute.</exception>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ReactiveCommand<RxVoid, TResult> CreateRunInBackground<TResult>(
         Func<TResult> execute,
         IObservable<bool>? canExecute,
@@ -401,6 +422,7 @@ public static class ReactiveCommand
     /// <param name="outputScheduler">An optional scheduler that is used to surface events. Defaults to <c>RxSchedulers.MainThreadScheduler</c>.</param>
     /// <returns>The ReactiveCommand instance.</returns>
     /// <exception cref="ArgumentNullException">execute.</exception>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ReactiveCommand<RxVoid, TResult> CreateRunInBackground<TResult>(
         Func<TResult> execute,
         ISequencer? backgroundScheduler,
@@ -436,6 +458,7 @@ public static class ReactiveCommand
     /// <param name="execute">The action to execute whenever the command is executed.</param>
     /// <returns>The ReactiveCommand instance.</returns>
     /// <exception cref="ArgumentNullException">execute.</exception>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ReactiveCommand<TParam, RxVoid> CreateRunInBackground<TParam>(Action<TParam> execute) =>
         CreateRunInBackground((Action<TParam>)execute, null, null, null);
 
@@ -445,6 +468,7 @@ public static class ReactiveCommand
     /// <param name="canExecute">An optional observable that dictates the availability of the command for execution.</param>
     /// <returns>The ReactiveCommand instance.</returns>
     /// <exception cref="ArgumentNullException">execute.</exception>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ReactiveCommand<TParam, RxVoid> CreateRunInBackground<TParam>(
         Action<TParam> execute,
         IObservable<bool>? canExecute) =>
@@ -457,6 +481,7 @@ public static class ReactiveCommand
     /// <param name="backgroundScheduler">The background scheduler.</param>
     /// <returns>The ReactiveCommand instance.</returns>
     /// <exception cref="ArgumentNullException">execute.</exception>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ReactiveCommand<TParam, RxVoid> CreateRunInBackground<TParam>(
         Action<TParam> execute,
         IObservable<bool>? canExecute,
@@ -470,6 +495,7 @@ public static class ReactiveCommand
     /// <param name="outputScheduler">An optional scheduler that is used to surface events. Defaults to <c>RxSchedulers.MainThreadScheduler</c>.</param>
     /// <returns>The ReactiveCommand instance.</returns>
     /// <exception cref="ArgumentNullException">execute.</exception>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ReactiveCommand<TParam, RxVoid> CreateRunInBackground<TParam>(
         Action<TParam> execute,
         ISequencer? backgroundScheduler,
@@ -515,6 +541,7 @@ public static class ReactiveCommand
     /// <param name="execute">The function to execute whenever the command is executed.</param>
     /// <returns>The ReactiveCommand instance.</returns>
     /// <exception cref="ArgumentNullException">execute.</exception>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ReactiveCommand<TParam, TResult> CreateRunInBackground<TParam, TResult>(Func<TParam, TResult> execute) =>
         CreateRunInBackground((Func<TParam, TResult>)execute, null, null, null);
 
@@ -527,6 +554,7 @@ public static class ReactiveCommand
     /// <param name="canExecute">An optional observable that dictates the availability of the command for execution.</param>
     /// <returns>The ReactiveCommand instance.</returns>
     /// <exception cref="ArgumentNullException">execute.</exception>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ReactiveCommand<TParam, TResult> CreateRunInBackground<TParam, TResult>(
         Func<TParam, TResult> execute,
         IObservable<bool>? canExecute) =>
@@ -542,6 +570,7 @@ public static class ReactiveCommand
     /// <param name="backgroundScheduler">The background scheduler.</param>
     /// <returns>The ReactiveCommand instance.</returns>
     /// <exception cref="ArgumentNullException">execute.</exception>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ReactiveCommand<TParam, TResult> CreateRunInBackground<TParam, TResult>(
         Func<TParam, TResult> execute,
         IObservable<bool>? canExecute,
@@ -558,6 +587,7 @@ public static class ReactiveCommand
     /// <param name="outputScheduler">An optional scheduler that is used to surface events. Defaults to <c>RxSchedulers.MainThreadScheduler</c>.</param>
     /// <returns>The ReactiveCommand instance.</returns>
     /// <exception cref="ArgumentNullException">execute.</exception>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ReactiveCommand<TParam, TResult> CreateRunInBackground<TParam, TResult>(
         Func<TParam, TResult> execute,
         ISequencer? backgroundScheduler,
@@ -594,6 +624,7 @@ public static class ReactiveCommand
     /// <typeparam name="TResult">The type of the command's result.</typeparam>
     /// <param name="childCommands">The child commands that the combined command will compose.</param>
     /// <returns>The CombinedReactiveCommand instance.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static CombinedReactiveCommand<TParam, TResult> CreateCombined<TParam, TResult>(
         IEnumerable<ReactiveCommandBase<TParam, TResult>> childCommands) =>
         CreateCombined(childCommands, null, null);
@@ -604,6 +635,7 @@ public static class ReactiveCommand
     /// <param name="childCommands">The child commands that the combined command will compose.</param>
     /// <param name="canExecute">An optional observable that dictates the availability of the command for execution.</param>
     /// <returns>The CombinedReactiveCommand instance.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static CombinedReactiveCommand<TParam, TResult> CreateCombined<TParam, TResult>(
         IEnumerable<ReactiveCommandBase<TParam, TResult>> childCommands,
         IObservable<bool>? canExecute) =>
@@ -615,12 +647,19 @@ public static class ReactiveCommand
     /// <param name="childCommands">The child commands that the combined command will compose.</param>
     /// <param name="outputScheduler">An optional scheduler that is used to surface events. Defaults to <c>RxSchedulers.MainThreadScheduler</c>.</param>
     /// <returns>The CombinedReactiveCommand instance.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static CombinedReactiveCommand<TParam, TResult> CreateCombined<TParam, TResult>(
         IEnumerable<ReactiveCommandBase<TParam, TResult>> childCommands,
         ISequencer? outputScheduler) =>
         CreateCombined(childCommands, null, outputScheduler);
 
     /// <summary>Creates a <see cref="CombinedReactiveCommand{TParam, TResult}"/> that composes all the provided child commands.</summary>
+    /// <typeparam name="TParam">
+    /// The type of the parameter passed through to command execution.
+    /// </typeparam>
+    /// <typeparam name="TResult">
+    /// The type of the command's result.
+    /// </typeparam>
     /// <param name="childCommands">
     /// The child commands that the combined command will compose.
     /// </param>
@@ -634,12 +673,6 @@ public static class ReactiveCommand
     /// <returns>
     /// The <c>CombinedReactiveCommand</c> instance.
     /// </returns>
-    /// <typeparam name="TParam">
-    /// The type of the parameter passed through to command execution.
-    /// </typeparam>
-    /// <typeparam name="TResult">
-    /// The type of the command's result.
-    /// </typeparam>
     public static CombinedReactiveCommand<TParam, TResult> CreateCombined<TParam, TResult>(
         IEnumerable<ReactiveCommandBase<TParam, TResult>> childCommands,
         IObservable<bool>? canExecute,
@@ -654,6 +687,7 @@ public static class ReactiveCommand
     /// <typeparam name="TResult">The type of the command's result.</typeparam>
     /// <param name="execute">Provides an observable representing the command's asynchronous execution logic.</param>
     /// <returns>The ReactiveCommand instance.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ReactiveCommand<RxVoid, TResult> CreateFromObservable<TResult>(
         Func<IObservable<TResult>> execute) =>
         CreateFromObservable(execute, null, null);
@@ -663,6 +697,7 @@ public static class ReactiveCommand
     /// <param name="execute">Provides an observable representing the command's asynchronous execution logic.</param>
     /// <param name="canExecute">An optional observable that dictates the availability of the command for execution.</param>
     /// <returns>The ReactiveCommand instance.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ReactiveCommand<RxVoid, TResult> CreateFromObservable<TResult>(
         Func<IObservable<TResult>> execute,
         IObservable<bool>? canExecute) =>
@@ -674,12 +709,16 @@ public static class ReactiveCommand
     /// <param name="outputScheduler">An optional scheduler that is used to surface events. Defaults to <c>RxSchedulers.MainThreadScheduler</c>.</param>
     /// <returns>The ReactiveCommand instance.</returns>
     /// <exception cref="ArgumentNullException">execute.</exception>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ReactiveCommand<RxVoid, TResult> CreateFromObservable<TResult>(
         Func<IObservable<TResult>> execute,
         ISequencer? outputScheduler) =>
         CreateFromObservable(execute, null, outputScheduler);
 
     /// <summary>Creates a parameterless <see cref="ReactiveCommand{TParam, TResult}"/> with asynchronous execution logic.</summary>
+    /// <typeparam name="TResult">
+    /// The type of the command's result.
+    /// </typeparam>
     /// <param name="execute">
     /// Provides an observable representing the command's asynchronous execution logic.
     /// </param>
@@ -692,9 +731,6 @@ public static class ReactiveCommand
     /// <returns>
     /// The <c>ReactiveCommand</c> instance.
     /// </returns>
-    /// <typeparam name="TResult">
-    /// The type of the command's result.
-    /// </typeparam>
     public static ReactiveCommand<RxVoid, TResult> CreateFromObservable<TResult>(
         Func<IObservable<TResult>> execute,
         IObservable<bool>? canExecute,
@@ -713,6 +749,7 @@ public static class ReactiveCommand
     /// <typeparam name="TResult">The type of the command's result.</typeparam>
     /// <param name="execute">Provides an observable representing the command's asynchronous execution logic.</param>
     /// <returns>The ReactiveCommand instance.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ReactiveCommand<TParam, TResult> CreateFromObservable<TParam, TResult>(
         Func<TParam, IObservable<TResult>> execute) =>
         CreateFromObservable((Func<TParam, IObservable<TResult>>)execute, null, null);
@@ -723,6 +760,7 @@ public static class ReactiveCommand
     /// <param name="execute">Provides an observable representing the command's asynchronous execution logic.</param>
     /// <param name="canExecute">An optional observable that dictates the availability of the command for execution.</param>
     /// <returns>The ReactiveCommand instance.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ReactiveCommand<TParam, TResult> CreateFromObservable<TParam, TResult>(
         Func<TParam, IObservable<TResult>> execute,
         IObservable<bool>? canExecute) =>
@@ -735,12 +773,19 @@ public static class ReactiveCommand
     /// <param name="outputScheduler">An optional scheduler that is used to surface events. Defaults to <c>RxSchedulers.MainThreadScheduler</c>.</param>
     /// <returns>The ReactiveCommand instance.</returns>
     /// <exception cref="ArgumentNullException">execute.</exception>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ReactiveCommand<TParam, TResult> CreateFromObservable<TParam, TResult>(
         Func<TParam, IObservable<TResult>> execute,
         ISequencer? outputScheduler) =>
         CreateFromObservable((Func<TParam, IObservable<TResult>>)execute, null, outputScheduler);
 
     /// <summary>Creates a <see cref="ReactiveCommand{TParam, TResult}"/> with asynchronous execution logic that takes a parameter of type <typeparamref name="TParam"/>.</summary>
+    /// <typeparam name="TParam">
+    /// The type of the parameter passed through to command execution.
+    /// </typeparam>
+    /// <typeparam name="TResult">
+    /// The type of the command's result.
+    /// </typeparam>
     /// <param name="execute">
     /// Provides an observable representing the command's asynchronous execution logic.
     /// </param>
@@ -753,12 +798,6 @@ public static class ReactiveCommand
     /// <returns>
     /// The <c>ReactiveCommand</c> instance.
     /// </returns>
-    /// <typeparam name="TParam">
-    /// The type of the parameter passed through to command execution.
-    /// </typeparam>
-    /// <typeparam name="TResult">
-    /// The type of the command's result.
-    /// </typeparam>
     public static ReactiveCommand<TParam, TResult> CreateFromObservable<TParam, TResult>(
         Func<TParam, IObservable<TResult>> execute,
         IObservable<bool>? canExecute,
@@ -776,6 +815,7 @@ public static class ReactiveCommand
     /// <typeparam name="TResult">The type of the command's result.</typeparam>
     /// <param name="execute">Provides a Task representing the command's asynchronous execution logic.</param>
     /// <returns>The ReactiveCommand instance.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ReactiveCommand<RxVoid, TResult> CreateFromTask<TResult>(
         Func<Task<TResult>> execute) =>
         CreateFromTask(execute, null, null);
@@ -785,6 +825,7 @@ public static class ReactiveCommand
     /// <param name="execute">Provides a Task representing the command's asynchronous execution logic.</param>
     /// <param name="canExecute">An optional observable that dictates the availability of the command for execution.</param>
     /// <returns>The ReactiveCommand instance.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ReactiveCommand<RxVoid, TResult> CreateFromTask<TResult>(
         Func<Task<TResult>> execute,
         IObservable<bool>? canExecute) =>
@@ -796,12 +837,16 @@ public static class ReactiveCommand
     /// <param name="outputScheduler">An optional scheduler that is used to surface events. Defaults to <c>RxSchedulers.MainThreadScheduler</c>.</param>
     /// <returns>The ReactiveCommand instance.</returns>
     /// <exception cref="ArgumentNullException">execute.</exception>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ReactiveCommand<RxVoid, TResult> CreateFromTask<TResult>(
         Func<Task<TResult>> execute,
         ISequencer? outputScheduler) =>
         CreateFromTask(execute, null, outputScheduler);
 
     /// <summary>Creates a parameterless <see cref="ReactiveCommand{TParam, TResult}"/> with asynchronous execution logic.</summary>
+    /// <typeparam name="TResult">
+    /// The type of the command's result.
+    /// </typeparam>
     /// <param name="execute">
     /// Provides a <see cref="Task"/> representing the command's asynchronous execution logic.
     /// </param>
@@ -814,9 +859,6 @@ public static class ReactiveCommand
     /// <returns>
     /// The <c>ReactiveCommand</c> instance.
     /// </returns>
-    /// <typeparam name="TResult">
-    /// The type of the command's result.
-    /// </typeparam>
     public static ReactiveCommand<RxVoid, TResult> CreateFromTask<TResult>(
         Func<Task<TResult>> execute,
         IObservable<bool>? canExecute,
@@ -831,6 +873,7 @@ public static class ReactiveCommand
     /// <typeparam name="TResult">The type of the command's result.</typeparam>
     /// <param name="execute">Provides a Task representing the command's asynchronous execution logic.</param>
     /// <returns>The ReactiveCommand instance.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ReactiveCommand<RxVoid, TResult> CreateFromTask<TResult>(
         Func<CancellationToken, Task<TResult>> execute) =>
         CreateFromTask((Func<CancellationToken, Task<TResult>>)execute, null, null);
@@ -840,6 +883,7 @@ public static class ReactiveCommand
     /// <param name="execute">Provides a Task representing the command's asynchronous execution logic.</param>
     /// <param name="canExecute">An optional observable that dictates the availability of the command for execution.</param>
     /// <returns>The ReactiveCommand instance.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ReactiveCommand<RxVoid, TResult> CreateFromTask<TResult>(
         Func<CancellationToken, Task<TResult>> execute,
         IObservable<bool>? canExecute) =>
@@ -851,12 +895,16 @@ public static class ReactiveCommand
     /// <param name="outputScheduler">An optional scheduler that is used to surface events. Defaults to <c>RxSchedulers.MainThreadScheduler</c>.</param>
     /// <returns>The ReactiveCommand instance.</returns>
     /// <exception cref="ArgumentNullException">execute.</exception>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ReactiveCommand<RxVoid, TResult> CreateFromTask<TResult>(
         Func<CancellationToken, Task<TResult>> execute,
         ISequencer? outputScheduler) =>
         CreateFromTask((Func<CancellationToken, Task<TResult>>)execute, null, outputScheduler);
 
     /// <summary>Creates a parameterless, cancellable <see cref="ReactiveCommand{TParam, TResult}"/> with asynchronous execution logic.</summary>
+    /// <typeparam name="TResult">
+    /// The type of the command's result.
+    /// </typeparam>
     /// <param name="execute">
     /// Provides a <see cref="Task"/> representing the command's asynchronous execution logic.
     /// </param>
@@ -869,9 +917,6 @@ public static class ReactiveCommand
     /// <returns>
     /// The <c>ReactiveCommand</c> instance.
     /// </returns>
-    /// <typeparam name="TResult">
-    /// The type of the command's result.
-    /// </typeparam>
     public static ReactiveCommand<RxVoid, TResult> CreateFromTask<TResult>(
         Func<CancellationToken, Task<TResult>> execute,
         IObservable<bool>? canExecute,
@@ -888,6 +933,7 @@ public static class ReactiveCommand
     /// <summary>Creates a parameterless reactive command with asynchronous task-based execution logic.</summary>
     /// <param name="execute">Provides a Task representing the command's asynchronous execution logic.</param>
     /// <returns>The ReactiveCommand instance.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ReactiveCommand<RxVoid, RxVoid> CreateFromTask(Func<Task> execute) =>
         CreateFromTask((Func<Task>)execute, null, null);
 
@@ -895,6 +941,7 @@ public static class ReactiveCommand
     /// <param name="execute">Provides a Task representing the command's asynchronous execution logic.</param>
     /// <param name="canExecute">An optional observable that dictates the availability of the command for execution.</param>
     /// <returns>The ReactiveCommand instance.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ReactiveCommand<RxVoid, RxVoid> CreateFromTask(
         Func<Task> execute,
         IObservable<bool>? canExecute) =>
@@ -905,6 +952,7 @@ public static class ReactiveCommand
     /// <param name="outputScheduler">An optional scheduler that is used to surface events. Defaults to <c>RxSchedulers.MainThreadScheduler</c>.</param>
     /// <returns>The ReactiveCommand instance.</returns>
     /// <exception cref="ArgumentNullException">execute.</exception>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ReactiveCommand<RxVoid, RxVoid> CreateFromTask(
         Func<Task> execute,
         ISequencer? outputScheduler) =>
@@ -936,6 +984,7 @@ public static class ReactiveCommand
     /// <summary>Creates a parameterless, cancellable reactive command with asynchronous task-based execution logic.</summary>
     /// <param name="execute">Provides a Task representing the command's asynchronous execution logic.</param>
     /// <returns>The ReactiveCommand instance.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ReactiveCommand<RxVoid, RxVoid> CreateFromTask(Func<CancellationToken, Task> execute) =>
         CreateFromTask((Func<CancellationToken, Task>)execute, null, null);
 
@@ -943,6 +992,7 @@ public static class ReactiveCommand
     /// <param name="execute">Provides a Task representing the command's asynchronous execution logic.</param>
     /// <param name="canExecute">An optional observable that dictates the availability of the command for execution.</param>
     /// <returns>The ReactiveCommand instance.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ReactiveCommand<RxVoid, RxVoid> CreateFromTask(
         Func<CancellationToken, Task> execute,
         IObservable<bool>? canExecute) =>
@@ -953,6 +1003,7 @@ public static class ReactiveCommand
     /// <param name="outputScheduler">An optional scheduler that is used to surface events. Defaults to <c>RxSchedulers.MainThreadScheduler</c>.</param>
     /// <returns>The ReactiveCommand instance.</returns>
     /// <exception cref="ArgumentNullException">execute.</exception>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ReactiveCommand<RxVoid, RxVoid> CreateFromTask(
         Func<CancellationToken, Task> execute,
         ISequencer? outputScheduler) =>
@@ -991,6 +1042,7 @@ public static class ReactiveCommand
     /// <typeparam name="TResult">The type of the command's result.</typeparam>
     /// <param name="execute">Provides a Task representing the command's asynchronous execution logic.</param>
     /// <returns>The ReactiveCommand instance.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ReactiveCommand<TParam, TResult> CreateFromTask<TParam, TResult>(
         Func<TParam, Task<TResult>> execute) =>
         CreateFromTask((Func<TParam, Task<TResult>>)execute, null, null);
@@ -1003,6 +1055,7 @@ public static class ReactiveCommand
     /// <param name="execute">Provides a Task representing the command's asynchronous execution logic.</param>
     /// <param name="canExecute">An optional observable that dictates the availability of the command for execution.</param>
     /// <returns>The ReactiveCommand instance.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ReactiveCommand<TParam, TResult> CreateFromTask<TParam, TResult>(
         Func<TParam, Task<TResult>> execute,
         IObservable<bool>? canExecute) =>
@@ -1017,12 +1070,19 @@ public static class ReactiveCommand
     /// <param name="outputScheduler">An optional scheduler that is used to surface events. Defaults to <c>RxSchedulers.MainThreadScheduler</c>.</param>
     /// <returns>The ReactiveCommand instance.</returns>
     /// <exception cref="ArgumentNullException">execute.</exception>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ReactiveCommand<TParam, TResult> CreateFromTask<TParam, TResult>(
         Func<TParam, Task<TResult>> execute,
         ISequencer? outputScheduler) =>
         CreateFromTask((Func<TParam, Task<TResult>>)execute, null, outputScheduler);
 
     /// <summary>Creates a <see cref="ReactiveCommand{TParam, TResult}"/> with asynchronous execution logic that takes a parameter of type <typeparamref name="TParam"/>.</summary>
+    /// <typeparam name="TParam">
+    /// The type of the parameter passed through to command execution.
+    /// </typeparam>
+    /// <typeparam name="TResult">
+    /// The type of the command's result.
+    /// </typeparam>
     /// <param name="execute">
     /// Provides a <see cref="Task"/> representing the command's asynchronous execution logic.
     /// </param>
@@ -1035,12 +1095,6 @@ public static class ReactiveCommand
     /// <returns>
     /// The <c>ReactiveCommand</c> instance.
     /// </returns>
-    /// <typeparam name="TParam">
-    /// The type of the parameter passed through to command execution.
-    /// </typeparam>
-    /// <typeparam name="TResult">
-    /// The type of the command's result.
-    /// </typeparam>
     public static ReactiveCommand<TParam, TResult> CreateFromTask<TParam, TResult>(
         Func<TParam, Task<TResult>> execute,
         IObservable<bool>? canExecute,
@@ -1061,6 +1115,7 @@ public static class ReactiveCommand
     /// <typeparam name="TResult">The type of the command's result.</typeparam>
     /// <param name="execute">Provides a Task representing the command's asynchronous execution logic.</param>
     /// <returns>The ReactiveCommand instance.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ReactiveCommand<TParam, TResult> CreateFromTask<TParam, TResult>(
         Func<TParam, CancellationToken, Task<TResult>> execute) =>
         CreateFromTask((Func<TParam, CancellationToken, Task<TResult>>)execute, null, null);
@@ -1073,6 +1128,7 @@ public static class ReactiveCommand
     /// <param name="execute">Provides a Task representing the command's asynchronous execution logic.</param>
     /// <param name="canExecute">An optional observable that dictates the availability of the command for execution.</param>
     /// <returns>The ReactiveCommand instance.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ReactiveCommand<TParam, TResult> CreateFromTask<TParam, TResult>(
         Func<TParam, CancellationToken, Task<TResult>> execute,
         IObservable<bool>? canExecute) =>
@@ -1087,12 +1143,19 @@ public static class ReactiveCommand
     /// <param name="outputScheduler">An optional scheduler that is used to surface events. Defaults to <c>RxSchedulers.MainThreadScheduler</c>.</param>
     /// <returns>The ReactiveCommand instance.</returns>
     /// <exception cref="ArgumentNullException">execute.</exception>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ReactiveCommand<TParam, TResult> CreateFromTask<TParam, TResult>(
         Func<TParam, CancellationToken, Task<TResult>> execute,
         ISequencer? outputScheduler) =>
         CreateFromTask((Func<TParam, CancellationToken, Task<TResult>>)execute, null, outputScheduler);
 
     /// <summary>Creates a <see cref="ReactiveCommand{TParam, TResult}"/> with asynchronous, cancellable execution logic that takes a parameter of type <typeparamref name="TParam"/>.</summary>
+    /// <typeparam name="TParam">
+    /// The type of the parameter passed through to command execution.
+    /// </typeparam>
+    /// <typeparam name="TResult">
+    /// The type of the command's result.
+    /// </typeparam>
     /// <param name="execute">
     /// Provides a <see cref="Task"/> representing the command's asynchronous execution logic.
     /// </param>
@@ -1105,12 +1168,6 @@ public static class ReactiveCommand
     /// <returns>
     /// The <c>ReactiveCommand</c> instance.
     /// </returns>
-    /// <typeparam name="TParam">
-    /// The type of the parameter passed through to command execution.
-    /// </typeparam>
-    /// <typeparam name="TResult">
-    /// The type of the command's result.
-    /// </typeparam>
     public static ReactiveCommand<TParam, TResult> CreateFromTask<TParam, TResult>(
         Func<TParam, CancellationToken, Task<TResult>> execute,
         IObservable<bool>? canExecute,
@@ -1128,6 +1185,7 @@ public static class ReactiveCommand
     /// <typeparam name="TParam">The type of the parameter passed through to command execution.</typeparam>
     /// <param name="execute">Provides a Task representing the command's asynchronous execution logic.</param>
     /// <returns>The ReactiveCommand instance.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ReactiveCommand<TParam, RxVoid> CreateFromTask<TParam>(
         Func<TParam, Task> execute) =>
         CreateFromTask((Func<TParam, Task>)execute, null, null);
@@ -1137,6 +1195,7 @@ public static class ReactiveCommand
     /// <param name="execute">Provides a Task representing the command's asynchronous execution logic.</param>
     /// <param name="canExecute">An optional observable that dictates the availability of the command for execution.</param>
     /// <returns>The ReactiveCommand instance.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ReactiveCommand<TParam, RxVoid> CreateFromTask<TParam>(
         Func<TParam, Task> execute,
         IObservable<bool>? canExecute) =>
@@ -1148,12 +1207,16 @@ public static class ReactiveCommand
     /// <param name="outputScheduler">An optional scheduler that is used to surface events. Defaults to <c>RxSchedulers.MainThreadScheduler</c>.</param>
     /// <returns>The ReactiveCommand instance.</returns>
     /// <exception cref="ArgumentNullException">execute.</exception>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ReactiveCommand<TParam, RxVoid> CreateFromTask<TParam>(
         Func<TParam, Task> execute,
         ISequencer? outputScheduler) =>
         CreateFromTask((Func<TParam, Task>)execute, null, outputScheduler);
 
     /// <summary>Creates a <see cref="ReactiveCommand{TParam, TResult}"/> with asynchronous execution logic that takes a parameter of type <typeparamref name="TParam"/>.</summary>
+    /// <typeparam name="TParam">
+    /// The type of the parameter passed through to command execution.
+    /// </typeparam>
     /// <param name="execute">
     /// Provides a <see cref="Task"/> representing the command's asynchronous execution logic.
     /// </param>
@@ -1166,9 +1229,6 @@ public static class ReactiveCommand
     /// <returns>
     /// The <c>ReactiveCommand</c> instance.
     /// </returns>
-    /// <typeparam name="TParam">
-    /// The type of the parameter passed through to command execution.
-    /// </typeparam>
     public static ReactiveCommand<TParam, RxVoid> CreateFromTask<TParam>(
         Func<TParam, Task> execute,
         IObservable<bool>? canExecute,
@@ -1188,6 +1248,7 @@ public static class ReactiveCommand
     /// <typeparam name="TParam">The type of the parameter passed through to command execution.</typeparam>
     /// <param name="execute">Provides a Task representing the command's asynchronous execution logic.</param>
     /// <returns>The ReactiveCommand instance.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ReactiveCommand<TParam, RxVoid> CreateFromTask<TParam>(
         Func<TParam, CancellationToken, Task> execute) =>
         CreateFromTask((Func<TParam, CancellationToken, Task>)execute, null, null);
@@ -1199,6 +1260,7 @@ public static class ReactiveCommand
     /// <param name="execute">Provides a Task representing the command's asynchronous execution logic.</param>
     /// <param name="canExecute">An optional observable that dictates the availability of the command for execution.</param>
     /// <returns>The ReactiveCommand instance.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ReactiveCommand<TParam, RxVoid> CreateFromTask<TParam>(
         Func<TParam, CancellationToken, Task> execute,
         IObservable<bool>? canExecute) =>
@@ -1212,12 +1274,16 @@ public static class ReactiveCommand
     /// <param name="outputScheduler">An optional scheduler that is used to surface events. Defaults to <c>RxSchedulers.MainThreadScheduler</c>.</param>
     /// <returns>The ReactiveCommand instance.</returns>
     /// <exception cref="ArgumentNullException">execute.</exception>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ReactiveCommand<TParam, RxVoid> CreateFromTask<TParam>(
         Func<TParam, CancellationToken, Task> execute,
         ISequencer? outputScheduler) =>
         CreateFromTask((Func<TParam, CancellationToken, Task>)execute, null, outputScheduler);
 
     /// <summary>Creates a <see cref="ReactiveCommand{TParam, TResult}"/> with asynchronous, cancellable execution logic that takes a parameter of type <typeparamref name="TParam"/>.</summary>
+    /// <typeparam name="TParam">
+    /// The type of the parameter passed through to command execution.
+    /// </typeparam>
     /// <param name="execute">
     /// Provides a <see cref="Task"/> representing the command's asynchronous execution logic.
     /// </param>
@@ -1230,9 +1296,6 @@ public static class ReactiveCommand
     /// <returns>
     /// The <c>ReactiveCommand</c> instance.
     /// </returns>
-    /// <typeparam name="TParam">
-    /// The type of the parameter passed through to command execution.
-    /// </typeparam>
     public static ReactiveCommand<TParam, RxVoid> CreateFromTask<TParam>(
         Func<TParam, CancellationToken, Task> execute,
         IObservable<bool>? canExecute,
@@ -1270,6 +1333,12 @@ public static class ReactiveCommand
     }
 
     /// <summary>Creates a <see cref="ReactiveCommand{TParam, TResult}"/> with asynchronous execution logic that takes a parameter of type <typeparamref name="TParam"/>.</summary>
+    /// <typeparam name="TParam">
+    /// The type of the parameter passed through to command execution.
+    /// </typeparam>
+    /// <typeparam name="TResult">
+    /// The type of the command's result.
+    /// </typeparam>
     /// <param name="execute">
     /// Provides an observable representing the command's asynchronous execution logic.
     /// </param>
@@ -1282,12 +1351,6 @@ public static class ReactiveCommand
     /// <returns>
     /// The <c>ReactiveCommand</c> instance.
     /// </returns>
-    /// <typeparam name="TParam">
-    /// The type of the parameter passed through to command execution.
-    /// </typeparam>
-    /// <typeparam name="TResult">
-    /// The type of the command's result.
-    /// </typeparam>
     internal static ReactiveCommand<TParam, TResult> CreateFromObservableCancellable<TParam, TResult>(
         Func<TParam, IObservable<(IObservable<TResult> Result, Action Cancel)>> execute,
         IObservable<bool>? canExecute = null,

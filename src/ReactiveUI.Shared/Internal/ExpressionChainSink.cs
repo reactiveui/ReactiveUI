@@ -5,6 +5,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 using ReactiveUI.Primitives.Disposables;
 
 #if REACTIVE_SHIM
@@ -150,6 +151,7 @@ internal sealed class ExpressionChainSink<TSender, TValue>(ExpressionChainParame
         /// <summary>Sets the parent value of the level after <paramref name="level"/>.</summary>
         /// <param name="level">The level index that produced the value.</param>
         /// <param name="value">The value the link produced (the parent for the next level).</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void SetNextParent(int level, object? value) => _levels[level + 1].SetParent(value);
 
         /// <summary>Handles a leaf raw emission: applies skip-initial, the non-null-parent filter, the cast, the
@@ -279,6 +281,7 @@ internal sealed class ExpressionChainSink<TSender, TValue>(ExpressionChainParame
             }
 
             /// <inheritdoc/>
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public void Dispose() => _subscription.Dispose();
 
             /// <summary>Builds the value fetcher for a link once, returning null when the member has no fetcher.</summary>
@@ -307,6 +310,7 @@ internal sealed class ExpressionChainSink<TSender, TValue>(ExpressionChainParame
 
             /// <summary>Forwards a link-subscription error to the downstream observer.</summary>
             /// <param name="error">The error to forward.</param>
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             private void ForwardError(Exception error) => sink._downstream.OnError(error);
 
             /// <summary>Reads the current value of this link from a parent using the cached fetcher.</summary>
@@ -347,9 +351,11 @@ internal sealed class ExpressionChainSink<TSender, TValue>(ExpressionChainParame
             private sealed class Observer(Level level) : IObserver<IObservedChange<object?, object?>>
             {
                 /// <inheritdoc/>
+                [MethodImpl(MethodImplOptions.AggressiveInlining)]
                 public void OnNext(IObservedChange<object?, object?> value) => level.OnNotification(value);
 
                 /// <inheritdoc/>
+                [MethodImpl(MethodImplOptions.AggressiveInlining)]
                 public void OnError(Exception error) => level.ForwardError(error);
 
                 /// <inheritdoc/>

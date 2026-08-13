@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 #if WINUI_TARGET
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 
@@ -22,6 +23,7 @@ namespace ReactiveUI;
 #endif
 
 /// <summary>Creates an observable for a property if available that is based on a DependencyProperty.</summary>
+[DebuggerDisplay("DependencyObjectObservableForProperty")]
 public class DependencyObjectObservableForProperty : ICreatesObservableForProperty
 {
     /// <summary>The binding affinity returned for objects that expose a matching DependencyProperty.</summary>

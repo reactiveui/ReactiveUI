@@ -3,10 +3,14 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics;
+using System.Runtime.CompilerServices;
+
 namespace ReactiveUI.Testing;
 
 /// <summary>Test Sequencer.</summary>
 /// <seealso cref="IDisposable" />
+[DebuggerDisplay("{CompletedPhases}, {CurrentPhase}")]
 public class TestSequencer : IDisposable
 {
     /// <summary>The number of participants that must reach the barrier before a phase advances.</summary>
@@ -16,7 +20,7 @@ public class TestSequencer : IDisposable
     private readonly Barrier _phaseSync;
 
     /// <summary>A value indicating whether this instance has already been disposed.</summary>
-    private bool _disposedValue;
+    private int _disposedValue;
 
     /// <summary>Initializes a new instance of the <see cref="TestSequencer"/> class.</summary>
     public TestSequencer() => _phaseSync = new(ParticipantCount);
@@ -37,6 +41,7 @@ public class TestSequencer : IDisposable
     /// <returns>
     /// A <see cref="Task" /> representing the asynchronous operation.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public Task AdvancePhaseAsync() => AdvancePhaseAsync(string.Empty);
 
     /// <summary>Advances this phase instance.</summary>
@@ -70,16 +75,11 @@ public class TestSequencer : IDisposable
     /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
     protected virtual void Dispose(bool disposing)
     {
-        if (_disposedValue)
+        if (Interlocked.Exchange(ref _disposedValue, 1) != 0 || !disposing)
         {
             return;
         }
 
-        if (disposing)
-        {
-            _phaseSync.Dispose();
-        }
-
-        _disposedValue = true;
+        _phaseSync.Dispose();
     }
 }

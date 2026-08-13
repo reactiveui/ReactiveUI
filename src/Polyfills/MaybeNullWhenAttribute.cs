@@ -3,9 +3,10 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-#if !NETCOREAPP3_0_OR_GREATER && !NETSTANDARD2_1_OR_GREATER
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 
+#if !NETCOREAPP3_0_OR_GREATER && !NETSTANDARD2_1_OR_GREATER
 namespace System.Diagnostics.CodeAnalysis;
 
 /// <summary>
@@ -38,7 +39,5 @@ internal sealed class MaybeNullWhenAttribute : Attribute
 
 #else
 using System.Diagnostics.CodeAnalysis;
-using System.Runtime.CompilerServices;
-
 [assembly: TypeForwardedTo(typeof(MaybeNullWhenAttribute))]
 #endif

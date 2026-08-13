@@ -38,9 +38,8 @@ public class GuidToStringTypeConverterTests
     public async Task TryConvert_EmptyGuid_Succeeds()
     {
         var converter = new GuidToStringTypeConverter();
-        var value = Guid.Empty;
 
-        var result = converter.TryConvert(value, null, out var output);
+        var result = converter.TryConvert(Guid.Empty, null, out var output);
 
         await Assert.That(result).IsTrue();
         await Assert.That(output).IsEqualTo("00000000-0000-0000-0000-000000000000");

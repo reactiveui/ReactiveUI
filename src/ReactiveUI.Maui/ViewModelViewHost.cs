@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Maui.Controls;
 using ReactiveUI.Internal;
@@ -25,6 +26,7 @@ namespace ReactiveUI.Maui;
 [RequiresDynamicCode(
     "If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, or generic "
     + "constraints), trimming can't validate that the requirements of those annotations are met.")]
+[DebuggerDisplay("{ViewModel}, {DefaultContent}")]
 public class ViewModelViewHost : ContentView, IViewFor
 {
     /// <summary>Identifies the <see cref="ViewModel"/> property.</summary>
@@ -128,6 +130,7 @@ public class ViewModelViewHost : ContentView, IViewFor
     /// <summary>Resolves a view for the view model using the specified contract.</summary>
     /// <param name="viewModel">ViewModel.</param>
     /// <param name="contract">contract used by ViewLocator.</param>
+    /// <exception cref="InvalidOperationException">No view is registered for <paramref name="viewModel"/>.</exception>
     [RequiresUnreferencedCode(
         "This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
     [RequiresDynamicCode(

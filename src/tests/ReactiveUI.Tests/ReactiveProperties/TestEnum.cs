@@ -9,11 +9,11 @@ namespace ReactiveUI.Tests.ReactiveProperties;
 internal enum TestEnum
 {
     /// <summary>No value.</summary>
-    None,
+    None = 0,
 
     /// <summary>The first test value.</summary>
-    Enum1,
+    Enum1 = 1,
 
     /// <summary>The second test value.</summary>
-    Enum2
+    Enum2 = 2,
 }

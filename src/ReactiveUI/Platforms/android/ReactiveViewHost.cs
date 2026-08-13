@@ -6,6 +6,7 @@
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
 using Android.Content;
@@ -33,6 +34,7 @@ namespace ReactiveUI;
 /// <see cref="AllPublicProperties"/> for older infrastructure.
 /// </para>
 /// </remarks>
+[System.Diagnostics.DebuggerDisplay("{ViewModel}")]
 public class ReactiveViewHost<TViewModel> :
     LayoutViewHost,
     IViewFor<TViewModel>,
@@ -86,10 +88,10 @@ public class ReactiveViewHost<TViewModel> :
     /// <param name="bind">
     /// A callback responsible for explicitly wiring child views to the host.
     /// </param>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="bind"/> is <see langword="null"/>.</exception>
     /// <remarks>
     /// This constructor is fully AOT-safe and avoids reflection entirely.
     /// </remarks>
-    /// <exception cref="ArgumentNullException">Thrown when <paramref name="bind"/> is <see langword="null"/>.</exception>
     protected ReactiveViewHost(
         Context ctx,
         int layoutId,
@@ -188,21 +190,26 @@ public class ReactiveViewHost<TViewModel> :
     /// until the return value is disposed.
     /// </summary>
     /// <returns>An <see cref="IDisposable"/> that re-enables change notifications when disposed.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public IDisposable SuppressChangeNotifications() => IReactiveObjectExtensions.SuppressChangeNotifications(this);
 
     /// <summary>Gets a value indicating whether change notifications are enabled.</summary>
     /// <returns><see langword="true"/> if change notifications are enabled; otherwise, <see langword="false"/>.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool AreChangeNotificationsEnabled() => IReactiveObjectExtensions.AreChangeNotificationsEnabled(this);
 
     /// <inheritdoc/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args) => PropertyChanging?.Invoke(this, args);
 
     /// <inheritdoc/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args) => PropertyChanged?.Invoke(this, args);
 
     /// <summary>Reinitializes reactive infrastructure after deserialization.</summary>
     /// <param name="sc">The streaming context.</param>
     [OnDeserialized]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void SetupRxObj(in StreamingContext sc) => SetupRxObjAot();
 
     /// <summary>Initializes the instance for AOT-safe operation.</summary>

@@ -11,6 +11,7 @@ using Microsoft.UI.Xaml;
 #elif HAS_UNO
 using Windows.UI.Xaml;
 #else
+using System.Diagnostics;
 using System.Windows;
 #endif
 

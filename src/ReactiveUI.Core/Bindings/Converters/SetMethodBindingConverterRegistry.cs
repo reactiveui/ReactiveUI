@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 
 namespace ReactiveUI;
@@ -33,6 +34,7 @@ namespace ReactiveUI;
 /// set behavior, such as populating collections or handling platform-specific controls.
 /// </para>
 /// </remarks>
+[DebuggerDisplay("SetMethodBindingConverterRegistry")]
 public sealed class SetMethodBindingConverterRegistry
 {
     /// <summary>The initial capacity used for the set-method converter list.</summary>
@@ -125,11 +127,13 @@ public sealed class SetMethodBindingConverterRegistry
         {
             var converter = converters[i];
             var score = converter.GetAffinityForObjects(fromType, toType);
-            if (score > bestScore && score > 0)
+            if (score <= bestScore || score <= 0)
             {
-                bestScore = score;
-                best = converter;
+                continue;
             }
+
+            bestScore = score;
+            best = converter;
         }
 
         return best;

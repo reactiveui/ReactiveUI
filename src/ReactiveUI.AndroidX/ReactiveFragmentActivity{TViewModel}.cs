@@ -10,6 +10,7 @@ namespace ReactiveUI.AndroidX;
 #endif
 /// <summary>This is an Activity that is both an Activity and has ReactiveObject powers (i.e. you can call RaiseAndSetIfChanged).</summary>
 /// <typeparam name="TViewModel">The view model type.</typeparam>
+[System.Diagnostics.DebuggerDisplay("{ViewModel}")]
 public class ReactiveFragmentActivity<TViewModel> : ReactiveFragmentActivity, IViewFor<TViewModel>, ICanActivate
     where TViewModel : class
 {

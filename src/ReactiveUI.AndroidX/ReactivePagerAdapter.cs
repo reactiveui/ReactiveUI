@@ -19,6 +19,7 @@ namespace ReactiveUI.AndroidX;
 /// Observable change set, in a similar fashion to ReactiveTableViewSource.
 /// </summary>
 /// <typeparam name="TViewModel">The view model type.</typeparam>
+[System.Diagnostics.DebuggerDisplay("Count = {Count}")]
 public class ReactivePagerAdapter<TViewModel> : PagerAdapter, IEnableLogger
     where TViewModel : class
 {

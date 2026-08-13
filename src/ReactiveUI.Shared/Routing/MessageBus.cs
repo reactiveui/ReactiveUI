@@ -4,6 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Globalization;
+using System.Runtime.CompilerServices;
 using ReactiveUI.Primitives.Disposables;
 using Splat;
 
@@ -29,10 +30,10 @@ namespace ReactiveUI;
 public class MessageBus : IMessageBus
 {
     /// <summary>The internal store mapping type/contract pairs to weak-referenced subjects.</summary>
-    private readonly Dictionary<(Type type, string? contract), NotAWeakReference> _messageBus = [];
+    private readonly Dictionary<(Type Type, string? Contract), NotAWeakReference> _messageBus = [];
 
     /// <summary>Maps type/contract pairs to their associated scheduler overrides.</summary>
-    private readonly Dictionary<(Type type, string? contract), ISequencer> _schedulerMappings = [];
+    private readonly Dictionary<(Type Type, string? Contract), ISequencer> _schedulerMappings = [];
 
     /// <summary>Gets or sets the global message bus instance used for publishing and subscribing to messages across the application.</summary>
     /// <remarks>By default, this property is initialized with a standard message bus implementation.
@@ -42,21 +43,22 @@ public class MessageBus : IMessageBus
     public static IMessageBus Current { get; set; } = new MessageBus();
 
     /// <summary>Registers a scheduler for the type, which may be specified at runtime, and the contract.</summary>
-    /// <remarks>If a scheduler is already registered for the specified runtime and contract, this will overwrite the existing registration.</remarks>
     /// <typeparam name="T">The type of the message to listen to.</typeparam>
     /// <param name="scheduler">The scheduler on which to post the
     /// notifications for the specified type and contract. CurrentThreadScheduler by default.</param>
+    /// <remarks>If a scheduler is already registered for the specified runtime and contract, this will overwrite the existing registration.</remarks>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void RegisterScheduler<T>(ISequencer scheduler) =>
         RegisterScheduler<T>(scheduler, null);
 
     /// <summary>Registers a scheduler for the type, which may be specified at runtime, and the contract.</summary>
-    /// <remarks>If a scheduler is already registered for the specified runtime and contract, this will overwrite the existing registration.</remarks>
     /// <typeparam name="T">The type of the message to listen to.</typeparam>
     /// <param name="scheduler">The scheduler on which to post the
     /// notifications for the specified type and contract. CurrentThreadScheduler by default.</param>
     /// <param name="contract">A unique string to distinguish messages with
     /// identical types (i.e. "MyCoolViewModel") - if the message type is
     /// only used for one purpose, leave this as null.</param>
+    /// <remarks>If a scheduler is already registered for the specified runtime and contract, this will overwrite the existing registration.</remarks>
     public void RegisterScheduler<T>(ISequencer scheduler, string? contract) =>
         _schedulerMappings[(typeof(T), contract)] = scheduler;
 
@@ -67,6 +69,7 @@ public class MessageBus : IMessageBus
     /// <typeparam name="T">The type of the message to listen to.</typeparam>
     /// <returns>An Observable representing the notifications posted to the
     /// message bus.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public IObservable<T> Listen<T>() => Listen<T>(null);
 
     /// <summary>
@@ -79,6 +82,7 @@ public class MessageBus : IMessageBus
     /// only used for one purpose, leave this as null.</param>
     /// <returns>An Observable representing the notifications posted to the
     /// message bus.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public IObservable<T> Listen<T>(string? contract) => new ListenObservable<T>(this, contract, skipFirst: true);
 
     /// <summary>
@@ -88,6 +92,7 @@ public class MessageBus : IMessageBus
     /// <typeparam name="T">The type of the message to listen to.</typeparam>
     /// <returns>An Observable representing the notifications posted to the
     /// message bus.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public IObservable<T> ListenIncludeLatest<T>() => ListenIncludeLatest<T>(null);
 
     /// <summary>
@@ -100,11 +105,13 @@ public class MessageBus : IMessageBus
     /// only used for one purpose, leave this as null.</param>
     /// <returns>An Observable representing the notifications posted to the
     /// message bus.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public IObservable<T> ListenIncludeLatest<T>(string? contract) => new ListenObservable<T>(this, contract, skipFirst: false);
 
     /// <summary>Determines if a particular message Type is registered.</summary>
     /// <param name="type">The Type of the message to listen to.</param>
     /// <returns>True if messages have been posted for this message Type.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool IsRegistered(Type type) => IsRegistered(type, null);
 
     /// <summary>Determines if a particular message Type is registered.</summary>
@@ -130,6 +137,7 @@ public class MessageBus : IMessageBus
     /// <param name="source">An Observable that will be subscribed to, and a
     /// message sent out for each value provided.</param>
     /// <returns>a Disposable.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public IDisposable RegisterMessageSource<T>(IObservable<T> source) =>
         RegisterMessageSource(source, null);
 
@@ -171,6 +179,7 @@ public class MessageBus : IMessageBus
     /// </summary>
     /// <typeparam name="T">The type of the message to send.</typeparam>
     /// <param name="message">The actual message to send.</param>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void SendMessage<T>(T message) => SendMessage(message, null);
 
     /// <summary>
@@ -184,6 +193,7 @@ public class MessageBus : IMessageBus
     /// <param name="contract">A unique string to distinguish messages with
     /// identical types (i.e. "MyCoolViewModel") - if the message type is
     /// only used for one purpose, leave this as null.</param>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void SendMessage<T>(T message, string? contract) =>
         SetupSubjectIfNecessary<T>(contract).OnNext(message);
 
@@ -215,17 +225,17 @@ public class MessageBus : IMessageBus
     /// Executes a specified action while holding a lock on the message bus, providing access to the message bus
     /// dictionary and a key composed of the specified type and contract.
     /// </summary>
+    /// <param name="type">The type component of the message bus key to operate on.</param>
+    /// <param name="contract">The contract string component of the message bus key to operate on. Can be null to indicate no contract.</param>
+    /// <param name="block">The action to execute, which receives the message bus dictionary and the key tuple as parameters.</param>
     /// <remarks>This method ensures thread-safe access to the message bus by acquiring a lock during the
     /// execution of the specified action. The provided dictionary may be modified within the action. If the referenced
     /// value for the specified key is no longer alive after the action, the key is removed from the
     /// dictionary.</remarks>
-    /// <param name="type">The type component of the message bus key to operate on.</param>
-    /// <param name="contract">The contract string component of the message bus key to operate on. Can be null to indicate no contract.</param>
-    /// <param name="block">The action to execute, which receives the message bus dictionary and the key tuple as parameters.</param>
     private void WithMessageBus(
         Type type,
         string? contract,
-        Action<Dictionary<(Type type, string? contract), NotAWeakReference>, (Type type, string? contract)> block)
+        Action<Dictionary<(Type Type, string? Contract), NotAWeakReference>, (Type Type, string? Contract)> block)
     {
         lock (_messageBus)
         {
@@ -245,7 +255,7 @@ public class MessageBus : IMessageBus
     /// <param name="item">A tuple containing the type and an optional contract string used to identify the scheduler mapping.</param>
     /// <returns>The scheduler associated with the specified type and contract, or the current thread scheduler if no mapping is
     /// found.</returns>
-    private ISequencer GetScheduler((Type type, string? contract) item)
+    private ISequencer GetScheduler((Type Type, string? Contract) item)
     {
         _ = _schedulerMappings.TryGetValue(item, out var scheduler);
         return scheduler ?? Sequencer.CurrentThread;

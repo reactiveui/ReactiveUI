@@ -3,12 +3,15 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics;
 using System.Globalization;
+using System.Runtime.CompilerServices;
 using ReactiveUI.Builder.WpfApp.Models;
 
 namespace ReactiveUI.Builder.WpfApp.Services;
 
 /// <summary>A fake payment processor that simulates an authorization round-trip with a small delay and canned rules.</summary>
+[DebuggerDisplay("MockPaymentProcessor")]
 public sealed class MockPaymentProcessor : IPaymentProcessor
 {
     /// <summary>The amount above which a transaction is declined for exceeding the floor limit.</summary>
@@ -76,5 +79,6 @@ public sealed class MockPaymentProcessor : IPaymentProcessor
 
     /// <summary>Gets the current UTC instant.</summary>
     /// <returns>The current UTC instant.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static DateTimeOffset UtcNow() => TimeProvider.System.GetUtcNow();
 }

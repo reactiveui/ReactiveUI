@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -12,6 +13,7 @@ using Splat;
 namespace ReactiveUI.Builder.WpfApp;
 
 /// <summary>The application shell window; hosts the router through a <see cref="RoutedViewHost"/>.</summary>
+[DebuggerDisplay("MainWindow ViewModel={ViewModel}")]
 public partial class MainWindow : IViewFor<AppBootstrapper>
 {
     /// <summary>Identifies the <see cref="ViewModel"/> dependency property.</summary>

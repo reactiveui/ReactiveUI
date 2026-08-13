@@ -3,6 +3,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Runtime.CompilerServices;
+
 namespace ReactiveUI.Internal;
 
 /// <summary>
@@ -28,6 +30,7 @@ internal sealed class ObserveOnObservable<T>(IObservable<T> source, ISequencer s
     private sealed class Sink(IObserver<T> downstream, ISequencer scheduler) : IObserver<T>
     {
         /// <inheritdoc/>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void OnNext(T value) =>
             scheduler.Schedule((Downstream: downstream, Value: value), static (_, state) =>
             {
@@ -36,6 +39,7 @@ internal sealed class ObserveOnObservable<T>(IObservable<T> source, ISequencer s
             });
 
         /// <inheritdoc/>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void OnError(Exception error) =>
             scheduler.Schedule((Downstream: downstream, Error: error), static (_, state) =>
             {
@@ -44,6 +48,7 @@ internal sealed class ObserveOnObservable<T>(IObservable<T> source, ISequencer s
             });
 
         /// <inheritdoc/>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void OnCompleted() =>
             scheduler.Schedule(downstream, static (_, observer) =>
             {

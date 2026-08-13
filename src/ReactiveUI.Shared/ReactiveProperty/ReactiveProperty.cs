@@ -5,6 +5,7 @@
 
 using System.Collections;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
@@ -20,13 +21,14 @@ namespace ReactiveUI;
 /// Represents a reactive property that notifies subscribers of value changes and supports asynchronous validation and
 /// error notification.
 /// </summary>
+/// <typeparam name="T">The type of the value stored by the reactive property.</typeparam>
 /// <remarks>ReactiveProperty{T} provides observable value semantics, allowing consumers to subscribe to value
 /// changes and validation error updates. It supports INotifyPropertyChanged and INotifyDataErrorInfo for integration
 /// with data binding scenarios. Validation logic can be attached to perform asynchronous or synchronous checks, and
 /// error notifications are propagated to observers. Thread safety and scheduling of notifications are managed via the
 /// provided scheduler. Disposing the instance releases all resources and completes all observable streams.</remarks>
-/// <typeparam name="T">The type of the value stored by the reactive property.</typeparam>
 [DataContract]
+[DebuggerDisplay("{IsDisposed}, {Value}")]
 public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
 {
     /// <summary>The scheduler used to marshal validation and error notifications.</summary>
@@ -114,15 +116,15 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
     }
 
     /// <summary>Initializes a new instance of the <see cref="ReactiveProperty{T}"/> class with the specified initial value, scheduler, and configuration options.</summary>
-    /// <remarks>Use this constructor to customize the behavior of value emission and notification scheduling
-    /// for the ReactiveProperty. The configuration options allow control over whether subscribers receive the current
-    /// value immediately and whether duplicate values are propagated.</remarks>
     /// <param name="initialValue">The initial value to assign to the property. This value is immediately available to subscribers upon
     /// subscription unless skipped by configuration.</param>
     /// <param name="scheduler">The scheduler used to notify observers of value changes. If null, a default task pool scheduler is used.</param>
     /// <param name="skipCurrentValueOnSubscribe">true to prevent the current value from being emitted to new subscribers upon subscription; otherwise, false.</param>
     /// <param name="allowDuplicateValues">true to allow consecutive duplicate values to be published to subscribers; otherwise, false to suppress
     /// duplicate notifications.</param>
+    /// <remarks>Use this constructor to customize the behavior of value emission and notification scheduling
+    /// for the ReactiveProperty. The configuration options allow control over whether subscribers receive the current
+    /// value immediately and whether duplicate values are propagated.</remarks>
     public ReactiveProperty(
         T? initialValue,
         ISequencer? scheduler,
@@ -235,19 +237,20 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
     /// <summary>Adds a validation rule to the current ReactiveProperty instance using the specified validator function.</summary>
     /// <param name="validator">A function that takes an observable sequence of property values and returns an observable sequence of validation errors.</param>
     /// <returns>The current ReactiveProperty instance with the added validation rule.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public ReactiveProperty<T> AddValidationError(
         Func<IObservable<T?>, IObservable<IEnumerable?>> validator) =>
         AddValidationError(validator, false);
 
     /// <summary>Adds a validation rule to the current ReactiveProperty instance using the specified validator function.</summary>
-    /// <remarks>Multiple validation rules can be added by calling this method multiple times. Validation
-    /// errors from all registered validators are combined. The ErrorsChanged event is raised whenever the set of
-    /// validation errors changes.</remarks>
     /// <param name="validator">A function that takes an observable sequence of property values and returns an observable sequence of validation
     /// errors. The returned sequence should emit validation results whenever the property value changes.</param>
     /// <param name="ignoreInitialError">true to ignore validation for the initial value of the property; otherwise, false. If true, validation will only
     /// occur on subsequent value changes.</param>
     /// <returns>The current ReactiveProperty instance with the added validation rule.</returns>
+    /// <remarks>Multiple validation rules can be added by calling this method multiple times. Validation
+    /// errors from all registered validators are combined. The ErrorsChanged event is raised whenever the set of
+    /// validation errors changes.</remarks>
     public ReactiveProperty<T> AddValidationError(
         Func<IObservable<T?>, IObservable<IEnumerable?>> validator,
         bool ignoreInitialError)
@@ -287,19 +290,21 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
     /// <summary>Adds a validation rule to the property using the specified validator function.</summary>
     /// <param name="validator">A function that receives an observable sequence of property values and returns an observable sequence of validation error messages.</param>
     /// <returns>The current ReactiveProperty instance with the validation rule applied.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public ReactiveProperty<T> AddValidationError(
         Func<IObservable<T?>, IObservable<string?>> validator) =>
         AddValidationError((Func<IObservable<T?>, IObservable<string?>>)validator, false);
 
     /// <summary>Adds a validation rule to the property using the specified validator function.</summary>
-    /// <remarks>Multiple validation rules can be added by calling this method multiple times. Validation
-    /// errors are aggregated and exposed by the property. The validator function should be stateless and
-    /// thread-safe.</remarks>
     /// <param name="validator">A function that receives an observable sequence of property values and returns an observable sequence of
     /// validation error messages. The returned string is interpreted as the error message; a null value indicates no
     /// error.</param>
     /// <param name="ignoreInitialError">true to suppress the initial validation error until the property value changes; otherwise, false.</param>
     /// <returns>The current ReactiveProperty instance with the validation rule applied.</returns>
+    /// <remarks>Multiple validation rules can be added by calling this method multiple times. Validation
+    /// errors are aggregated and exposed by the property. The validator function should be stateless and
+    /// thread-safe.</remarks>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public ReactiveProperty<T> AddValidationError(
         Func<IObservable<T?>, IObservable<string?>> validator,
         bool ignoreInitialError) =>
@@ -308,19 +313,21 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
     /// <summary>Adds asynchronous validation logic to the reactive property using the specified validator function.</summary>
     /// <param name="validator">A function that asynchronously validates the current value and returns a collection of validation errors.</param>
     /// <returns>The current ReactiveProperty instance with the specified validation logic applied.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public ReactiveProperty<T> AddValidationError(
         Func<T?, Task<IEnumerable?>> validator) =>
         AddValidationError((Func<T?, Task<IEnumerable?>>)validator, false);
 
     /// <summary>Adds asynchronous validation logic to the reactive property using the specified validator function.</summary>
-    /// <remarks>This method enables chaining of multiple validation rules on a ReactiveProperty.
-    /// Validation is triggered whenever the property's value changes. The validator function can perform asynchronous
-    /// operations, such as remote checks or complex computations.</remarks>
     /// <param name="validator">A function that asynchronously validates the current value and returns a collection of validation errors. The
     /// function receives the current value as input and returns a task that produces an enumerable of validation error
     /// objects. If the collection is empty or null, the value is considered valid.</param>
     /// <param name="ignoreInitialError">true to suppress validation errors for the initial value; otherwise, false.</param>
     /// <returns>The current ReactiveProperty instance with the specified validation logic applied.</returns>
+    /// <remarks>This method enables chaining of multiple validation rules on a ReactiveProperty.
+    /// Validation is triggered whenever the property's value changes. The validator function can perform asynchronous
+    /// operations, such as remote checks or complex computations.</remarks>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public ReactiveProperty<T> AddValidationError(
         Func<T?, Task<IEnumerable?>> validator,
         bool ignoreInitialError) =>
@@ -329,49 +336,55 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
     /// <summary>Adds an asynchronous validation rule to the property using the specified validator function.</summary>
     /// <param name="validator">A function that asynchronously validates the property's value and returns an error message or null.</param>
     /// <returns>The current ReactiveProperty instance with the validation rule applied.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public ReactiveProperty<T> AddValidationError(Func<T?, Task<string?>> validator) =>
         AddValidationError((Func<T?, Task<string?>>)validator, false);
 
     /// <summary>Adds an asynchronous validation rule to the property using the specified validator function.</summary>
-    /// <remarks>The validator function is invoked whenever the property's value changes. If multiple
-    /// validation rules are added, all are evaluated and their error messages are aggregated.</remarks>
     /// <param name="validator">A function that asynchronously validates the property's value and returns an error message if validation fails,
     /// or null if the value is valid.</param>
     /// <param name="ignoreInitialError">true to suppress the initial validation error until the value changes; otherwise, false.</param>
     /// <returns>The current ReactiveProperty instance with the validation rule applied.</returns>
+    /// <remarks>The validator function is invoked whenever the property's value changes. If multiple
+    /// validation rules are added, all are evaluated and their error messages are aggregated.</remarks>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public ReactiveProperty<T> AddValidationError(Func<T?, Task<string?>> validator, bool ignoreInitialError) =>
         AddValidationError(xs => new AsyncProjectObservable<T?, string?>(xs, x => validator(x)), ignoreInitialError);
 
     /// <summary>Adds a validation rule to the reactive property using the specified validator function.</summary>
     /// <param name="validator">A function that takes the current value and returns a collection of validation errors.</param>
     /// <returns>The current ReactiveProperty instance with the validation rule applied.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public ReactiveProperty<T> AddValidationError(Func<T?, IEnumerable?> validator) =>
         AddValidationError((Func<T?, IEnumerable?>)validator, false);
 
     /// <summary>Adds a validation rule to the reactive property using the specified validator function.</summary>
-    /// <remarks>If multiple validation rules are added, all validators are evaluated and their errors are
-    /// aggregated. The validator function is invoked whenever the property's value changes.</remarks>
     /// <param name="validator">A function that takes the current value and returns a collection of validation errors. Returns null or an empty
     /// collection if the value is valid.</param>
     /// <param name="ignoreInitialError">true to ignore validation errors for the initial value; otherwise, false.</param>
     /// <returns>The current ReactiveProperty instance with the validation rule applied.</returns>
+    /// <remarks>If multiple validation rules are added, all validators are evaluated and their errors are
+    /// aggregated. The validator function is invoked whenever the property's value changes.</remarks>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public ReactiveProperty<T> AddValidationError(Func<T?, IEnumerable?> validator, bool ignoreInitialError) =>
         AddValidationError(xs => new MapSignal<T?, IEnumerable?>(xs, x => validator(x)), ignoreInitialError);
 
     /// <summary>Adds a validation rule to the property using the specified validator function.</summary>
     /// <param name="validator">A function that returns a validation error message or null if the value is valid.</param>
     /// <returns>The current ReactiveProperty instance with the validation rule applied.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public ReactiveProperty<T> AddValidationError(Func<T?, string?> validator) =>
         AddValidationError((Func<T?, string?>)validator, false);
 
     /// <summary>Adds a validation rule to the property using the specified validator function.</summary>
-    /// <remarks>If multiple validation rules are added, all validators are evaluated and their error messages
-    /// are aggregated. The property is considered valid only if all validators return null or an empty
-    /// string.</remarks>
     /// <param name="validator">A function that takes the current value of the property and returns a validation error message if the value is
     /// invalid; otherwise, returns null or an empty string if the value is valid.</param>
     /// <param name="ignoreInitialError">true to suppress validation errors for the initial value of the property; otherwise, false.</param>
     /// <returns>The current ReactiveProperty instance with the validation rule applied.</returns>
+    /// <remarks>If multiple validation rules are added, all validators are evaluated and their error messages
+    /// are aggregated. The property is considered valid only if all validators return null or an empty
+    /// string.</remarks>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public ReactiveProperty<T> AddValidationError(Func<T?, string?> validator, bool ignoreInitialError) =>
         AddValidationError(xs => new MapSignal<T?, string?>(xs, x => validator(x)), ignoreInitialError);
 
@@ -414,6 +427,7 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
     /// object.</param>
     /// <returns>An enumerable collection of validation errors for the specified property, or for the entire object if <paramref
     /// name="propertyName"/> is null or empty. Returns null if there are no errors.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public IEnumerable? GetErrors(string? propertyName) => _currentErrors;
 
     /// <summary>Returns the validation errors for the specified property or for the entire object.</summary>
@@ -424,10 +438,10 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
     IEnumerable INotifyDataErrorInfo.GetErrors(string? propertyName) => _currentErrors ?? Enumerable.Empty<object>();
 
     /// <summary>Subscribes the specified observer to receive notifications from this observable sequence.</summary>
-    /// <remarks>If the observable has already been disposed, the observer's OnCompleted method is called
-    /// immediately and a no-op disposable is returned.</remarks>
     /// <param name="observer">The observer that will receive notifications. Cannot be null.</param>
     /// <returns>A disposable object that can be used to unsubscribe the observer from the observable sequence.</returns>
+    /// <remarks>If the observable has already been disposed, the observer's OnCompleted method is called
+    /// immediately and a no-op disposable is returned.</remarks>
     public IDisposable Subscribe(IObserver<T?> observer)
     {
         if (observer is null)
@@ -557,10 +571,12 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
 
         /// <inheritdoc/>
         [ExcludeFromCodeCoverage] // Never invoked: the relay subscription is disposed before its source can terminate.
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void OnError(Exception error) => relay.OnError(error);
 
         /// <inheritdoc/>
         [ExcludeFromCodeCoverage]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void OnCompleted() => relay.OnCompleted();
     }
 
@@ -765,12 +781,15 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
             private sealed class Element(Sink parent, int index) : IObserver<IEnumerable?>
             {
                 /// <inheritdoc/>
+                [MethodImpl(MethodImplOptions.AggressiveInlining)]
                 public void OnNext(IEnumerable? value) => parent.OnNextAt(index, value);
 
                 /// <inheritdoc/>
+                [MethodImpl(MethodImplOptions.AggressiveInlining)]
                 public void OnError(Exception error) => parent.OnErrorAt(error);
 
                 /// <inheritdoc/>
+                [MethodImpl(MethodImplOptions.AggressiveInlining)]
                 public void OnCompleted() => parent.OnCompletedAt();
             }
         }
@@ -850,13 +869,16 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
 
             /// <inheritdoc/>
             [ExcludeFromCodeCoverage] // Never invoked: the source subscription is disposed before it can terminate.
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public void OnError(Exception error) => Fail(error);
 
             /// <inheritdoc/>
             [ExcludeFromCodeCoverage]
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public void OnCompleted() => Done();
 
             /// <inheritdoc/>
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public void Dispose() => _sourceSubscription?.Dispose();
 
             /// <summary>Awaits the selector task, forwarding its result or error, and completes the run once everything is done.</summary>

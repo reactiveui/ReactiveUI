@@ -4,6 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Collections;
+using System.Runtime.CompilerServices;
 using DynamicData;
 
 namespace ReactiveUI;
@@ -87,6 +88,7 @@ internal sealed class LightChangeSet<T> : IChangeSet<T>
     }
 
     /// <inheritdoc/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
     /// <summary>Accumulates a change into the per-reason tallies.</summary>

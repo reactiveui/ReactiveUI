@@ -46,6 +46,7 @@ public class DependencyObjectObservableForPropertyTest
 
     /// <summary>Runs a smoke test for dependency object observables for property.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    /// <exception cref="InvalidOperationException">The observed expression does not resolve to a named property.</exception>
     [Test]
     public async Task DependencyObjectObservableForPropertySmokeTest()
     {
@@ -79,6 +80,7 @@ public class DependencyObjectObservableForPropertyTest
 
     /// <summary>Runs a smoke test for derived dependency object observables for property.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    /// <exception cref="InvalidOperationException">The observed expression does not resolve to a named property.</exception>
     [Test]
     public async Task DerivedDependencyObjectObservableForPropertySmokeTest()
     {

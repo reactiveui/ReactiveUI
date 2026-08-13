@@ -12,9 +12,9 @@ namespace ReactiveUI.Reactive;
 namespace ReactiveUI;
 #endif
 /// <summary>Provides a container for holding a reference to a Java object instance for interop scenarios.</summary>
+/// <param name="instance">The Java object instance to be held. Cannot be null.</param>
 /// <remarks>This type is intended for internal use in interop scenarios where a managed reference to a Java
 /// object must be maintained. It is not intended for general application development.</remarks>
-/// <param name="instance">The Java object instance to be held. Cannot be null.</param>
 internal class JavaHolder(object instance) : Object
 {
     /// <summary>The held Java object instance used for interop scenarios.</summary>

@@ -5,6 +5,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 
 #if REACTIVE_SHIM
 namespace ReactiveUI.Reactive;
@@ -26,6 +27,7 @@ public static partial class WhenAnyObservableMixins
         /// <param name="obs1">An expression pointing to the observable property.</param>
         /// <returns>An observable that produces the latest value of the observed observable.</returns>
         [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IObservable<TRet> WhenAnyObservable<TRet>(
             Expression<Func<TSender, IObservable<TRet>?>> obs1) =>
             new WhenAnyObservableSwitchSink<TRet>(

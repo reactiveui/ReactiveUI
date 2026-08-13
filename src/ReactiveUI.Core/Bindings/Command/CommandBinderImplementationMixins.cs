@@ -5,6 +5,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 using System.Windows.Input;
 
 namespace ReactiveUI;
@@ -20,12 +21,6 @@ internal static class CommandBinderImplementationMixins
         /// Binds a command from the view model to a control on the view, enabling the control to execute the command with a
         /// specified parameter when an event is raised.
         /// </summary>
-        /// <remarks>
-        /// <para>The binding enables the control to execute the command when the specified event is raised,
-        /// and automatically manages the enabled state of the control based on the command's CanExecute state.</para>
-        /// <para>This method uses reflection to observe events and properties on the control, which may be
-        /// affected by trimming in some deployment scenarios.</para>
-        /// </remarks>
         /// <typeparam name="TView">The type of the view that implements the IViewFor interface.</typeparam>
         /// <typeparam name="TViewModel">The type of the view model containing the command to bind.</typeparam>
         /// <typeparam name="TProp">The type of the command property on the view model. Must implement ICommand.</typeparam>
@@ -40,7 +35,14 @@ internal static class CommandBinderImplementationMixins
         /// NOTE: If this parameter is used inside WhenActivated, it's important to dispose the binding when the view is deactivated.</param>
         /// <returns>An IReactiveBinding{TView, TProp} representing the established binding between the command and the control.
         /// It will remain active until disposed.</returns>
+        /// <remarks>
+        /// <para>The binding enables the control to execute the command when the specified event is raised,
+        /// and automatically manages the enabled state of the control based on the command's CanExecute state.</para>
+        /// <para>This method uses reflection to observe events and properties on the control, which may be
+        /// affected by trimming in some deployment scenarios.</para>
+        /// </remarks>
         [RequiresUnreferencedCode("Dynamic observation uses reflection over members that may be trimmed.")]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal IReactiveBinding<TView, TProp> BindCommand<
             TView,
             TViewModel,

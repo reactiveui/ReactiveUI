@@ -242,9 +242,7 @@ public class FollowObservableStateBehaviorTests
         behavior.StateObservable = subject.AsObservable();
 
         // Read the getter to cover that line
-        var observable = behavior.StateObservable;
-
-        await Assert.That(observable).IsNotNull();
+        await Assert.That(behavior.StateObservable).IsNotNull();
     }
 
     /// <summary>Tests that TargetObject getter returns the set value.</summary>
@@ -259,8 +257,6 @@ public class FollowObservableStateBehaviorTests
         behaviors.Add(behavior);
 
         // Read the getter to cover that line
-        var target = behavior.TargetObject;
-
-        await Assert.That(target).IsEqualTo(targetButton);
+        await Assert.That(behavior.TargetObject).IsEqualTo(targetButton);
     }
 }

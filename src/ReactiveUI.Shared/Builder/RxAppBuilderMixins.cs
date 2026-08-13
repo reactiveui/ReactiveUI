@@ -23,8 +23,7 @@ public static class RxAppBuilderMixins
         {
             ArgumentExceptionHelper.ThrowIfNull(resolver);
 
-            var readonlyResolver = (resolver as IReadonlyDependencyResolver) ?? AppLocator.Current;
-            return new(resolver, readonlyResolver);
+            return new(resolver, (resolver as IReadonlyDependencyResolver) ?? AppLocator.Current);
         }
     }
 }

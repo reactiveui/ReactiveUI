@@ -3,6 +3,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Runtime.CompilerServices;
+
 namespace ReactiveUI.Internal;
 
 /// <summary>
@@ -52,6 +54,7 @@ internal sealed class ChangeSetBinder<T> : IDisposable
     internal T this[int index] => _items[index];
 
     /// <inheritdoc/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Dispose() => _subscription.Dispose();
 
     /// <summary>Applies a batch of changes to the backing list and raises the callbacks.</summary>

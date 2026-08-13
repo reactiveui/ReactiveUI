@@ -3,8 +3,10 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 using ReactiveUI.Primitives;
 using ReactiveUI.Primitives.Disposables;
 using Splat;
@@ -126,6 +128,7 @@ public class InteractionBinderImplementation : IInteractionBinderImplementation
         }
 
         /// <inheritdoc/>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void OnCompleted() => registration.Dispose();
     }
 }

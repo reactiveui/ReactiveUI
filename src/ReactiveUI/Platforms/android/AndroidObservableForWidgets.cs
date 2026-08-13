@@ -6,6 +6,7 @@
 using System.Collections.Frozen;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 using Android.OS;
@@ -95,7 +96,9 @@ public sealed class AndroidObservableForWidgets : ICreatesObservableForProperty
                 static v => v.CurrentTab,
                 static (v, h) => v.TabChanged += h,
                 static (v, h) => v.TabChanged -= h),
-            CreateTimePickerHourFromWidget(), CreateTimePickerMinuteFromWidget(), CreateFromAdapterView()
+            CreateTimePickerFromWidget(static v => v.Hour, static v => v.CurrentHour),
+            CreateTimePickerFromWidget(static v => v.Minute, static v => v.CurrentMinute),
+            CreateFromAdapterView(),
         };
 
         Dictionary<(Type ViewType, string PropertyName), Func<object, Expression, IObservable<IObservedChange<object, object?>>>> dispatch =
@@ -133,6 +136,7 @@ public sealed class AndroidObservableForWidgets : ICreatesObservableForProperty
 
     /// <inheritdoc />
     [RequiresUnreferencedCode("Uses reflection over runtime types which is not trim- or AOT-safe.")]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public int GetAffinityForObject(Type type, string propertyName) =>
         GetAffinityForObject(type, propertyName, false);
 
@@ -169,6 +173,7 @@ public sealed class AndroidObservableForWidgets : ICreatesObservableForProperty
 
     /// <inheritdoc />
     [RequiresUnreferencedCode("Uses reflection over runtime types which is not trim- or AOT-safe.")]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public IObservable<IObservedChange<object, object?>> GetNotificationForProperty(
         object sender,
         Expression expression,
@@ -177,6 +182,7 @@ public sealed class AndroidObservableForWidgets : ICreatesObservableForProperty
 
     /// <inheritdoc />
     [RequiresUnreferencedCode("Uses reflection over runtime types which is not trim- or AOT-safe.")]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public IObservable<IObservedChange<object, object?>> GetNotificationForProperty(
         object sender,
         Expression expression,
@@ -185,12 +191,12 @@ public sealed class AndroidObservableForWidgets : ICreatesObservableForProperty
         GetNotificationForProperty(sender, expression, propertyName, beforeChanged, false);
 
     /// <inheritdoc />
-    /// <remarks>
-    /// This implementation does not support before-change notifications.
-    /// </remarks>
     /// <exception cref="ArgumentNullException">
     /// Thrown when sender, expression, or propertyName is null.
     /// </exception>
+    /// <remarks>
+    /// This implementation does not support before-change notifications.
+    /// </remarks>
     [RequiresUnreferencedCode("Uses reflection over runtime types which is not trim- or AOT-safe.")]
     public IObservable<IObservedChange<object, object?>> GetNotificationForProperty(
         object sender,
@@ -233,13 +239,13 @@ public sealed class AndroidObservableForWidgets : ICreatesObservableForProperty
     }
 
     /// <summary>Creates a dispatch item for selection changes on <see cref="AdapterView"/> instances.</summary>
+    /// <returns>
+    /// A dispatch item mapping <see cref="AdapterView"/> and the <c>SelectedItem</c> property to an observable factory.
+    /// </returns>
     /// <remarks>
     /// Adapter selection is represented by two distinct events: <see cref="AdapterView.ItemSelected"/> and
     /// <see cref="AdapterView.NothingSelected"/>. This dispatch item merges both into a single observable sequence.
     /// </remarks>
-    /// <returns>
-    /// A dispatch item mapping <see cref="AdapterView"/> and the <c>SelectedItem</c> property to an observable factory.
-    /// </returns>
     private static DispatchItem CreateFromAdapterView()
     {
         const string propName = "SelectedItem";
@@ -247,44 +253,52 @@ public sealed class AndroidObservableForWidgets : ICreatesObservableForProperty
         return new(
             typeof(AdapterView),
             propName,
-            static (x, ex) => new AdapterSelectionObservable((AdapterView)x, ex));
+            static (x, ex) => new ObservedChangeEventObservable(x, ex, emit =>
+            {
+                var adapterView = (AdapterView)x;
+
+                EventHandler<AdapterView.ItemSelectedEventArgs> onItemSelected = (_, _) => emit();
+                EventHandler<AdapterView.NothingSelectedEventArgs> onNothingSelected = (_, _) => emit();
+
+                adapterView.ItemSelected += onItemSelected;
+                adapterView.NothingSelected += onNothingSelected;
+
+                return new ActionDisposable(() =>
+                {
+                    adapterView.ItemSelected -= onItemSelected;
+                    adapterView.NothingSelected -= onNothingSelected;
+                });
+            }));
     }
 
-    /// <summary>Creates a dispatch item for the <see cref="TimePicker"/> hour property that is compatible with the current OS level.</summary>
-    /// <remarks>
-    /// Android introduced <see cref="TimePicker.Hour"/> at API level 23. Earlier OS versions use
-    /// <see cref="TimePicker.CurrentHour"/>.
-    /// </remarks>
-    /// <returns>A dispatch item for observing the hour value on a <see cref="TimePicker"/>.</returns>
+    /// <summary>Creates a dispatch item for a <see cref="TimePicker"/> value that is compatible with the current OS level.</summary>
+    /// <param name="property">
+    /// Selects the member introduced at API level 23 (<see cref="TimePicker.Hour"/> or <see cref="TimePicker.Minute"/>).
+    /// </param>
+    /// <param name="legacyProperty">
+    /// Selects the pre-API-23 equivalent (<see cref="TimePicker.CurrentHour"/> or <see cref="TimePicker.CurrentMinute"/>),
+    /// used when the running OS predates the replacement.
+    /// </param>
+    /// <returns>A dispatch item for observing the selected value on a <see cref="TimePicker"/>.</returns>
     [ObsoletedOSPlatform("android23.0")]
     [SupportedOSPlatform("android35.0")]
-    private static DispatchItem CreateTimePickerHourFromWidget() =>
-        (int)Build.VERSION.SdkInt >= TimePickerHourMinuteApiLevel ? CreateFromWidget<TimePicker, TimePicker.TimeChangedEventArgs>(
-                static v => v.Hour,
-                static (v, h) => v.TimeChanged += h,
-                static (v, h) => v.TimeChanged -= h) : CreateFromWidget<TimePicker, TimePicker.TimeChangedEventArgs>(
-            static v => v.CurrentHour,
-            static (v, h) => v.TimeChanged += h,
-            static (v, h) => v.TimeChanged -= h);
-
-    /// <summary>Creates a dispatch item for the <see cref="TimePicker"/> minute property that is compatible with the current OS level.</summary>
-    /// <remarks>
-    /// Android introduced <see cref="TimePicker.Minute"/> at API level 23. Earlier OS versions use
-    /// <see cref="TimePicker.CurrentMinute"/>.
-    /// </remarks>
-    /// <returns>A dispatch item for observing the minute value on a <see cref="TimePicker"/>.</returns>
-    [ObsoletedOSPlatform("android23.0")]
-    [SupportedOSPlatform("android35.0")]
-    private static DispatchItem CreateTimePickerMinuteFromWidget() =>
-        (int)Build.VERSION.SdkInt >= TimePickerHourMinuteApiLevel ? CreateFromWidget<TimePicker, TimePicker.TimeChangedEventArgs>(
-                static v => v.Minute,
-                static (v, h) => v.TimeChanged += h,
-                static (v, h) => v.TimeChanged -= h) : CreateFromWidget<TimePicker, TimePicker.TimeChangedEventArgs>(
-            static v => v.CurrentMinute,
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static DispatchItem CreateTimePickerFromWidget(
+        Expression<Func<TimePicker, object?>> property,
+        Expression<Func<TimePicker, object?>> legacyProperty) =>
+        CreateFromWidget<TimePicker, TimePicker.TimeChangedEventArgs>(
+            (int)Build.VERSION.SdkInt >= TimePickerHourMinuteApiLevel ? property : legacyProperty,
             static (v, h) => v.TimeChanged += h,
             static (v, h) => v.TimeChanged -= h);
 
     /// <summary>Creates a dispatch item for a widget type and property by subscribing to a widget event.</summary>
+    /// <typeparam name="TView">The widget type.</typeparam>
+    /// <typeparam name="TEventArgs">The event args type for the widget event.</typeparam>
+    /// <param name="property">An expression selecting the widget property that is being observed.</param>
+    /// <param name="addHandler">Registers the event handler on the widget.</param>
+    /// <param name="removeHandler">Unregisters the event handler from the widget.</param>
+    /// <returns>A dispatch item for the widget and property.</returns>
+    /// <exception cref="ArgumentException">Thrown when <paramref name="property"/> does not expose valid member info.</exception>
     /// <remarks>
     /// <para>
     /// The observable produced by the dispatch item emits a change record when the widget event fires.
@@ -294,13 +308,6 @@ public sealed class AndroidObservableForWidgets : ICreatesObservableForProperty
     /// to avoid trimming/AOT analysis noise in supported platform builds.
     /// </para>
     /// </remarks>
-    /// <typeparam name="TView">The widget type.</typeparam>
-    /// <typeparam name="TEventArgs">The event args type for the widget event.</typeparam>
-    /// <param name="property">An expression selecting the widget property that is being observed.</param>
-    /// <param name="addHandler">Registers the event handler on the widget.</param>
-    /// <param name="removeHandler">Unregisters the event handler from the widget.</param>
-    /// <returns>A dispatch item for the widget and property.</returns>
-    /// <exception cref="ArgumentException">Thrown when <paramref name="property"/> does not expose valid member info.</exception>
     private static DispatchItem CreateFromWidget<TView, TEventArgs>(
         Expression<Func<TView, object?>> property,
         Action<TView, EventHandler<TEventArgs>> addHandler,
@@ -312,75 +319,18 @@ public sealed class AndroidObservableForWidgets : ICreatesObservableForProperty
             property.Body.GetMemberInfo()
             ?? throw new ArgumentException("Does not have a valid body member info.", nameof(property));
 
-        var propName = memberInfo.Name;
-
         return new(
             typeof(TView),
-            propName,
-            (x, ex) => new WidgetEventObservable<TView, TEventArgs>((TView)x, ex, addHandler, removeHandler));
-    }
-
-    /// <summary>
-    /// Bridges an <see cref="AdapterView"/>'s selection events into an observed-change stream — replacing the
-    /// <c>FromEvent(ItemSelected).Merge(FromEvent(NothingSelected))</c> chain. Each <see cref="AdapterView.ItemSelected"/>
-    /// or <see cref="AdapterView.NothingSelected"/> raise emits an observed change; both handlers are detached on dispose.
-    /// </summary>
-    /// <param name="adapterView">The adapter view to observe.</param>
-    /// <param name="expression">The expression surfaced on the emitted change.</param>
-    private sealed class AdapterSelectionObservable(AdapterView adapterView, Expression expression) : IObservable<IObservedChange<object, object?>>
-    {
-        /// <inheritdoc/>
-        public IDisposable Subscribe(IObserver<IObservedChange<object, object?>> observer)
-        {
-            ArgumentExceptionHelper.ThrowIfNull(observer);
-
-            EventHandler<AdapterView.ItemSelectedEventArgs> onItemSelected = (_, _) =>
-                observer.OnNext(new ObservedChange<object, object?>(adapterView, expression, null));
-
-            EventHandler<AdapterView.NothingSelectedEventArgs> onNothingSelected = (_, _) =>
-                observer.OnNext(new ObservedChange<object, object?>(adapterView, expression, null));
-
-            adapterView.ItemSelected += onItemSelected;
-            adapterView.NothingSelected += onNothingSelected;
-
-            return new ActionDisposable(() =>
+            memberInfo.Name,
+            (x, ex) => new ObservedChangeEventObservable(x, ex, emit =>
             {
-                adapterView.ItemSelected -= onItemSelected;
-                adapterView.NothingSelected -= onNothingSelected;
-            });
-        }
-    }
+                var view = (TView)x;
 
-    /// <summary>
-    /// Bridges a widget's typed CLR event into an observed-change stream — replacing
-    /// <c>Observable.FromEvent</c>. Each event raise emits an <see cref="ObservedChange{TSender, TValue}"/> for the
-    /// widget; the handler is detached when the subscription is disposed.
-    /// </summary>
-    /// <typeparam name="TView">The widget type.</typeparam>
-    /// <typeparam name="TEventArgs">The widget event's argument type.</typeparam>
-    /// <param name="view">The widget instance.</param>
-    /// <param name="expression">The expression surfaced on the emitted change.</param>
-    /// <param name="addHandler">Attaches an event handler to the widget.</param>
-    /// <param name="removeHandler">Detaches an event handler from the widget.</param>
-    private sealed class WidgetEventObservable<TView, TEventArgs>(
-        TView view,
-        Expression expression,
-        Action<TView, EventHandler<TEventArgs>> addHandler,
-        Action<TView, EventHandler<TEventArgs>> removeHandler) : IObservable<IObservedChange<object, object?>>
-        where TView : View
-        where TEventArgs : EventArgs
-    {
-        /// <inheritdoc/>
-        public IDisposable Subscribe(IObserver<IObservedChange<object, object?>> observer)
-        {
-            ArgumentExceptionHelper.ThrowIfNull(observer);
+                EventHandler<TEventArgs> handler = (_, _) => emit();
 
-            EventHandler<TEventArgs> handler = (_, _) =>
-                observer.OnNext(new ObservedChange<object, object?>(view!, expression, null));
-
-            addHandler(view, handler);
-            return new ActionDisposable(() => removeHandler(view, handler));
-        }
+                addHandler(view, handler);
+                return new ActionDisposable(() => removeHandler(view, handler));
+            }));
     }
 
     /// <summary>Represents a single dispatch table entry for a widget type and property.</summary>

@@ -15,12 +15,12 @@ namespace ReactiveUI;
 /// Manages the state and change notification logic for a reactive object extension, including suppression and
 /// delaying of property change notifications.
 /// </summary>
+/// <typeparam name="TSender">The type of the reactive object that this extension state is associated with. Must implement <see
+/// cref="IReactiveObject"/>.</typeparam>
 /// <remarks>This class provides mechanisms to control and observe property change notifications for
 /// reactive objects, supporting scenarios where notifications need to be temporarily suppressed or delayed. It is
 /// intended for internal use by reactive extensions to manage notification lifecycles and exception
 /// handling.</remarks>
-/// <typeparam name="TSender">The type of the reactive object that this extension state is associated with. Must implement <see
-/// cref="IReactiveObject"/>.</typeparam>
 internal sealed class ExtensionState<TSender> : IExtensionState<TSender>
     where TSender : IReactiveObject
 {
@@ -88,9 +88,9 @@ internal sealed class ExtensionState<TSender> : IExtensionState<TSender>
     public bool NotificationsEnabled() => Interlocked.Read(ref _changeNotificationsSuppressed) == 0;
 
     /// <summary>Determines whether change notifications are currently delayed.</summary>
+    /// <returns><see langword="true"/> if change notifications are being delayed; otherwise, <see langword="false"/>.</returns>
     /// <remarks>This method can be used to check if change notifications are temporarily suspended,
     /// which may occur during batch updates or other operations that require notification suppression.</remarks>
-    /// <returns><see langword="true"/> if change notifications are being delayed; otherwise, <see langword="false"/>.</returns>
     public bool AreChangeNotificationsDelayed() => Interlocked.Read(ref _changeNotificationsDelayed) > 0;
 
     /// <summary>
@@ -142,10 +142,10 @@ internal sealed class ExtensionState<TSender> : IExtensionState<TSender>
     public void SubscribeChanging() => _ = _propertyChanging.Value;
 
     /// <summary>Raises a property changing notification for the specified property.</summary>
+    /// <param name="propertyName">The name of the property for which the change notification is raised. Cannot be null or empty.</param>
     /// <remarks>This method notifies subscribers that a property is about to change. Change
     /// notifications are only raised if change notifications are currently enabled. Use this method to support data
     /// binding or other scenarios where consumers need to react before a property value changes.</remarks>
-    /// <param name="propertyName">The name of the property for which the change notification is raised. Cannot be null or empty.</param>
     public void RaiseChanging(string propertyName)
     {
         if (!NotificationsEnabled())
@@ -182,10 +182,10 @@ internal sealed class ExtensionState<TSender> : IExtensionState<TSender>
     public void SubscribeChanged() => _ = _propertyChanged.Value;
 
     /// <summary>Notifies subscribers that the value of a specified property has changed.</summary>
+    /// <param name="propertyName">The name of the property that changed. Cannot be null or empty.</param>
     /// <remarks>This method raises property change notifications to observers if change notifications
     /// are currently enabled. Use this method to inform listeners that a property value has been updated, typically
     /// within property setters.</remarks>
-    /// <param name="propertyName">The name of the property that changed. Cannot be null or empty.</param>
     public void RaiseChanged(string propertyName)
     {
         if (!NotificationsEnabled())
@@ -265,13 +265,13 @@ internal sealed class ExtensionState<TSender> : IExtensionState<TSender>
     }
 
     /// <summary>Notifies the specified subject with the provided item, handling any exceptions that occur during notification.</summary>
-    /// <remarks>If an exception is thrown by a subscriber during notification, the exception is
-    /// logged and, depending on the state of the internal exception handler, may be rethrown or forwarded to an
-    /// exception subject.</remarks>
     /// <typeparam name="T">The type of the item to be sent to the subject.</typeparam>
     /// <param name="rxObj">The sender object associated with the notification. Used for logging if an exception occurs.</param>
     /// <param name="item">The item to send to the subject's observers.</param>
     /// <param name="subject">The subject to be notified. If null, no notification is sent.</param>
+    /// <remarks>If an exception is thrown by a subscriber during notification, the exception is
+    /// logged and, depending on the state of the internal exception handler, may be rethrown or forwarded to an
+    /// exception subject.</remarks>
     private void NotifyObservable<T>(TSender rxObj, T item, DelayableNotificationSignal<T>? subject)
     {
         try
@@ -294,12 +294,12 @@ internal sealed class ExtensionState<TSender> : IExtensionState<TSender>
     /// Creates a lazily initialized tuple containing a subject for change notifications and an observable sequence
     /// of distinct change events.
     /// </summary>
-    /// <remarks>The returned observable buffers and emits change events based on the current delay
-    /// settings. Subscribers receive only distinct change events. The subject and observable are created only when
-    /// first accessed.</remarks>
     /// <returns>A lazy-initialized tuple consisting of an <see cref="DelayableNotificationSignal{T}"/> for <c>IReactivePropertyChangedEventArgs&lt;TSender&gt;</c>
     /// for publishing change notifications and an <see cref="IObservable{T}"/> for <c>IReactivePropertyChangedEventArgs&lt;TSender&gt;</c>
     /// that emits distinct change events, respecting any configured delay in change notifications.</returns>
+    /// <remarks>The returned observable buffers and emits change events based on the current delay
+    /// settings. Subscribers receive only distinct change events. The subject and observable are created only when
+    /// first accessed.</remarks>
     private Lazy<DelayableNotificationSignal<IReactivePropertyChangedEventArgs<TSender>>>
         CreateLazyDelayableSubjectAndObservable() =>
         new(() => new(
@@ -307,14 +307,14 @@ internal sealed class ExtensionState<TSender> : IExtensionState<TSender>
             DistinctEvents));
 
     /// <summary>Creates a lazily initialized subject for event notifications that supports delayed change notification delivery.</summary>
-    /// <remarks>The returned subject buffers and batches event notifications when change
-    /// notifications are delayed, and emits them when delivery resumes. This allows consumers to subscribe to event
-    /// streams that respect delayed notification semantics.</remarks>
     /// <typeparam name="TEventArgs">The type of event arguments associated with the event notifications. Must implement
     /// IReactivePropertyChangedEventArgs{TSender}.</typeparam>
     /// <param name="raiseEvent">An action to invoke for each event notification emitted by the subject.</param>
     /// <returns>A Lazy object that initializes an ISubject{TEventArgs} for publishing event notifications when first
     /// accessed.</returns>
+    /// <remarks>The returned subject buffers and batches event notifications when change
+    /// notifications are delayed, and emits them when delivery resumes. This allows consumers to subscribe to event
+    /// streams that respect delayed notification semantics.</remarks>
     private Lazy<DelayableNotificationSignal<TEventArgs>> CreateLazyDelayableEventSubject<TEventArgs>(
         Action<TEventArgs> raiseEvent)
         where TEventArgs : IReactivePropertyChangedEventArgs<TSender> =>

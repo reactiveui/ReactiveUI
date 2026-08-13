@@ -4,6 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Collections.Specialized;
+using System.Diagnostics;
 using Foundation;
 using UIKit;
 
@@ -15,6 +16,7 @@ namespace ReactiveUI;
 /// <summary>Class used to extract a common API between <see cref="UICollectionView"/> and <see cref="UICollectionViewCell"/>.</summary>
 /// <typeparam name="TSource">The type of the source.</typeparam>
 /// <typeparam name="TCell">The type of the cell.</typeparam>
+[DebuggerDisplay("{Collection}, {SizeHint}")]
 public class TableSectionInformation<TSource, TCell> : TableSectionInformation<TSource>
     where TCell : UITableViewCell
 {

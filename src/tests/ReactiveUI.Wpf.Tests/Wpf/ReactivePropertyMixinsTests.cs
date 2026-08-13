@@ -253,7 +253,7 @@ public class ReactivePropertyMixinsTests
         var property = new ReactiveProperty<string>(ValidValue, Sequencer.Immediate, false, false);
         _ = property.AddValidationError(static x => string.IsNullOrEmpty(x) ? ValidationErrorText : null);
 
-        string? lastError = "initial";
+        var lastError = "initial";
         var observable = property.ObserveValidationErrors();
 
         // Act

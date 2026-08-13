@@ -230,6 +230,7 @@ public class ReactiveObjectTests
 
     /// <summary>Test that ReactiveObject shouldn't serialize anything extra.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
+    /// <exception cref="InvalidOperationException">Serializing the fixture produced a null JSON string.</exception>
     [Test]
     public async Task ReactiveObjectShouldntSerializeAnythingExtra()
     {

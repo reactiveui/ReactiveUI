@@ -5,6 +5,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 using Splat;
 
 #if REACTIVE_SHIM
@@ -67,6 +68,7 @@ public static class PropertyBindingMixins
         /// <returns>An object that when disposed, disconnects the binding.</returns>
         [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
         [RequiresDynamicCode("Uses dynamic binding paths which may require runtime code generation or reflection-based invocation.")]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IDisposable BindTo<TTarget, TTargetValue>(
             TTarget? target,
             Expression<Func<TTarget, TTargetValue?>> property)
@@ -82,6 +84,7 @@ public static class PropertyBindingMixins
         /// <returns>An object that when disposed, disconnects the binding.</returns>
         [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
         [RequiresDynamicCode("Uses dynamic binding paths which may require runtime code generation or reflection-based invocation.")]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IDisposable BindTo<TTarget, TTargetValue>(
             TTarget? target,
             Expression<Func<TTarget, TTargetValue?>> property,
@@ -101,6 +104,7 @@ public static class PropertyBindingMixins
         /// <returns>An object that when disposed, disconnects the binding.</returns>
         [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
         [RequiresDynamicCode("Uses dynamic binding paths which may require runtime code generation or reflection-based invocation.")]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IDisposable BindTo<TTarget, TTargetValue>(
             TTarget? target,
             Expression<Func<TTarget, TTargetValue?>> property,
@@ -132,6 +136,7 @@ public static class PropertyBindingMixins
         /// <returns>An object that when disposed, disconnects the binding.</returns>
         [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
         [RequiresDynamicCode("Uses dynamic binding paths which may require runtime code generation or reflection-based invocation.")]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IDisposable BindTo<TTarget, TTargetValue>(
             TTarget? target,
             Expression<Func<TTarget, TTargetValue?>> property,
@@ -157,7 +162,8 @@ public static class PropertyBindingMixins
         /// <returns>An instance of IDisposable that, when disposed, disconnects the binding.</returns>
         [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
         [RequiresDynamicCode("Uses dynamic binding paths which may require runtime code generation or reflection-based invocation.")]
-        public IReactiveBinding<TView, (object? view, bool isViewModel)> Bind<TViewModel, TViewModelPropertyType, TViewPropertyType>(
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public IReactiveBinding<TView, (object? View, bool IsViewModel)> Bind<TViewModel, TViewModelPropertyType, TViewPropertyType>(
             TViewModel? viewModel,
             Expression<Func<TViewModel, TViewModelPropertyType?>> viewModelProperty,
             Expression<Func<TView, TViewPropertyType>> viewProperty)
@@ -175,7 +181,8 @@ public static class PropertyBindingMixins
         /// <returns>An instance of IDisposable that, when disposed, disconnects the binding.</returns>
         [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
         [RequiresDynamicCode("Uses dynamic binding paths which may require runtime code generation or reflection-based invocation.")]
-        public IReactiveBinding<TView, (object? view, bool isViewModel)> Bind<TViewModel, TViewModelPropertyType, TViewPropertyType>(
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public IReactiveBinding<TView, (object? View, bool IsViewModel)> Bind<TViewModel, TViewModelPropertyType, TViewPropertyType>(
             TViewModel? viewModel,
             Expression<Func<TViewModel, TViewModelPropertyType?>> viewModelProperty,
             Expression<Func<TView, TViewPropertyType>> viewProperty,
@@ -195,7 +202,8 @@ public static class PropertyBindingMixins
         /// <returns>An instance of IDisposable that, when disposed, disconnects the binding.</returns>
         [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
         [RequiresDynamicCode("Uses dynamic binding paths which may require runtime code generation or reflection-based invocation.")]
-        public IReactiveBinding<TView, (object? view, bool isViewModel)> Bind<TViewModel, TViewModelPropertyType, TViewPropertyType>(
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public IReactiveBinding<TView, (object? View, bool IsViewModel)> Bind<TViewModel, TViewModelPropertyType, TViewPropertyType>(
             TViewModel? viewModel,
             Expression<Func<TViewModel, TViewModelPropertyType?>> viewModelProperty,
             Expression<Func<TView, TViewPropertyType>> viewProperty,
@@ -237,7 +245,8 @@ public static class PropertyBindingMixins
         /// </returns>
         [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
         [RequiresDynamicCode("Uses dynamic binding paths which may require runtime code generation or reflection-based invocation.")]
-        public IReactiveBinding<TView, (object? view, bool isViewModel)> Bind<TViewModel, TViewModelPropertyType, TViewPropertyType>(
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public IReactiveBinding<TView, (object? View, bool IsViewModel)> Bind<TViewModel, TViewModelPropertyType, TViewPropertyType>(
             TViewModel? viewModel,
             Expression<Func<TViewModel, TViewModelPropertyType?>> viewModelProperty,
             Expression<Func<TView, TViewPropertyType>> viewProperty,
@@ -267,7 +276,8 @@ public static class PropertyBindingMixins
         /// <returns>An instance of IDisposable that, when disposed, disconnects the binding.</returns>
         [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
         [RequiresDynamicCode("Uses dynamic binding paths which may require runtime code generation or reflection-based invocation.")]
-        public IReactiveBinding<TView, (object? view, bool isViewModel)> Bind<
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public IReactiveBinding<TView, (object? View, bool IsViewModel)> Bind<
             TViewModel,
             TViewModelPropertyType,
             TViewPropertyType,
@@ -292,7 +302,8 @@ public static class PropertyBindingMixins
         /// <returns>An instance of IDisposable that, when disposed, disconnects the binding.</returns>
         [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
         [RequiresDynamicCode("Uses dynamic binding paths which may require runtime code generation or reflection-based invocation.")]
-        public IReactiveBinding<TView, (object? view, bool isViewModel)> Bind<
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public IReactiveBinding<TView, (object? View, bool IsViewModel)> Bind<
             TViewModel,
             TViewModelPropertyType,
             TViewPropertyType,
@@ -319,7 +330,8 @@ public static class PropertyBindingMixins
         /// <returns>An instance of IDisposable that, when disposed, disconnects the binding.</returns>
         [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
         [RequiresDynamicCode("Uses dynamic binding paths which may require runtime code generation or reflection-based invocation.")]
-        public IReactiveBinding<TView, (object? view, bool isViewModel)> Bind<
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public IReactiveBinding<TView, (object? View, bool IsViewModel)> Bind<
             TViewModel,
             TViewModelPropertyType,
             TViewPropertyType,
@@ -348,7 +360,8 @@ public static class PropertyBindingMixins
         /// <returns>An instance of IDisposable that, when disposed, disconnects the binding.</returns>
         [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
         [RequiresDynamicCode("Uses dynamic binding paths which may require runtime code generation or reflection-based invocation.")]
-        public IReactiveBinding<TView, (object? view, bool isViewModel)> Bind<
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public IReactiveBinding<TView, (object? View, bool IsViewModel)> Bind<
             TViewModel,
             TViewModelPropertyType,
             TViewPropertyType,
@@ -399,7 +412,8 @@ public static class PropertyBindingMixins
             "Maintainability",
             "SST1472:Signatures should not declare too many parameters",
             Justification = "This overload is part of the public binding API surface; the parameter count is intentional and cannot change without breaking callers.")]
-        public IReactiveBinding<TView, (object? view, bool isViewModel)> Bind<
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public IReactiveBinding<TView, (object? View, bool IsViewModel)> Bind<
             TViewModel,
             TViewModelPropertyType,
             TViewPropertyType,
@@ -453,7 +467,8 @@ public static class PropertyBindingMixins
         /// </returns>
         [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
         [RequiresDynamicCode("Uses dynamic binding paths which may require runtime code generation or reflection-based invocation.")]
-        public IReactiveBinding<TView, (object? view, bool isViewModel)> Bind<TViewModel, TViewModelPropertyType, TViewPropertyType>(
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public IReactiveBinding<TView, (object? View, bool IsViewModel)> Bind<TViewModel, TViewModelPropertyType, TViewPropertyType>(
             TViewModel? viewModel,
             Expression<Func<TViewModel, TViewModelPropertyType?>> viewModelProperty,
             Expression<Func<TView, TViewPropertyType>> viewProperty,
@@ -482,7 +497,8 @@ public static class PropertyBindingMixins
         /// <returns>An instance of IDisposable that, when disposed, disconnects the binding.</returns>
         [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
         [RequiresDynamicCode("Uses dynamic binding paths which may require runtime code generation or reflection-based invocation.")]
-        public IReactiveBinding<TView, (object? view, bool isViewModel)> Bind<
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public IReactiveBinding<TView, (object? View, bool IsViewModel)> Bind<
             TViewModel,
             TViewModelPropertyType,
             TViewPropertyType,
@@ -523,7 +539,8 @@ public static class PropertyBindingMixins
         /// </returns>
         [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
         [RequiresDynamicCode("Uses dynamic binding paths which may require runtime code generation or reflection-based invocation.")]
-        public IReactiveBinding<TView, (object? view, bool isViewModel)> Bind<
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public IReactiveBinding<TView, (object? View, bool IsViewModel)> Bind<
             TViewModel,
             TViewModelPropertyType,
             TViewPropertyType,
@@ -556,6 +573,7 @@ public static class PropertyBindingMixins
         /// <returns>An instance of IDisposable that, when disposed, disconnects the binding.</returns>
         [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
         [RequiresDynamicCode("Uses dynamic binding paths which may require runtime code generation or reflection-based invocation.")]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IReactiveBinding<TView, TViewPropertyType> OneWayBind<TViewModel, TViewModelPropertyType, TViewPropertyType>(
             TViewModel? viewModel,
             Expression<Func<TViewModel, TViewModelPropertyType?>> viewModelProperty,
@@ -574,6 +592,7 @@ public static class PropertyBindingMixins
         /// <returns>An instance of IDisposable that, when disposed, disconnects the binding.</returns>
         [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
         [RequiresDynamicCode("Uses dynamic binding paths which may require runtime code generation or reflection-based invocation.")]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IReactiveBinding<TView, TViewPropertyType> OneWayBind<TViewModel, TViewModelPropertyType, TViewPropertyType>(
             TViewModel? viewModel,
             Expression<Func<TViewModel, TViewModelPropertyType?>> viewModelProperty,
@@ -613,6 +632,7 @@ public static class PropertyBindingMixins
         /// </returns>
         [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
         [RequiresDynamicCode("Uses dynamic binding paths which may require runtime code generation or reflection-based invocation.")]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IReactiveBinding<TView, TViewPropertyType> OneWayBind<TViewModel, TViewModelPropertyType, TViewPropertyType>(
             TViewModel? viewModel,
             Expression<Func<TViewModel, TViewModelPropertyType?>> viewModelProperty,
@@ -658,6 +678,7 @@ public static class PropertyBindingMixins
         /// </returns>
         [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
         [RequiresDynamicCode("Uses dynamic binding paths which may require runtime code generation or reflection-based invocation.")]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IReactiveBinding<TView, TOut> OneWayBind<TViewModel, TProp, TOut>(
             TViewModel? viewModel,
             Expression<Func<TViewModel, TProp>> viewModelProperty,

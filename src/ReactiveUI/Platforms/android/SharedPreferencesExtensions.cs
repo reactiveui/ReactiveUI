@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Runtime.CompilerServices;
 using Android.Content;
 using ReactiveUI.Primitives.Disposables;
 
@@ -20,6 +21,7 @@ public static class SharedPreferencesExtensions
     {
         /// <summary>A observable sequence of keys for changed shared preferences.</summary>
         /// <returns>The observable sequence of keys for changed shared preferences.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IObservable<string?> PreferenceChanged() =>
             new PreferenceChangedObservable(sharedPreferences);
     }
@@ -50,6 +52,7 @@ public static class SharedPreferencesExtensions
             ISharedPreferencesOnSharedPreferenceChangeListener
     {
         /// <inheritdoc/>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         void ISharedPreferencesOnSharedPreferenceChangeListener.OnSharedPreferenceChanged(
             ISharedPreferences? sharedPreferences,
             string? key) => observer.OnNext(key);

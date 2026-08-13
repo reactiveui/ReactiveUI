@@ -43,8 +43,7 @@ public class ExpressionRewriterTests
 
         // ArrayLength should be rewritten to MemberAccess of Length property
         await Assert.That(result.NodeType).IsEqualTo(ExpressionType.MemberAccess);
-        var memberExpr = (MemberExpression)result;
-        await Assert.That(memberExpr.Member.Name).IsEqualTo("Length");
+        await Assert.That(((MemberExpression)result).Member.Name).IsEqualTo("Length");
     }
 
     /// <summary>Verifies that a constant expression is preserved as a Constant node.</summary>

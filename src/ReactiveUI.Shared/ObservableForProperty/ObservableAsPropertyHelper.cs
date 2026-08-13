@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Runtime.CompilerServices;
 using ReactiveUI.Primitives.Disposables;
 using Splat;
 
@@ -18,6 +19,7 @@ namespace ReactiveUI;
 /// notifications. This class can be created directly, but is more often created
 /// via the <see cref="OAPHCreationHelperMixins" /> extension methods.
 /// </summary>
+/// <typeparam name="T">The type.</typeparam>
 /// <remarks>
 /// <para>
 /// Use this helper when the value for a property is derived from one or more observable streams (for example,
@@ -36,7 +38,6 @@ namespace ReactiveUI;
 /// ]]>
 /// </code>
 /// </example>
-/// <typeparam name="T">The type.</typeparam>
 [System.Diagnostics.DebuggerDisplay("Value = {_lastValue}, IsSubscribed = {IsSubscribed}")]
 public sealed class ObservableAsPropertyHelper<T> : IHandleObservableErrors, IDisposable, IEnableLogger
 {
@@ -421,14 +422,17 @@ public sealed class ObservableAsPropertyHelper<T> : IHandleObservableErrors, IDi
 
     /// <summary>Returns the default value of <typeparamref name="T"/>.</summary>
     /// <returns>The default value.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static T? GetDefault() => default;
 
     /// <summary>Subscribes the helper to its source observable.</summary>
     /// <returns>The source subscription.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private IDisposable SubscribeToSource() => _sourceObservable.Subscribe(new SourceObserver(this));
 
     /// <summary>Schedules delivery of a value's change notifications on the configured scheduler.</summary>
     /// <param name="value">The value to deliver.</param>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void ScheduleDeliver(T? value) =>
         _scheduler.ScheduleOrInline(
             (Helper: this, Value: value),
@@ -449,6 +453,7 @@ public sealed class ObservableAsPropertyHelper<T> : IHandleObservableErrors, IDi
 
     /// <summary>Schedules delivery of a source error to the exceptions stream.</summary>
     /// <param name="error">The error produced by the source.</param>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void OnSourceError(Exception error) =>
         Sequencer.CurrentThread.Schedule(
             (Helper: this, Error: error),
@@ -502,9 +507,11 @@ public sealed class ObservableAsPropertyHelper<T> : IHandleObservableErrors, IDi
     private sealed class SourceObserver(ObservableAsPropertyHelper<T> parent) : IObserver<T?>
     {
         /// <inheritdoc/>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void OnNext(T? value) => parent.OnSourceNext(value);
 
         /// <inheritdoc/>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void OnError(Exception error) => parent.OnSourceError(error);
 
         /// <inheritdoc/>
@@ -532,6 +539,7 @@ public sealed class ObservableAsPropertyHelper<T> : IHandleObservableErrors, IDi
     private sealed class ExceptionSubscription(ObservableAsPropertyHelper<T> parent, IObserver<Exception> observer) : IDisposable
     {
         /// <inheritdoc/>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Dispose() => parent.RemoveException(observer);
     }
 }

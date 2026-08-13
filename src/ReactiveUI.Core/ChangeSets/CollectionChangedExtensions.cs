@@ -4,6 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Collections.Specialized;
+using System.Runtime.CompilerServices;
 
 namespace ReactiveUI;
 
@@ -62,6 +63,7 @@ public static class CollectionChangedExtensions
             /// <summary>Forwards a collection-changed event to the observer.</summary>
             /// <param name="sender">The collection that raised the event.</param>
             /// <param name="e">The collection-changed event arguments.</param>
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             private void OnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e) =>
                 _observer.OnNext(new(sender, e));
         }

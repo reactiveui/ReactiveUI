@@ -19,11 +19,6 @@ public interface IInteractionBinderImplementation : IEnableLogger
     /// Binds an interaction on the specified view model to a handler on the view, enabling the view to respond to
     /// interaction requests from the view model.
     /// </summary>
-    /// <remarks>This method enables the view to observe and handle interaction requests initiated by the view
-    /// model, typically for user-driven workflows such as dialogs or prompts. The returned <see cref="IDisposable"/>
-    /// should be disposed when the binding is no longer needed to prevent memory leaks. This method uses reflection and
-    /// may not be compatible with trimming tools; see the <see cref="RequiresUnreferencedCodeAttribute"/> for
-    /// details.</remarks>
     /// <typeparam name="TViewModel">The type of the view model containing the interaction property.</typeparam>
     /// <typeparam name="TView">The type of the view that will handle the interaction. Must implement <see cref="IViewFor"/>.</typeparam>
     /// <typeparam name="TInput">The type of the input parameter for the interaction.</typeparam>
@@ -36,6 +31,11 @@ public interface IInteractionBinderImplementation : IEnableLogger
     /// <param name="handler">A delegate that handles the interaction when it is triggered. Receives the interaction context and returns a
     /// <see cref="Task"/> representing the asynchronous operation. Must not be <see langword="null"/>.</param>
     /// <returns>An <see cref="IDisposable"/> that can be disposed to unbind the interaction and release associated resources.</returns>
+    /// <remarks>This method enables the view to observe and handle interaction requests initiated by the view
+    /// model, typically for user-driven workflows such as dialogs or prompts. The returned <see cref="IDisposable"/>
+    /// should be disposed when the binding is no longer needed to prevent memory leaks. This method uses reflection and
+    /// may not be compatible with trimming tools; see the <see cref="RequiresUnreferencedCodeAttribute"/> for
+    /// details.</remarks>
     [RequiresUnreferencedCode("Dynamic observation uses reflection over members that may be trimmed.")]
     IDisposable BindInteraction<TViewModel, TView, TInput, TOutput>(
         TViewModel? viewModel,
@@ -49,9 +49,6 @@ public interface IInteractionBinderImplementation : IEnableLogger
     /// Binds an interaction from a view model to a handler in the view, enabling the view to respond to interaction
     /// requests from the view model.
     /// </summary>
-    /// <remarks>This method uses reflection to observe the specified interaction property, which may be
-    /// affected by code trimming. The handler is invoked each time the interaction is triggered by the view model.
-    /// Disposing the returned IDisposable will detach the handler and stop observing the interaction.</remarks>
     /// <typeparam name="TViewModel">The type of the view model containing the interaction property.</typeparam>
     /// <typeparam name="TView">The type of the view implementing the IViewFor interface.</typeparam>
     /// <typeparam name="TInput">The type of the input parameter for the interaction.</typeparam>
@@ -64,6 +61,9 @@ public interface IInteractionBinderImplementation : IEnableLogger
     /// <param name="handler">A function that handles the interaction by processing the interaction context and returning an observable
     /// sequence. The result of the observable is ignored.</param>
     /// <returns>An IDisposable that can be disposed to unbind the interaction and release associated resources.</returns>
+    /// <remarks>This method uses reflection to observe the specified interaction property, which may be
+    /// affected by code trimming. The handler is invoked each time the interaction is triggered by the view model.
+    /// Disposing the returned IDisposable will detach the handler and stop observing the interaction.</remarks>
     [RequiresUnreferencedCode("Dynamic observation uses reflection over members that may be trimmed.")]
     IDisposable BindInteraction<TViewModel, TView, TInput, TOutput, TDontCare>(
         TViewModel? viewModel,

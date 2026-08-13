@@ -93,6 +93,7 @@ public class WhenAnyValueSubscribeRaceTests
     /// value. Any divergence means a real <c>PropertyChanged</c> raised on the mutator thread fired
     /// during the main thread's read-then-subscribe window and was dropped on the floor.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     /// <remarks>
     /// Without the fix in <c>ExpressionChainSink.Level.SetParent</c>, this test fails reliably (on
     /// the order of 5-10% of iterations drop the final mutation). With the fix, the handler is
@@ -100,7 +101,6 @@ public class WhenAnyValueSubscribeRaceTests
     /// handler on the mutator's thread, the handler blocks on <c>sink._gate</c> until the main
     /// thread releases it, and then re-emits the post-mutation value. Every iteration converges.
     /// </remarks>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task WhenAnyValue_ConcurrentMutationDuringSubscribe_NeverLosesFinalValue_Stress()
     {

@@ -15,21 +15,6 @@ public sealed class StringToNullableDateTimeOffsetTypeConverter : BindingTypeCon
     public override bool TryConvert(
         string? from,
         object? conversionHint,
-        out DateTimeOffset? result)
-    {
-        if (string.IsNullOrEmpty(from))
-        {
-            result = null;
-            return true;
-        }
-
-        if (DateTimeOffset.TryParse(from, out var value))
-        {
-            result = value;
-            return true;
-        }
-
-        result = null;
-        return false;
-    }
+        out DateTimeOffset? result) =>
+        NullableValueConversion.TryConvert(from, DateTimeOffset.TryParse, out result);
 }

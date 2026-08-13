@@ -114,8 +114,7 @@ public class ComprehensiveAOTTests
     public async Task ReactiveProperty_WithExplicitScheduler_WorksInAOT()
     {
         // Use explicit scheduler to avoid RxApp dependency (AOT-friendly)
-        var scheduler = Sequencer.CurrentThread;
-        var property = new ReactiveProperty<string>(InitialValue, scheduler, false, false);
+        var property = new ReactiveProperty<string>(InitialValue, Sequencer.CurrentThread, false, false);
 
         var values = new List<string>();
         _ = property.ObserveOn(Sequencer.Immediate).Subscribe(value => values.Add(value ?? string.Empty));
@@ -159,11 +158,8 @@ public class ComprehensiveAOTTests
     {
         Splat.Builder.AppBuilder.ResetBuilderStateForTests();
 
-        // Basic DI operations that work in AOT
-        var resolver = Locator.CurrentMutable;
-
         // Register concrete types (AOT-friendly)
-        resolver.Register<ISequencer>(static () => Sequencer.CurrentThread);
+        Locator.CurrentMutable.Register<ISequencer>(static () => Sequencer.CurrentThread);
 
         // Resolve registered types
         var scheduler = Locator.Current.GetService<ISequencer>();

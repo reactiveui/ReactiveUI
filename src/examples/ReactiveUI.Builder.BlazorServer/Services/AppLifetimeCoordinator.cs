@@ -5,10 +5,12 @@
 
 using System.Diagnostics;
 using System.IO.MemoryMappedFiles;
+using System.Runtime.CompilerServices;
 
 namespace ReactiveUI.Builder.BlazorServer.Services;
 
 /// <summary>Cross-process instance counter. Used to determine when the last instance closes.</summary>
+[DebuggerDisplay("AppLifetimeCoordinator")]
 public sealed class AppLifetimeCoordinator : IDisposable
 {
     /// <summary>The name of the shared memory-mapped file used to store the instance count.</summary>
@@ -52,10 +54,12 @@ public sealed class AppLifetimeCoordinator : IDisposable
 
     /// <summary>Increments the instance count.</summary>
     /// <returns>The new count after incrementing.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public int Increment() => UpdateCount(static c => c + 1);
 
     /// <summary>Decrements the instance count.</summary>
     /// <returns>The new count after decrementing (0 means last instance is closing).</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public int Decrement() => UpdateCount(static c => Math.Max(0, c - 1));
 
     /// <inheritdoc />

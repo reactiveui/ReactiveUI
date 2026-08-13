@@ -152,7 +152,7 @@ internal static class MauiReactiveHelpers
         DependencyProperty routerProperty,
         DependencyProperty viewContractObservableProperty,
         MultipleDisposable subscriptions,
-        Action<(IRoutableViewModel? viewModel, string? contract)> resolveView)
+        Action<(IRoutableViewModel? ViewModel, string? Contract)> resolveView)
         where THost : FrameworkElement, IMauiRoutedViewHost
     {
         host.ViewContractObservable = CreateViewContractObservable(host, host.Log());
@@ -199,7 +199,7 @@ internal static class MauiReactiveHelpers
         (string Name, DependencyProperty Property, Func<IObservable<string?>> GetValue) viewContractObservable,
         Func<string?> getViewContract,
         Action<string?> setViewContract,
-        Action<(IRoutableViewModel? viewModel, string? contract)> resolveView,
+        Action<(IRoutableViewModel? ViewModel, string? Contract)> resolveView,
         MultipleDisposable subscriptions)
     {
         var routerChanged = CreatePropertyValueObservable(source, router.Name, router.Property, router.GetValue);
@@ -221,7 +221,7 @@ internal static class MauiReactiveHelpers
         _ = currentViewModel
             .CombineLatest(viewContract, static (viewModel, contract) => (viewModel, contract))
             .DistinctUntilChanged()
-            .Subscribe(new DelegateObserver<(IRoutableViewModel? viewModel, string? contract)>(
+            .Subscribe(new DelegateObserver<(IRoutableViewModel? ViewModel, string? Contract)>(
                 resolveView,
                 RxState.DefaultExceptionHandler.OnNext))
             .DisposeWith(subscriptions);
@@ -257,8 +257,8 @@ internal static class MauiReactiveHelpers
             .DisposeWith(subscriptions);
         _ = viewModelAndContract
             .DistinctUntilChanged()
-            .Subscribe(new DelegateObserver<(TViewModel? viewModel, string? contract)>(
-                pair => resolveView(pair.viewModel, pair.contract)))
+            .Subscribe(new DelegateObserver<(TViewModel? ViewModel, string? Contract)>(
+                pair => resolveView(pair.ViewModel, pair.Contract)))
             .DisposeWith(subscriptions);
     }
 

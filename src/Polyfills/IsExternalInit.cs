@@ -3,8 +3,10 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-#if !NET
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
+
+#if !NET
 using System.Diagnostics.CodeAnalysis;
 
 namespace System.Runtime.CompilerServices;
@@ -19,7 +21,5 @@ namespace System.Runtime.CompilerServices;
 internal static class IsExternalInit;
 
 #else
-using System.Runtime.CompilerServices;
-
 [assembly: TypeForwardedTo(typeof(IsExternalInit))]
 #endif

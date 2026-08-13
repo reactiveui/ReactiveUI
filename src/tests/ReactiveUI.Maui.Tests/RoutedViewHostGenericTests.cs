@@ -178,8 +178,7 @@ public class RoutedViewHostGenericTests
         var page = host.PublicPageForViewModel(viewModel);
 
         await Assert.That(page).IsAssignableTo<TestRoutableView>();
-        var view = (TestRoutableView)page;
-        await Assert.That(view.ViewModel).IsEqualTo(viewModel);
+        await Assert.That(((TestRoutableView)page).ViewModel).IsEqualTo(viewModel);
     }
 
     /// <summary>Tests that PageForViewModel sets page title when SetTitleOnNavigate is true.</summary>

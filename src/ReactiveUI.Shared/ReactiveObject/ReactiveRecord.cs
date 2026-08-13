@@ -4,11 +4,9 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.ComponentModel;
-
-#if !MONO
 using System.ComponentModel.DataAnnotations;
-#endif
-
+using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
 
@@ -23,6 +21,7 @@ namespace ReactiveUI;
 /// Changing and Changed Observables to monitor object changes.
 /// </summary>
 [DataContract]
+[DebuggerDisplay("{Changing}, {Changed}")]
 public abstract record ReactiveRecord : IReactiveNotifyPropertyChanged<IReactiveObject>, IHandleObservableErrors, IReactiveObject
 {
     /// <summary>Tracks whether property-changing event subscriptions have been set up.</summary>
@@ -88,26 +87,32 @@ public abstract record ReactiveRecord : IReactiveNotifyPropertyChanged<IReactive
     public IObservable<Exception> ThrownExceptions => GetThrownExceptions();
 
     /// <inheritdoc/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args) =>
         _propertyChangingHandler?.Invoke(this, args);
 
     /// <inheritdoc/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args) =>
         _propertyChangedHandler?.Invoke(this, args);
 
     /// <inheritdoc/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public IDisposable SuppressChangeNotifications() => IReactiveObjectExtensions.SuppressChangeNotifications(this);
 
     /// <summary>Determines if change notifications are enabled or not.</summary>
     /// <returns>A value indicating whether change notifications are enabled.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool AreChangeNotificationsEnabled() => IReactiveObjectExtensions.AreChangeNotificationsEnabled(this);
 
     /// <summary>Delays notifications until the return IDisposable is disposed.</summary>
     /// <returns>A disposable which when disposed will send delayed notifications.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public IDisposable DelayChangeNotifications() => IReactiveObjectExtensions.DelayChangeNotifications(this);
 
     /// <summary>Adds a property-changing event handler.</summary>
     /// <param name="handler">The handler to add.</param>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void AddPropertyChanging(PropertyChangingEventHandler? handler) =>
         ReactiveNotificationHelpers.AddPropertyChanging(this, ref _propertyChangingEventsSubscribed, ref _propertyChangingHandler, handler);
 
@@ -117,6 +122,7 @@ public abstract record ReactiveRecord : IReactiveNotifyPropertyChanged<IReactive
 
     /// <summary>Adds a property-changed event handler.</summary>
     /// <param name="handler">The handler to add.</param>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void AddPropertyChanged(PropertyChangedEventHandler? handler) =>
         ReactiveNotificationHelpers.AddPropertyChanged(this, ref _propertyChangedEventsSubscribed, ref _propertyChangedHandler, handler);
 
@@ -126,16 +132,19 @@ public abstract record ReactiveRecord : IReactiveNotifyPropertyChanged<IReactive
 
     /// <summary>Gets the property-changing observable.</summary>
     /// <returns>The property-changing observable.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private IObservable<IReactivePropertyChangedEventArgs<IReactiveObject>> GetChanging() =>
         ReactiveNotificationHelpers.GetChanging(this, ref _changing);
 
     /// <summary>Gets the property-changed observable.</summary>
     /// <returns>The property-changed observable.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private IObservable<IReactivePropertyChangedEventArgs<IReactiveObject>> GetChanged() =>
         ReactiveNotificationHelpers.GetChanged(this, ref _changed);
 
     /// <summary>Gets the exception observable.</summary>
     /// <returns>The exception observable.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private IObservable<Exception> GetThrownExceptions() =>
         ReactiveNotificationHelpers.GetThrownExceptions(this, ref _thrownExceptions);
 }

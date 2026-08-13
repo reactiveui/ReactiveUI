@@ -3,6 +3,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Runtime.CompilerServices;
+
 namespace ReactiveUI.Internal;
 
 /// <summary>A sink that combines the latest value from two sources.</summary>
@@ -123,9 +125,11 @@ internal sealed class CombineLatestSink<TFirst, TSecond> : IDisposable
     private sealed class FirstObserver(CombineLatestSink<TFirst, TSecond> parent) : IObserver<TFirst>
     {
         /// <inheritdoc/>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void OnNext(TFirst value) => parent.OnFirst(value);
 
         /// <inheritdoc/>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void OnError(Exception error) => parent.OnError(error);
 
         /// <inheritdoc/>
@@ -139,9 +143,11 @@ internal sealed class CombineLatestSink<TFirst, TSecond> : IDisposable
     private sealed class SecondObserver(CombineLatestSink<TFirst, TSecond> parent) : IObserver<TSecond>
     {
         /// <inheritdoc/>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void OnNext(TSecond value) => parent.OnSecond(value);
 
         /// <inheritdoc/>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void OnError(Exception error) => parent.OnError(error);
 
         /// <inheritdoc/>

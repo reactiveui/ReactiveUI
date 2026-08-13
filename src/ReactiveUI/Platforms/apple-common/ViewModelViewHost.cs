@@ -3,7 +3,9 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using ReactiveUI.Internal;
 
 #if UIKIT
@@ -50,6 +52,7 @@ namespace ReactiveUI;
 [RequiresDynamicCode(
     "If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, "
     + "or generic constraints), trimming can't validate that the requirements of those annotations are met.")]
+[DebuggerDisplay("{ViewModel}, {DefaultContent}")]
 public class ViewModelViewHost : ReactiveViewController
 {
     /// <summary>Tracks the currently-adopted view controller and ensures it is disowned on replacement or disposal.</summary>
@@ -237,8 +240,7 @@ public class ViewModelViewHost : ReactiveViewController
                 .Subscribe(new DelegateObserver<(object? ViewModel, string? Contract)>(
                     x =>
                     {
-                        var viewLocator = ViewLocator ?? ReactiveUI.ViewLocator.Current;
-                        var view = viewLocator.ResolveView(x.ViewModel, x.Contract);
+                        var view = (ViewLocator ?? ReactiveUI.ViewLocator.Current).ResolveView(x.ViewModel, x.Contract);
 
                         if (view is null)
                         {
@@ -337,9 +339,11 @@ public class ViewModelViewHost : ReactiveViewController
             }
 
             /// <inheritdoc/>
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public void OnError(Exception error) => downstream.OnError(error);
 
             /// <inheritdoc/>
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public void OnCompleted() => downstream.OnCompleted();
         }
     }
@@ -498,9 +502,11 @@ public class ViewModelViewHost : ReactiveViewController
             private sealed class ViewModelObserver(Sink parent) : IObserver<object?>
             {
                 /// <inheritdoc/>
+                [MethodImpl(MethodImplOptions.AggressiveInlining)]
                 public void OnNext(object? value) => parent.OnViewModel(value);
 
                 /// <inheritdoc/>
+                [MethodImpl(MethodImplOptions.AggressiveInlining)]
                 public void OnError(Exception error) => parent.OnError(error);
 
                 /// <inheritdoc/>
@@ -514,9 +520,11 @@ public class ViewModelViewHost : ReactiveViewController
             private sealed class ContractObserver(Sink parent) : IObserver<string?>
             {
                 /// <inheritdoc/>
+                [MethodImpl(MethodImplOptions.AggressiveInlining)]
                 public void OnNext(string? value) => parent.OnContract(value);
 
                 /// <inheritdoc/>
+                [MethodImpl(MethodImplOptions.AggressiveInlining)]
                 public void OnError(Exception error) => parent.OnError(error);
 
                 /// <inheritdoc/>
@@ -650,9 +658,11 @@ public class ViewModelViewHost : ReactiveViewController
             private sealed class ViewModelObserver(Sink parent) : IObserver<object?>
             {
                 /// <inheritdoc/>
+                [MethodImpl(MethodImplOptions.AggressiveInlining)]
                 public void OnNext(object? value) => parent.OnViewModel(value);
 
                 /// <inheritdoc/>
+                [MethodImpl(MethodImplOptions.AggressiveInlining)]
                 public void OnError(Exception error) => parent.OnError(error);
 
                 /// <inheritdoc/>
@@ -666,9 +676,11 @@ public class ViewModelViewHost : ReactiveViewController
             private sealed class DefaultContentObserver(Sink parent) : IObserver<NSViewController?>
             {
                 /// <inheritdoc/>
+                [MethodImpl(MethodImplOptions.AggressiveInlining)]
                 public void OnNext(NSViewController? value) => parent.OnDefaultContent(value);
 
                 /// <inheritdoc/>
+                [MethodImpl(MethodImplOptions.AggressiveInlining)]
                 public void OnError(Exception error) => parent.OnError(error);
 
                 /// <inheritdoc/>
@@ -702,6 +714,7 @@ public class ViewModelViewHost : ReactiveViewController
         private sealed class Sink(IObserver<T> downstream, ISequencer scheduler) : IObserver<T>
         {
             /// <inheritdoc/>
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public void OnNext(T value) =>
                 scheduler.ScheduleOrInline((Downstream: downstream, Value: value), static (_, state) =>
                 {
@@ -710,6 +723,7 @@ public class ViewModelViewHost : ReactiveViewController
                 });
 
             /// <inheritdoc/>
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public void OnError(Exception error) =>
                 scheduler.ScheduleOrInline((Downstream: downstream, Error: error), static (_, state) =>
                 {
@@ -718,6 +732,7 @@ public class ViewModelViewHost : ReactiveViewController
                 });
 
             /// <inheritdoc/>
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public void OnCompleted() =>
                 scheduler.ScheduleOrInline(downstream, static (_, observer) =>
                 {

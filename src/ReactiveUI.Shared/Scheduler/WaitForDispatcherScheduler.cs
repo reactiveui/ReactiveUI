@@ -3,6 +3,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Runtime.CompilerServices;
+
 #if REACTIVE_SHIM
 namespace ReactiveUI.Reactive;
 #else
@@ -99,6 +101,7 @@ public class WaitForDispatcherScheduler : ISequencer
     /// <param name="dueTime">The delay before execution.</param>
     /// <param name="action">The scheduled work.</param>
     /// <returns>A disposable that cancels the scheduled work.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private IDisposable ScheduleRelative<TState>(
         TState state,
         TimeSpan dueTime,
@@ -124,11 +127,11 @@ public class WaitForDispatcherScheduler : ISequencer
     /// Attempts to create and return an instance of the scheduler. If the scheduler cannot be created, returns a
     /// fallback scheduler instance.
     /// </summary>
+    /// <returns>An <see cref="ISequencer"/> instance. If the scheduler cannot be created due to the dispatcher not being ready,
+    /// returns the current-thread scheduler as a fallback.</returns>
     /// <remarks>This method caches the created scheduler instance for future calls. If the underlying
     /// scheduler factory throws an <see cref="InvalidOperationException"/> or <see cref="ArgumentNullException"/>, the
     /// method returns a scheduler that executes work on the current thread instead.</remarks>
-    /// <returns>An <see cref="ISequencer"/> instance. If the scheduler cannot be created due to the dispatcher not being ready,
-    /// returns the current-thread scheduler as a fallback.</returns>
     private ISequencer AttemptToCreateScheduler()
     {
         if (_scheduler is not null)

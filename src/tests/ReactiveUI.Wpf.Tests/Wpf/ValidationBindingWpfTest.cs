@@ -93,7 +93,7 @@ public class ValidationBindingWpfTest
         {
             Expression.Parameter(typeof(TestView), "view"),
             Expression.Constant(new TextBox()),
-            Expression.Property(Expression.Constant(new TextBox()), "Text")
+            Expression.Property(Expression.Constant(new TextBox()), "Text"),
         };
 
         await Assert.That(() => ValidationBindingWpf<TestView, TestViewModel, Control, string>.ExtractControlName(chain, typeof(TestView)))

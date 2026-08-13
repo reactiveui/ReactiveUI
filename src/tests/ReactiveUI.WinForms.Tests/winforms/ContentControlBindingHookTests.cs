@@ -32,7 +32,7 @@ public class ContentControlBindingHookTests
         Expression<Func<Button, Control.ControlCollection>> expr = x => x.Controls;
         var viewProperties = new IObservedChange<object, object>[]
         {
-            new ObservedChange<object, object>(button, expr.Body, button.Controls)
+            new ObservedChange<object, object>(button, expr.Body, button.Controls),
         };
 
         var result = hook.ExecuteHook(
@@ -55,7 +55,7 @@ public class ContentControlBindingHookTests
         Expression<Func<Panel, Control.ControlCollection>> expr = x => x.Controls;
         var viewProperties = new IObservedChange<object, object>[]
         {
-            new ObservedChange<object, object>(panel, expr.Body, panel.Controls)
+            new ObservedChange<object, object>(panel, expr.Body, panel.Controls),
         };
 
         var result = hook.ExecuteHook(
@@ -78,7 +78,7 @@ public class ContentControlBindingHookTests
         Expression<Func<Panel, int>> expr = x => x.Width;
         var viewProperties = new IObservedChange<object, object>[]
         {
-            new ObservedChange<object, object>(panel, expr.Body, panel.Width)
+            new ObservedChange<object, object>(panel, expr.Body, panel.Width),
         };
 
         var result = hook.ExecuteHook(

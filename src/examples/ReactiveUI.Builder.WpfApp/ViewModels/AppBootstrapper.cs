@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using ReactiveUI.Builder.WpfApp.Services;
 using Splat;
@@ -12,6 +13,7 @@ namespace ReactiveUI.Builder.WpfApp.ViewModels;
 /// <summary>The root screen that owns the router and navigates to the terminal on start-up.</summary>
 /// <seealso cref="ReactiveObject" />
 /// <seealso cref="IScreen" />
+[DebuggerDisplay("AppBootstrapper Router={Router}")]
 public sealed class AppBootstrapper : ReactiveObject, IScreen
 {
     /// <summary>Initializes a new instance of the <see cref="AppBootstrapper"/> class.</summary>

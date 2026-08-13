@@ -3,12 +3,14 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics;
 using System.Windows;
 using ReactiveUI.Builder.WpfApp.ViewModels;
 
 namespace ReactiveUI.Builder.WpfApp.Views;
 
 /// <summary>The payment terminal view (keypad, amount display and result banner).</summary>
+[DebuggerDisplay("TerminalView ViewModel={ViewModel}")]
 public partial class TerminalView : IViewFor<TerminalViewModel>
 {
     /// <summary>Identifies the <see cref="ViewModel"/> dependency property.</summary>

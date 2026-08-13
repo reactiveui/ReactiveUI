@@ -3,7 +3,9 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 
 namespace ReactiveUI;
 
@@ -12,6 +14,7 @@ namespace ReactiveUI;
 /// This converter provides a fast path for string-to-string bindings without
 /// requiring reflection or TypeDescriptor.
 /// </remarks>
+[DebuggerDisplay("{FromType}, {ToType}")]
 public sealed class StringConverter : IBindingTypeConverter
 {
     /// <inheritdoc/>
@@ -21,6 +24,7 @@ public sealed class StringConverter : IBindingTypeConverter
     public Type ToType => typeof(string);
 
     /// <inheritdoc/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public int GetAffinityForObjects() => BindingAffinity.DefaultInternalTypeConverter;
 
     /// <inheritdoc/>

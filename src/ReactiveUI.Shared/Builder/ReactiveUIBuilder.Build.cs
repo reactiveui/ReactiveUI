@@ -3,6 +3,9 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics;
+using System.Runtime.CompilerServices;
+
 #if REACTIVE_SHIM
 namespace ReactiveUI.Reactive.Builder;
 #else
@@ -10,6 +13,7 @@ namespace ReactiveUI.Builder;
 #endif
 
 /// <summary>Application build and typed instance-resolution members for <see cref="ReactiveUIBuilder"/>.</summary>
+[DebuggerDisplay("ReactiveUIBuilder")]
 public sealed partial class ReactiveUIBuilder
 {
     /// <summary>Builds the application and returns the ReactiveUI instance wrapper.</summary>
@@ -39,6 +43,7 @@ public sealed partial class ReactiveUIBuilder
     /// <summary>Builds the application and returns the ReactiveUI instance wrapper.</summary>
     /// <returns>IReactiveUIInstance instance for chaining.</returns>
     /// <exception cref="InvalidOperationException">Thrown if building the app instance fails.</exception>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public IReactiveUIInstance BuildApp() => Build();
 
     /// <summary>Resolves a single instance and passes it to the action.</summary>

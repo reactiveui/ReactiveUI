@@ -3,7 +3,9 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Text.Json.Serialization.Metadata;
 using ReactiveUI.Builder.WpfApp.Models;
@@ -11,9 +13,10 @@ using ReactiveUI.Builder.WpfApp.Models;
 namespace ReactiveUI.Builder.WpfApp.Services;
 
 /// <summary>A suspension driver that persists and restores the terminal state as indented JSON on disk.</summary>
-/// <seealso cref="ISuspensionDriver" />
-/// <remarks>Initializes a new instance of the <see cref="FileJsonSuspensionDriver"/> class.</remarks>
 /// <param name="path">The file path the state is persisted to.</param>
+/// <remarks>Initializes a new instance of the <see cref="FileJsonSuspensionDriver"/> class.</remarks>
+/// <seealso cref="ISuspensionDriver" />
+[DebuggerDisplay("FileJsonSuspensionDriver")]
 public sealed class FileJsonSuspensionDriver(string path) : ISuspensionDriver
 {
     /// <summary>The serializer options used when writing state, configured to produce human-readable JSON.</summary>
@@ -21,6 +24,7 @@ public sealed class FileJsonSuspensionDriver(string path) : ISuspensionDriver
 
     /// <summary>Invalidates the application state by deleting it from disk.</summary>
     /// <returns>A completed observable.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public IObservable<RxVoid> InvalidateState() => Signal.Start(
         () =>
         {
@@ -35,6 +39,7 @@ public sealed class FileJsonSuspensionDriver(string path) : ISuspensionDriver
 
     /// <summary>Loads the application state from persistent storage.</summary>
     /// <returns>An observable that produces the loaded state.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public IObservable<object?> LoadState() => Signal.Start(
         object? () =>
         {
@@ -52,6 +57,7 @@ public sealed class FileJsonSuspensionDriver(string path) : ISuspensionDriver
     /// <typeparam name="T">The type of state to load.</typeparam>
     /// <param name="typeInfo">The source-generated JSON type info.</param>
     /// <returns>An observable that produces the deserialized state.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public IObservable<T?> LoadState<T>(JsonTypeInfo<T> typeInfo) => Signal.Start(
         () =>
         {
@@ -69,6 +75,7 @@ public sealed class FileJsonSuspensionDriver(string path) : ISuspensionDriver
     /// <typeparam name="T">The type of state to save.</typeparam>
     /// <param name="state">The application state.</param>
     /// <returns>A completed observable.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public IObservable<RxVoid> SaveState<T>(T state) => Signal.Start(
         () => File.WriteAllText(path, JsonSerializer.Serialize(state, _options)),
         RxSchedulers.TaskpoolScheduler);
@@ -78,6 +85,7 @@ public sealed class FileJsonSuspensionDriver(string path) : ISuspensionDriver
     /// <param name="state">The application state.</param>
     /// <param name="typeInfo">The source-generated JSON type info.</param>
     /// <returns>A completed observable.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public IObservable<RxVoid> SaveState<T>(T state, JsonTypeInfo<T> typeInfo) => Signal.Start(
         () => File.WriteAllText(path, JsonSerializer.Serialize(state, typeInfo)),
         RxSchedulers.TaskpoolScheduler);

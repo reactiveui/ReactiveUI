@@ -4,6 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 using ReactiveUI.Helpers;
 
 #if REACTIVE_SHIM
@@ -36,6 +37,7 @@ public static class OAPHCreationHelperMixins
         /// <param name="source">The ReactiveObject that has the property.</param>
         /// <param name="property">An Expression representing the property (i.e. x => x.SomeProperty).</param>
         /// <returns>An initialized ObservableAsPropertyHelper; use this as the backing field for your property.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ObservableAsPropertyHelper<TRet> ToProperty<TObj>(
             TObj source,
             Expression<Func<TObj, TRet>> property)
@@ -52,6 +54,7 @@ public static class OAPHCreationHelperMixins
         /// <param name="property">An Expression representing the property (i.e. x => x.SomeProperty).</param>
         /// <param name="deferSubscription">If true, defers subscription until the first read of the property value.</param>
         /// <returns>An initialized ObservableAsPropertyHelper; use this as the backing field for your property.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ObservableAsPropertyHelper<TRet> ToProperty<TObj>(
             TObj source,
             Expression<Func<TObj, TRet>> property,
@@ -72,6 +75,7 @@ public static class OAPHCreationHelperMixins
         /// be a Dispatcher-based scheduler.
         /// </param>
         /// <returns>An initialized ObservableAsPropertyHelper; use this as the backing field for your property.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ObservableAsPropertyHelper<TRet> ToProperty<TObj>(
             TObj source,
             Expression<Func<TObj, TRet>> property,
@@ -129,6 +133,7 @@ public static class OAPHCreationHelperMixins
         /// <param name="property">An Expression representing the property (i.e. x => x.SomeProperty).</param>
         /// <param name="initialValue">The initial value of the property.</param>
         /// <returns>An initialized ObservableAsPropertyHelper; use this as the backing field for your property.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ObservableAsPropertyHelper<TRet> ToProperty<TObj>(
             TObj source,
             Expression<Func<TObj, TRet>> property,
@@ -150,6 +155,7 @@ public static class OAPHCreationHelperMixins
         /// be a Dispatcher-based scheduler.
         /// </param>
         /// <returns>An initialized ObservableAsPropertyHelper; use this as the backing field for your property.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ObservableAsPropertyHelper<TRet> ToProperty<TObj>(
             TObj source,
             Expression<Func<TObj, TRet>> property,
@@ -169,6 +175,7 @@ public static class OAPHCreationHelperMixins
         /// <param name="initialValue">The initial value of the property.</param>
         /// <param name="deferSubscription">If true, defers subscription until the first read of the property value.</param>
         /// <returns>An initialized ObservableAsPropertyHelper; use this as the backing field for your property.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ObservableAsPropertyHelper<TRet> ToProperty<TObj>(
             TObj source,
             Expression<Func<TObj, TRet>> property,
@@ -206,6 +213,7 @@ public static class OAPHCreationHelperMixins
         /// An initialized ObservableAsPropertyHelper; use this as the backing field
         /// for your property.
         /// </returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ObservableAsPropertyHelper<TRet> ToProperty<TObj>(
             TObj source,
             Expression<Func<TObj, TRet>> property,
@@ -225,6 +233,7 @@ public static class OAPHCreationHelperMixins
         /// <param name="property">An Expression representing the property (i.e. x => x.SomeProperty).</param>
         /// <param name="getInitialValue">A function that returns the initial value of the property.</param>
         /// <returns>An initialized ObservableAsPropertyHelper; use this as the backing field for your property.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ObservableAsPropertyHelper<TRet> ToProperty<TObj>(
             TObj source,
             Expression<Func<TObj, TRet>> property,
@@ -246,6 +255,7 @@ public static class OAPHCreationHelperMixins
         /// be a Dispatcher-based scheduler.
         /// </param>
         /// <returns>An initialized ObservableAsPropertyHelper; use this as the backing field for your property.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ObservableAsPropertyHelper<TRet> ToProperty<TObj>(
             TObj source,
             Expression<Func<TObj, TRet>> property,
@@ -265,6 +275,7 @@ public static class OAPHCreationHelperMixins
         /// <param name="getInitialValue">A function that returns the initial value of the property.</param>
         /// <param name="deferSubscription">If true, defers subscription until the first read of the property value.</param>
         /// <returns>An initialized ObservableAsPropertyHelper; use this as the backing field for your property.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ObservableAsPropertyHelper<TRet> ToProperty<TObj>(
             TObj source,
             Expression<Func<TObj, TRet>> property,
@@ -324,6 +335,7 @@ public static class OAPHCreationHelperMixins
         /// <param name="property">An Expression representing the property (i.e. x => x.SomeProperty).</param>
         /// <param name="result">An out param matching the return value, provided for convenience.</param>
         /// <returns>An initialized ObservableAsPropertyHelper; use this as the backing field for your property.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ObservableAsPropertyHelper<TRet> ToProperty<TObj>(
             TObj source,
             Expression<Func<TObj, TRet>> property,
@@ -342,6 +354,7 @@ public static class OAPHCreationHelperMixins
         /// <param name="result">An out param matching the return value, provided for convenience.</param>
         /// <param name="deferSubscription">If true, defers subscription until the first read of the property value.</param>
         /// <returns>An initialized ObservableAsPropertyHelper; use this as the backing field for your property.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ObservableAsPropertyHelper<TRet> ToProperty<TObj>(
             TObj source,
             Expression<Func<TObj, TRet>> property,
@@ -409,6 +422,7 @@ public static class OAPHCreationHelperMixins
         /// <param name="result">An out param matching the return value, provided for convenience.</param>
         /// <param name="initialValue">The initial value of the property.</param>
         /// <returns>An initialized ObservableAsPropertyHelper; use this as the backing field for your property.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ObservableAsPropertyHelper<TRet> ToProperty<TObj>(
             TObj source,
             Expression<Func<TObj, TRet>> property,
@@ -429,6 +443,7 @@ public static class OAPHCreationHelperMixins
         /// <param name="initialValue">The initial value of the property.</param>
         /// <param name="deferSubscription">If true, defers subscription until the first read of the property value.</param>
         /// <returns>An initialized ObservableAsPropertyHelper; use this as the backing field for your property.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ObservableAsPropertyHelper<TRet> ToProperty<TObj>(
             TObj source,
             Expression<Func<TObj, TRet>> property,
@@ -470,6 +485,7 @@ public static class OAPHCreationHelperMixins
         /// An initialized ObservableAsPropertyHelper; use this as the backing
         /// field for your property.
         /// </returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ObservableAsPropertyHelper<TRet> ToProperty<TObj>(
             TObj source,
             Expression<Func<TObj, TRet>> property,
@@ -491,6 +507,7 @@ public static class OAPHCreationHelperMixins
         /// <param name="result">An out param matching the return value, provided for convenience.</param>
         /// <param name="getInitialValue">A function that returns the initial value of the property.</param>
         /// <returns>An initialized ObservableAsPropertyHelper; use this as the backing field for your property.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ObservableAsPropertyHelper<TRet> ToProperty<TObj>(
             TObj source,
             Expression<Func<TObj, TRet>> property,
@@ -511,6 +528,7 @@ public static class OAPHCreationHelperMixins
         /// <param name="getInitialValue">A function that returns the initial value of the property.</param>
         /// <param name="deferSubscription">If true, defers subscription until the first read of the property value.</param>
         /// <returns>An initialized ObservableAsPropertyHelper; use this as the backing field for your property.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ObservableAsPropertyHelper<TRet> ToProperty<TObj>(
             TObj source,
             Expression<Func<TObj, TRet>> property,
@@ -578,6 +596,7 @@ public static class OAPHCreationHelperMixins
         /// <param name="property">The name of the property. Recommended for use with nameof().</param>
         /// <param name="initialValue">The initial value of the property.</param>
         /// <returns>An initialized ObservableAsPropertyHelper; use this as the backing field for your property.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ObservableAsPropertyHelper<TRet> ToProperty<TObj>(
             TObj source,
             string property,
@@ -599,6 +618,7 @@ public static class OAPHCreationHelperMixins
         /// be a Dispatcher-based scheduler.
         /// </param>
         /// <returns>An initialized ObservableAsPropertyHelper; use this as the backing field for your property.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ObservableAsPropertyHelper<TRet> ToProperty<TObj>(
             TObj source,
             string property,
@@ -618,6 +638,7 @@ public static class OAPHCreationHelperMixins
         /// <param name="initialValue">The initial value of the property.</param>
         /// <param name="deferSubscription">If true, defers subscription until the first read of the property value.</param>
         /// <returns>An initialized ObservableAsPropertyHelper; use this as the backing field for your property.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ObservableAsPropertyHelper<TRet> ToProperty<TObj>(
             TObj source,
             string property,
@@ -656,6 +677,7 @@ public static class OAPHCreationHelperMixins
         /// An initialized ObservableAsPropertyHelper; use this as the backing field
         /// for your property.
         /// </returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ObservableAsPropertyHelper<TRet> ToProperty<TObj>(
             TObj source,
             string property,
@@ -674,6 +696,7 @@ public static class OAPHCreationHelperMixins
         /// <param name="source">The ReactiveObject that has the property.</param>
         /// <param name="property">The name of the property. Recommended for use with nameof().</param>
         /// <returns>An initialized ObservableAsPropertyHelper; use this as the backing field for your property.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ObservableAsPropertyHelper<TRet> ToProperty<TObj>(
             TObj source,
             string property)
@@ -690,6 +713,7 @@ public static class OAPHCreationHelperMixins
         /// <param name="property">The name of the property. Recommended for use with nameof().</param>
         /// <param name="deferSubscription">If true, defers subscription until the first read of the property value.</param>
         /// <returns>An initialized ObservableAsPropertyHelper; use this as the backing field for your property.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ObservableAsPropertyHelper<TRet> ToProperty<TObj>(
             TObj source,
             string property,
@@ -710,6 +734,7 @@ public static class OAPHCreationHelperMixins
         /// be a Dispatcher-based scheduler.
         /// </param>
         /// <returns>An initialized ObservableAsPropertyHelper; use this as the backing field for your property.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ObservableAsPropertyHelper<TRet> ToProperty<TObj>(
             TObj source,
             string property,
@@ -769,6 +794,7 @@ public static class OAPHCreationHelperMixins
         /// <param name="property">The name of the property. Recommended for use with nameof().</param>
         /// <param name="getInitialValue">A function that returns the initial value of the property.</param>
         /// <returns>An initialized ObservableAsPropertyHelper; use this as the backing field for your property.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ObservableAsPropertyHelper<TRet> ToProperty<TObj>(
             TObj source,
             string property,
@@ -787,6 +813,7 @@ public static class OAPHCreationHelperMixins
         /// <param name="getInitialValue">A function that returns the initial value of the property.</param>
         /// <param name="deferSubscription">If true, defers subscription until the first read of the property value.</param>
         /// <returns>An initialized ObservableAsPropertyHelper; use this as the backing field for your property.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ObservableAsPropertyHelper<TRet> ToProperty<TObj>(
             TObj source,
             string property,
@@ -851,6 +878,7 @@ public static class OAPHCreationHelperMixins
         /// <param name="property">The name of the property. Recommended for use with nameof().</param>
         /// <param name="result">An out param matching the return value, provided for convenience.</param>
         /// <returns>An initialized ObservableAsPropertyHelper; use this as the backing field for your property.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ObservableAsPropertyHelper<TRet> ToProperty<TObj>(
             TObj source,
             string property,
@@ -869,6 +897,7 @@ public static class OAPHCreationHelperMixins
         /// <param name="result">An out param matching the return value, provided for convenience.</param>
         /// <param name="deferSubscription">If true, defers subscription until the first read of the property value.</param>
         /// <returns>An initialized ObservableAsPropertyHelper; use this as the backing field for your property.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ObservableAsPropertyHelper<TRet> ToProperty<TObj>(
             TObj source,
             string property,
@@ -935,6 +964,7 @@ public static class OAPHCreationHelperMixins
         /// <param name="result">An out param matching the return value, provided for convenience.</param>
         /// <param name="getInitialValue">A function that returns the initial value of the property.</param>
         /// <returns>An initialized ObservableAsPropertyHelper; use this as the backing field for your property.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ObservableAsPropertyHelper<TRet> ToProperty<TObj>(
             TObj source,
             string property,
@@ -955,6 +985,7 @@ public static class OAPHCreationHelperMixins
         /// <param name="getInitialValue">A function that returns the initial value of the property.</param>
         /// <param name="deferSubscription">If true, defers subscription until the first read of the property value.</param>
         /// <returns>An initialized ObservableAsPropertyHelper; use this as the backing field for your property.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ObservableAsPropertyHelper<TRet> ToProperty<TObj>(
             TObj source,
             string property,
@@ -1026,10 +1057,6 @@ public static class OAPHCreationHelperMixins
         /// Creates an ObservableAsPropertyHelper that synchronizes the value of a property on the target object with the
         /// latest value from the specified observable sequence.
         /// </summary>
-        /// <remarks>This method is intended for use with reactive UI patterns, enabling properties to be
-        /// automatically updated in response to observable sequences. The returned ObservableAsPropertyHelper should be
-        /// assigned to a backing field and exposed via a read-only property to ensure correct change notification
-        /// behavior.</remarks>
         /// <typeparam name="TRet">The type of the property value.</typeparam>
         /// <param name="observable">The observable sequence that provides values to assign to the property. Cannot be null.</param>
         /// <param name="property">An expression that identifies the property on the target object to be synchronized. Must be of the form 'x =>
@@ -1042,6 +1069,10 @@ public static class OAPHCreationHelperMixins
         /// <returns>An ObservableAsPropertyHelper that manages the synchronization between the observable sequence and the specified
         /// property.</returns>
         /// <exception cref="ArgumentException">Thrown if target, observable, or property is null, or if property is not a valid property expression.</exception>
+        /// <remarks>This method is intended for use with reactive UI patterns, enabling properties to be
+        /// automatically updated in response to observable sequences. The returned ObservableAsPropertyHelper should be
+        /// assigned to a backing field and exposed via a read-only property to ensure correct change notification
+        /// behavior.</remarks>
         internal ObservableAsPropertyHelper<TRet> ObservableToProperty<TRet>(
             IObservable<TRet?> observable,
             Expression<Func<TObj, TRet>> property,
@@ -1068,9 +1099,6 @@ public static class OAPHCreationHelperMixins
         /// Creates an ObservableAsPropertyHelper that synchronizes the specified observable sequence with a property on the
         /// target object.
         /// </summary>
-        /// <remarks>This method is intended for use with reactive objects to facilitate property change
-        /// notifications based on observable sequences. It ensures that property change events are raised appropriately
-        /// when the observable emits new values.</remarks>
         /// <typeparam name="TRet">The type of the property and the values produced by the observable sequence.</typeparam>
         /// <param name="observable">The observable sequence whose values will be used to update the property. Cannot be null.</param>
         /// <param name="property">An expression that identifies the property on the target object to synchronize with the observable sequence.
@@ -1082,6 +1110,9 @@ public static class OAPHCreationHelperMixins
         /// property.</returns>
         /// <exception cref="ArgumentException">Thrown if target, observable, or property is null, or if property does not represent a valid property
         /// expression.</exception>
+        /// <remarks>This method is intended for use with reactive objects to facilitate property change
+        /// notifications based on observable sequences. It ensures that property change events are raised appropriately
+        /// when the observable emits new values.</remarks>
         internal ObservableAsPropertyHelper<TRet> ObservableToProperty<TRet>(
             IObservable<TRet?> observable,
             Expression<Func<TObj, TRet>> property,
@@ -1107,9 +1138,6 @@ public static class OAPHCreationHelperMixins
         /// Creates an ObservableAsPropertyHelper that synchronizes the specified observable sequence with a property on the
         /// target object, raising property change notifications as values are emitted.
         /// </summary>
-        /// <remarks>This method is intended for use in reactive view models to facilitate property updates based
-        /// on observable sequences. The returned ObservableAsPropertyHelper should be stored in a backing field to ensure
-        /// proper subscription management and to avoid memory leaks.</remarks>
         /// <typeparam name="TRet">The type of the property value.</typeparam>
         /// <param name="observable">The observable sequence whose values will be used to update the property. Cannot be null.</param>
         /// <param name="property">The name of the property to synchronize with the observable sequence. Cannot be null.</param>
@@ -1119,6 +1147,9 @@ public static class OAPHCreationHelperMixins
         /// <param name="scheduler">An optional scheduler used to deliver property change notifications. If null, the default scheduler is used.</param>
         /// <returns>An ObservableAsPropertyHelper that manages the synchronization between the observable sequence and the specified
         /// property.</returns>
+        /// <remarks>This method is intended for use in reactive view models to facilitate property updates based
+        /// on observable sequences. The returned ObservableAsPropertyHelper should be stored in a backing field to ensure
+        /// proper subscription management and to avoid memory leaks.</remarks>
         internal ObservableAsPropertyHelper<TRet> ObservableToProperty<TRet>(
             IObservable<TRet?> observable,
             string property,
@@ -1143,9 +1174,6 @@ public static class OAPHCreationHelperMixins
         /// Creates an ObservableAsPropertyHelper that synchronizes the specified observable sequence with a property on the
         /// target object.
         /// </summary>
-        /// <remarks>Use this method to connect an observable sequence to a property, enabling reactive updates
-        /// and change notifications on the target object. This is commonly used in reactive UI patterns to keep properties
-        /// in sync with asynchronous or event-driven data sources.</remarks>
         /// <typeparam name="TRet">The type of the values produced by the observable sequence and exposed by the property.</typeparam>
         /// <param name="observable">The observable sequence whose values will be used to update the property. Cannot be null.</param>
         /// <param name="property">The name of the property to synchronize with the observable sequence. Cannot be null.</param>
@@ -1154,6 +1182,9 @@ public static class OAPHCreationHelperMixins
         /// <param name="scheduler">An optional scheduler used to deliver property change notifications. If null, the default scheduler is used.</param>
         /// <returns>An ObservableAsPropertyHelper that manages the synchronization between the observable sequence and the specified
         /// property.</returns>
+        /// <remarks>Use this method to connect an observable sequence to a property, enabling reactive updates
+        /// and change notifications on the target object. This is commonly used in reactive UI patterns to keep properties
+        /// in sync with asynchronous or event-driven data sources.</remarks>
         internal ObservableAsPropertyHelper<TRet> ObservableToProperty<TRet>(
             IObservable<TRet?> observable,
             string property,
@@ -1179,6 +1210,7 @@ public static class OAPHCreationHelperMixins
     /// <typeparam name="TRet">The property value type.</typeparam>
     /// <param name="property">The property expression.</param>
     /// <returns>The property name used by change notifications.</returns>
+    /// <exception cref="ArgumentException"><paramref name="property"/> is not of the form 'x => x.SomeProperty'.</exception>
     private static string GetPropertyName<TObj, TRet>(Expression<Func<TObj, TRet>> property)
     {
         var expression = Reflection.Rewrite(property.Body);

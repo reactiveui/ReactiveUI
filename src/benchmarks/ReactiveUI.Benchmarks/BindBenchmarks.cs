@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics;
 using BenchmarkDotNet.Attributes;
 
 namespace ReactiveUI.Benchmarks;
@@ -10,6 +11,7 @@ namespace ReactiveUI.Benchmarks;
 /// <summary>Benchmarks the property-binding sinks: cold one-way/two-way binding setup and view-model to view propagation.</summary>
 [MemoryDiagnoser]
 [MarkdownExporterAttribute.GitHub]
+[DebuggerDisplay("BindBenchmarks")]
 public class BindBenchmarks
 {
     /// <summary>The number of source changes pushed per propagation benchmark.</summary>

@@ -3,6 +3,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Runtime.CompilerServices;
+
 namespace ReactiveUI;
 
 /// <summary>Convenience class to help chain selectors onto existing parent comparers.</summary>
@@ -26,6 +28,7 @@ public static class ComparerChainingExtensions
         /// A function supplying the values for the comparer.
         /// </param>
         /// <returns>A comparer.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IComparer<T> ThenBy<TValue>(Func<T, TValue> selector) =>
             ThenBy(parent, selector, Comparer<TValue>.Default);
 
@@ -44,6 +47,7 @@ public static class ComparerChainingExtensions
         /// The comparer to use when comparing the values returned by the selector.
         /// </param>
         /// <returns>A comparer.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IComparer<T> ThenBy<TValue>(
             Func<T, TValue> selector,
             IComparer<TValue> comparer) =>
@@ -60,6 +64,7 @@ public static class ComparerChainingExtensions
         /// A function supplying the values for the comparer.
         /// </param>
         /// <returns>A comparer.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IComparer<T> ThenByDescending<TValue>(Func<T, TValue> selector) =>
             ThenByDescending(parent, selector, Comparer<TValue>.Default);
 
@@ -78,6 +83,7 @@ public static class ComparerChainingExtensions
         /// The comparer to use when comparing the values returned by the selector.
         /// </param>
         /// <returns>A comparer.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IComparer<T> ThenByDescending<TValue>(
             Func<T, TValue> selector,
             IComparer<TValue> comparer) =>

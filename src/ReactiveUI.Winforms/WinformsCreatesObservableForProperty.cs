@@ -4,9 +4,11 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using ReactiveUI.Internal;
 using Splat;
 
@@ -24,14 +26,15 @@ public class WinformsCreatesObservableForProperty : ICreatesObservableForPropert
     private const int EventBindingAffinity = 8;
 
     /// <summary>Caches the reflected change event for each property to avoid repeated reflection.</summary>
-    private static readonly MemoizingMRUCache<(Type type, string name), EventInfo?> EventInfoCache = new(
-        static (pair, _) => pair.type.GetEvent(
-            $"{pair.name}Changed",
+    private static readonly MemoizingMRUCache<(Type Type, string Name), EventInfo?> EventInfoCache = new(
+        static (pair, _) => pair.Type.GetEvent(
+            $"{pair.Name}Changed",
             BindingFlags.FlattenHierarchy | BindingFlags.Instance | BindingFlags.Public),
         RxCacheSize.SmallCacheLimit);
 
     /// <inheritdoc/>
     [RequiresUnreferencedCode("Uses reflection over runtime types which is not trim- or AOT-safe.")]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public int GetAffinityForObject(Type type, string propertyName) =>
         GetAffinityForObject(type, propertyName, false);
 
@@ -56,6 +59,7 @@ public class WinformsCreatesObservableForProperty : ICreatesObservableForPropert
 
     /// <inheritdoc/>
     [RequiresUnreferencedCode("Uses reflection over runtime types which is not trim- or AOT-safe.")]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public IObservable<IObservedChange<object, object?>> GetNotificationForProperty(
         object sender,
         Expression expression,
@@ -64,6 +68,7 @@ public class WinformsCreatesObservableForProperty : ICreatesObservableForPropert
 
     /// <inheritdoc/>
     [RequiresUnreferencedCode("Uses reflection over runtime types which is not trim- or AOT-safe.")]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public IObservable<IObservedChange<object, object?>> GetNotificationForProperty(
         object sender,
         Expression expression,

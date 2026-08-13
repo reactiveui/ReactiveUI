@@ -18,6 +18,7 @@ public static class ExpressionMixins
     {
         /// <summary>Gets all the chain of child expressions within a Expression. Handles property member accesses, objects and indexes.</summary>
         /// <returns>An enumerable of expressions.</returns>
+        /// <exception cref="NotSupportedException">The chain contains a node kind other than an index or member access.</exception>
         public IEnumerable<Expression> GetExpressionChain()
         {
             List<Expression> expressions = [];
@@ -65,6 +66,7 @@ public static class ExpressionMixins
         /// going through the Conversion Expressions.
         /// </summary>
         /// <returns>The member info from the expression.</returns>
+        /// <exception cref="NotSupportedException">The expression is not an index, member access, or conversion.</exception>
         public MemberInfo? GetMemberInfo()
         {
             ArgumentExceptionHelper.ThrowIfNull(expression);
@@ -96,6 +98,7 @@ public static class ExpressionMixins
 
         /// <summary>Gets the parent Expression of the current Expression object.</summary>
         /// <returns>The parent expression.</returns>
+        /// <exception cref="NotSupportedException">The expression is not an index or member access.</exception>
         public Expression? GetParent()
         {
             ArgumentExceptionHelper.ThrowIfNull(expression);

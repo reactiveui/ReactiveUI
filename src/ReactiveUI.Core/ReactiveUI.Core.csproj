@@ -38,6 +38,7 @@
   <ItemGroup>
     <Compile Include="..\Shared\ArgumentValidation.cs" Link="Shared\ArgumentValidation.cs"/>
     <Compile Include="..\Shared\DelegateObserver.cs" Link="Shared\DelegateObserver.cs"/>
+    <Compile Include="..\Shared\TaskObserverBridge.cs" Link="Shared\TaskObserverBridge.cs"/>
     <Compile Include="..\Shared\Platform\EventPatternObservable.cs" Link="Shared\Platform\EventPatternObservable.cs"/>
     <Compile Remove="EventHandlers\LocalizableAttribute.cs" Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) != 'android'"/>
     <Compile Remove="Bindings\Converter\DateOnlyToStringTypeConverter.cs" Condition="$(TargetFramework.StartsWith('net4'))"/>

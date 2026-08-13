@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Runtime.CompilerServices;
 using ReactiveUI.Primitives.Disposables;
 
 #if REACTIVE_SHIM
@@ -17,6 +18,7 @@ namespace ReactiveUI.Internal;
 internal sealed class SchedulingObserver<T>(IObserver<T> downstream, ISequencer scheduler) : IObserver<T>
 {
     /// <inheritdoc/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void OnNext(T value) =>
         scheduler.ScheduleOrInline(
             (Observer: downstream, Value: value),
@@ -27,6 +29,7 @@ internal sealed class SchedulingObserver<T>(IObserver<T> downstream, ISequencer 
             });
 
     /// <inheritdoc/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void OnError(Exception error) =>
         scheduler.ScheduleOrInline(
             (Observer: downstream, Error: error),
@@ -37,6 +40,7 @@ internal sealed class SchedulingObserver<T>(IObserver<T> downstream, ISequencer 
             });
 
     /// <inheritdoc/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void OnCompleted() =>
         scheduler.ScheduleOrInline(
             downstream,

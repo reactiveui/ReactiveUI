@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 
 namespace ReactiveUI;
@@ -33,6 +34,7 @@ namespace ReactiveUI;
 /// They provide runtime type checking and conversion using techniques like reflection or type descriptors.
 /// </para>
 /// </remarks>
+[DebuggerDisplay("BindingFallbackConverterRegistry")]
 public sealed class BindingFallbackConverterRegistry
 {
     /// <summary>The initial capacity used for the fallback converter list.</summary>
@@ -127,11 +129,13 @@ public sealed class BindingFallbackConverterRegistry
         {
             var converter = converters[i];
             var score = converter.GetAffinityForObjects(fromType, toType);
-            if (score > bestScore && score > 0)
+            if (score <= bestScore || score <= 0)
             {
-                bestScore = score;
-                best = converter;
+                continue;
             }
+
+            bestScore = score;
+            best = converter;
         }
 
         return best;

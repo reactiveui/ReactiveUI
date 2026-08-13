@@ -10,12 +10,12 @@ namespace ReactiveUI;
 /// <summary>A data-only version of IObservedChange.</summary>
 /// <typeparam name="TSender">The sender type.</typeparam>
 /// <typeparam name="TValue">The value type.</typeparam>
-/// <remarks>
-/// Initializes a new instance of the <see cref="ObservedChange{TSender, TValue}"/> class.
-/// </remarks>
 /// <param name="sender">The sender.</param>
 /// <param name="expression">Expression describing the member.</param>
 /// <param name="value">The value.</param>
+/// <remarks>
+/// Initializes a new instance of the <see cref="ObservedChange{TSender, TValue}"/> class.
+/// </remarks>
 [System.Diagnostics.DebuggerDisplay("Value = {Value}, Sender = {Sender}")]
 public class ObservedChange<TSender, TValue>(TSender sender, Expression? expression, TValue value) : IObservedChange<TSender, TValue>
 {

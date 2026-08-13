@@ -75,6 +75,7 @@ public static partial class ControlFetcherMixins
             "ApiDesign",
             "RS0026:Do not add multiple public overloads with optional parameters",
             Justification = "The optional parameter is [CallerMemberName], which cannot be expressed as a separate overload; it is a compile-time convenience, not a binary-versioning hazard.")]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public View? GetControl([CallerMemberName] string? propertyName = null) =>
             ResolveActivityControl(activity, propertyName);
 
@@ -86,6 +87,7 @@ public static partial class ControlFetcherMixins
         [RequiresUnreferencedCode(
             "WireUpControls uses reflection to discover properties and attributes that may be trimmed.")]
         [RequiresDynamicCode("WireUpControls uses reflection that may require dynamic code generation.")]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WireUpControls() =>
             activity.WireUpControls(ResolveStrategy.Implicit);
 
@@ -140,6 +142,7 @@ public static partial class ControlFetcherMixins
         [RequiresUnreferencedCode(
             "WireUpControls uses reflection to discover properties and attributes that may be trimmed.")]
         [RequiresDynamicCode("WireUpControls uses reflection that may require dynamic code generation.")]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WireUpControls(View inflatedView) =>
             fragment.WireUpControls(inflatedView, ResolveStrategy.Implicit);
 
@@ -198,6 +201,7 @@ public static partial class ControlFetcherMixins
         [RequiresUnreferencedCode(
             "WireUpControls uses reflection to discover properties and attributes that may be trimmed.")]
         [RequiresDynamicCode("WireUpControls uses reflection that may require dynamic code generation.")]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WireUpControls() =>
             layoutHost.WireUpControls(ResolveStrategy.Implicit);
 
@@ -271,6 +275,7 @@ public static partial class ControlFetcherMixins
             "ApiDesign",
             "RS0026:Do not add multiple public overloads with optional parameters",
             Justification = "The optional parameter is [CallerMemberName], which cannot be expressed as a separate overload; it is a compile-time convenience, not a binary-versioning hazard.")]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public View? GetControl(Assembly assembly, [CallerMemberName] string? propertyName = null) =>
             ResolveViewControl(view, assembly, propertyName);
 
@@ -282,6 +287,7 @@ public static partial class ControlFetcherMixins
         [RequiresUnreferencedCode(
             "WireUpControls uses reflection to discover properties and attributes that may be trimmed.")]
         [RequiresDynamicCode("WireUpControls uses reflection that may require dynamic code generation.")]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WireUpControls() =>
             view.WireUpControls(ResolveStrategy.Implicit);
 
@@ -330,12 +336,12 @@ public static partial class ControlFetcherMixins
         /// Retrieves the set of properties on the specified object that are eligible for wire-up based on the provided
         /// resolution strategy.
         /// </summary>
-        /// <remarks>This method uses reflection to discover properties, which may require dynamically generated
-        /// code and may be affected by code trimming. Use caution when calling this method in environments where reflection
-        /// or dynamic code generation is restricted.</remarks>
         /// <param name="resolveStrategy">The strategy that determines which properties are considered for wire-up.</param>
         /// <returns>An enumerable collection of <see cref="PropertyInfo"/> objects representing the properties eligible for wire-up.
         /// The collection is empty if no matching properties are found.</returns>
+        /// <remarks>This method uses reflection to discover properties, which may require dynamically generated
+        /// code and may be affected by code trimming. Use caution when calling this method in environments where reflection
+        /// or dynamic code generation is restricted.</remarks>
         [RequiresUnreferencedCode("Property discovery uses reflection and may require members removed by trimming.")]
         [RequiresDynamicCode("Property discovery uses reflection that may require dynamic code generation.")]
         public PropertyInfo[] GetWireUpMembers(ResolveStrategy resolveStrategy)
@@ -352,6 +358,7 @@ public static partial class ControlFetcherMixins
     /// <returns>An array of properties eligible for wiring.</returns>
     [RequiresUnreferencedCode("Property discovery uses reflection and may require members removed by trimming.")]
     [RequiresDynamicCode("Property discovery uses reflection that may require dynamic code generation.")]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static PropertyInfo[] GetWireUpMembersCached(Type type, ResolveStrategy resolveStrategy) =>
         WireUpMembersCache.GetOrAdd((type, resolveStrategy), static key =>
         {
@@ -396,6 +403,7 @@ public static partial class ControlFetcherMixins
     [RequiresUnreferencedCode(
         "Android resource discovery uses reflection over generated resource types that may be trimmed.")]
     [RequiresDynamicCode("Android resource discovery uses reflection that may require dynamic code generation.")]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static View? ResolveActivityControl(Activity activity, string? propertyName) =>
         GetCachedControl(
             propertyName,
@@ -415,6 +423,7 @@ public static partial class ControlFetcherMixins
     [RequiresUnreferencedCode(
         "Android resource discovery uses reflection over generated resource types that may be trimmed.")]
     [RequiresDynamicCode("Android resource discovery uses reflection that may require dynamic code generation.")]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static View? ResolveViewControl(View view, Assembly assembly, string? propertyName) =>
         GetCachedControl(
             propertyName,
@@ -508,6 +517,7 @@ public static partial class ControlFetcherMixins
     /// <summary>Builds a mapping of resource name to integer ID for an assembly.</summary>
     /// <param name="assembly">The assembly whose generated <c>Id</c> resource type is read.</param>
     /// <returns>A case-insensitive map of resource name to ID built for the assembly.</returns>
+    /// <exception cref="InvalidOperationException">Thrown when the generated resource type has no nested <c>Id</c> type.</exception>
     [RequiresUnreferencedCode(
         "Android resource discovery uses reflection over generated resource types that may be trimmed.")]
     [RequiresDynamicCode("Android resource discovery uses reflection that may require dynamic code generation.")]

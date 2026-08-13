@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Runtime.CompilerServices;
 using ReactiveUI.Primitives.Disposables;
 
 #if REACTIVE_SHIM
@@ -11,6 +12,8 @@ namespace ReactiveUI.Reactive;
 namespace ReactiveUI;
 #endif
 /// <summary>Encapsulates a user interaction behind a reactive interface.</summary>
+/// <typeparam name="TParam">The type of parameter values passed in during command execution.</typeparam>
+/// <typeparam name="TResult">The type of the values that are the result of command execution.</typeparam>
 /// <remarks>
 /// This class provides the bulk of the actual implementation for reactive commands. You should not create instances
 /// of this class directly, but rather via the static creation methods on the non-generic <see cref="ReactiveCommand"/>
@@ -20,8 +23,6 @@ namespace ReactiveUI;
 /// State transitions driven by execution begin/end, results and exceptions are scheduled onto the output scheduler;
 /// values returned directly from <see cref="Execute(TParam)"/> are delivered on the execution thread.
 /// </remarks>
-/// <typeparam name="TParam">The type of parameter values passed in during command execution.</typeparam>
-/// <typeparam name="TResult">The type of the values that are the result of command execution.</typeparam>
 [System.Diagnostics.DebuggerDisplay("CanExecute = {_canExecuteValue}, IsExecuting = {_isExecutingValue}, InFlight = {_inFlight}")]
 public class ReactiveCommand<TParam, TResult> : ReactiveCommandBase<TParam, TResult>
 {
@@ -201,6 +202,7 @@ public class ReactiveCommand<TParam, TResult> : ReactiveCommandBase<TParam, TRes
     }
 
     /// <summary>Schedules an execution-begin transition on the output scheduler.</summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void NotifyBegin() =>
         _outputScheduler.ScheduleOrInline(this, static (_, command) =>
         {
@@ -209,6 +211,7 @@ public class ReactiveCommand<TParam, TResult> : ReactiveCommandBase<TParam, TRes
         });
 
     /// <summary>Schedules an execution-end transition on the output scheduler.</summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void NotifyEnd() =>
         _outputScheduler.ScheduleOrInline(this, static (_, command) =>
         {
@@ -218,6 +221,7 @@ public class ReactiveCommand<TParam, TResult> : ReactiveCommandBase<TParam, TRes
 
     /// <summary>Schedules a result broadcast to command subscribers on the output scheduler.</summary>
     /// <param name="result">The result value to broadcast.</param>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void NotifyResult(TResult result) =>
         _outputScheduler.ScheduleOrInline((Command: this, Result: result), static (_, state) =>
         {
@@ -227,6 +231,7 @@ public class ReactiveCommand<TParam, TResult> : ReactiveCommandBase<TParam, TRes
 
     /// <summary>Schedules exception delivery on the output scheduler.</summary>
     /// <param name="error">The exception to deliver.</param>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void DeliverException(Exception error) =>
         _outputScheduler.ScheduleOrInline((Command: this, Error: error), static (_, state) =>
         {
@@ -419,6 +424,7 @@ public class ReactiveCommand<TParam, TResult> : ReactiveCommandBase<TParam, TRes
     private sealed class BoolSubscription(ReactiveCommand<TParam, TResult> owner, IObserver<bool> observer, bool isExecuting) : IDisposable
     {
         /// <inheritdoc/>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Dispose() => owner.RemoveBool(observer, isExecuting);
     }
 
@@ -441,6 +447,7 @@ public class ReactiveCommand<TParam, TResult> : ReactiveCommandBase<TParam, TRes
     private sealed class ExceptionSubscription(ReactiveCommand<TParam, TResult> owner, IObserver<Exception> observer) : IDisposable
     {
         /// <inheritdoc/>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Dispose() => owner.RemoveException(observer);
     }
 
@@ -450,6 +457,7 @@ public class ReactiveCommand<TParam, TResult> : ReactiveCommandBase<TParam, TRes
     private sealed class ResultSubscription(ReactiveCommand<TParam, TResult> owner, IObserver<TResult> observer) : IDisposable
     {
         /// <inheritdoc/>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Dispose() => owner.RemoveResult(observer);
     }
 
@@ -584,12 +592,15 @@ public class ReactiveCommand<TParam, TResult> : ReactiveCommandBase<TParam, TRes
         private sealed class ResultObserver(Execution execution) : IObserver<TResult>
         {
             /// <inheritdoc/>
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public void OnNext(TResult value) => execution.OnResult(value);
 
             /// <inheritdoc/>
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public void OnError(Exception error) => execution.OnError(error);
 
             /// <inheritdoc/>
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public void OnCompleted() => execution.OnResultCompleted();
         }
     }

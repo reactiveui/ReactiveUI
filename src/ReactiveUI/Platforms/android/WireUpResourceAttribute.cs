@@ -16,6 +16,7 @@ namespace ReactiveUI;
 /// should be associated with it. Use the optional resource name override to specify a custom resource name if the
 /// default naming convention does not apply.</remarks>
 [AttributeUsage(AttributeTargets.All)]
+[System.Diagnostics.DebuggerDisplay("{ResourceNameOverride}")]
 public sealed class WireUpResourceAttribute : Attribute
 {
     /// <summary>Initializes a new instance of the <see cref="WireUpResourceAttribute"/> class.</summary>

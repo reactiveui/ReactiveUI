@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics;
 using BenchmarkDotNet.Attributes;
 
 namespace ReactiveUI.Benchmarks;
@@ -10,6 +11,7 @@ namespace ReactiveUI.Benchmarks;
 /// <summary>Benchmarks the <c>WhenAnyObservable</c> sink: per-value propagation through a live subscription and cold subscribe.</summary>
 [MemoryDiagnoser]
 [MarkdownExporterAttribute.GitHub]
+[DebuggerDisplay("WhenAnyObservableBenchmarks")]
 public class WhenAnyObservableBenchmarks
 {
     /// <summary>The number of values pushed through the inner observable per emission benchmark.</summary>

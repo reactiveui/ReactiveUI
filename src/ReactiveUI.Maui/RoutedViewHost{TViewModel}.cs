@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Maui.Controls;
 
@@ -51,8 +52,8 @@ public class RoutedViewHost<
         var ret = ViewLocator.Current.ResolveView<TViewModel>();
         if (ret is null)
         {
-            const string msg =
-                $"Couldn't find a View for ViewModel. You probably need to register an IViewFor<{nameof(TViewModel)}>";
+            var msg =
+                $"Couldn't find a View for ViewModel. You probably need to register an IViewFor<{typeof(TViewModel).Name}>";
 
             return Signal.Fail<Page>(new InvalidOperationException(msg));
         }
@@ -71,6 +72,8 @@ public class RoutedViewHost<
     /// <summary>Page for view model.</summary>
     /// <param name="vm">The vm.</param>
     /// <returns>A page associated to a <see cref="IRoutableViewModel"/>.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="vm"/> is null.</exception>
+    /// <exception cref="InvalidOperationException">No <c>IViewFor</c> is registered for <typeparamref name="TViewModel"/>.</exception>
     [RequiresUnreferencedCode(
         "This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
     [RequiresDynamicCode(
@@ -84,8 +87,8 @@ public class RoutedViewHost<
         var ret = ViewLocator.Current.ResolveView<TViewModel>();
         if (ret is null)
         {
-            const string msg =
-                $"Couldn't find a View for ViewModel. You probably need to register an IViewFor<{nameof(TViewModel)}>";
+            var msg =
+                $"Couldn't find a View for ViewModel. You probably need to register an IViewFor<{typeof(TViewModel).Name}>";
 
             throw new InvalidOperationException(msg);
         }
@@ -96,9 +99,9 @@ public class RoutedViewHost<
 
         if (SetTitleOnNavigate)
         {
-            _ = RxSchedulers.MainThreadScheduler.Schedule((page: pg, vm), static (_, state) =>
+            _ = RxSchedulers.MainThreadScheduler.Schedule((Page: pg, vm), static (_, state) =>
             {
-                state.page.Title = state.vm.UrlPathSegment;
+                state.Page.Title = state.vm.UrlPathSegment;
                 return EmptyDisposable.Instance;
             });
         }

@@ -2,10 +2,11 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
+using System.Runtime.CompilerServices;
+
 #if NETFRAMEWORK
 
 using System.Diagnostics.CodeAnalysis;
-
 namespace System;
 
 /// <summary>Combines the hash codes of multiple values into a single hash code.</summary>
@@ -32,6 +33,7 @@ internal static class HashCode
     /// <param name="value1">The first value.</param>
     /// <param name="value2">The second value.</param>
     /// <returns>The combined hash code.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int Combine<T1, T2>(T1 value1, T2 value2) =>
         (value1, value2).GetHashCode();
 
@@ -43,6 +45,7 @@ internal static class HashCode
     /// <param name="value2">The second value.</param>
     /// <param name="value3">The third value.</param>
     /// <returns>The combined hash code.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int Combine<T1, T2, T3>(T1 value1, T2 value2, T3 value3) =>
         (value1, value2, value3).GetHashCode();
 
@@ -56,6 +59,7 @@ internal static class HashCode
     /// <param name="value3">The third value.</param>
     /// <param name="value4">The fourth value.</param>
     /// <returns>The combined hash code.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int Combine<T1, T2, T3, T4>(T1 value1, T2 value2, T3 value3, T4 value4) =>
         (value1, value2, value3, value4).GetHashCode();
 
@@ -71,6 +75,7 @@ internal static class HashCode
     /// <param name="value4">The fourth value.</param>
     /// <param name="value5">The fifth value.</param>
     /// <returns>The combined hash code.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int Combine<T1, T2, T3, T4, T5>(T1 value1, T2 value2, T3 value3, T4 value4, T5 value5) =>
         (value1, value2, value3, value4, value5).GetHashCode();
 
@@ -88,6 +93,7 @@ internal static class HashCode
     /// <param name="value5">The fifth value.</param>
     /// <param name="value6">The sixth value.</param>
     /// <returns>The combined hash code.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int Combine<T1, T2, T3, T4, T5, T6>(T1 value1, T2 value2, T3 value3, T4 value4, T5 value5, T6 value6) =>
         (value1, value2, value3, value4, value5, value6).GetHashCode();
 
@@ -107,6 +113,7 @@ internal static class HashCode
     /// <param name="value6">The sixth value.</param>
     /// <param name="value7">The seventh value.</param>
     /// <returns>The combined hash code.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int Combine<T1, T2, T3, T4, T5, T6, T7>(T1 value1, T2 value2, T3 value3, T4 value4, T5 value5, T6 value6, T7 value7) =>
         (value1, value2, value3, value4, value5, value6, value7).GetHashCode();
 
@@ -132,6 +139,7 @@ internal static class HashCode
         "Maintainability",
         "SST1472:Signatures should not declare too many parameters",
         Justification = "Mirrors the System.HashCode.Combine 8-arity overload; the polyfill compiles only where the BCL lacks it.")]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int Combine<T1, T2, T3, T4, T5, T6, T7, T8>(T1 value1, T2 value2, T3 value3, T4 value4, T5 value5, T6 value6, T7 value7, T8 value8) =>
         (value1, value2, value3, value4, value5, value6, value7, value8).GetHashCode();
 }

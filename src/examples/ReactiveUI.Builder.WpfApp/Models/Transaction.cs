@@ -3,9 +3,12 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics;
+
 namespace ReactiveUI.Builder.WpfApp.Models;
 
 /// <summary>A single (mock) EFTPOS transaction recorded in the terminal journal.</summary>
+[DebuggerDisplay("Transaction Reference={Reference}, Outcome={Outcome}")]
 public sealed class Transaction
 {
     /// <summary>Gets or sets the bank authorization reference.</summary>

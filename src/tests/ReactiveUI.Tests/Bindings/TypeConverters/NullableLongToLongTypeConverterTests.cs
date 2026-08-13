@@ -25,9 +25,8 @@ public class NullableLongToLongTypeConverterTests
     {
         var converter = new NullableLongToLongTypeConverter();
         const long Value = 1_234_567_890_123_456L;
-        long? value = Value;
 
-        var result = converter.TryConvert(value, null, out var output);
+        var result = converter.TryConvert(Value, null, out var output);
 
         await Assert.That(result).IsTrue();
         await Assert.That(output).IsEqualTo(Value);
@@ -39,9 +38,8 @@ public class NullableLongToLongTypeConverterTests
     public async Task TryConvert_Null_ReturnsFalse()
     {
         var converter = new NullableLongToLongTypeConverter();
-        long? value = null;
 
-        var result = converter.TryConvert(value, null, out _);
+        var result = converter.TryConvert(null, null, out _);
 
         await Assert.That(result).IsFalse();
     }
@@ -71,9 +69,8 @@ public class NullableLongToLongTypeConverterTests
     {
         var converter = new NullableLongToLongTypeConverter();
         const long Value = 42L;
-        long? value = Value;
 
-        var success = converter.TryConvertTyped(value, null, out var result);
+        var success = converter.TryConvertTyped(Value, null, out var result);
 
         await Assert.That(success).IsTrue();
         await Assert.That(result).IsEqualTo(Value);

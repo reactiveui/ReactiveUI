@@ -5,6 +5,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 using ReactiveUI.Primitives;
 using ReactiveUI.Primitives.Disposables;
 
@@ -80,7 +81,8 @@ public partial class PropertyBinderImplementation : IPropertyBinderImplementatio
     private delegate bool OutFunc<in T1, T2>(T1 t1, out T2 t2);
 
     /// <inheritdoc />
-    public IReactiveBinding<TView, (object? view, bool isViewModel)>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public IReactiveBinding<TView, (object? View, bool IsViewModel)>
         Bind<TViewModel, TView, TViewModelPropertyType, TViewPropertyType, TDontCare>(
             TViewModel? viewModel,
             TView view,
@@ -102,7 +104,8 @@ public partial class PropertyBinderImplementation : IPropertyBinderImplementatio
             TriggerUpdate.ViewToViewModel);
 
     /// <inheritdoc />
-    public IReactiveBinding<TView, (object? view, bool isViewModel)>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public IReactiveBinding<TView, (object? View, bool IsViewModel)>
         Bind<TViewModel, TView, TViewModelPropertyType, TViewPropertyType, TDontCare>(
             TViewModel? viewModel,
             TView view,
@@ -125,7 +128,8 @@ public partial class PropertyBinderImplementation : IPropertyBinderImplementatio
             TriggerUpdate.ViewToViewModel);
 
     /// <inheritdoc />
-    public IReactiveBinding<TView, (object? view, bool isViewModel)>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public IReactiveBinding<TView, (object? View, bool IsViewModel)>
         Bind<TViewModel, TView, TViewModelPropertyType, TViewPropertyType, TDontCare>(
             TViewModel? viewModel,
             TView view,
@@ -149,7 +153,7 @@ public partial class PropertyBinderImplementation : IPropertyBinderImplementatio
             TriggerUpdate.ViewToViewModel);
 
     /// <inheritdoc />
-    public IReactiveBinding<TView, (object? view, bool isViewModel)>
+    public IReactiveBinding<TView, (object? View, bool IsViewModel)>
         Bind<TViewModel, TView, TViewModelPropertyType, TViewPropertyType, TDontCare>(
             TViewModel? viewModel,
             TView view,
@@ -197,7 +201,8 @@ public partial class PropertyBinderImplementation : IPropertyBinderImplementatio
     }
 
     /// <inheritdoc />
-    public IReactiveBinding<TView, (object? view, bool isViewModel)>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public IReactiveBinding<TView, (object? View, bool IsViewModel)>
         Bind<TViewModel, TView, TViewModelPropertyType, TViewPropertyType, TDontCare>(
             TViewModel? viewModel,
             TView view,
@@ -219,7 +224,7 @@ public partial class PropertyBinderImplementation : IPropertyBinderImplementatio
             TriggerUpdate.ViewToViewModel);
 
     /// <inheritdoc />
-    public IReactiveBinding<TView, (object? view, bool isViewModel)>
+    public IReactiveBinding<TView, (object? View, bool IsViewModel)>
         Bind<TViewModel, TView, TViewModelPropertyType, TViewPropertyType, TDontCare>(
             TViewModel? viewModel,
             TView view,
@@ -259,6 +264,7 @@ public partial class PropertyBinderImplementation : IPropertyBinderImplementatio
     }
 
     /// <inheritdoc />
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public IReactiveBinding<TView, TViewPropertyType> OneWayBind<TViewModel, TView, TViewModelPropertyType, TViewPropertyType>(
         TViewModel? viewModel,
         TView view,
@@ -269,6 +275,7 @@ public partial class PropertyBinderImplementation : IPropertyBinderImplementatio
         OneWayBind(viewModel, view, viewModelProperty, viewProperty, null, null);
 
     /// <inheritdoc />
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public IReactiveBinding<TView, TViewPropertyType> OneWayBind<TViewModel, TView, TViewModelPropertyType, TViewPropertyType>(
         TViewModel? viewModel,
         TView view,
@@ -280,6 +287,7 @@ public partial class PropertyBinderImplementation : IPropertyBinderImplementatio
         OneWayBind(viewModel, view, viewModelProperty, viewProperty, null, viewModelToViewConverterOverride);
 
     /// <inheritdoc />
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public IReactiveBinding<TView, TViewPropertyType> OneWayBind<TViewModel, TView, TViewModelPropertyType, TViewPropertyType>(
         TViewModel? viewModel,
         TView view,
@@ -395,6 +403,7 @@ public partial class PropertyBinderImplementation : IPropertyBinderImplementatio
     }
 
     /// <inheritdoc />
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public IDisposable BindTo<TValue, TTarget, TTargetValue>(
         IObservable<TValue> observedChange,
         TTarget? target,
@@ -403,6 +412,7 @@ public partial class PropertyBinderImplementation : IPropertyBinderImplementatio
         BindTo(observedChange, target, propertyExpression, null, null);
 
     /// <inheritdoc />
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public IDisposable BindTo<TValue, TTarget, TTargetValue>(
         IObservable<TValue> observedChange,
         TTarget? target,
@@ -491,6 +501,7 @@ public partial class PropertyBinderImplementation : IPropertyBinderImplementatio
     /// with built-in affinity-based selection. No external caching is needed.
     /// </para>
     /// </remarks>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static object? GetConverterForTypes(Type lhs, Type rhs) =>
         _staticConverterResolver.GetBindingConverter(lhs, rhs);
 

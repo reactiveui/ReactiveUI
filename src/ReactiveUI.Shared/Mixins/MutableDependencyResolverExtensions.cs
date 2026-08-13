@@ -4,6 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using Splat;
 
 #if REACTIVE_SHIM
@@ -32,19 +33,20 @@ public static class MutableDependencyResolverExtensions
         /// <typeparam name="TView">The view type to register. Must implement IViewFor{TViewModel} and have a parameterless constructor.</typeparam>
         /// <typeparam name="TViewModel">The view model type for which the view is registered.</typeparam>
         /// <returns>The dependency resolver instance, enabling method chaining.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IMutableDependencyResolver RegisterViewForViewModel<TView, TViewModel>()
             where TView : class, IViewFor<TViewModel>, new()
             where TViewModel : class =>
             RegisterViewForViewModel<TView, TViewModel>(resolver, null);
 
         /// <summary>Registers a view type for a specified view model type with the dependency resolver, optionally using a contract.</summary>
-        /// <remarks>This method enables the dependency resolver to resolve the specified view type when an
-        /// IViewFor{TViewModel} is requested. Use the contract parameter to distinguish between multiple registrations for
-        /// the same view model type.</remarks>
         /// <typeparam name="TView">The view type to register. Must implement IViewFor{TViewModel} and have a parameterless constructor.</typeparam>
         /// <typeparam name="TViewModel">The view model type for which the view is registered.</typeparam>
         /// <param name="contract">An optional contract to associate with the registration. If null, the registration is made without a contract.</param>
         /// <returns>The dependency resolver instance, enabling method chaining.</returns>
+        /// <remarks>This method enables the dependency resolver to resolve the specified view type when an
+        /// IViewFor{TViewModel} is requested. Use the contract parameter to distinguish between multiple registrations for
+        /// the same view model type.</remarks>
         public IMutableDependencyResolver RegisterViewForViewModel<TView, TViewModel>(
             string? contract)
             where TView : class, IViewFor<TViewModel>, new()
@@ -67,20 +69,21 @@ public static class MutableDependencyResolverExtensions
         /// <typeparam name="TView">The type of the view to register. Must implement IViewFor{TViewModel} and have a parameterless constructor.</typeparam>
         /// <typeparam name="TViewModel">The type of the view model associated with the view.</typeparam>
         /// <returns>The dependency resolver instance, enabling method chaining.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IMutableDependencyResolver RegisterSingletonViewForViewModel<TView, TViewModel>()
             where TView : class, IViewFor<TViewModel>, new()
             where TViewModel : class =>
             RegisterSingletonViewForViewModel<TView, TViewModel>(resolver, null);
 
         /// <summary>Registers a singleton view implementation for the specified view model type in the dependency resolver.</summary>
-        /// <remarks>This method registers a singleton instance of the specified view type for the given view
-        /// model type. The view will be created lazily upon first resolution. Use the contract parameter to distinguish
-        /// between multiple registrations of the same view model type, if needed.</remarks>
         /// <typeparam name="TView">The type of the view to register. Must implement IViewFor{TViewModel} and have a parameterless constructor.</typeparam>
         /// <typeparam name="TViewModel">The type of the view model associated with the view.</typeparam>
         /// <param name="contract">An optional contract string to associate with the registration. If null, the registration is made without a
         /// contract.</param>
         /// <returns>The dependency resolver instance, enabling method chaining.</returns>
+        /// <remarks>This method registers a singleton instance of the specified view type for the given view
+        /// model type. The view will be created lazily upon first resolution. Use the contract parameter to distinguish
+        /// between multiple registrations of the same view model type, if needed.</remarks>
         public IMutableDependencyResolver RegisterSingletonViewForViewModel<TView, TViewModel>(
             string? contract)
             where TView : class, IViewFor<TViewModel>, new()

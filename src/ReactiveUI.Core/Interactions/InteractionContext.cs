@@ -6,6 +6,12 @@
 namespace ReactiveUI;
 
 /// <summary>Contains contextual information for an interaction.</summary>
+/// <typeparam name="TInput">
+/// The type of the interaction's input.
+/// </typeparam>
+/// <typeparam name="TOutput">
+/// The type of the interaction's output.
+/// </typeparam>
 /// <remarks>
 /// <para>
 /// Instances of this class are passed into interaction handlers. The <see cref="Input"/> property exposes
@@ -29,12 +35,6 @@ namespace ReactiveUI;
 /// ]]>
 /// </code>
 /// </example>
-/// <typeparam name="TInput">
-/// The type of the interaction's input.
-/// </typeparam>
-/// <typeparam name="TOutput">
-/// The type of the interaction's output.
-/// </typeparam>
 [System.Diagnostics.DebuggerDisplay("Input = {Input}, IsHandled = {IsHandled}")]
 public sealed class InteractionContext<TInput, TOutput> : IOutputContext<TInput, TOutput>
 {

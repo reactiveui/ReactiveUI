@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Runtime.CompilerServices;
 using DynamicData;
 using DynamicData.Kernel;
 
@@ -48,12 +49,15 @@ public static class DynamicDataInteropMixins
         private sealed class Sink(IObserver<IChangeSet<T>> downstream) : IObserver<IReactiveChangeSet<T>>
         {
             /// <inheritdoc/>
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public void OnNext(IReactiveChangeSet<T> value) => downstream.OnNext(Convert(value));
 
             /// <inheritdoc/>
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public void OnError(Exception error) => downstream.OnError(error);
 
             /// <inheritdoc/>
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public void OnCompleted() => downstream.OnCompleted();
 
             /// <summary>Converts a ReactiveUI change set into a lightweight DynamicData change set.</summary>
@@ -78,6 +82,7 @@ public static class DynamicDataInteropMixins
             /// <summary>Translates a ReactiveUI change into the equivalent DynamicData list change.</summary>
             /// <param name="change">The ReactiveUI change.</param>
             /// <returns>The DynamicData change.</returns>
+            /// <exception cref="NotSupportedException">The change is a refresh, which has no DynamicData list equivalent.</exception>
             private static Change<T> ToDynamicDataChange(in ReactiveChange<T> change) =>
                 change.Reason switch
                 {

@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics;
 using System.Windows;
 using Splat;
 
@@ -41,6 +42,7 @@ namespace ReactiveUI;
 /// </code>
 /// </para>
 /// </remarks>
+[DebuggerDisplay("{IdleTimeout}")]
 public class AutoSuspendHelper : IEnableLogger
 {
     /// <summary>The default idle timeout, in seconds.</summary>

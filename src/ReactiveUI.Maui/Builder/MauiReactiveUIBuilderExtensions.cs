@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Runtime.CompilerServices;
 using Microsoft.Maui.Dispatching;
 using Microsoft.Maui.Hosting;
 #if REACTIVE_SHIM
@@ -34,6 +35,7 @@ public static class MauiReactiveUIBuilderExtensions
     {
         /// <summary>Configures ReactiveUI for MAUI platform with appropriate schedulers and platform services.</summary>
         /// <returns>The builder instance for chaining.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IReactiveUIBuilder WithMaui() => builder.WithMaui(null);
 
         /// <summary>Configures ReactiveUI for MAUI platform with appropriate schedulers and platform services.</summary>
@@ -53,6 +55,7 @@ public static class MauiReactiveUIBuilderExtensions
 
         /// <summary>Adds the MAUI scheduler.</summary>
         /// <returns>The builder instance for chaining.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IReactiveUIBuilder WithMauiScheduler() => builder.WithMauiScheduler(null);
 
         /// <summary>Adds the MAUI scheduler.</summary>

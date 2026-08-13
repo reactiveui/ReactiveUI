@@ -79,10 +79,10 @@ public class SuspensionHost<TAppState> : ReactiveObject, ISuspensionHost<TAppSta
     }
 
     /// <summary>Gets or sets the observable which signals when the application is launching new.</summary>
+    /// <exception cref="ArgumentNullException">Thrown when the value is <see langword="null"/>.</exception>
     /// <remarks>
     /// Emits when the platform indicates a clean launch (for example, no saved state is available).
     /// </remarks>
-    /// <exception cref="ArgumentNullException">Thrown when the value is <see langword="null"/>.</exception>
     public IObservable<RxVoid> IsLaunchingNew
     {
         get => new WhenAnyObservableSwitchSink<RxVoid>(_isLaunchingNew);
@@ -94,10 +94,10 @@ public class SuspensionHost<TAppState> : ReactiveObject, ISuspensionHost<TAppSta
     }
 
     /// <summary>Gets or sets the observable which signals when the application is resuming from a suspended state.</summary>
+    /// <exception cref="ArgumentNullException">Thrown when the value is <see langword="null"/>.</exception>
     /// <remarks>
     /// Raised when the host platform reports that the previous process image is being restored.
     /// </remarks>
-    /// <exception cref="ArgumentNullException">Thrown when the value is <see langword="null"/>.</exception>
     public IObservable<RxVoid> IsResuming
     {
         get => new WhenAnyObservableSwitchSink<RxVoid>(_isResuming);
@@ -109,10 +109,10 @@ public class SuspensionHost<TAppState> : ReactiveObject, ISuspensionHost<TAppSta
     }
 
     /// <summary>Gets or sets the observable which signals when the application is activated / unpausing.</summary>
+    /// <exception cref="ArgumentNullException">Thrown when the value is <see langword="null"/>.</exception>
     /// <remarks>
     /// Fired when the app returns to the foreground without being recreated.
     /// </remarks>
-    /// <exception cref="ArgumentNullException">Thrown when the value is <see langword="null"/>.</exception>
     public IObservable<RxVoid> IsUnpausing
     {
         get => new WhenAnyObservableSwitchSink<RxVoid>(_isUnpausing);
@@ -124,11 +124,11 @@ public class SuspensionHost<TAppState> : ReactiveObject, ISuspensionHost<TAppSta
     }
 
     /// <summary>Gets or sets an observable which signals when the application is continuing from a temporarily paused state.</summary>
+    /// <exception cref="ArgumentNullException">Thrown when the value is <see langword="null"/>.</exception>
     /// <remarks>
     /// This member exists to preserve behavior patterns where a host differentiates resume-from-tombstone vs
     /// resume-from-suspend; consumers may ignore it if not applicable.
     /// </remarks>
-    /// <exception cref="ArgumentNullException">Thrown when the value is <see langword="null"/>.</exception>
     public IObservable<RxVoid> IsContinuing
     {
         get => new WhenAnyObservableSwitchSink<RxVoid>(_isContinuing);
@@ -140,10 +140,10 @@ public class SuspensionHost<TAppState> : ReactiveObject, ISuspensionHost<TAppSta
     }
 
     /// <summary>Gets or sets the observable which signals when the application should persist its state to disk.</summary>
+    /// <exception cref="ArgumentNullException">Thrown when the value is <see langword="null"/>.</exception>
     /// <remarks>
     /// The produced <see cref="IDisposable"/> should be disposed once the application finishes persisting its state.
     /// </remarks>
-    /// <exception cref="ArgumentNullException">Thrown when the value is <see langword="null"/>.</exception>
     public IObservable<IDisposable> ShouldPersistState
     {
         get => new WhenAnyObservableSwitchSink<IDisposable>(_shouldPersistState);
@@ -155,10 +155,10 @@ public class SuspensionHost<TAppState> : ReactiveObject, ISuspensionHost<TAppSta
     }
 
     /// <summary>Gets or sets the observable which signals that the saved application state should be deleted.</summary>
+    /// <exception cref="ArgumentNullException">Thrown when the value is <see langword="null"/>.</exception>
     /// <remarks>
     /// Triggered when the host detects an unrecoverable failure; use it to delete corrupt state and log crash telemetry.
     /// </remarks>
-    /// <exception cref="ArgumentNullException">Thrown when the value is <see langword="null"/>.</exception>
     public IObservable<RxVoid> ShouldInvalidateState
     {
         get => new WhenAnyObservableSwitchSink<RxVoid>(_shouldInvalidateState);
@@ -202,12 +202,12 @@ public class SuspensionHost<TAppState> : ReactiveObject, ISuspensionHost<TAppSta
     public IObservable<TAppState?> AppStateValueChanged => _appStateValueChanged;
 
     /// <summary>Gets or sets a function that can be used to create a new application state instance.</summary>
-    /// <remarks>
-    /// This is the legacy object-based API. It projects to/from <see cref="CreateNewAppStateTyped"/>.
-    /// </remarks>
     /// <exception cref="InvalidCastException">
     /// Thrown when the factory returns a value that is not assignable to <typeparamref name="TAppState"/>.
     /// </exception>
+    /// <remarks>
+    /// This is the legacy object-based API. It projects to/from <see cref="CreateNewAppStateTyped"/>.
+    /// </remarks>
     Func<object>? ISuspensionHost.CreateNewAppState
     {
         get
@@ -236,12 +236,12 @@ public class SuspensionHost<TAppState> : ReactiveObject, ISuspensionHost<TAppSta
     }
 
     /// <summary>Gets or sets the current application state.</summary>
-    /// <remarks>
-    /// This is the legacy object-based API. It projects to/from the typed <see cref="AppStateValue"/> property.
-    /// </remarks>
     /// <exception cref="InvalidCastException">
     /// Thrown when the assigned value is not assignable to <typeparamref name="TAppState"/>.
     /// </exception>
+    /// <remarks>
+    /// This is the legacy object-based API. It projects to/from the typed <see cref="AppStateValue"/> property.
+    /// </remarks>
     object? ISuspensionHost.AppState
     {
         get => _appState;
