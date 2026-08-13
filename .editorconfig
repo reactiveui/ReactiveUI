@@ -2026,8 +2026,6 @@ dotnet_diagnostic.PAS0002.severity = error # A baseline entry no longer exists i
 dotnet_diagnostic.PAS0003.severity = error # A public symbol differs from its baseline entry
 dotnet_diagnostic.PAS0004.severity = error # No public API baseline for this target framework
 dotnet_diagnostic.PAS0005.severity = error # The public API baseline could not be read
-dotnet_diagnostic.RS0016.severity = error # A public symbol is missing from the PublicAPI baseline
-dotnet_diagnostic.RS0017.severity = error # A PublicAPI baseline entry no longer exists in source
 
 ###################
 # Microsoft.NET.ILLink.Analyzers (IL)

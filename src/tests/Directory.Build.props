@@ -1,17 +1,16 @@
 <Project>
   <PropertyGroup>
     <IsTestProject Condition="'$(IsTestProject)' == '' and '$(MSBuildProjectName)' != 'ReactiveUI.Test.Utilities' and '$(MSBuildProjectName)' != 'ReactiveUI.TestGuiMocks'">true</IsTestProject>
+    <!-- Projects in this folder (tests) are not shipped libraries, so they have no public
+         API surface to track. This covers the two helper projects above that are not test
+         projects themselves. It has to precede the import: the root defaults the value and
+         derives $(EnablePublicApiBaseline) and the analyzer reference from it, so setting it
+         afterwards leaves tracking half on. -->
+    <TrackPublicApi>false</TrackPublicApi>
   </PropertyGroup>
 
   <!-- Inherit all repository-wide settings from the root src/Directory.Build.props. -->
   <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))" />
-
-  <PropertyGroup>
-    <!-- Projects in this folder (tests) are not shipped libraries, so they have no public
-         API surface to track. Disabling here (rather than by path-substring matching in the
-         root props) avoids false positives from unrelated paths. -->
-    <TrackPublicApi>false</TrackPublicApi>
-  </PropertyGroup>
 
   <!-- The test source is migrated off System.Reactive onto ReactiveUI.Primitives. Lean test projects bind
        operators (ObserveOn/Where/Subscribe/...) and factories (Signal.*) to the Primitives surface; the
