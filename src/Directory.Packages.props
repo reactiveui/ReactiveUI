@@ -16,21 +16,21 @@
 
   <PropertyGroup Label="Framework-Aligned Versions">
     <MauiVersion Condition="$(TargetFramework.StartsWith('net10'))">10.0.90</MauiVersion>
-    <MauiVersion Condition="$(TargetFramework.StartsWith('net11'))">11.0.0-preview.6.26360.8</MauiVersion>
+    <MauiVersion Condition="$(TargetFramework.StartsWith('net11'))">11.0.0-preview.7.26406.9</MauiVersion>
 
     <AspNetVersion Condition="$(TargetFramework.StartsWith('netstandard'))">3.1.32</AspNetVersion>
     <AspNetVersion Condition="$(TargetFramework.StartsWith('net8'))">8.0.29</AspNetVersion>
     <AspNetVersion Condition="$(TargetFramework.StartsWith('net9'))">9.0.18</AspNetVersion>
     <AspNetVersion Condition="$(TargetFramework.StartsWith('net10'))">10.0.10</AspNetVersion>
-    <AspNetVersion Condition="$(TargetFramework.StartsWith('net11'))">11.0.0-preview.6.26359.118</AspNetVersion>
+    <AspNetVersion Condition="$(TargetFramework.StartsWith('net11'))">11.0.0-preview.7.26381.103</AspNetVersion>
 
     <SystemTextJsonVersion>10.0.10</SystemTextJsonVersion>
-    <SystemTextJsonVersion Condition="$(TargetFramework.StartsWith('net11'))">11.0.0-preview.6.26359.118</SystemTextJsonVersion>
+    <SystemTextJsonVersion Condition="$(TargetFramework.StartsWith('net11'))">11.0.0-preview.7.26381.103</SystemTextJsonVersion>
 
     <!-- Microsoft.Extensions.* and the runtime data packages track the framework: stable 10.0.x for
          net8/9/10, the net11 preview on net11 so the net11 ReactiveUI.Primitives assemblies resolve. -->
     <MicrosoftExtensionsVersion>10.0.10</MicrosoftExtensionsVersion>
-    <MicrosoftExtensionsVersion Condition="$(TargetFramework.StartsWith('net11'))">11.0.0-preview.6.26359.118</MicrosoftExtensionsVersion>
+    <MicrosoftExtensionsVersion Condition="$(TargetFramework.StartsWith('net11'))">11.0.0-preview.7.26381.103</MicrosoftExtensionsVersion>
 
     <XamlBehaviorsWpfVersion Condition="$(TargetFramework.StartsWith('net4'))">1.1.142</XamlBehaviorsWpfVersion>
     <XamlBehaviorsWpfVersion Condition="$(TargetFramework.StartsWith('net8'))">1.1.142</XamlBehaviorsWpfVersion>
