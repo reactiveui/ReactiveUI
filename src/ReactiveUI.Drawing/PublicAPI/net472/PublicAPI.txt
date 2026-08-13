@@ -1,0 +1,18 @@
+namespace ReactiveUI.Builder
+{
+    public static class ReactiveUIBuilderDrawingExtensions
+    {
+        extension(ReactiveUI.Builder.IReactiveUIBuilder builder)
+        {
+            public ReactiveUI.Builder.IReactiveUIBuilder WithDrawing() { }
+        }
+    }
+}
+namespace ReactiveUI.Drawing
+{
+    public class Registrations : ReactiveUI.IWantsToRegisterStuff
+    {
+        public Registrations() { }
+        public void Register(ReactiveUI.IRegistrar registrar) { }
+    }
+}

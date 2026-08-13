@@ -1,0 +1,40 @@
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.Routing.Tests")]
+[assembly: System.Runtime.Versioning.SupportedOSPlatform("MacCatalyst15.0")]
+namespace ReactiveUI;
+
+public static class DynamicDataAutoPersistMixins
+{
+    extension<TItem>(System.IObservable<DynamicData.IChangeSet<TItem>> @this) where TItem : ReactiveUI.IReactiveObject
+    {
+        public System.IDisposable ActOnEveryObject(System.Action<TItem> onAdd, System.Action<TItem> onRemove) { }
+    }
+}
+public static class DynamicDataChangeSetMixins
+{
+    extension(DynamicData.IChangeSet changeSet)
+    {
+        public bool HasCountChanged() { }
+    }
+    extension(System.IObservable<DynamicData.IChangeSet> changeSet)
+    {
+        public System.IObservable<DynamicData.IChangeSet> CountChanged() { }
+    }
+    extension<T>(System.IObservable<DynamicData.IChangeSet<T>> changeSet) where T : notnull
+    {
+        public System.IObservable<DynamicData.IChangeSet<T>> CountChanged() { }
+    }
+}
+public static class DynamicDataInteropMixins
+{
+    extension<T>(System.IObservable<ReactiveUI.IReactiveChangeSet<T>> source) where T : notnull
+    {
+        public System.IObservable<DynamicData.IChangeSet<T>> ToDynamicDataChangeSet() { }
+    }
+}
+public static class RoutingStateDynamicDataMixins
+{
+    extension(ReactiveUI.RoutingState routingState)
+    {
+        public System.IObservable<DynamicData.IChangeSet<ReactiveUI.IRoutableViewModel>> NavigationChanged() { }
+    }
+}

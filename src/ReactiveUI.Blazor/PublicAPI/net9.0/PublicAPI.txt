@@ -1,0 +1,94 @@
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.Blazor.Tests")]
+namespace ReactiveUI.Blazor
+{
+    public class PlatformOperations : ReactiveUI.IPlatformOperations
+    {
+        public PlatformOperations() { }
+        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+        public string? GetOrientation() { }
+    }
+    [System.Diagnostics.DebuggerDisplay("{ViewModel}, {Activated}")]
+    public class ReactiveComponentBase<T> : Microsoft.AspNetCore.Components.ComponentBase, ReactiveUI.ICanActivate, ReactiveUI.IViewFor<T>, System.ComponentModel.INotifyPropertyChanged, System.IDisposable where T : class, System.ComponentModel.INotifyPropertyChanged
+    {
+        public ReactiveComponentBase() { }
+        public System.IObservable<ReactiveUI.Primitives.RxVoid> Activated { get; }
+        public System.IObservable<ReactiveUI.Primitives.RxVoid> Deactivated { get; }
+        object? ReactiveUI.IViewFor.ViewModel { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public T? ViewModel { get; set; }
+        public event System.ComponentModel.PropertyChangedEventHandler? PropertyChanged;
+        public void Dispose() { }
+        protected virtual void Dispose(bool disposing) { }
+        protected override void OnAfterRender(bool firstRender) { }
+        protected override void OnInitialized() { }
+        protected virtual void OnPropertyChanged(string? propertyName = null) { }
+    }
+    [System.Diagnostics.DebuggerDisplay("{ViewModel}, {Activated}")]
+    public class ReactiveInjectableComponentBase<T> : Microsoft.AspNetCore.Components.ComponentBase, ReactiveUI.ICanActivate, ReactiveUI.IViewFor<T>, System.ComponentModel.INotifyPropertyChanged, System.IDisposable where T : class, System.ComponentModel.INotifyPropertyChanged
+    {
+        public ReactiveInjectableComponentBase() { }
+        public System.IObservable<ReactiveUI.Primitives.RxVoid> Activated { get; }
+        public System.IObservable<ReactiveUI.Primitives.RxVoid> Deactivated { get; }
+        object? ReactiveUI.IViewFor.ViewModel { get; set; }
+        [Microsoft.AspNetCore.Components.Inject]
+        public T? ViewModel { get; set; }
+        public event System.ComponentModel.PropertyChangedEventHandler? PropertyChanged;
+        public void Dispose() { }
+        protected virtual void Dispose(bool disposing) { }
+        protected override void OnAfterRender(bool firstRender) { }
+        protected override void OnInitialized() { }
+        protected virtual void OnPropertyChanged(string? propertyName = null) { }
+    }
+    [System.Diagnostics.DebuggerDisplay("{ViewModel}, {Activated}")]
+    public class ReactiveLayoutComponentBase<T> : Microsoft.AspNetCore.Components.LayoutComponentBase, ReactiveUI.ICanActivate, ReactiveUI.IViewFor<T>, System.ComponentModel.INotifyPropertyChanged, System.IDisposable where T : class, System.ComponentModel.INotifyPropertyChanged
+    {
+        public ReactiveLayoutComponentBase() { }
+        public System.IObservable<ReactiveUI.Primitives.RxVoid> Activated { get; }
+        public System.IObservable<ReactiveUI.Primitives.RxVoid> Deactivated { get; }
+        object? ReactiveUI.IViewFor.ViewModel { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public T? ViewModel { get; set; }
+        public event System.ComponentModel.PropertyChangedEventHandler? PropertyChanged;
+        public void Dispose() { }
+        protected virtual void Dispose(bool disposing) { }
+        protected override void OnAfterRender(bool firstRender) { }
+        protected override void OnInitialized() { }
+        protected virtual void OnPropertyChanged(string? propertyName = null) { }
+    }
+    [System.Diagnostics.DebuggerDisplay("{ViewModel}, {Activated}")]
+    public class ReactiveOwningComponentBase<T> : Microsoft.AspNetCore.Components.OwningComponentBase<T>, ReactiveUI.ICanActivate, ReactiveUI.IViewFor<T>, System.ComponentModel.INotifyPropertyChanged where T : class, System.ComponentModel.INotifyPropertyChanged
+    {
+        public ReactiveOwningComponentBase() { }
+        public System.IObservable<ReactiveUI.Primitives.RxVoid> Activated { get; }
+        public System.IObservable<ReactiveUI.Primitives.RxVoid> Deactivated { get; }
+        object? ReactiveUI.IViewFor.ViewModel { get; set; }
+        [Microsoft.AspNetCore.Components.Parameter]
+        public T? ViewModel { get; set; }
+        public event System.ComponentModel.PropertyChangedEventHandler? PropertyChanged;
+        protected override void Dispose(bool disposing) { }
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("OnAfterRender wires reactive subscriptions that may not be trimming-safe in all environments.")]
+        protected override void OnAfterRender(bool firstRender) { }
+        protected override void OnInitialized() { }
+        protected virtual void OnPropertyChanged(string? propertyName = null) { }
+    }
+    public class Registrations : ReactiveUI.IWantsToRegisterStuff
+    {
+        public Registrations() { }
+        public void Register(ReactiveUI.IRegistrar registrar) { }
+    }
+}
+namespace ReactiveUI.Builder
+{
+    public static class BlazorReactiveUIBuilderExtensions
+    {
+        public static ReactiveUI.Primitives.Concurrency.ISequencer BlazorMainThreadScheduler { get; }
+        public static ReactiveUI.Primitives.Concurrency.ISequencer BlazorWasmScheduler { get; }
+        extension(ReactiveUI.Builder.IReactiveUIBuilder builder)
+        {
+            public ReactiveUI.Builder.IReactiveUIBuilder WithBlazor() { }
+            public ReactiveUI.Builder.IReactiveUIBuilder WithBlazorScheduler() { }
+            public ReactiveUI.Builder.IReactiveUIBuilder WithBlazorWasm() { }
+            public ReactiveUI.Builder.IReactiveUIBuilder WithBlazorWasmScheduler() { }
+        }
+    }
+}
