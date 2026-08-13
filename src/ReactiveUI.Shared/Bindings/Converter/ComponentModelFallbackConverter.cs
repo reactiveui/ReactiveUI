@@ -11,6 +11,7 @@ namespace ReactiveUI.Reactive;
 #else
 namespace ReactiveUI;
 #endif
+
 /// <summary>
 /// Fallback converter using System.ComponentModel.TypeDescriptor for reflection-based type conversion.
 /// This converter is consulted only when no typed converter matches.
@@ -18,7 +19,8 @@ namespace ReactiveUI;
 /// <remarks>
 /// This converter uses reflection and is not AOT-safe. It should be used as a last resort when no typed converter can
 /// handle the conversion. The shared conversion logic lives in <see cref="ComponentModelConversion"/>. The
-/// <see cref="PreserveAttribute"/> keeps the converter from being stripped by the mobile linker.
+/// <see cref="PreserveAttribute"/> keeps the converter from being stripped by the mobile linker; it is ReactiveUI's
+/// own attribute and is inert on the desktop targets, so one file serves every platform.
 /// </remarks>
 [Preserve(AllMembers = true)]
 public sealed class ComponentModelFallbackConverter : IBindingFallbackConverter
