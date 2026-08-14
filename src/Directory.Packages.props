@@ -105,7 +105,7 @@
     <PackageVersion Include="Microsoft.Extensions.DependencyModel" Version="$(MicrosoftExtensionsVersion)"/>
     <PackageVersion Include="System.Collections.Immutable" Version="$(MicrosoftExtensionsVersion)"/>
     <PackageVersion Include="System.Text.Json" Version="$(SystemTextJsonVersion)"/>
-    <PackageVersion Include="Microsoft.Data.Sqlite.Core" Version="10.0.10"/>
+    <PackageVersion Include="Microsoft.Data.Sqlite.Core" Version="10.0.11"/>
     <PackageVersion Include="SQLitePCLRaw.bundle_green" Version="2.1.11"/>
   </ItemGroup>
 
