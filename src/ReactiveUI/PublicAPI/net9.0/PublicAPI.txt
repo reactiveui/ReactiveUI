@@ -175,6 +175,7 @@ namespace ReactiveUI
             public ReactiveUI.IReactiveBinding<TView, TProp> BindCommand<TViewModel, TProp, TControl, TParam>(TViewModel? viewModel, System.Linq.Expressions.Expression<System.Func<TViewModel, TProp?>> propertyName, System.Linq.Expressions.Expression<System.Func<TView, TControl>> controlName, System.Linq.Expressions.Expression<System.Func<TViewModel, TParam?>> withParameter, string? toEvent) where TViewModel : class where TProp : System.Windows.Input.ICommand where TControl : class { }
         }
     }
+    [ReactiveUI.Preserve(AllMembers=true)]
     public sealed class ComponentModelFallbackConverter : ReactiveUI.IBindingFallbackConverter
     {
         public ComponentModelFallbackConverter() { }
