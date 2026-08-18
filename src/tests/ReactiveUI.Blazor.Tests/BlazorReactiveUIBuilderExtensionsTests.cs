@@ -4,7 +4,11 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Diagnostics.CodeAnalysis;
+#if REACTIVE_SHIM
+using ReactiveUI.Reactive.Builder;
+#else
 using ReactiveUI.Builder;
+#endif
 using Splat;
 
 namespace ReactiveUI.Blazor.Tests;
@@ -14,6 +18,17 @@ public class BlazorReactiveUIBuilderExtensionsTests
 {
     /// <summary>The expected <see cref="ArgumentException.ParamName"/> for the builder argument.</summary>
     private const string BuilderParameterName = "builder";
+
+    /// <summary>The maximum time to wait for asynchronous scheduler work.</summary>
+    private const int SchedulerTimeoutSeconds = 5;
+
+    /// <summary>Gets the expected scheduler for the active lean or reactive compilation seam.</summary>
+    private static ISequencer ExpectedBlazorWasmScheduler =>
+#if REACTIVE_SHIM
+        WasmScheduler.Default;
+#else
+        WasmSequencer.Default;
+#endif
 
     /// <summary>Verifies that BlazorMainThreadScheduler returns the current-thread sequencer.</summary>
     /// <returns>A Task representing the asynchronous test operation.</returns>
@@ -25,7 +40,27 @@ public class BlazorReactiveUIBuilderExtensionsTests
     /// <returns>A Task representing the asynchronous test operation.</returns>
     [Test]
     public async Task BlazorWasmScheduler_ReturnsConfiguredSequencer() =>
-        await Assert.That(BlazorReactiveUIBuilderExtensions.BlazorWasmScheduler).IsSameReferenceAs(BlazorReactiveUIBuilderExtensions.BlazorWasmScheduler);
+        await Assert.That(BlazorReactiveUIBuilderExtensions.BlazorWasmScheduler).IsSameReferenceAs(ExpectedBlazorWasmScheduler);
+
+    /// <summary>Verifies that the WASM scheduler executes work through its event-loop queue.</summary>
+    /// <returns>A Task representing the asynchronous test operation.</returns>
+    [Test]
+    public async Task BlazorWasmScheduler_ExecutesScheduledWork()
+    {
+        var completion = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+
+        using var scheduled = BlazorReactiveUIBuilderExtensions.BlazorWasmScheduler.Schedule(
+            completion,
+            static (_, source) =>
+            {
+                source.SetResult();
+                return EmptyDisposable.Instance;
+            });
+
+        await completion.Task.WaitAsync(TimeSpan.FromSeconds(SchedulerTimeoutSeconds));
+
+        await Assert.That(completion.Task.IsCompletedSuccessfully).IsTrue();
+    }
 
     /// <summary>Verifies that WithBlazor calls WithBlazorScheduler and WithPlatformModule.</summary>
     /// <returns>A Task representing the asynchronous test operation.</returns>
@@ -37,9 +72,39 @@ public class BlazorReactiveUIBuilderExtensionsTests
         var result = builder.WithBlazor();
 
         await Assert.That(result).IsSameReferenceAs(builder);
+        await Assert.That(builder.CoreServicesSet).IsTrue();
         await Assert.That(builder.MainThreadSchedulerSet).IsTrue();
         await Assert.That(builder.MainThreadScheduler).IsSameReferenceAs(Sequencer.CurrentThread);
+        await Assert.That(builder.TaskPoolScheduler).IsSameReferenceAs(TaskPoolSequencer.Default);
         await Assert.That(builder.PlatformModuleCalled).IsTrue();
+    }
+
+    /// <summary>Verifies that WithBlazorWasm configures core services and the WASM scheduler.</summary>
+    /// <returns>A Task representing the asynchronous test operation.</returns>
+    [Test]
+    public async Task WithBlazorWasm_ConfiguresCoreServicesSchedulersAndPlatformModule()
+    {
+        var builder = new TestReactiveUIBuilder();
+
+        var result = builder.WithBlazorWasm();
+
+        await Assert.That(result).IsSameReferenceAs(builder);
+        await Assert.That(builder.CoreServicesSet).IsTrue();
+        await Assert.That(builder.MainThreadScheduler).IsSameReferenceAs(BlazorReactiveUIBuilderExtensions.BlazorWasmScheduler);
+        await Assert.That(builder.TaskPoolScheduler).IsSameReferenceAs(TaskPoolSequencer.Default);
+        await Assert.That(builder.PlatformModuleCalled).IsTrue();
+    }
+
+    /// <summary>Verifies that WithBlazorWasm throws ArgumentNullException when builder is null.</summary>
+    /// <returns>A Task representing the asynchronous test operation.</returns>
+    [Test]
+    public async Task WithBlazorWasm_ThrowsArgumentNullException_WhenBuilderIsNull()
+    {
+        IReactiveUIBuilder? builder = null;
+
+        var exception = await Assert.That(() => builder!.WithBlazorWasm()).Throws<ArgumentNullException>();
+        await Assert.That(exception).IsNotNull();
+        await Assert.That(exception.ParamName).IsEqualTo(BuilderParameterName);
     }
 
     /// <summary>Verifies that WithBlazor throws ArgumentNullException when builder is null.</summary>
@@ -115,6 +180,12 @@ public class BlazorReactiveUIBuilderExtensionsTests
         /// <summary>Gets a value indicating whether the main thread scheduler was set.</summary>
         public bool MainThreadSchedulerSet { get; private set; }
 
+        /// <summary>Gets a value indicating whether core services were configured.</summary>
+        public bool CoreServicesSet { get; private set; }
+
+        /// <summary>Gets the task-pool scheduler that was set on the builder.</summary>
+        public ISequencer? TaskPoolScheduler { get; private set; }
+
         /// <summary>Gets a value indicating whether the platform module registration was called.</summary>
         public bool PlatformModuleCalled { get; private set; }
 
@@ -154,7 +225,11 @@ public class BlazorReactiveUIBuilderExtensionsTests
             where T : Splat.Builder.IModule => throw new NotSupportedException();
 
         /// <inheritdoc/>
-        public Splat.Builder.IAppBuilder WithCoreServices() => this;
+        public Splat.Builder.IAppBuilder WithCoreServices()
+        {
+            CoreServicesSet = true;
+            return this;
+        }
 
         /// <inheritdoc/>
         public Splat.Builder.IAppBuilder WithCustomRegistration(Action<IMutableDependencyResolver> configureAction) =>
@@ -246,6 +321,7 @@ public class BlazorReactiveUIBuilderExtensionsTests
         public IReactiveUIBuilder WithTaskPoolScheduler(ISequencer scheduler, bool setRxApp)
         {
             ArgumentNullException.ThrowIfNull(scheduler);
+            TaskPoolScheduler = scheduler;
             return this;
         }
 

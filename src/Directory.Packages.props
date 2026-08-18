@@ -5,12 +5,12 @@
   </PropertyGroup>
 
   <PropertyGroup Label="Shared Version Variables">
-    <SplatVersion>20.2.0</SplatVersion>
-    <PrimitivesVersion>7.1.1</PrimitivesVersion>
+    <SplatVersion>21.0.0</SplatVersion>
+    <PrimitivesVersion>7.2.0</PrimitivesVersion>
     <TUnitVersion>1.63.0</TUnitVersion>
     <!-- StyleSharp.Analyzers, PerformanceSharp.Analyzers and SecuritySharp.Analyzers ship from the
          same release pipeline and always share a version. -->
-    <RoslynCommonAnalyzersVersion>3.43.2</RoslynCommonAnalyzersVersion>
+    <RoslynCommonAnalyzersVersion>3.45.0</RoslynCommonAnalyzersVersion>
     <XamarinAndroidXLifecycleLiveDataVersion>2.11.0.1</XamarinAndroidXLifecycleLiveDataVersion>
   </PropertyGroup>
 
@@ -19,17 +19,17 @@
     <MauiVersion Condition="$(TargetFramework.StartsWith('net11'))">11.0.0-preview.7.26406.9</MauiVersion>
 
     <AspNetVersion Condition="$(TargetFramework.StartsWith('netstandard'))">3.1.32</AspNetVersion>
-    <AspNetVersion Condition="$(TargetFramework.StartsWith('net8'))">8.0.29</AspNetVersion>
-    <AspNetVersion Condition="$(TargetFramework.StartsWith('net9'))">9.0.18</AspNetVersion>
-    <AspNetVersion Condition="$(TargetFramework.StartsWith('net10'))">10.0.10</AspNetVersion>
+    <AspNetVersion Condition="$(TargetFramework.StartsWith('net8'))">8.0.30</AspNetVersion>
+    <AspNetVersion Condition="$(TargetFramework.StartsWith('net9'))">9.0.19</AspNetVersion>
+    <AspNetVersion Condition="$(TargetFramework.StartsWith('net10'))">10.0.11</AspNetVersion>
     <AspNetVersion Condition="$(TargetFramework.StartsWith('net11'))">11.0.0-preview.7.26381.103</AspNetVersion>
 
-    <SystemTextJsonVersion>10.0.10</SystemTextJsonVersion>
+    <SystemTextJsonVersion>10.0.11</SystemTextJsonVersion>
     <SystemTextJsonVersion Condition="$(TargetFramework.StartsWith('net11'))">11.0.0-preview.7.26381.103</SystemTextJsonVersion>
 
     <!-- Microsoft.Extensions.* and the runtime data packages track the framework: stable 10.0.x for
          net8/9/10, the net11 preview on net11 so the net11 ReactiveUI.Primitives assemblies resolve. -->
-    <MicrosoftExtensionsVersion>10.0.10</MicrosoftExtensionsVersion>
+    <MicrosoftExtensionsVersion>10.0.11</MicrosoftExtensionsVersion>
     <MicrosoftExtensionsVersion Condition="$(TargetFramework.StartsWith('net11'))">11.0.0-preview.7.26381.103</MicrosoftExtensionsVersion>
 
     <XamlBehaviorsWpfVersion Condition="$(TargetFramework.StartsWith('net4'))">1.1.142</XamlBehaviorsWpfVersion>
@@ -58,7 +58,6 @@
 
   <ItemGroup Label="Rx Ecosystem">
     <PackageVersion Include="DynamicData" Version="9.4.33"/>
-    <PackageVersion Include="Reactive.Wasm" Version="3.0.1"/>
     <PackageVersion Include="Splat" Version="$(SplatVersion)"/>
     <PackageVersion Include="Splat.Autofac" Version="$(SplatVersion)"/>
     <PackageVersion Include="Splat.Drawing" Version="$(SplatVersion)"/>
@@ -122,6 +121,8 @@
 
   <ItemGroup Label="Platform - Blazor / ASP.NET">
     <PackageVersion Include="Microsoft.AspNetCore.Components" Version="$(AspNetVersion)"/>
+    <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.11"/>
+    <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="10.0.11"/>
   </ItemGroup>
 
   <ItemGroup Label="Legacy Compat Shims">

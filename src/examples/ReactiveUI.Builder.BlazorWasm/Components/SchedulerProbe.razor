@@ -1,0 +1,37 @@
+@inherits ReactiveComponentBase<SchedulerProbeViewModel>
+
+<section>
+    <p id="scheduler-status">@ViewModel?.Status</p>
+    <button id="scheduler-probe" @onclick="Schedule">Schedule through ReactiveUI</button>
+</section>
+
+@code {
+    private IDisposable? _execution;
+
+    protected override void OnInitialized()
+    {
+        ViewModel = new();
+        base.OnInitialized();
+    }
+
+    private void Schedule()
+    {
+        if (ViewModel is not { } viewModel)
+        {
+            return;
+        }
+
+        _execution?.Dispose();
+        _execution = viewModel.Run.Execute().Subscribe();
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            _execution?.Dispose();
+        }
+
+        base.Dispose(disposing);
+    }
+}

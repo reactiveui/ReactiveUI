@@ -14,21 +14,22 @@ namespace ReactiveUI.Builder;
 [SuppressMessage("ReSharper", "InconsistentNaming", Justification = "ReactiveUI is the name of the product.")]
 public static class BlazorReactiveUIBuilderExtensions
 {
-    /// <summary>Gets the blazor main thread scheduler.</summary>
+    /// <summary>Gets the Blazor Server scheduler.</summary>
     /// <value>
-    /// The blazor main thread scheduler.
+    /// A current-thread scheduler. Renderer-affine work remains component-scoped and is marshalled through
+    /// <c>ComponentBase.InvokeAsync</c> because Blazor Server has one renderer dispatcher per circuit.
     /// </value>
     public static ISequencer BlazorMainThreadScheduler { get; } = Sequencer.CurrentThread;
 
-    /// <summary>Gets the blazor wasm scheduler.</summary>
+    /// <summary>Gets the browser WebAssembly event-loop scheduler.</summary>
     /// <value>
-    /// The blazor wasm scheduler.
+    /// The Primitives scheduler that yields work through the WebAssembly event loop without creating threads.
     /// </value>
     public static ISequencer BlazorWasmScheduler { get; } =
 #if REACTIVE_SHIM
         WasmScheduler.Default;
 #else
-        Sequencer.CurrentThread;
+        WasmSequencer.Default;
 #endif
 
     /// <summary>Provides ReactiveUI builder extension methods for Blazor.</summary>
@@ -53,7 +54,7 @@ public static class BlazorReactiveUIBuilderExtensions
         {
             ArgumentExceptionHelper.ThrowIfNull(builder);
 
-            return builder
+            return ((IReactiveUIBuilder)builder.WithCoreServices())
                 .WithBlazorWasmScheduler()
                 .WithTaskPoolScheduler(TaskPoolSequencer.Default)
                 .WithPlatformModule<Blazor.Registrations>();

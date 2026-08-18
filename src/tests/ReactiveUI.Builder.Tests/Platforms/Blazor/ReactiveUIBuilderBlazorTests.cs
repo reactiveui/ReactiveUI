@@ -38,6 +38,26 @@ public class ReactiveUIBuilderBlazorTests
         await Assert.That(platformOperations).IsNotNull();
     }
 
+    /// <summary>Verifies that the Blazor Server builder configures both scheduler slots.</summary>
+    /// <returns>A task representing the asynchronous test.</returns>
+    [Test]
+    [TestExecutor<WithBlazorExecutor>]
+    public async Task WithBlazor_Should_Configure_Server_Schedulers()
+    {
+        await Assert.That(RxSchedulers.MainThreadScheduler).IsSameReferenceAs(Sequencer.CurrentThread);
+        await Assert.That(RxSchedulers.TaskpoolScheduler).IsSameReferenceAs(TaskPoolSequencer.Default);
+    }
+
+    /// <summary>Verifies that the Blazor WebAssembly builder configures both scheduler slots.</summary>
+    /// <returns>A task representing the asynchronous test.</returns>
+    [Test]
+    [TestExecutor<WithBlazorWasmExecutor>]
+    public async Task WithBlazorWasm_Should_Configure_WebAssembly_Schedulers()
+    {
+        await Assert.That(RxSchedulers.MainThreadScheduler).IsSameReferenceAs(BlazorReactiveUIBuilderExtensions.BlazorWasmScheduler);
+        await Assert.That(RxSchedulers.TaskpoolScheduler).IsSameReferenceAs(TaskPoolSequencer.Default);
+    }
+
     /// <summary>Executor that builds the app with Blazor platform services registered.</summary>
     internal sealed class WithBlazorExecutor : BuilderTestExecutorBase
     {
@@ -47,5 +67,15 @@ public class ReactiveUIBuilderBlazorTests
                 .WithCoreServices())
             .WithBlazor()
             .BuildApp();
+    }
+
+    /// <summary>Executor that builds the app with Blazor WebAssembly platform services registered.</summary>
+    internal sealed class WithBlazorWasmExecutor : BuilderTestExecutorBase
+    {
+        /// <inheritdoc/>
+        protected override void ConfigureBuilder() =>
+            RxAppBuilder.CreateReactiveUIBuilder()
+                .WithBlazorWasm()
+                .BuildApp();
     }
 }
