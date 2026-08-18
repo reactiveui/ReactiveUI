@@ -11,6 +11,7 @@
     </Folder>
     <Folder Name="/Examples/">
         <Project Path="examples/ReactiveUI.Builder.BlazorServer/ReactiveUI.Builder.BlazorServer.csproj" Id="5d87db90-4f69-470e-8c4f-4e68516ee3fb" />
+        <Project Path="examples/ReactiveUI.Builder.BlazorWasm/ReactiveUI.Builder.BlazorWasm.csproj" />
         <Project Path="examples/ReactiveUI.Builder.WpfApp/ReactiveUI.Builder.WpfApp.csproj" />
         <Project Path="examples/ReactiveUI.Samples.Wpf/ReactiveUI.Samples.Wpf.csproj" />
         <Project Path="examples/ReactiveUI.Samples.Winforms/ReactiveUI.Samples.Winforms.csproj" />
@@ -35,6 +36,7 @@
     <Folder Name="/Tests/">
         <Project Path="tests/ReactiveUI.AOTTests/ReactiveUI.AOT.Tests.csproj" />
         <Project Path="tests/ReactiveUI.Blazor.Tests/ReactiveUI.Blazor.Tests.csproj" />
+        <Project Path="tests/ReactiveUI.Blazor.Tests.Reactive/ReactiveUI.Blazor.Tests.Reactive.csproj" />
         <Project Path="tests/ReactiveUI.Builder.Maui.Tests/ReactiveUI.Builder.Maui.Tests.csproj" />
         <Project Path="tests/ReactiveUI.Builder.Tests/ReactiveUI.Builder.Tests.csproj" />
         <Project Path="tests/ReactiveUI.Maui.Tests/ReactiveUI.Maui.Tests.csproj" />

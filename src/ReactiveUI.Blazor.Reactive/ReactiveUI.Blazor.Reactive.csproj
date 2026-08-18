@@ -14,9 +14,10 @@
   <ItemGroup>
     <Using Include="ReactiveUI.Internal"/>
     <Using Include="ReactiveUI.Primitives.Disposables"/>
+    <Using Include="ReactiveUI.Primitives.Reactive.Concurrency"/>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Reactive.Wasm"/>
+    <PackageReference Include="ReactiveUI.Primitives.Blazor.Reactive"/>
     <PackageReference Include="Microsoft.AspNetCore.Components"/>
   </ItemGroup>
   <!-- The same ReactiveUI.Blazor source the lean package ships, recompiled here under REACTIVE_SHIM. -->

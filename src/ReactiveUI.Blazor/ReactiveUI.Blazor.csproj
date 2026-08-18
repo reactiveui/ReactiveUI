@@ -10,7 +10,7 @@
     <Using Include="ReactiveUI.Primitives.Disposables"/>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Reactive.Wasm"/>
+    <PackageReference Include="ReactiveUI.Primitives.Blazor"/>
     <PackageReference Include="Microsoft.AspNetCore.Components"/>
   </ItemGroup>
   <ItemGroup>
