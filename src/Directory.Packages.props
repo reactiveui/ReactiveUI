@@ -88,8 +88,8 @@
     <PackageVersion Include="SecuritySharp.Analyzers" Version="$(RoslynCommonAnalyzersVersion)"/>
     <PackageVersion Include="Roslynator.Analyzers" Version="5.0.0"/>
     <PackageVersion Include="SonarAnalyzer.CSharp" Version="10.32.0.713"/>
-    <PackageVersion Include="Microsoft.CodeAnalysis.Analyzers" Version="5.6.0"/>
-    <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="5.6.0"/>
+    <PackageVersion Include="Microsoft.CodeAnalysis.Analyzers" Version="5.9.0"/>
+    <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="5.9.0"/>
     <PackageVersion Include="PublicApiSharp.Analyzers" Version="1.0.7"/>
   </ItemGroup>
 
