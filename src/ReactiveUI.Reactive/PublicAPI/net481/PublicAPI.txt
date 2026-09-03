@@ -1113,16 +1113,16 @@ namespace ReactiveUI.Reactive
             [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
             public System.IDisposable WhenActivated() { }
             [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-            public System.IDisposable WhenActivated(System.Action<ReactiveUI.Primitives.Disposables.MultipleDisposable> block) { }
+            public System.IDisposable WhenActivated(System.Action<ReactiveUI.Primitives.Reactive.Disposables.ContainerDisposable> block) { }
             [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
             public System.IDisposable WhenActivated(System.Action<System.Action<System.IDisposable>> block) { }
             public System.IDisposable WhenActivated(System.Func<System.Collections.Generic.IEnumerable<System.IDisposable>> block) { }
             [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
             public System.IDisposable WhenActivated(System.IObservable<object?> viewModelChanged) { }
             [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-            public System.IDisposable WhenActivated(System.Action<ReactiveUI.Primitives.Disposables.MultipleDisposable> block, ReactiveUI.IViewFor? view) { }
+            public System.IDisposable WhenActivated(System.Action<ReactiveUI.Primitives.Reactive.Disposables.ContainerDisposable> block, ReactiveUI.IViewFor? view) { }
             [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-            public System.IDisposable WhenActivated(System.Action<ReactiveUI.Primitives.Disposables.MultipleDisposable> block, System.IObservable<object?> viewModelChanged) { }
+            public System.IDisposable WhenActivated(System.Action<ReactiveUI.Primitives.Reactive.Disposables.ContainerDisposable> block, System.IObservable<object?> viewModelChanged) { }
             [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
             public System.IDisposable WhenActivated(System.Action<System.Action<System.IDisposable>> block, ReactiveUI.IViewFor view) { }
             [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
@@ -1132,7 +1132,7 @@ namespace ReactiveUI.Reactive
         }
         extension(ReactiveUI.Reactive.IActivatableViewModel item)
         {
-            public void WhenActivated(System.Action<ReactiveUI.Primitives.Disposables.MultipleDisposable> block) { }
+            public void WhenActivated(System.Action<ReactiveUI.Primitives.Reactive.Disposables.ContainerDisposable> block) { }
             public void WhenActivated(System.Action<System.Action<System.IDisposable>> block) { }
             public void WhenActivated(System.Func<System.Collections.Generic.IEnumerable<System.IDisposable>> block) { }
         }

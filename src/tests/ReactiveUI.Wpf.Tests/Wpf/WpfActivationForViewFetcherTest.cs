@@ -91,7 +91,7 @@ public class WpfActivationForViewFetcherTest
             var disposables = new MultipleDisposable(
                 view.WhenActivated(static () => [Scope.Empty]),
                 view.WhenActivated(static (Action<IDisposable> _) => { }),
-                view.WhenActivated(static (MultipleDisposable _) => { }),
+                view.WhenActivated(static (ActivationDisposables _) => { }),
                 view.WhenActivated(static () => [Scope.Empty], view),
                 view.WhenActivated(static (Action<IDisposable> _) => { }, view));
 
@@ -127,7 +127,7 @@ public class WpfActivationForViewFetcherTest
                     return [Scope.Empty];
                 }),
                 view.WhenActivated((Action<IDisposable> _) => activationCount++),
-                view.WhenActivated((MultipleDisposable _) => activationCount++),
+                view.WhenActivated((ActivationDisposables _) => activationCount++),
                 view.WhenActivated(
                     () =>
                     {
@@ -269,7 +269,7 @@ public class WpfActivationForViewFetcherTest
                 new FrameworkPropertyMetadata(true));
 
         /// <summary>Initializes a new instance of the <see cref="DesignModeActivatableUserControl"/> class.</summary>
-        public DesignModeActivatableUserControl() => ActivationDisposable = this.WhenActivated(static (MultipleDisposable _) => { });
+        public DesignModeActivatableUserControl() => ActivationDisposable = this.WhenActivated(static (ActivationDisposables _) => { });
 
         /// <summary>Gets the disposable returned by the activation subscription.</summary>
         public IDisposable ActivationDisposable { get; }

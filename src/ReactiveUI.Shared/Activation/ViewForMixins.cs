@@ -140,30 +140,30 @@ public static class ViewForMixins
         /// Activates the specified view and executes the provided block when the view is activated, managing disposables
         /// for the activation lifecycle.
         /// </summary>
-        /// <param name="block">An action that receives a MultipleDisposable to which activation-related disposables should be added.</param>
+        /// <param name="block">An action that receives an <see cref="ActivationDisposables"/> to which activation-related disposables should be added.</param>
         /// <returns>An IDisposable that deactivates the view and disposes of all registered disposables when disposed.</returns>
         [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IDisposable WhenActivated(
-            Action<MultipleDisposable> block) =>
+            Action<ActivationDisposables> block) =>
             item.WhenActivated(block, (IViewFor?)null);
 
         /// <summary>
         /// Activates the specified view and executes the provided block when the view is activated, managing disposables
         /// for the activation lifecycle.
         /// </summary>
-        /// <param name="block">An action that receives a MultipleDisposable to which activation-related disposables should be added.</param>
+        /// <param name="block">An action that receives an <see cref="ActivationDisposables"/> to which activation-related disposables should be added.</param>
         /// <param name="view">An optional IViewFor instance representing the view context. If null, the item itself is used as the view.</param>
         /// <returns>An IDisposable that deactivates the view and disposes of all registered disposables when disposed.</returns>
         [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IDisposable WhenActivated(
-            Action<MultipleDisposable> block,
+            Action<ActivationDisposables> block,
             IViewFor? view) =>
             item.WhenActivated(
                 () =>
                 {
-                    MultipleDisposable d = [];
+                    ActivationDisposables d = [];
                     block(d);
                     return [d];
                 },
@@ -243,21 +243,21 @@ public static class ViewForMixins
         /// Registers a block of activation logic to be executed when the view is activated, forwarding
         /// <see cref="IActivatableViewModel"/> activation using a caller-supplied ViewModel-change signal.
         /// </summary>
-        /// <param name="block">An action that receives a <see cref="MultipleDisposable"/> to which activation-related disposables can be added.</param>
+        /// <param name="block">An action that receives an <see cref="ActivationDisposables"/> to which activation-related disposables can be added.</param>
         /// <param name="viewModelChanged">An observable that emits the view's ViewModel whenever it changes (including its current value).</param>
         /// <returns>An <see cref="IDisposable"/> that deactivates the view and disposes the registered resources when disposed.</returns>
-        /// <remarks>This is the trim- and AOT-safe counterpart to the reflected <c>WhenActivated(Action&lt;MultipleDisposable&gt;, IViewFor)</c>
+        /// <remarks>This is the trim- and AOT-safe counterpart to the reflected <c>WhenActivated(Action&lt;ActivationDisposables&gt;, IViewFor)</c>
         /// overload; the <paramref name="viewModelChanged"/> observable replaces reflection-based ViewModel discovery. Produce it with a
         /// reflection-free source such as the source-generated <c>WhenAnyValue</c> or a hand-written
         /// <see cref="System.ComponentModel.INotifyPropertyChanged"/> subscription.</remarks>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IDisposable WhenActivated(
-            Action<MultipleDisposable> block,
+            Action<ActivationDisposables> block,
             IObservable<object?> viewModelChanged) =>
             item.WhenActivated(
                 () =>
                 {
-                    MultipleDisposable d = [];
+                    ActivationDisposables d = [];
                     block(d);
                     return [d];
                 },
@@ -329,19 +329,19 @@ public static class ViewForMixins
         /// Registers a block of code to be executed when the specified view model is activated, and ensures that any
         /// disposables created within the block are disposed when the view model is deactivated.
         /// </summary>
-        /// <param name="block">An action that receives a <see cref="MultipleDisposable"/> to which disposables can be added for automatic
+        /// <param name="block">An action that receives an <see cref="ActivationDisposables"/> to which disposables can be added for automatic
         /// cleanup upon deactivation. Cannot be null.</param>
         /// <remarks>Use this method to manage subscriptions or other resources that should be tied to the
-        /// activation lifecycle of the view model. All disposables added to the provided <see cref="MultipleDisposable"/>
+        /// activation lifecycle of the view model. All disposables added to the provided <see cref="ActivationDisposables"/>
         /// will be disposed automatically when the view model is deactivated.</remarks>
         public void
-            WhenActivated(Action<MultipleDisposable> block)
+            WhenActivated(Action<ActivationDisposables> block)
         {
             ArgumentExceptionHelper.ThrowIfNull(item);
 
             item.Activator.AddActivationBlock(() =>
             {
-                MultipleDisposable d = [];
+                ActivationDisposables d = [];
                 block(d);
                 return [d];
             });
