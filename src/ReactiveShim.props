@@ -44,6 +44,9 @@
          Signal.* factories. The shared source constructs these directly in place of in-repo sink forks; only
          the seam-neutral (both-leaf) concretes are named so the .Reactive leaf below stays buildable. -->
     <Using Include="ReactiveUI.Primitives.Advanced" />
+    <!-- The disposal container WhenActivated hands to an activation block. Lean has nothing to interop with,
+         so it is the plain MultipleDisposable; the .Reactive leaf rebinds it below. -->
+    <Using Include="ReactiveUI.Primitives.Disposables.MultipleDisposable" Alias="ActivationDisposables"/>
   </ItemGroup>
 
   <!-- Reactive seam: the *.Reactive leaves recompile the shared ReactiveUI source against System.Reactive's
@@ -70,6 +73,14 @@
     <!-- Reactive-shim counterpart of the lean leaf's ReactiveUI.Primitives.Advanced import: the same
          seam-neutral concrete signal classes, flipped to the ReactiveUI.Primitives.Reactive.Advanced namespace. -->
     <Using Include="ReactiveUI.Primitives.Reactive.Advanced" />
+    <!-- Activation seam: a System.Reactive consumer writes DisposeWith against CompositeDisposable, which
+         MultipleDisposable is not, so a block given one cannot use the fluent helpers it already has
+         (see reactiveui/ReactiveUI#4434). ContainerDisposable is a MultipleDisposable that converts to a
+         CompositeDisposable it owns, so the block gets a container both sides accept. This has to replace
+         the lean binding rather than add an overload: Action<T> is contravariant, so an added
+         Action<ContainerDisposable> loses overload resolution to the existing Action<MultipleDisposable>
+         and an untyped lambda would still bind to the one that does not convert. -->
+    <Using Include="ReactiveUI.Primitives.Reactive.Disposables.ContainerDisposable" Alias="ActivationDisposables"/>
   </ItemGroup>
 
   <!-- Reactive seam, platform leaves: the apple/android reactive main-thread sequencers

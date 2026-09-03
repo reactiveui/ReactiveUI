@@ -6,6 +6,8 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 #if REACTIVE_SHIM
+using System.Reactive.Disposables;
+using System.Reactive.Disposables.Fluent;
 using ReactiveUI.Reactive.Builder;
 #else
 using ReactiveUI.Builder;
@@ -100,11 +102,11 @@ public class ViewForMixinsTests
         }
     }
 
-    /// <summary>The <c>Action&lt;MultipleDisposable&gt;</c> view-model overload runs the block on activation and disposes the
-    /// composite on deactivation.</summary>
+    /// <summary>The <c>Action&lt;ActivationDisposables&gt;</c> view-model overload runs the block on activation and disposes the
+    /// container on deactivation.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
-    public async Task ViewModelWhenActivatedMultipleDisposableOverloadActivatesAndDeactivates()
+    public async Task ViewModelWhenActivatedActivationDisposablesOverloadActivatesAndDeactivates()
     {
         var activations = 0;
         var deactivations = new StrongBox<int>();
@@ -205,11 +207,11 @@ public class ViewForMixinsTests
         }
     }
 
-    /// <summary>The trim-safe <c>Action&lt;MultipleDisposable&gt;</c> overload activates the view block and forwards ViewModel
+    /// <summary>The trim-safe <c>Action&lt;ActivationDisposables&gt;</c> overload activates the view block and forwards ViewModel
     /// activation using the supplied observable.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
-    public async Task ViewWhenActivatedWithViewModelChangedMultipleDisposableOverloadActivatesView()
+    public async Task ViewWhenActivatedWithViewModelChangedActivationDisposablesOverloadActivatesView()
     {
         using (WithActivatingViewFetcher())
         {
@@ -302,6 +304,53 @@ public class ViewForMixinsTests
             await Assert.That(viewModel.IsActiveCount).IsEqualTo(0);
         }
     }
+
+#if REACTIVE_SHIM
+    /// <summary>The container handed to a view-model activation block is usable as a System.Reactive
+    /// <see cref="CompositeDisposable"/>, and what is registered through the composite is disposed on deactivation.</summary>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task ViewModelWhenActivatedContainerIsUsableAsCompositeDisposable()
+    {
+        var deactivations = new StrongBox<int>();
+        var viewModel = new ActivatableViewModelMock();
+
+        viewModel.WhenActivated(d =>
+        {
+            CompositeDisposable composite = d;
+            composite.Add(Scope.Create(deactivations, static box => box.Value++));
+        });
+
+        _ = viewModel.Activator.Activate();
+        await Assert.That(deactivations.Value).IsEqualTo(0);
+
+        viewModel.Activator.Deactivate();
+        await Assert.That(deactivations.Value).IsEqualTo(1);
+    }
+
+    /// <summary>System.Reactive's fluent <c>DisposeWith</c> accepts the container a view activation block is given, so a
+    /// consumer keeps the disposal idiom it already has instead of converting by hand.</summary>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task ViewWhenActivatedContainerAcceptsSystemReactiveDisposeWith()
+    {
+        using (WithActivatingViewFetcher())
+        {
+            var viewModel = new ActivatingViewModel();
+            var view = new ActivatingView { ViewModel = viewModel };
+            var deactivations = new StrongBox<int>();
+
+            using var activation = view.WhenActivated(d =>
+                Scope.Create(deactivations, static box => box.Value++).DisposeWith(d));
+
+            view.Loaded.OnNext(RxVoid.Default);
+            await Assert.That(deactivations.Value).IsEqualTo(0);
+
+            view.Unloaded.OnNext(RxVoid.Default);
+            await Assert.That(deactivations.Value).IsEqualTo(1);
+        }
+    }
+#endif
 
     /// <summary>Builds a dependency resolver scope with a registered <see cref="ActivatingViewFetcher"/>.</summary>
     /// <returns>A disposable that restores the previous resolver when disposed.</returns>

@@ -96,14 +96,14 @@ public static class WpfViewForMixins
         /// <returns>An <see cref="IDisposable"/> that unregisters the activation logic.</returns>
         [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public IDisposable WhenActivated(Action<MultipleDisposable> block) => item.WhenActivated(block, null);
+        public IDisposable WhenActivated(Action<ActivationDisposables> block) => item.WhenActivated(block, null);
 
         /// <summary>Activates the specified WPF view and manages the provided disposables for the duration of the activation lifecycle.</summary>
         /// <param name="block">An action that receives a composite disposable for activation-related resources.</param>
         /// <param name="view">An optional view instance to use for view model activation.</param>
         /// <returns>An <see cref="IDisposable"/> that unregisters the activation logic.</returns>
         [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
-        public IDisposable WhenActivated(Action<MultipleDisposable> block, IViewFor? view)
+        public IDisposable WhenActivated(Action<ActivationDisposables> block, IViewFor? view)
         {
             ArgumentExceptionHelper.ThrowIfNull(item);
             ArgumentExceptionHelper.ThrowIfNull(block);
@@ -113,7 +113,7 @@ public static class WpfViewForMixins
                 : ((IActivatableView)item).WhenActivated(
                     () =>
                     {
-                        MultipleDisposable d = [];
+                        ActivationDisposables d = [];
                         block(d);
                         return [d];
                     },

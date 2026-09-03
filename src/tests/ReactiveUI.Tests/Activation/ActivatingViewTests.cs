@@ -250,7 +250,7 @@ public class ActivatingViewTests
 
     /// <summary>Provides a no-op activation callback for overload selection in tests.</summary>
     /// <param name="_">The activation-scoped disposable container.</param>
-    private static void NoopActivation(MultipleDisposable _)
+    private static void NoopActivation(ActivationDisposables _)
     {
         // Intentionally empty.
     }
