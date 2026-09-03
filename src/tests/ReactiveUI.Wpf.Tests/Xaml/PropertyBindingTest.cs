@@ -759,19 +759,22 @@ public partial class PropertyBindingTest
         await Assert.That(dis.IsDisposed).IsTrue();
     }
 
-    /// <summary>Verifies that one-way binding with a hint tolerates a null disposal container.</summary>
+    /// <summary>Verifies that registering a one-way binding into a null disposal container is rejected.</summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void OneWayBindWithHintTestDisposeWithNullContainerIsSafe()
+    public async Task OneWayBindWithHintTestDisposeWithNullContainerThrows()
     {
         MultipleDisposable? dis = null;
         var vm = new PropertyBindViewModel();
         var view = new PropertyBindView { ViewModel = vm };
         var fixture = new PropertyBinderImplementation();
+        var binding = fixture.OneWayBind(vm, view, static x => x.JustABoolean, static v => v.SomeTextBox.Visibility, BooleanToVisibilityHint.Inverse);
 
-        // DisposeWith(MultipleDisposable) is a null-safe no-op in ReactiveUI.Primitives (disposables?.Add(...)),
-        // so binding against a null container neither throws nor loses the binding — the live binding is returned.
-        var binding = fixture.OneWayBind(vm, view, static x => x.JustABoolean, static v => v.SomeTextBox.Visibility, BooleanToVisibilityHint.Inverse).DisposeWith(dis!);
+        // DisposeWith validates the container, so a null one is an argument error rather than a registration
+        // that silently disappears and leaks the binding.
+        var ex = await Assert.That(() => binding.DisposeWith(dis!)).Throws<ArgumentNullException>();
 
+        await Assert.That(ex).IsNotNull();
         binding.Dispose();
     }
 
