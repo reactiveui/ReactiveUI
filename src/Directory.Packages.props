@@ -75,7 +75,12 @@
     <PackageVersion Include="TUnit" Version="$(TUnitVersion)"/>
     <PackageVersion Include="TUnit.Core" Version="$(TUnitVersion)"/>
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.9.0"/>
-    <PackageVersion Include="Microsoft.Testing.Extensions.CodeCoverage" Version="18.11.0"/>
+    <!-- Held at 18.10.0. On 18.11.0 the collector's SharedBufferReconciler takes a cross-process mutex
+         while finishing a session, and a solution-wide run has many hosts holding it in turn: when one
+         exits still owning it the next waiter gets an AbandonedMutexException that the collector does not
+         handle, so a test host that passed every test aborts (SIGABRT) and the run reports exit code 7.
+         It lands on whichever assembly loses the race, which is why it shows up on the macOS leg. -->
+    <PackageVersion Include="Microsoft.Testing.Extensions.CodeCoverage" Version="18.10.0"/>
     <PackageVersion Include="Microsoft.Testing.Platform.MSBuild" Version="2.4.0"/>
     <PackageVersion Include="Microsoft.Reactive.Testing" Version="7.0.0"/>
     <PackageVersion Include="System.Reactive" Version="7.0.0"/>
