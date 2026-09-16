@@ -126,8 +126,8 @@
 
   <ItemGroup Label="Platform - Blazor / ASP.NET">
     <PackageVersion Include="Microsoft.AspNetCore.Components" Version="$(AspNetVersion)"/>
-    <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.11"/>
-    <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="10.0.11"/>
+    <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.12"/>
+    <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="10.0.12"/>
   </ItemGroup>
 
   <ItemGroup Label="Legacy Compat Shims">
