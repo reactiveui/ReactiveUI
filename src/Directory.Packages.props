@@ -100,7 +100,7 @@
 
   <ItemGroup Label="Build / SourceLink / Versioning">
     <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="10.0.400"/>
-    <PackageVersion Include="MinVer" Version="7.0.0"/>
+    <PackageVersion Include="MinVer" Version="8.0.0"/>
   </ItemGroup>
 
   <ItemGroup Label="Microsoft Extensions / Runtime / Data">
