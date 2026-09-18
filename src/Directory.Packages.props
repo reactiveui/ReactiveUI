@@ -74,7 +74,7 @@
   <ItemGroup Label="Testing">
     <PackageVersion Include="TUnit" Version="$(TUnitVersion)"/>
     <PackageVersion Include="TUnit.Core" Version="$(TUnitVersion)"/>
-    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.9.0"/>
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.10.1"/>
     <!-- Held at 18.10.0. On 18.11.0 the collector's SharedBufferReconciler takes a cross-process mutex
          while finishing a session, and a solution-wide run has many hosts holding it in turn: when one
          exits still owning it the next waiter gets an AbandonedMutexException that the collector does not
