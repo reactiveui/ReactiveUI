@@ -14,25 +14,20 @@ namespace ReactiveUI.Builder;
 /// <summary>WPF-specific extensions for the ReactiveUI builder.</summary>
 public static class WpfReactiveUIBuilderExtensions
 {
-#if !NET462
-    /// <summary>Lazily binds the shared WPF main-thread sequencer to the first UI dispatcher that requests it.</summary>
-    private static readonly Lazy<ISequencer> LazyWpfMainThreadScheduler = new(static () =>
-        new DispatcherSequencer(System.Windows.Threading.Dispatcher.CurrentDispatcher));
-#endif
-
     /// <summary>Gets the WPF main thread scheduler.</summary>
     /// <value>
     /// The WPF main thread scheduler.
     /// </value>
-    public static ISequencer WpfMainThreadScheduler =>
-#if NET462
-        // System.Reactive 6.x ships no net462 asset, and its netstandard2.0 facade (which net462 resolves to) does
-        // not include DispatcherScheduler. Fall back to the current-thread scheduler so net462 compiles; use net472+
-        // for true WPF dispatcher marshalling.
-        Sequencer.CurrentThread;
-#else
-        LazyWpfMainThreadScheduler.Value;
-#endif
+    public static ISequencer WpfMainThreadScheduler { get; } = new WaitForDispatcherScheduler(
+        static () =>
+        {
+            var dispatcher = System.Windows.Application.Current?.Dispatcher
+                ?? (System.Threading.Thread.CurrentThread.GetApartmentState() == System.Threading.ApartmentState.STA
+                    ? System.Windows.Threading.Dispatcher.CurrentDispatcher
+                    : System.Windows.Threading.Dispatcher.FromThread(System.Threading.Thread.CurrentThread)
+                        ?? throw new InvalidOperationException("WPF Application has not been initialized yet."));
+            return new DispatcherSequencer(dispatcher);
+        });
 
     /// <summary>Provides ReactiveUI builder extension methods for WPF on <see cref="IAppBuilder"/>.</summary>
     /// <param name="builder">The application builder.</param>

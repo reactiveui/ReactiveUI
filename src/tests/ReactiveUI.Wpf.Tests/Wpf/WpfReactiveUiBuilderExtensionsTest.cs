@@ -3,9 +3,14 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Collections.ObjectModel;
 using System.Windows;
+using System.Windows.Data;
+using System.Windows.Threading;
+using ReactiveUI.Tests.Xaml.Utilities;
 using Splat;
 using Splat.Builder;
+using TUnit.Core.Executors;
 
 namespace ReactiveUI.Tests.Wpf;
 
@@ -87,7 +92,7 @@ public class WpfReactiveUiBuilderExtensionsTest
             _ = builder.WithWpfScheduler();
 
             await Assert.That(builder.MainThreadScheduler).IsNotNull();
-            await Assert.That(builder.MainThreadScheduler!).IsTypeOf<DispatcherSequencer>();
+            await Assert.That(builder.MainThreadScheduler!).IsTypeOf<WaitForDispatcherScheduler>();
         }
     }
 
@@ -181,6 +186,113 @@ public class WpfReactiveUiBuilderExtensionsTest
             var success = converter!.TryConvertTyped(true, null, out var result);
             await Assert.That(success).IsTrue();
             await Assert.That(result).IsEqualTo(Visibility.Visible);
+        }
+    }
+
+    /// <summary>Tests that WpfMainThreadScheduler invoked from a background thread marshals work to the WPF dispatcher.</summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    [TestExecutor<STAThreadExecutor>]
+    public async Task WpfMainThreadScheduler_InvokedFromBackgroundThread_MarshalsToDispatcher()
+    {
+        if (Application.Current is null)
+        {
+            _ = new Application();
+        }
+
+        var targetDispatcher = Application.Current?.Dispatcher ?? Dispatcher.CurrentDispatcher;
+        var targetThreadId = targetDispatcher.Thread.ManagedThreadId;
+        var executedThreadId = 0;
+
+        await Task.Run(() =>
+        {
+            WpfReactiveUIBuilderExtensions.WpfMainThreadScheduler.Schedule(
+                () => executedThreadId = Environment.CurrentManagedThreadId);
+        });
+
+        if (targetDispatcher.CheckAccess())
+        {
+            DispatcherUtilities.DoEvents();
+        }
+        else
+        {
+            targetDispatcher.Invoke(DispatcherUtilities.DoEvents);
+        }
+
+        using (Assert.Multiple())
+        {
+            await Assert.That(executedThreadId).IsNotZero();
+            await Assert.That(executedThreadId).IsEqualTo(targetThreadId);
+        }
+    }
+
+    /// <summary>Tests that modifying an ObservableCollection on MainThreadScheduler from a background thread does not throw.</summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    [TestExecutor<STAThreadExecutor>]
+    public async Task ObserveOnMainThreadScheduler_ModifyingObservableCollection_DoesNotThrow()
+    {
+        if (Application.Current is null)
+        {
+            _ = new Application();
+        }
+
+        var targetDispatcher = Application.Current?.Dispatcher ?? Dispatcher.CurrentDispatcher;
+
+        AppBuilder.ResetBuilderStateForTests();
+        var resolver = new ModernDependencyResolver();
+        resolver.InitializeSplat();
+
+        using (resolver.WithResolver())
+        {
+            _ = AppLocator.CurrentMutable.CreateReactiveUIBuilder().WithWpf().BuildApp();
+
+            ObservableCollection<string> collection = null!;
+            targetDispatcher.Invoke(() =>
+            {
+                collection = new ObservableCollection<string>();
+                var view = CollectionViewSource.GetDefaultView(collection);
+                _ = view;
+            });
+
+            Exception? scheduledException = null;
+
+            await Task.Run(() =>
+            {
+                try
+                {
+                    RxSchedulers.MainThreadScheduler.Schedule(() =>
+                    {
+                        try
+                        {
+                            collection.Add("Item 1");
+                        }
+                        catch (Exception ex)
+                        {
+                            scheduledException = ex;
+                        }
+                    });
+                }
+                catch (Exception ex)
+                {
+                    scheduledException = ex;
+                }
+            });
+
+            if (targetDispatcher.CheckAccess())
+            {
+                DispatcherUtilities.DoEvents();
+            }
+            else
+            {
+                targetDispatcher.Invoke(DispatcherUtilities.DoEvents);
+            }
+
+            using (Assert.Multiple())
+            {
+                await Assert.That(scheduledException).IsNull();
+                await Assert.That(collection).Contains("Item 1");
+            }
         }
     }
 }
