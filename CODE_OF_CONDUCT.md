@@ -1,7 +1,7 @@
 # Code of Conduct
 
-This project has adopted the code of conduct defined by the Contributor Covenant to clarify expected behavior in our community.
+The ReactiveUI Code of Conduct is published at
+[www.reactiveui.net/code-of-conduct](https://www.reactiveui.net/code-of-conduct/).
+It applies to every repository in the [reactiveui](https://github.com/reactiveui) organization.
 
-For more information, see the [.NET Foundation Code of Conduct](https://dotnetfoundation.org/code-of-conduct).
-
-To report concerns, please contact us at [hello@reactiveui.net](mailto:hello@reactiveui.net).
+To report a concern, email [hello@reactiveui.net](mailto:hello@reactiveui.net).
