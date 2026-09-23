@@ -42,20 +42,21 @@ public static class ComponentModelConversion
         ArgumentExceptionHelper.ThrowIfNull(fromType);
         ArgumentExceptionHelper.ThrowIfNull(toType);
 
+        var fromIsString = fromType == typeof(string);
+        var lookupFrom = fromIsString ? toType : fromType;
+
         var canConvert = _capabilityCache.GetOrAdd((fromType, toType), CapabilityFactory);
 
         return canConvert ? 1 : 0;
 
-        static bool CapabilityFactory((Type From, Type To) key)
+        bool CapabilityFactory((Type From, Type To) _)
         {
             try
             {
-                var fromIsString = key.From == typeof(string);
-                var (lookupFrom, lookupTo) = fromIsString ? (key.To, key.From) : (key.From, key.To);
                 var converter = TypeDescriptor.GetConverter(lookupFrom);
                 return fromIsString
                     ? converter?.CanConvertFrom(typeof(string)) == true
-                    : converter?.CanConvertTo(lookupTo) == true;
+                    : converter?.CanConvertTo(toType) == true;
             }
             catch
             {

@@ -293,7 +293,7 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public ReactiveProperty<T> AddValidationError(
         Func<IObservable<T?>, IObservable<string?>> validator) =>
-        AddValidationError((Func<IObservable<T?>, IObservable<string?>>)validator, false);
+        AddValidationError(validator, false);
 
     /// <summary>Adds a validation rule to the property using the specified validator function.</summary>
     /// <param name="validator">A function that receives an observable sequence of property values and returns an observable sequence of
@@ -316,7 +316,7 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public ReactiveProperty<T> AddValidationError(
         Func<T?, Task<IEnumerable?>> validator) =>
-        AddValidationError((Func<T?, Task<IEnumerable?>>)validator, false);
+        AddValidationError(validator, false);
 
     /// <summary>Adds asynchronous validation logic to the reactive property using the specified validator function.</summary>
     /// <param name="validator">A function that asynchronously validates the current value and returns a collection of validation errors. The
@@ -338,7 +338,7 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
     /// <returns>The current ReactiveProperty instance with the validation rule applied.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public ReactiveProperty<T> AddValidationError(Func<T?, Task<string?>> validator) =>
-        AddValidationError((Func<T?, Task<string?>>)validator, false);
+        AddValidationError(validator, false);
 
     /// <summary>Adds an asynchronous validation rule to the property using the specified validator function.</summary>
     /// <param name="validator">A function that asynchronously validates the property's value and returns an error message if validation fails,
@@ -356,7 +356,7 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
     /// <returns>The current ReactiveProperty instance with the validation rule applied.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public ReactiveProperty<T> AddValidationError(Func<T?, IEnumerable?> validator) =>
-        AddValidationError((Func<T?, IEnumerable?>)validator, false);
+        AddValidationError(validator, false);
 
     /// <summary>Adds a validation rule to the reactive property using the specified validator function.</summary>
     /// <param name="validator">A function that takes the current value and returns a collection of validation errors. Returns null or an empty
@@ -374,7 +374,7 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
     /// <returns>The current ReactiveProperty instance with the validation rule applied.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public ReactiveProperty<T> AddValidationError(Func<T?, string?> validator) =>
-        AddValidationError((Func<T?, string?>)validator, false);
+        AddValidationError(validator, false);
 
     /// <summary>Adds a validation rule to the property using the specified validator function.</summary>
     /// <param name="validator">A function that takes the current value of the property and returns a validation error message if the value is
@@ -706,7 +706,7 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
                     return null;
                 }
 
-                List<object?> stringValues = new(_latest.Length);
+                List<object?> stringValues = [with(capacity: _latest.Length)];
                 List<object?> otherValues = [];
                 foreach (var item in _latest)
                 {

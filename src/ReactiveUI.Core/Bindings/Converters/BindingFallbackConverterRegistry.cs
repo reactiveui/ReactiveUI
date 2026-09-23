@@ -78,7 +78,7 @@ public sealed class BindingFallbackConverterRegistry
 
         lock (_gate)
         {
-            var snap = _snapshot ?? new Snapshot(new(DefaultConverterListCapacity));
+            var snap = _snapshot ?? new Snapshot([with(capacity: DefaultConverterListCapacity)]);
 
             List<IBindingFallbackConverter> newList = [.. snap.Converters, converter];
 

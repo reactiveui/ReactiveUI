@@ -66,7 +66,7 @@ public class ActivationForViewFetcher : IActivationForViewFetcher
             ?? GetActivationFor(view as View)
             ?? GetActivationFor(view as Cell)
 #endif
-            ?? (IObservable<bool>)Signal.Silent<bool>();
+            ?? Signal.Silent<bool>();
 
         return activation.DistinctUntilChanged();
     }

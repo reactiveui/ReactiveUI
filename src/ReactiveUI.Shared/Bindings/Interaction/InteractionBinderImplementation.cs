@@ -48,7 +48,7 @@ public class InteractionBinderImplementation : IInteractionBinderImplementation
         where TViewModel : class
         where TView : class, IViewFor
     {
-        ArgumentExceptionHelper.ThrowIfNull((Func<IInteractionContext<TInput, TOutput>, IObservable<TDontCare>>)handler);
+        ArgumentExceptionHelper.ThrowIfNull(handler);
 
         return BindInteractionCore(
             viewModel,

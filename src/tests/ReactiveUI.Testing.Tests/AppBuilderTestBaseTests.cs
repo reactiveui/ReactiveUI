@@ -91,12 +91,12 @@ public class AppBuilderTestBaseTests
         /// <param name="testBody">The asynchronous test body to execute.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public static new Task RunAppBuilderTestAsync(Func<Task> testBody) =>
-            AppBuilderTestBase.RunAppBuilderTestAsync((Func<Task>)testBody);
+            AppBuilderTestBase.RunAppBuilderTestAsync(testBody);
 
         /// <summary>Exposes the protected synchronous app builder test runner for testing.</summary>
         /// <param name="testBody">The synchronous test body to execute.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public static new Task RunAppBuilderTestAsync(Action testBody) =>
-            AppBuilderTestBase.RunAppBuilderTestAsync((Action)testBody);
+            AppBuilderTestBase.RunAppBuilderTestAsync(testBody);
     }
 }

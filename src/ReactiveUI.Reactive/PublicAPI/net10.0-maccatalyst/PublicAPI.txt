@@ -521,9 +521,6 @@ namespace ReactiveUI.Reactive
     }
     public static class OAPHCreationHelperMixins
     {
-        extension<TObj>(TObj target) where TObj : class, ReactiveUI.IReactiveObject
-        {
-        }
         extension<TRet>(System.IObservable<TRet> target)
         {
             [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]

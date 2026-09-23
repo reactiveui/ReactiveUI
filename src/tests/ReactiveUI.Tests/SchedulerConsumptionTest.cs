@@ -110,7 +110,7 @@ public class SchedulerConsumptionTest
 
         /// <summary>Gets an observable stream of processed data.</summary>
         /// <returns>An observable sequence of processed data strings.</returns>
-        public IObservable<string> GetData() => _dataSubject.ObserveOn((ISequencer)RxSchedulers.TaskpoolScheduler).Select(static data => $"Processed: {data}");
+        public IObservable<string> GetData() => _dataSubject.ObserveOn(RxSchedulers.TaskpoolScheduler).Select(static data => $"Processed: {data}");
 
         /// <summary>Publishes a data value to the repository.</summary>
         /// <param name="data">The data to publish.</param>
@@ -133,7 +133,7 @@ public class SchedulerConsumptionTest
             Justification = "canonical ObservableAsPropertyHelper initialization requires 'this' in the constructor; the single-threaded fixture never exposes the half-built instance.")]
         public ExampleViewModel() => _greeting = this.WhenAnyValue(x => x.Name)
             .Select(static name => $"Hello, {name ?? "World"}!")
-            .ObserveOn((ISequencer)RxSchedulers.MainThreadScheduler)
+            .ObserveOn(RxSchedulers.MainThreadScheduler)
             .ToProperty(this, nameof(Greeting), scheduler: RxSchedulers.MainThreadScheduler);
 
         /// <summary>Gets the greeting derived from the name.</summary>

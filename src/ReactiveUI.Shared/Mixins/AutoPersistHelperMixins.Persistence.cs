@@ -648,11 +648,11 @@ public static partial class AutoPersistHelperMixins
                     continue;
                 }
 
-                set ??= new(StringComparer.Ordinal);
+                set ??= [with(StringComparer.Ordinal)];
                 _ = set.Add(p.Name);
             }
 
-            set ??= new(StringComparer.Ordinal);
+            set ??= [with(StringComparer.Ordinal)];
             return new(hasDataContract, set);
         }
 
