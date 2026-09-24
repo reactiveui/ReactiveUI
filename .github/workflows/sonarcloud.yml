@@ -15,12 +15,7 @@ jobs:
         with:
             productNamespacePrefix: ReactiveUI
             installWorkloads: true
-            # ReactiveUI.WinUI.Tests hosts a real WinUI application; without the Windows App SDK runtime on the
-            # agent those tests skip and contribute no coverage. It is a machine-level MSIX framework package,
-            # not an SDK workload, so installWorkloads does not cover it. Keep in step with the
-            # Microsoft.WindowsAppSDK version pinned in src/Directory.Packages.props.
             installWindowsAppRuntime: true
-            windowsAppRuntimeVersion: '2.3'
             sonarProjectKey: reactiveui_ReactiveUI
             sonarOrganization: reactiveui
             sonarExclusions: '**/tests/**,**/integrationtests/**,**/benchmarks/**,**/examples/**,**/TestResults/**'

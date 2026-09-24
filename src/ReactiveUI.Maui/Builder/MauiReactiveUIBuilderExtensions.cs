@@ -24,10 +24,10 @@ public static class MauiReactiveUIBuilderExtensions
 {
     /// <summary>Gets the MAUI main thread scheduler.</summary>
     /// <value>
-    /// The MAUI main thread scheduler.
+    /// The shared <see cref="MauiDispatcherSequencer.Main"/> sequencer for the MAUI UI thread.
     /// </value>
-    public static ISequencer MauiMainThreadScheduler =>
-        Dispatcher.GetForCurrentThread() is { } dispatcher ? dispatcher.ToSequencer() : Sequencer.Default;
+    /// <exception cref="InvalidOperationException">No application exists yet and the calling thread has no dispatcher.</exception>
+    public static ISequencer MauiMainThreadScheduler => MauiDispatcherSequencer.Main;
 
     /// <summary>Provides MAUI-specific configuration extension members for <see cref="IReactiveUIBuilder"/>.</summary>
     /// <param name="builder">The builder instance.</param>

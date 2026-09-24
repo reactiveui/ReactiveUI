@@ -5,6 +5,7 @@
 
 using System.Windows.Threading;
 using ReactiveUI.Tests.Utilities.AppBuilder;
+using ReactiveUI.Tests.Wpf;
 
 namespace ReactiveUI.Tests.Xaml;
 
@@ -12,7 +13,7 @@ namespace ReactiveUI.Tests.Xaml;
 /// Provides a test executor that initializes and cleans up the ReactiveUI WPF environment for unit tests requiring WPF
 /// view resolution and scheduler configuration.
 /// </summary>
-public class WpfViewResolverTestExecutor : STAThreadExecutor
+public class WpfViewResolverTestExecutor : DispatcherThreadExecutor
 {
     /// <summary>Helper that manages app builder setup and teardown for the test.</summary>
     private readonly AppBuilderTestHelper _helper = new();

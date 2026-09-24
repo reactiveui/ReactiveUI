@@ -19,11 +19,16 @@ public class MauiReactiveUIBuilderExtensionsTest
     /// <summary>The scheduling delay, in milliseconds, used by the delayed-dispatch tests.</summary>
     private const int ScheduleDelayMilliseconds = 100;
 
-    /// <summary>Tests that MauiMainThreadScheduler is not null.</summary>
+    /// <summary>Tests that MauiMainThreadScheduler throws on a thread without a dispatcher instead of falling back to the thread pool.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public async Task MauiMainThreadScheduler_IsNotNull() =>
-        await Assert.That(MauiReactiveUIBuilderExtensions.MauiMainThreadScheduler).IsNotNull();
+    public async Task MauiMainThreadScheduler_WithoutDispatcher_Throws() =>
+        await Assert.That(static () => Task.Factory.StartNew<ISequencer?>(
+                static () => MauiReactiveUIBuilderExtensions.MauiMainThreadScheduler,
+                CancellationToken.None,
+                TaskCreationOptions.LongRunning,
+                TaskScheduler.Default))
+            .ThrowsExactly<InvalidOperationException>();
 
     /// <summary>Tests that MauiMainThreadScheduler resolves to a dispatcher-backed sequencer when a current-thread dispatcher is available.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
@@ -32,7 +37,7 @@ public class MauiReactiveUIBuilderExtensionsTest
     public async Task MauiMainThreadScheduler_WithCurrentDispatcher_ResolvesDispatcherSequencer()
     {
         // The MauiTestExecutor installs a TestDispatcherProvider whose GetForCurrentThread() returns a dispatcher,
-        // so the property takes the dispatcher.ToSequencer() branch instead of falling back to Sequencer.Default.
+        // so the property resolves MauiDispatcherSequencer.Main from the calling thread's dispatcher.
         await Assert.That(MauiReactiveUIBuilderExtensions.MauiMainThreadScheduler.GetType().Name).IsEqualTo(MauiDispatcherSequencerTypeName);
     }
 

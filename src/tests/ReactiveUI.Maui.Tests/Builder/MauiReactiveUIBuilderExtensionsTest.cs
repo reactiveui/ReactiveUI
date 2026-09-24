@@ -11,11 +11,16 @@ namespace ReactiveUI.Maui.Tests.Builder;
 /// <summary>Tests for <see cref="MauiReactiveUIBuilderExtensions"/>.</summary>
 public class MauiReactiveUIBuilderExtensionsTest
 {
-    /// <summary>Tests that MauiMainThreadScheduler is not null.</summary>
+    /// <summary>Tests that MauiMainThreadScheduler throws on a thread without a dispatcher instead of falling back to the thread pool.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public async Task MauiMainThreadScheduler_IsNotNull() =>
-        await Assert.That(MauiReactiveUIBuilderExtensions.MauiMainThreadScheduler).IsNotNull();
+    public async Task MauiMainThreadScheduler_WithoutDispatcher_Throws() =>
+        await Assert.That(static () => Task.Factory.StartNew<ISequencer?>(
+                static () => MauiReactiveUIBuilderExtensions.MauiMainThreadScheduler,
+                CancellationToken.None,
+                TaskCreationOptions.LongRunning,
+                TaskScheduler.Default))
+            .ThrowsExactly<InvalidOperationException>();
 
 #if ANDROID
     /// <summary>

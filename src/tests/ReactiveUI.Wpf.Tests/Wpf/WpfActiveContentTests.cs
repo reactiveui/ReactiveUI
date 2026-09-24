@@ -147,7 +147,7 @@ public class WpfActiveContentTests
     }
 
     /// <summary>A test executor that registers the default, ContractA and ContractB views.</summary>
-    public class ViewBRegisteredExecutor : STAThreadExecutor
+    public class ViewBRegisteredExecutor : DispatcherThreadExecutor
     {
         /// <summary>Helper that manages app builder setup and teardown for the test.</summary>
         private readonly AppBuilderTestHelper _helper = new();
@@ -179,7 +179,7 @@ public class WpfActiveContentTests
     }
 
     /// <summary>A test executor that registers the default and ContractA views to test fallback resolution.</summary>
-    public class View0FallbackExecutor : STAThreadExecutor
+    public class View0FallbackExecutor : DispatcherThreadExecutor
     {
         /// <summary>Helper that manages app builder setup and teardown for the test.</summary>
         private readonly AppBuilderTestHelper _helper = new();
@@ -210,7 +210,7 @@ public class WpfActiveContentTests
     }
 
     /// <summary>A test executor that registers the default and ContractA views for bypass-resolution tests.</summary>
-    public class NoneWithBypassExecutor : STAThreadExecutor
+    public class NoneWithBypassExecutor : DispatcherThreadExecutor
     {
         /// <summary>Helper that manages app builder setup and teardown for the test.</summary>
         private readonly AppBuilderTestHelper _helper = new();
@@ -241,7 +241,7 @@ public class WpfActiveContentTests
     }
 
     /// <summary>A test executor that registers the default, ContractA and ContractB views.</summary>
-    public class ExecutorBIfViewBIsRegistered : STAThreadExecutor
+    public class ExecutorBIfViewBIsRegistered : DispatcherThreadExecutor
     {
         /// <summary>Helper that manages app builder setup and teardown for the test.</summary>
         private readonly AppBuilderTestHelper _helper = new();
