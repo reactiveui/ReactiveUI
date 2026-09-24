@@ -80,9 +80,13 @@
          SupportedOSPlatformVersion to API 35, matching Google Play's current floor (older versions are not supported). -->
     <ReactiveUIAndroidTargets>net10.0-android36.0;net11.0-android37</ReactiveUIAndroidTargets>
 
-    <!-- Windows-only targets (combines Framework + Windows targets) - conditioned -->
+    <!-- Plain desktop targets (windows7.0) for the WPF/WinForms/Blend leaves. A net*-windows app cannot consume a
+         -windows10.0.19041.0 asset, so without these it falls back to the .NET Framework asset via AssetTargetFallback. -->
+    <ReactiveUIDesktopTargets>net8.0-windows;net9.0-windows;net10.0-windows;net11.0-windows</ReactiveUIDesktopTargets>
+
+    <!-- Windows-only targets (combines Framework + desktop + Windows targets) - conditioned -->
     <ReactiveUIWindowsOnlyTargets>$(ReactiveUIWindowsTargets)</ReactiveUIWindowsOnlyTargets>
-    <ReactiveUIWindowsOnlyTargets>$(ReactiveUIFrameworkTargets);$(ReactiveUIWindowsTargets)</ReactiveUIWindowsOnlyTargets>
+    <ReactiveUIWindowsOnlyTargets>$(ReactiveUIFrameworkTargets);$(ReactiveUIDesktopTargets);$(ReactiveUIWindowsTargets)</ReactiveUIWindowsOnlyTargets>
 
     <ReactiveUITestTargets>net8.0;net9.0;net10.0</ReactiveUITestTargets>
     <ReactiveUITestTargets>net8.0-windows10.0.19041.0;net9.0-windows10.0.19041.0;net10.0-windows10.0.19041.0;net11.0-windows10.0.19041.0</ReactiveUITestTargets>
