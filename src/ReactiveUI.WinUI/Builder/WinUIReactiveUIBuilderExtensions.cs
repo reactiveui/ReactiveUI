@@ -3,8 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using Microsoft.UI.Dispatching;
-
 #if REACTIVE_SHIM
 namespace ReactiveUI.Reactive.Builder;
 #else
@@ -14,19 +12,12 @@ namespace ReactiveUI.Builder;
 /// <summary>WinUI-specific extensions for the ReactiveUI builder.</summary>
 public static class WinUIReactiveUIBuilderExtensions
 {
-    /// <summary>The lazily-initialized sequencer that marshals work onto the current WinUI dispatcher queue.</summary>
-    private static readonly Lazy<ISequencer> LazyWinUIMainThreadScheduler = new(static () =>
-    {
-        var dispatcherQueue = DispatcherQueue.GetForCurrentThread()
-                              ?? throw new InvalidOperationException("There is no current dispatcher thread");
-        return new DispatcherQueueSequencer(dispatcherQueue);
-    });
-
     /// <summary>Gets the win UI main thread scheduler.</summary>
     /// <value>
-    /// The win UI main thread scheduler.
+    /// The shared <see cref="DispatcherQueueSequencer.Main"/> sequencer for the WinUI UI thread.
     /// </value>
-    public static ISequencer WinUIMainThreadScheduler => LazyWinUIMainThreadScheduler.Value;
+    /// <exception cref="InvalidOperationException">The sequencer is not bound yet and the calling thread has no dispatcher queue.</exception>
+    public static ISequencer WinUIMainThreadScheduler => DispatcherQueueSequencer.Main;
 
     /// <summary>Provides ReactiveUI builder extension methods for WinUI.</summary>
     /// <param name="builder">The ReactiveUI builder.</param>

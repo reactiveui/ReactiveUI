@@ -100,7 +100,7 @@ public class RoutedViewHostTests
     }
 
     /// <summary>Test executor for RoutedViewHost tests that require view registration.</summary>
-    public class WpfWithViewAndRoutingExecutor : STAThreadExecutor
+    public class WpfWithViewAndRoutingExecutor : DispatcherThreadExecutor
     {
         /// <summary>Helper that manages app builder setup and teardown for the test.</summary>
         private readonly AppBuilderTestHelper _helper = new();

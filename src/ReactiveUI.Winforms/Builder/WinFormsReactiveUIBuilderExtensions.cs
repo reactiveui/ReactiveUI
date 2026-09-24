@@ -15,21 +15,12 @@ namespace ReactiveUI.Builder;
 [SuppressMessage("ReSharper", "InconsistentNaming", Justification = "ReactiveUI deliberate")]
 public static class WinFormsReactiveUIBuilderExtensions
 {
-    /// <summary>Lazily creates the hidden control used to marshal the shared WinForms main-thread sequencer.</summary>
-    private static readonly Lazy<ISequencer> LazyWinFormsMainThreadScheduler = new(static () =>
-    {
-        var control = new Control();
-
-        // ControlSequencer needs a real handle so BeginInvoke can marshal work onto the UI thread.
-        _ = control.Handle;
-        return new ControlSequencer(control);
-    });
-
     /// <summary>Gets the win forms main thread scheduler.</summary>
     /// <value>
-    /// The win forms main thread scheduler.
+    /// The shared <see cref="ControlSequencer.Main"/> sequencer for the Windows Forms UI thread.
     /// </value>
-    public static ISequencer WinFormsMainThreadScheduler => LazyWinFormsMainThreadScheduler.Value;
+    /// <exception cref="InvalidOperationException">The sequencer is not bound yet and the calling thread is not an STA thread.</exception>
+    public static ISequencer WinFormsMainThreadScheduler => ControlSequencer.Main;
 
     /// <summary>Provides ReactiveUI builder extension methods for WinForms.</summary>
     /// <param name="builder">The ReactiveUI builder.</param>
