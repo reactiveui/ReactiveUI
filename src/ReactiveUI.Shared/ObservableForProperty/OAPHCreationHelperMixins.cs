@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Collections.ObjectModel;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using ReactiveUI.Helpers;
@@ -1211,20 +1212,97 @@ public static class OAPHCreationHelperMixins
     /// <param name="property">The property expression.</param>
     /// <returns>The property name used by change notifications.</returns>
     /// <exception cref="ArgumentException"><paramref name="property"/> is not of the form 'x => x.SomeProperty'.</exception>
+    /// <exception cref="NotSupportedException"><paramref name="property"/> is not a member or constant-argument indexer access.</exception>
+    /// <remarks>
+    /// Only the member name is needed, so this reads it straight from the expression rather than rewriting the tree,
+    /// which keeps <c>ToProperty</c> free of the reflection that rewriting indexers requires.
+    /// </remarks>
     private static string GetPropertyName<TObj, TRet>(Expression<Func<TObj, TRet>> property)
     {
-        var expression = Reflection.Rewrite(property.Body);
-        var parent = expression.GetParent();
+        const string InvalidShapeMessage = "Property expression must be of the form 'x => x.SomeProperty'";
+
+        // Array element access carries no member to name, so it resolves to a null name and is rejected below.
+        (Expression? parent, string? name) = StripConversions(property.Body) switch
+        {
+            MemberExpression member => (member.Expression, member.Member.Name),
+            MethodCallExpression call => (call.Object, GetIndexerName(call)),
+            IndexExpression index => (index.Object, GetIndexerName(index)),
+            BinaryExpression { NodeType: ExpressionType.ArrayIndex } arrayIndex => (arrayIndex.Left, null),
+            var unsupported => throw new NotSupportedException(
+                $"Unsupported expression of type '{unsupported.NodeType}' {unsupported}.")
+        };
+
         ArgumentExceptionHelper.ThrowIfNull(parent);
 
-        if (parent.NodeType != ExpressionType.Parameter)
+        if (StripConversions(parent).NodeType != ExpressionType.Parameter || name is null)
         {
-            throw new ArgumentException("Property expression must be of the form 'x => x.SomeProperty'");
+            throw new ArgumentException(InvalidShapeMessage);
         }
 
-        var memberInfo = expression.GetMemberInfo();
-        ArgumentExceptionHelper.ThrowIfNull(memberInfo);
+        return name;
+    }
 
-        return expression is IndexExpression ? $"{memberInfo.Name}[]" : memberInfo.Name;
+    /// <summary>Removes any <see cref="ExpressionType.Convert"/> wrappers from an expression.</summary>
+    /// <param name="expression">The expression.</param>
+    /// <returns>The innermost non-conversion expression.</returns>
+    private static Expression StripConversions(Expression expression)
+    {
+        while (expression is UnaryExpression { NodeType: ExpressionType.Convert } conversion)
+        {
+            expression = conversion.Operand;
+        }
+
+        return expression;
+    }
+
+    /// <summary>Gets the change-notification name of an indexer getter call such as <c>x[0]</c>.</summary>
+    /// <param name="call">The indexer getter call.</param>
+    /// <returns>The indexer name followed by <c>[]</c>.</returns>
+    /// <exception cref="NotSupportedException">The call is not an indexer getter with constant arguments.</exception>
+    private static string GetIndexerName(MethodCallExpression call)
+    {
+        const string GetterPrefix = "get_";
+
+        if (!call.Method.IsSpecialName || !AllConstant(call.Arguments))
+        {
+            throw new NotSupportedException("Index expressions are only supported with constants.");
+        }
+
+        var methodName = call.Method.Name;
+        var indexerName = methodName.StartsWith(GetterPrefix, StringComparison.Ordinal)
+            ? methodName.Substring(GetterPrefix.Length)
+            : methodName;
+
+        return $"{indexerName}[]";
+    }
+
+    /// <summary>Gets the change-notification name of an index expression.</summary>
+    /// <param name="index">The index expression.</param>
+    /// <returns>The indexer name followed by <c>[]</c>, or <see langword="null"/> for an array access, which has no member to name.</returns>
+    /// <exception cref="NotSupportedException">The index uses a non-constant argument.</exception>
+    private static string? GetIndexerName(IndexExpression index)
+    {
+        if (!AllConstant(index.Arguments))
+        {
+            throw new NotSupportedException("Index expressions are only supported with constants.");
+        }
+
+        return index.Indexer is null ? null : $"{index.Indexer.Name}[]";
+    }
+
+    /// <summary>Determines whether all expressions in the provided collection are constant expressions.</summary>
+    /// <param name="expressions">The argument list.</param>
+    /// <returns><see langword="true"/> if all arguments are constants; otherwise <see langword="false"/>.</returns>
+    private static bool AllConstant(ReadOnlyCollection<Expression> expressions)
+    {
+        for (var i = 0; i < expressions.Count; i++)
+        {
+            if (expressions[i] is not ConstantExpression)
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

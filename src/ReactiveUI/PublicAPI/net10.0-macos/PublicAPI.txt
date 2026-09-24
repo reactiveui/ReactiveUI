@@ -1412,6 +1412,7 @@ namespace ReactiveUI
         public static System.Action<object?, object?, object?[]?> GetValueSetterOrThrow(System.Reflection.MemberInfo? member) { }
         [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Resolves types by name and loads assemblies; types may be trimmed.")]
         public static System.Type? ReallyFindType(string? type, bool throwOnFailure) { }
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Expression rewriting uses reflection over runtime types (e.g., Item/Length) which may be removed by trimming.")]
         [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
         public static System.Linq.Expressions.Expression Rewrite(System.Linq.Expressions.Expression? expression) { }
         public static void ThrowIfMethodsNotOverloaded(string callingTypeName, System.Type targetType, params string[] methodsToCheck) { }

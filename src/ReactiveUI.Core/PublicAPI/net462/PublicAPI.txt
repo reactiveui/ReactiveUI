@@ -301,14 +301,10 @@ namespace ReactiveUI
             public System.Linq.Expressions.Expression? GetParent() { }
         }
     }
-    public sealed class ExpressionRewriter : System.Linq.Expressions.ExpressionVisitor
+    public sealed class ExpressionRewriter
     {
         public ExpressionRewriter() { }
-        public override System.Linq.Expressions.Expression Visit(System.Linq.Expressions.Expression? node) { }
-        protected override System.Linq.Expressions.Expression VisitBinary(System.Linq.Expressions.BinaryExpression node) { }
-        protected override System.Linq.Expressions.Expression VisitIndex(System.Linq.Expressions.IndexExpression node) { }
-        protected override System.Linq.Expressions.Expression VisitMethodCall(System.Linq.Expressions.MethodCallExpression node) { }
-        protected override System.Linq.Expressions.Expression VisitUnary(System.Linq.Expressions.UnaryExpression node) { }
+        public System.Linq.Expressions.Expression Visit(System.Linq.Expressions.Expression? node) { }
     }
     public sealed class GuidToStringTypeConverter : ReactiveUI.BindingTypeConverter<System.Guid, string>
     {

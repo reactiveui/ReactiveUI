@@ -51,6 +51,8 @@ public static partial class Reflection
     /// <summary>Uses the expression re-writer to simplify the expression down to its simplest expression.</summary>
     /// <param name="expression">The expression to rewrite.</param>
     /// <returns>The rewritten expression, or <see langword="null"/> if <paramref name="expression"/> is <see langword="null"/>.</returns>
+    [RequiresUnreferencedCode(
+        "Expression rewriting uses reflection over runtime types (e.g., Item/Length) which may be removed by trimming.")]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Expression Rewrite(Expression? expression) => _expressionRewriter.Visit(expression);
 

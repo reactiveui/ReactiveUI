@@ -220,6 +220,74 @@ public class ExpressionRewriterTests
         await Assert.That(ex.Message).Contains("Add");
     }
 
+    /// <summary>Verifies that the rewriter can be used directly, stripping conversions from a member chain.</summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task Visit_OnRewriterInstance_StripsConversions()
+    {
+        Expression<Func<TestClass, object?>> expr = x => (object?)x.Property;
+
+        var result = new ExpressionRewriter().Visit(expr.Body);
+
+        await Assert.That(result.NodeType).IsEqualTo(ExpressionType.MemberAccess);
+        await Assert.That(((MemberExpression)result).Expression!.NodeType).IsEqualTo(ExpressionType.Parameter);
+    }
+
+    /// <summary>Verifies that an unchanged member chain is returned as the same instance.</summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task Visit_WithUnchangedMemberChain_ReturnsSameInstance()
+    {
+        Expression<Func<TestClass, string?>> expr = x => x.Nested!.Property;
+
+        var result = new ExpressionRewriter().Visit(expr.Body);
+
+        await Assert.That(result).IsSameReferenceAs(expr.Body);
+    }
+
+    /// <summary>Verifies that a static member access, which has no receiver to visit, is rejected.</summary>
+    [Test]
+    public void Visit_WithStaticMemberAccess_Throws()
+    {
+        Expression<Func<string>> expr = () => string.Empty;
+
+        _ = Assert.Throws<ArgumentNullException>(() => new ExpressionRewriter().Visit(expr.Body));
+    }
+
+    /// <summary>Verifies that the receiver of an index expression is visited, stripping its conversions.</summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task Visit_WithIndexExpression_VisitsReceiver()
+    {
+        var parameter = System.Linq.Expressions.Expression.Parameter(typeof(TestClass), "x");
+        var list = System.Linq.Expressions.Expression.Convert(
+            System.Linq.Expressions.Expression.Property(parameter, nameof(TestClass.List)),
+            typeof(List<int>));
+        var indexExpr = System.Linq.Expressions.Expression.MakeIndex(
+            list,
+            typeof(List<int>).GetProperty("Item"),
+            [System.Linq.Expressions.Expression.Constant(0)]);
+
+        var result = (IndexExpression)new ExpressionRewriter().Visit(indexExpr);
+
+        await Assert.That(result.Object!.NodeType).IsEqualTo(ExpressionType.MemberAccess);
+    }
+
+    /// <summary>Verifies that the rewriter declares its trimming requirement, which Native AOT publishing relies on (#4455).</summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task Visit_DeclaresRequiresUnreferencedCode()
+    {
+        var visit = typeof(ExpressionRewriter).GetMethod(nameof(ExpressionRewriter.Visit))!;
+
+        using (Assert.Multiple())
+        {
+            await Assert.That(typeof(ExpressionRewriter).BaseType).IsEqualTo(typeof(object));
+            await Assert.That(visit.IsDefined(typeof(System.Diagnostics.CodeAnalysis.RequiresUnreferencedCodeAttribute), false))
+                .IsTrue();
+        }
+    }
+
     /// <summary>A sample class used as the target of expression rewriting tests.</summary>
     private sealed class TestClass
     {

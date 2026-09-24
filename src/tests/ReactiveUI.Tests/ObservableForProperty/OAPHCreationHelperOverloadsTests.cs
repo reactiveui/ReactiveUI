@@ -141,6 +141,33 @@ public class OAPHCreationHelperOverloadsTests
         second.Dispose();
     }
 
+    /// <summary>Verifies that a conversion around the property is ignored when resolving the notified property name.</summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task ToProperty_ExpressionWithConversion_NotifiesPropertyName()
+    {
+        var fixture = NewFixture();
+        var changed = new List<string?>();
+        fixture.PropertyChanged += (_, args) => changed.Add(args.PropertyName);
+
+        using var helper = Signal.Emit<object?>(SourceValue)
+            .ToProperty(fixture, static x => (object?)x.Text, scheduler: Sequencer.Immediate);
+
+        await Assert.That(changed).Contains(nameof(OverloadFixture.Text));
+    }
+
+    /// <summary>Verifies that a property on a nested object, rather than on the target, is rejected.</summary>
+    [Test]
+    public void ToProperty_ExpressionOnNestedObject_Throws() =>
+        Assert.Throws<ArgumentException>(static () =>
+            Source().ToProperty(NewFixture(), static x => x.Nested!.Text, scheduler: Sequencer.Immediate));
+
+    /// <summary>Verifies that an indexer with a non-constant argument is rejected.</summary>
+    [Test]
+    public void ToProperty_ExpressionWithNonConstantIndexer_Throws() =>
+        Assert.Throws<NotSupportedException>(static () =>
+            Source().ToProperty(NewFixture(), static x => x[x.Text!], scheduler: Sequencer.Immediate));
+
     /// <summary>Creates a fresh source observable emitting a single value on the immediate scheduler.</summary>
     /// <returns>A source observable.</returns>
     private static IObservable<string?> Source() => Signal.Emit<string?>(SourceValue);
@@ -158,5 +185,13 @@ public class OAPHCreationHelperOverloadsTests
             get;
             set => this.RaiseAndSetIfChanged(ref field, value);
         }
+
+        /// <summary>Gets a nested fixture, used to check that only properties of the target are accepted.</summary>
+        public OverloadFixture? Nested { get; }
+
+        /// <summary>Gets a value for the given key, used to check indexer validation.</summary>
+        /// <param name="key">The lookup key.</param>
+        /// <returns>The key that was passed in.</returns>
+        public string? this[string key] => key;
     }
 }

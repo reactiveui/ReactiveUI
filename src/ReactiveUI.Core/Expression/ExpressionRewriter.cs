@@ -7,6 +7,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace ReactiveUI;
@@ -17,7 +18,7 @@ namespace ReactiveUI;
 /// </summary>
 /// <remarks>
 /// <para>
-/// This visitor intentionally supports a constrained set of expression node types. Unsupported shapes
+/// This rewriter intentionally supports a constrained set of expression node types. Unsupported shapes
 /// are rejected with actionable exceptions to help callers correct their expressions.
 /// </para>
 /// <para>
@@ -32,15 +33,25 @@ namespace ReactiveUI;
 /// <para>
 /// Index expressions are only supported when all indices are constants.
 /// </para>
+/// <para>
+/// The rewriter does not derive from <see cref="ExpressionVisitor"/>: resolving indexer and length properties
+/// reflects over types known only at runtime, and a <see cref="ExpressionVisitor"/> override cannot declare that
+/// requirement because the base members do not.
+/// </para>
 /// </remarks>
-public sealed class ExpressionRewriter : ExpressionVisitor
+public sealed class ExpressionRewriter
 {
+    /// <summary>The trimming requirement shared by every member that reflects over runtime-only types.</summary>
+    private const string RequiresUnreferencedCodeMessage =
+        "Expression rewriting uses reflection over runtime types (e.g., Item/Length) which may be removed by trimming.";
+
     /// <summary>Visits the specified expression node and rewrites supported shapes into their normalized form.</summary>
     /// <param name="node">The expression node to visit.</param>
     /// <returns>The rewritten expression.</returns>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="node"/> is <see langword="null"/>.</exception>
     /// <exception cref="NotSupportedException">Thrown when <paramref name="node"/> uses an unsupported node type or shape.</exception>
-    public override Expression Visit(Expression? node)
+    [RequiresUnreferencedCode(RequiresUnreferencedCodeMessage)]
+    public Expression Visit(Expression? node)
     {
         ArgumentExceptionHelper.ThrowIfNull(node);
 
@@ -51,33 +62,83 @@ public sealed class ExpressionRewriter : ExpressionVisitor
             ExpressionType.Call => VisitMethodCall((MethodCallExpression)node),
             ExpressionType.Index => VisitIndex((IndexExpression)node),
             ExpressionType.MemberAccess => VisitMember((MemberExpression)node),
-            ExpressionType.Parameter => VisitParameter((ParameterExpression)node),
-            ExpressionType.Constant => VisitConstant((ConstantExpression)node),
+            ExpressionType.Parameter or ExpressionType.Constant => node,
             _ => throw CreateUnsupportedNodeException(node)
         };
+    }
+
+    /// <summary>Creates a consistent exception for unsupported node types, including additional context for binary expressions.</summary>
+    /// <param name="node">The unsupported node.</param>
+    /// <returns>An exception to throw.</returns>
+    private static NotSupportedException CreateUnsupportedNodeException(Expression node)
+    {
+        const int MessageBuilderInitialCapacity = 96;
+        StringBuilder sb = new(MessageBuilderInitialCapacity);
+        _ = sb.Append("Unsupported expression of type '")
+            .Append(node.NodeType)
+            .Append("' ")
+            .Append(node)
+            .Append('.');
+
+        if (node is BinaryExpression be)
+        {
+            _ = sb.Append(" Did you meant to use expressions '")
+                .Append(be.Left)
+                .Append("' and '")
+                .Append(be.Right)
+                .Append("'?");
+        }
+
+        return new(sb.ToString());
+    }
+
+    /// <summary>Returns the indexer property (<c>Item</c>) for the specified type.</summary>
+    /// <param name="type">The type to inspect.</param>
+    /// <returns>The resolved indexer property.</returns>
+    /// <exception cref="InvalidOperationException">Thrown when no indexer property can be found.</exception>
+    [RequiresUnreferencedCode(RequiresUnreferencedCodeMessage)]
+    private static PropertyInfo GetItemProperty(Type type)
+    {
+        var property = type.GetRuntimeProperty("Item");
+        return property ?? throw new InvalidOperationException("Could not find a valid indexer property named 'Item'.");
+    }
+
+    /// <summary>Returns the <c>Length</c> property for the specified type.</summary>
+    /// <param name="type">The type to inspect.</param>
+    /// <returns>The resolved length property.</returns>
+    /// <exception cref="InvalidOperationException">Thrown when no length property can be found.</exception>
+    [RequiresUnreferencedCode(RequiresUnreferencedCodeMessage)]
+    private static PropertyInfo GetLengthProperty(Type type)
+    {
+        var property = type.GetRuntimeProperty("Length");
+        return property
+               ?? throw new InvalidOperationException("Could not find valid information for the array length operator.");
+    }
+
+    /// <summary>Determines whether all expressions in the provided collection are constant expressions.</summary>
+    /// <param name="expressions">The argument list.</param>
+    /// <returns><see langword="true"/> if all arguments are constants; otherwise <see langword="false"/>.</returns>
+    private static bool AllConstant(ReadOnlyCollection<Expression> expressions)
+    {
+        for (var i = 0; i < expressions.Count; i++)
+        {
+            if (expressions[i] is not ConstantExpression)
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /// <summary>Visits a <see cref="BinaryExpression"/> representing an array or indexer access and rewrites it as an appropriate expression tree node.</summary>
     /// <param name="node">The binary expression node to visit. Must represent an array or indexer access with a constant index.</param>
     /// <returns>An <see cref="Expression"/> that represents the rewritten array or indexer access.</returns>
     /// <exception cref="NotSupportedException">Thrown if the right side of the binary expression is not a constant expression.</exception>
-    /// <remarks>This method supports rewriting array index expressions only when the index is a constant. For
-    /// array types, it produces an <see cref="Expression.ArrayAccess(Expression, IEnumerable{Expression})"/>; for other types with indexers, it produces an
-    /// <see cref="Expression.MakeIndex"/> using the type's indexer property. Reflection is used to access runtime type
-    /// information, which may have compatibility implications with trimming and AOT compilation.</remarks>
-    [RequiresUnreferencedCode(
-        "Expression rewriting uses reflection over runtime types (e.g., Item/Length) which may be removed by trimming.")]
-    [RequiresDynamicCode(
-        "Expression rewriting uses reflection over runtime types and may not be compatible with AOT compilation.")]
-    [SuppressMessage(
-        "AOT",
-        "IL3051:'RequiresDynamicCodeAttribute' annotations must match across all interface implementations or overrides.",
-        Justification = "Third Party Code")]
-    [SuppressMessage(
-        "Trimming",
-        "IL2046:'RequiresUnreferencedCodeAttribute' annotations must match across all interface implementations or overrides.",
-        Justification = "Third Party Code")]
-    protected override Expression VisitBinary(BinaryExpression node)
+    /// <remarks>For array types, it produces an <see cref="Expression.ArrayAccess(Expression, IEnumerable{Expression})"/>; for other
+    /// types with indexers, it produces an <see cref="Expression.MakeIndex"/> using the type's indexer property.</remarks>
+    [RequiresUnreferencedCode(RequiresUnreferencedCodeMessage)]
+    private IndexExpression VisitBinary(BinaryExpression node)
     {
         if (node.Right is not ConstantExpression)
         {
@@ -92,27 +153,12 @@ public sealed class ExpressionRewriter : ExpressionVisitor
             : Expression.MakeIndex(instance, GetItemProperty(instance.Type), [index]);
     }
 
-    /// <summary>Visits a <see cref="UnaryExpression"/> node and rewrites it as needed for expression tree processing.</summary>
+    /// <summary>Visits a <see cref="UnaryExpression"/> node, stripping conversions and rewriting array length accesses.</summary>
     /// <param name="node">The unary expression node to visit. Must not be null and must have a valid operand.</param>
-    /// <returns>An <see cref="Expression"/> representing the rewritten unary expression, or the original node if no rewriting is
-    /// required.</returns>
+    /// <returns>An <see cref="Expression"/> representing the rewritten unary expression.</returns>
     /// <exception cref="ArgumentException">Thrown if <paramref name="node"/> does not have a valid operand.</exception>
-    /// <remarks>This method may strip conversion nodes or rewrite array length accesses to ensure expression
-    /// chains remain stable. Reflection is used to access runtime type information, which may have compatibility
-    /// implications with trimming and AOT compilation.</remarks>
-    [RequiresUnreferencedCode(
-        "Expression rewriting uses reflection over runtime types (e.g., Item/Length) which may be removed by trimming.")]
-    [RequiresDynamicCode(
-        "Expression rewriting uses reflection over runtime types and may not be compatible with AOT compilation.")]
-    [SuppressMessage(
-        "AOT",
-        "IL3051:'RequiresDynamicCodeAttribute' annotations must match across all interface implementations or overrides.",
-        Justification = "Third Party Code")]
-    [SuppressMessage(
-        "Trimming",
-        "IL2046:'RequiresUnreferencedCodeAttribute' annotations must match across all interface implementations or overrides.",
-        Justification = "Third Party Code")]
-    protected override Expression VisitUnary(UnaryExpression node)
+    [RequiresUnreferencedCode(RequiresUnreferencedCodeMessage)]
+    private Expression VisitUnary(UnaryExpression node)
     {
         if (node.Operand is null)
         {
@@ -145,23 +191,8 @@ public sealed class ExpressionRewriter : ExpressionVisitor
     /// <returns>An expression representing the rewritten indexer access.</returns>
     /// <exception cref="NotSupportedException">Thrown if the method call does not represent an indexer access with all constant arguments.</exception>
     /// <exception cref="ArgumentException">Thrown if the method call does not target a valid object instance.</exception>
-    /// <remarks>This method rewrites method calls that correspond to indexer accesses (such as calls to
-    /// 'get_Item') into index expressions, provided that all arguments are constant. Reflection is used to determine
-    /// the appropriate indexer property, which may have compatibility implications with trimming and AOT
-    /// scenarios.</remarks>
-    [RequiresUnreferencedCode(
-        "Expression rewriting uses reflection over runtime types (e.g., Item/Length) which may be removed by trimming.")]
-    [RequiresDynamicCode(
-        "Expression rewriting uses reflection over runtime types and may not be compatible with AOT compilation.")]
-    [SuppressMessage(
-        "AOT",
-        "IL3051:'RequiresDynamicCodeAttribute' annotations must match across all interface implementations or overrides.",
-        Justification = "Third Party Code")]
-    [SuppressMessage(
-        "Trimming",
-        "IL2046:'RequiresUnreferencedCodeAttribute' annotations must match across all interface implementations or overrides.",
-        Justification = "Third Party Code")]
-    protected override Expression VisitMethodCall(MethodCallExpression node)
+    [RequiresUnreferencedCode(RequiresUnreferencedCodeMessage)]
+    private IndexExpression VisitMethodCall(MethodCallExpression node)
     {
         if (!node.Method.IsSpecialName || !AllConstant(node.Arguments))
         {
@@ -180,91 +211,33 @@ public sealed class ExpressionRewriter : ExpressionVisitor
         return Expression.MakeIndex(instance, GetItemProperty(instance.Type), args);
     }
 
-    /// <summary>Validates that index expressions only use constant arguments, then defers to the base visitor.</summary>
+    /// <summary>Validates that index expressions only use constant arguments, then visits the receiver and arguments.</summary>
     /// <param name="node">The index expression.</param>
     /// <returns>The visited (and potentially rewritten) index expression.</returns>
     /// <exception cref="NotSupportedException">Thrown when any index argument is not a constant.</exception>
-    protected override Expression VisitIndex(IndexExpression node)
+    [RequiresUnreferencedCode(RequiresUnreferencedCodeMessage)]
+    private IndexExpression VisitIndex(IndexExpression node)
     {
         if (!AllConstant(node.Arguments))
         {
             throw new NotSupportedException("Index expressions are only supported with constants.");
         }
 
-        return base.VisitIndex(node);
+        return node.Update(Visit(node.Object), VisitArgumentList(node.Arguments));
     }
 
-    /// <summary>Creates a consistent exception for unsupported node types, including additional context for binary expressions.</summary>
-    /// <param name="node">The unsupported node.</param>
-    /// <returns>An exception to throw.</returns>
-    private static NotSupportedException CreateUnsupportedNodeException(Expression node)
-    {
-        const int MessageBuilderInitialCapacity = 96;
-        StringBuilder sb = new(MessageBuilderInitialCapacity);
-        _ = sb.Append("Unsupported expression of type '")
-            .Append(node.NodeType)
-            .Append("' ")
-            .Append(node)
-            .Append('.');
-
-        if (node is BinaryExpression be)
-        {
-            _ = sb.Append(" Did you meant to use expressions '")
-                .Append(be.Left)
-                .Append("' and '")
-                .Append(be.Right)
-                .Append("'?");
-        }
-
-        return new(sb.ToString());
-    }
-
-    /// <summary>Returns the indexer property (<c>Item</c>) for the specified type.</summary>
-    /// <param name="type">The type to inspect.</param>
-    /// <returns>The resolved indexer property.</returns>
-    /// <exception cref="InvalidOperationException">Thrown when no indexer property can be found.</exception>
-    private static PropertyInfo GetItemProperty(
-        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties
-                                    | DynamicallyAccessedMemberTypes.NonPublicProperties)]
-        Type type)
-    {
-        var property = type.GetRuntimeProperty("Item");
-        return property ?? throw new InvalidOperationException("Could not find a valid indexer property named 'Item'.");
-    }
-
-    /// <summary>Returns the <c>Length</c> property for the specified type.</summary>
-    /// <param name="type">The type to inspect.</param>
-    /// <returns>The resolved length property.</returns>
-    /// <exception cref="InvalidOperationException">Thrown when no length property can be found.</exception>
-    private static PropertyInfo GetLengthProperty(
-        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties
-                                    | DynamicallyAccessedMemberTypes.NonPublicProperties)]
-        Type type)
-    {
-        var property = type.GetRuntimeProperty("Length");
-        return property
-               ?? throw new InvalidOperationException("Could not find valid information for the array length operator.");
-    }
-
-    /// <summary>Determines whether all expressions in the provided collection are constant expressions.</summary>
-    /// <param name="expressions">The argument list.</param>
-    /// <returns><see langword="true"/> if all arguments are constants; otherwise <see langword="false"/>.</returns>
-    private static bool AllConstant(ReadOnlyCollection<Expression> expressions)
-    {
-        for (var i = 0; i < expressions.Count; i++)
-        {
-            if (expressions[i] is not ConstantExpression)
-            {
-                return false;
-            }
-        }
-
-        return true;
-    }
+    /// <summary>Visits the receiver of a member access.</summary>
+    /// <param name="node">The member expression.</param>
+    /// <returns>The visited (and potentially rewritten) member expression.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when the member is static and so has no receiver.</exception>
+    [RequiresUnreferencedCode(RequiresUnreferencedCodeMessage)]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private MemberExpression VisitMember(MemberExpression node) => node.Update(Visit(node.Expression));
 
     /// <summary>Visits a method argument list without LINQ allocations.</summary>
     /// <param name="arguments">The argument list to visit.</param>
     /// <returns>A visited argument array suitable for <see cref="Expression.MakeIndex(Expression, PropertyInfo, IEnumerable{Expression})"/>.</returns>
+    [RequiresUnreferencedCode(RequiresUnreferencedCodeMessage)]
     private Expression[] VisitArgumentList(ReadOnlyCollection<Expression> arguments)
     {
         var count = arguments.Count;
