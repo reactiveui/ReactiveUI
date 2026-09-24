@@ -67,7 +67,7 @@ public class ViewModelViewHostTests
     }
 
     /// <summary>A test executor that registers the test view for view-resolution tests.</summary>
-    public class WpfWithViewExecutor : STAThreadExecutor
+    public class WpfWithViewExecutor : DispatcherThreadExecutor
     {
         /// <summary>Helper that manages app builder setup and teardown for the test.</summary>
         private readonly AppBuilderTestHelper _helper = new();

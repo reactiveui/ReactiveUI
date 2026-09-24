@@ -4,10 +4,12 @@
 // See the LICENSE file in the project root for full license information.
 
 using Splat;
+using TUnit.Core.Executors;
 
 namespace ReactiveUI.Tests.Wpf;
 
 /// <summary>Tests for the WPF ReactiveUI builder extensions.</summary>
+[TestExecutor<DispatcherThreadExecutor>]
 public class ReactiveUiBuilderWpfTests
 {
     /// <summary>Verifies that <c>WithWpf</c> registers the WPF platform services.</summary>

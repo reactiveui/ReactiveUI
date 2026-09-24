@@ -6,11 +6,13 @@
 using System.Windows;
 using Splat;
 using Splat.Builder;
+using TUnit.Core.Executors;
 
 namespace ReactiveUI.Tests.Wpf;
 
 /// <summary>Tests for <see cref="WpfReactiveUIBuilderExtensions"/>.</summary>
 [NotInParallel]
+[TestExecutor<DispatcherThreadExecutor>]
 public class WpfReactiveUiBuilderExtensionsTest
 {
     /// <summary>Tests that WpfMainThreadScheduler is not null.</summary>
@@ -18,6 +20,24 @@ public class WpfReactiveUiBuilderExtensionsTest
     [Test]
     public async Task WpfMainThreadScheduler_IsNotNull() =>
         await Assert.That(WpfReactiveUIBuilderExtensions.WpfMainThreadScheduler).IsNotNull();
+
+    /// <summary>Tests that WpfMainThreadScheduler throws on a thread without a dispatcher before an application exists.</summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task WpfMainThreadScheduler_WithoutDispatcher_Throws()
+    {
+        if (Application.Current is not null)
+        {
+            return;
+        }
+
+        await Assert.That(static () => Task.Factory.StartNew<ISequencer?>(
+                static () => WpfReactiveUIBuilderExtensions.WpfMainThreadScheduler,
+                CancellationToken.None,
+                TaskCreationOptions.LongRunning,
+                TaskScheduler.Default))
+            .ThrowsExactly<InvalidOperationException>();
+    }
 
     /// <summary>Tests that WithWpf throws when builder is null.</summary>
     [Test]

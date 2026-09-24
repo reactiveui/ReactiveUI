@@ -59,7 +59,7 @@ public class DefaultViewLocatorTests
     /// <summary>A test executor that registers a single view/view model pair before running the test.</summary>
     /// <typeparam name="TView">The view type to register.</typeparam>
     /// <typeparam name="TViewModel">The view model type associated with the view.</typeparam>
-    public sealed class Executor<TView, TViewModel> : STAThreadExecutor
+    public sealed class Executor<TView, TViewModel> : DispatcherThreadExecutor
         where TView : class, IViewFor<TViewModel>, new()
         where TViewModel : class, IReactiveObject
     {
