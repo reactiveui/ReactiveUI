@@ -20,7 +20,7 @@ jobs:
             # not an SDK workload, so installWorkloads does not cover it. Keep in step with the
             # Microsoft.WindowsAppSDK version pinned in src/Directory.Packages.props.
             installWindowsAppRuntime: true
-            windowsAppRuntimeVersion: '2.3'
+            windowsAppRuntimeVersion: '2.5'
             sonarProjectKey: reactiveui_ReactiveUI
             sonarOrganization: reactiveui
             sonarExclusions: '**/tests/**,**/integrationtests/**,**/benchmarks/**,**/examples/**,**/TestResults/**'

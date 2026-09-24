@@ -26,6 +26,6 @@ jobs:
       # cover it and the tests skip themselves without it. Keep the version in step with the
       # Microsoft.WindowsAppSDK package pinned in src/Directory.Packages.props.
       installWindowsAppRuntime: true
-      windowsAppRuntimeVersion: '2.3'
+      windowsAppRuntimeVersion: '2.5'
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
