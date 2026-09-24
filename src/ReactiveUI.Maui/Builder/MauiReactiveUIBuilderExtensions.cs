@@ -48,7 +48,7 @@ public static class MauiReactiveUIBuilderExtensions
             return ((IReactiveUIBuilder)builder.WithCoreServices())
                 .WithMauiScheduler(dispatcher)
                 .WithTaskPoolScheduler(TaskPoolSequencer.Default)
-                .WithPlatformModule<Registrations>()
+                .WithPlatformModule<Maui.Registrations>()
                 .WithMauiConverters()
                 .WithPlatformServices();
         }
