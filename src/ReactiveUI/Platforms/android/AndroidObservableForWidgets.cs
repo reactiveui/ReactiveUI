@@ -102,10 +102,9 @@ public sealed class AndroidObservableForWidgets : ICreatesObservableForProperty
         };
 
         Dictionary<(Type ViewType, string PropertyName), Func<object, Expression, IObservable<IObservedChange<object, object?>>>> dispatch =
-            new(
-                items.Length);
+            [with(capacity: items.Length)];
 
-        Dictionary<string, List<Type>> byProperty = new(items.Length, StringComparer.Ordinal);
+        Dictionary<string, List<Type>> byProperty = [with(capacity: items.Length, StringComparer.Ordinal)];
 
         for (var i = 0; i < items.Length; i++)
         {
@@ -119,13 +118,13 @@ public sealed class AndroidObservableForWidgets : ICreatesObservableForProperty
             dispatch[(item.Type, item.Property)] = item.Func;
 
             ref var list = ref CollectionsMarshal.GetValueRefOrAddDefault(byProperty, item.Property, out _);
-            list ??= new(CandidateTypesInitialCapacity);
+            list ??= [with(capacity: CandidateTypesInitialCapacity)];
             list.Add(item.Type);
         }
 
         DispatchTable = dispatch.ToFrozenDictionary();
 
-        Dictionary<string, Type[]> index = new(byProperty.Count, StringComparer.Ordinal);
+        Dictionary<string, Type[]> index = [with(capacity: byProperty.Count, StringComparer.Ordinal)];
         foreach (var pair in byProperty)
         {
             index[pair.Key] = [.. pair.Value];

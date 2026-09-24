@@ -242,7 +242,7 @@ public class CommandBinderImplementation : ICommandBinderImplementation
         where TViewModel : class
         where TProp : ICommand
         where TControl : class =>
-        BindCommand(viewModel, view, viewModelProperty, controlProperty, (IObservable<TParam?>)withParameter, null);
+        BindCommand(viewModel, view, viewModelProperty, controlProperty, withParameter, null);
 
     /// <summary>
     /// Binds an observable command to a control property or event on a view, updating the binding when the command or

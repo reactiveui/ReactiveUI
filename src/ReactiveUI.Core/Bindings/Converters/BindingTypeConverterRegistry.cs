@@ -85,11 +85,11 @@ public sealed class BindingTypeConverterRegistry
 
         lock (_gate)
         {
-            var snap = _snapshot ?? new Snapshot(new(DefaultRegistryCapacity));
+            var snap = _snapshot ?? new Snapshot([with(capacity: DefaultRegistryCapacity)]);
 
             var newDict = CloneRegistryShallow(snap.ConvertersByTypePair);
 
-            List<IBindingTypeConverter> outputList = !newDict.TryGetValue(key, out var list) ? new(DefaultConverterListCapacity) : [.. list];
+            List<IBindingTypeConverter> outputList = !newDict.TryGetValue(key, out var list) ? [with(capacity: DefaultConverterListCapacity)] : [.. list];
 
             outputList.Add(converter);
             newDict[key] = outputList;
@@ -194,7 +194,7 @@ public sealed class BindingTypeConverterRegistry
     {
         ArgumentExceptionHelper.ThrowIfNull(source);
 
-        Dictionary<(Type FromType, Type ToType), List<IBindingTypeConverter>> clone = new(source.Count);
+        Dictionary<(Type FromType, Type ToType), List<IBindingTypeConverter>> clone = [with(capacity: source.Count)];
         foreach (var kvp in source)
         {
             clone[kvp.Key] = kvp.Value;

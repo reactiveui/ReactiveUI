@@ -60,7 +60,7 @@ internal sealed class MockPropertyBindingExpressionCompiler : IPropertyBindingEx
         ArgumentNullException.ThrowIfNull(setter);
         ArgumentNullException.ThrowIfNull(getSetConverter);
 
-        return (Func<object?, object?, object?[]?, (bool ShouldEmit, object? Value)>?)_setThenGetFunc ?? ((target, value, parameters) =>
+        return _setThenGetFunc ?? ((target, value, parameters) =>
         {
             var current = getter(target, parameters);
             if (EqualityComparer<object?>.Default.Equals(current, value))

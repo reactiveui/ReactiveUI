@@ -37,7 +37,7 @@ public class ObservableLoggingMixinTests
 
         var logger = new TestEnableLogger(loggerInstance);
 
-        var testLogger = (TestEnableLogger)logger;
+        var testLogger = logger;
         var subject = new Signal<int>();
 
         // Use interface variable in Do()

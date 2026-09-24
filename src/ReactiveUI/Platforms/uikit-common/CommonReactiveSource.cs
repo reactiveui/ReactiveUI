@@ -218,7 +218,7 @@ internal sealed class CommonReactiveSource<TSource, TUIView, TUIViewCell, TSecti
     private static List<Update> GetRemoveUpdates(PendingChange pendingChange)
     {
         var count = pendingChange.OldItems is null ? 1 : pendingChange.OldItems.Count;
-        List<Update> updates = new(count);
+        List<Update> updates = [with(capacity: count)];
         for (var i = 0; i < count; i++)
         {
             updates.Add(Update.CreateDelete(pendingChange.OldStartingIndex));
@@ -233,7 +233,7 @@ internal sealed class CommonReactiveSource<TSource, TUIView, TUIViewCell, TSecti
     private static List<Update> GetAddUpdates(PendingChange pendingChange)
     {
         var count = pendingChange.NewItems is null ? 1 : pendingChange.NewItems.Count;
-        List<Update> updates = new(count);
+        List<Update> updates = [with(capacity: count)];
         for (var i = 0; i < count; i++)
         {
             updates.Add(Update.CreateAdd(pendingChange.NewStartingIndex + i));
@@ -249,7 +249,7 @@ internal sealed class CommonReactiveSource<TSource, TUIView, TUIViewCell, TSecti
     {
         var oldCount = pendingChange.OldItems is null ? 1 : pendingChange.OldItems.Count;
         var newCount = pendingChange.NewItems is null ? 1 : pendingChange.NewItems.Count;
-        List<Update> updates = new(oldCount + newCount);
+        List<Update> updates = [with(capacity: oldCount + newCount)];
         for (var i = 0; i < oldCount; i++)
         {
             updates.Add(Update.CreateDelete(pendingChange.OldStartingIndex + i));
@@ -270,7 +270,7 @@ internal sealed class CommonReactiveSource<TSource, TUIView, TUIViewCell, TSecti
     {
         const int UpdatesPerReplacedItem = 2;
         var count = pendingChange.NewItems is null ? 1 : pendingChange.NewItems.Count;
-        List<Update> updates = new(count * UpdatesPerReplacedItem);
+        List<Update> updates = [with(capacity: count * UpdatesPerReplacedItem)];
         for (var i = 0; i < count; i++)
         {
             var index = pendingChange.NewStartingIndex + i;

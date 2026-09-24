@@ -82,7 +82,7 @@ public sealed class SetMethodBindingConverterRegistry
 
         lock (_gate)
         {
-            var snap = _snapshot ?? new Snapshot(new(DefaultConverterListCapacity));
+            var snap = _snapshot ?? new Snapshot([with(capacity: DefaultConverterListCapacity)]);
 
             List<ISetMethodBindingConverter> newList = [.. snap.Converters, converter];
 

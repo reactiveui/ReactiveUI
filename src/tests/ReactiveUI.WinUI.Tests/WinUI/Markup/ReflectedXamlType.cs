@@ -20,7 +20,7 @@ namespace ReactiveUI.Tests.WinUI.Markup;
 internal sealed class ReflectedXamlType(TestXamlMetadataProvider provider, Type underlyingType) : IXamlType
 {
     /// <summary>The members described so far, keyed by name.</summary>
-    private readonly Dictionary<string, IXamlMember?> _members = new(StringComparer.Ordinal);
+    private readonly Dictionary<string, IXamlMember?> _members = [with(StringComparer.Ordinal)];
 
     /// <inheritdoc/>
     public IXamlType? BaseType => underlyingType.BaseType is { } baseType ? provider.GetXamlType(baseType) : null;

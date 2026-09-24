@@ -615,7 +615,7 @@ public static partial class ControlFetcherMixins
         [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.NonPublicFields)] Type idType)
     {
         var fields = idType.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static);
-        Dictionary<string, int> dict = new(fields.Length, StringComparer.InvariantCultureIgnoreCase);
+        Dictionary<string, int> dict = [with(capacity: fields.Length, StringComparer.InvariantCultureIgnoreCase)];
 
         for (var i = 0; i < fields.Length; i++)
         {

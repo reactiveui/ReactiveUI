@@ -64,7 +64,7 @@ public class WinUIReactiveUIBuilderExtensionsTests
 
         using (resolver.WithResolver())
         {
-            var builder = (ReactiveUIBuilder)resolver.CreateReactiveUIBuilder();
+            var builder = resolver.CreateReactiveUIBuilder();
 
             _ = builder.WithWinUIScheduler();
 
@@ -83,7 +83,7 @@ public class WinUIReactiveUIBuilderExtensionsTests
 
         using (resolver.WithResolver())
         {
-            var builder = (ReactiveUIBuilder)resolver.CreateReactiveUIBuilder();
+            var builder = resolver.CreateReactiveUIBuilder();
 
             _ = builder.WithWinUIConverters().BuildApp();
 

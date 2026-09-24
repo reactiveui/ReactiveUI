@@ -80,7 +80,7 @@ public class WinFormsReactiveUIBuilderExtensionsTest
 
         using (resolver.WithResolver())
         {
-            var builder = (ReactiveUIBuilder)resolver.CreateReactiveUIBuilder();
+            var builder = resolver.CreateReactiveUIBuilder();
 
             _ = builder.WithWinFormsScheduler();
 

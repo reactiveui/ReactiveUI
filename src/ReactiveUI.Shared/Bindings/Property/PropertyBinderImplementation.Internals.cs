@@ -41,7 +41,7 @@ public partial class PropertyBinderImplementation
         }
 
         return viewModelToViewConverterOverride is null && viewType.IsAssignableFrom(typeof(TViewModelPropertyType))
-            ? (true, (object?)value)
+            ? (true, value)
             : (false, null);
     }
 

@@ -6,37 +6,37 @@
 
   <PropertyGroup Label="Shared Version Variables">
     <SplatVersion>21.0.0</SplatVersion>
-    <PrimitivesVersion>7.3.0</PrimitivesVersion>
-    <TUnitVersion>1.65.68</TUnitVersion>
+    <PrimitivesVersion>8.1.0</PrimitivesVersion>
+    <TUnitVersion>1.69.0</TUnitVersion>
     <!-- StyleSharp.Analyzers, PerformanceSharp.Analyzers and SecuritySharp.Analyzers ship from the
          same release pipeline and always share a version. -->
-    <RoslynCommonAnalyzersVersion>3.46.0</RoslynCommonAnalyzersVersion>
+    <RoslynCommonAnalyzersVersion>5.1.2</RoslynCommonAnalyzersVersion>
     <XamarinAndroidXLifecycleLiveDataVersion>2.11.0.1</XamarinAndroidXLifecycleLiveDataVersion>
   </PropertyGroup>
 
   <PropertyGroup Label="Framework-Aligned Versions">
-    <MauiVersion Condition="$(TargetFramework.StartsWith('net10'))">10.0.100</MauiVersion>
-    <MauiVersion Condition="$(TargetFramework.StartsWith('net11'))">11.0.0-preview.7.26406.9</MauiVersion>
+    <MauiVersion Condition="$(TargetFramework.StartsWith('net10'))">10.0.110</MauiVersion>
+    <MauiVersion Condition="$(TargetFramework.StartsWith('net11'))">11.0.0-rc.1.26451.6</MauiVersion>
 
     <AspNetVersion Condition="$(TargetFramework.StartsWith('netstandard'))">3.1.32</AspNetVersion>
-    <AspNetVersion Condition="$(TargetFramework.StartsWith('net8'))">8.0.30</AspNetVersion>
-    <AspNetVersion Condition="$(TargetFramework.StartsWith('net9'))">9.0.19</AspNetVersion>
-    <AspNetVersion Condition="$(TargetFramework.StartsWith('net10'))">10.0.11</AspNetVersion>
-    <AspNetVersion Condition="$(TargetFramework.StartsWith('net11'))">11.0.0-preview.7.26381.103</AspNetVersion>
+    <AspNetVersion Condition="$(TargetFramework.StartsWith('net8'))">8.0.31</AspNetVersion>
+    <AspNetVersion Condition="$(TargetFramework.StartsWith('net9'))">9.0.20</AspNetVersion>
+    <AspNetVersion Condition="$(TargetFramework.StartsWith('net10'))">10.0.12</AspNetVersion>
+    <AspNetVersion Condition="$(TargetFramework.StartsWith('net11'))">11.0.0-rc.1.26425.128</AspNetVersion>
 
-    <SystemTextJsonVersion>10.0.11</SystemTextJsonVersion>
-    <SystemTextJsonVersion Condition="$(TargetFramework.StartsWith('net11'))">11.0.0-preview.7.26381.103</SystemTextJsonVersion>
+    <SystemTextJsonVersion>10.0.12</SystemTextJsonVersion>
+    <SystemTextJsonVersion Condition="$(TargetFramework.StartsWith('net11'))">11.0.0-rc.1.26425.128</SystemTextJsonVersion>
 
     <!-- Microsoft.Extensions.* and the runtime data packages track the framework: stable 10.0.x for
          net8/9/10, the net11 preview on net11 so the net11 ReactiveUI.Primitives assemblies resolve. -->
-    <MicrosoftExtensionsVersion>10.0.11</MicrosoftExtensionsVersion>
-    <MicrosoftExtensionsVersion Condition="$(TargetFramework.StartsWith('net11'))">11.0.0-preview.7.26381.103</MicrosoftExtensionsVersion>
+    <MicrosoftExtensionsVersion>10.0.12</MicrosoftExtensionsVersion>
+    <MicrosoftExtensionsVersion Condition="$(TargetFramework.StartsWith('net11'))">11.0.0-rc.1.26425.128</MicrosoftExtensionsVersion>
 
-    <XamlBehaviorsWpfVersion Condition="$(TargetFramework.StartsWith('net4'))">1.1.158</XamlBehaviorsWpfVersion>
-    <XamlBehaviorsWpfVersion Condition="$(TargetFramework.StartsWith('net8'))">1.1.158</XamlBehaviorsWpfVersion>
-    <XamlBehaviorsWpfVersion Condition="$(TargetFramework.StartsWith('net9'))">1.1.158</XamlBehaviorsWpfVersion>
-    <XamlBehaviorsWpfVersion Condition="$(TargetFramework.StartsWith('net10'))">1.1.158</XamlBehaviorsWpfVersion>
-    <XamlBehaviorsWpfVersion Condition="$(TargetFramework.StartsWith('net11'))">1.1.158</XamlBehaviorsWpfVersion>
+    <XamlBehaviorsWpfVersion Condition="$(TargetFramework.StartsWith('net4'))">1.1.161</XamlBehaviorsWpfVersion>
+    <XamlBehaviorsWpfVersion Condition="$(TargetFramework.StartsWith('net8'))">1.1.161</XamlBehaviorsWpfVersion>
+    <XamlBehaviorsWpfVersion Condition="$(TargetFramework.StartsWith('net9'))">1.1.161</XamlBehaviorsWpfVersion>
+    <XamlBehaviorsWpfVersion Condition="$(TargetFramework.StartsWith('net10'))">1.1.161</XamlBehaviorsWpfVersion>
+    <XamlBehaviorsWpfVersion Condition="$(TargetFramework.StartsWith('net11'))">1.1.161</XamlBehaviorsWpfVersion>
   </PropertyGroup>
 
   <ItemGroup Label="ReactiveUI Primitives">
@@ -74,14 +74,9 @@
   <ItemGroup Label="Testing">
     <PackageVersion Include="TUnit" Version="$(TUnitVersion)"/>
     <PackageVersion Include="TUnit.Core" Version="$(TUnitVersion)"/>
-    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.9.0"/>
-    <!-- Held at 18.10.0. On 18.11.0 the collector's SharedBufferReconciler takes a cross-process mutex
-         while finishing a session, and a solution-wide run has many hosts holding it in turn: when one
-         exits still owning it the next waiter gets an AbandonedMutexException that the collector does not
-         handle, so a test host that passed every test aborts (SIGABRT) and the run reports exit code 7.
-         It lands on whichever assembly loses the race, which is why it shows up on the macOS leg. -->
-    <PackageVersion Include="Microsoft.Testing.Extensions.CodeCoverage" Version="18.10.0"/>
-    <PackageVersion Include="Microsoft.Testing.Platform.MSBuild" Version="2.4.0"/>
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.10.1"/>
+    <PackageVersion Include="Microsoft.Testing.Extensions.CodeCoverage" Version="18.11.2"/>
+    <PackageVersion Include="Microsoft.Testing.Platform.MSBuild" Version="2.4.1"/>
     <PackageVersion Include="Microsoft.Reactive.Testing" Version="7.0.0"/>
     <PackageVersion Include="System.Reactive" Version="7.0.0"/>
     <PackageVersion Include="Mocks.Maui" Version="1.2.5"/>
@@ -92,24 +87,24 @@
     <PackageVersion Include="PerformanceSharp.Analyzers" Version="$(RoslynCommonAnalyzersVersion)"/>
     <PackageVersion Include="SecuritySharp.Analyzers" Version="$(RoslynCommonAnalyzersVersion)"/>
     <PackageVersion Include="Roslynator.Analyzers" Version="5.0.0"/>
-    <PackageVersion Include="SonarAnalyzer.CSharp" Version="10.33.0.1635"/>
+    <PackageVersion Include="SonarAnalyzer.CSharp" Version="10.34.0.3385"/>
     <PackageVersion Include="Microsoft.CodeAnalysis.Analyzers" Version="5.9.0"/>
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="5.9.0"/>
-    <PackageVersion Include="PublicApiSharp.Analyzers" Version="1.0.7"/>
+    <PackageVersion Include="PublicApiSharp.Analyzers" Version="2.0.1"/>
   </ItemGroup>
 
   <ItemGroup Label="Build / SourceLink / Versioning">
-    <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="10.0.400"/>
-    <PackageVersion Include="MinVer" Version="7.0.0"/>
+    <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="10.0.401"/>
+    <PackageVersion Include="MinVer" Version="8.0.0"/>
   </ItemGroup>
 
   <ItemGroup Label="Microsoft Extensions / Runtime / Data">
-    <PackageVersion Include="Microsoft.Bcl.TimeProvider" Version="10.0.11"/>
+    <PackageVersion Include="Microsoft.Bcl.TimeProvider" Version="10.0.12"/>
     <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="$(MicrosoftExtensionsVersion)"/>
     <PackageVersion Include="Microsoft.Extensions.DependencyModel" Version="$(MicrosoftExtensionsVersion)"/>
     <PackageVersion Include="System.Collections.Immutable" Version="$(MicrosoftExtensionsVersion)"/>
     <PackageVersion Include="System.Text.Json" Version="$(SystemTextJsonVersion)"/>
-    <PackageVersion Include="Microsoft.Data.Sqlite.Core" Version="10.0.11"/>
+    <PackageVersion Include="Microsoft.Data.Sqlite.Core" Version="10.0.12"/>
     <PackageVersion Include="SQLitePCLRaw.bundle_green" Version="2.1.11"/>
   </ItemGroup>
 
@@ -126,8 +121,8 @@
 
   <ItemGroup Label="Platform - Blazor / ASP.NET">
     <PackageVersion Include="Microsoft.AspNetCore.Components" Version="$(AspNetVersion)"/>
-    <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.11"/>
-    <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="10.0.11"/>
+    <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.12"/>
+    <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="10.0.12"/>
   </ItemGroup>
 
   <ItemGroup Label="Legacy Compat Shims">
@@ -158,7 +153,7 @@
   </ItemGroup>
 
   <ItemGroup Label="Platform - WinUI (non-MAUI only)" Condition="'$(UseMaui)' != 'true'">
-    <PackageVersion Include="Microsoft.WindowsAppSDK" Version="2.4.0"/>
+    <PackageVersion Include="Microsoft.WindowsAppSDK" Version="2.5.1"/>
   </ItemGroup>
 
   <ItemGroup Label="Polyfills - net4 (System.ValueTuple)" Condition="$(TargetFramework.StartsWith('net4'))">
