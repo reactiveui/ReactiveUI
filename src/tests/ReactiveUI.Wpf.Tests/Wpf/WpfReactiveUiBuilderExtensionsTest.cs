@@ -82,7 +82,7 @@ public class WpfReactiveUiBuilderExtensionsTest
 
         using (resolver.WithResolver())
         {
-            var builder = (ReactiveUIBuilder)resolver.CreateReactiveUIBuilder();
+            var builder = resolver.CreateReactiveUIBuilder();
 
             _ = builder.WithWpfScheduler();
 
@@ -108,7 +108,7 @@ public class WpfReactiveUiBuilderExtensionsTest
 
         using (resolver.WithResolver())
         {
-            var builder = (ReactiveUIBuilder)resolver.CreateReactiveUIBuilder();
+            var builder = resolver.CreateReactiveUIBuilder();
 
             _ = builder.WithWpfConverters();
 
@@ -140,7 +140,7 @@ public class WpfReactiveUiBuilderExtensionsTest
 
         using (resolver.WithResolver())
         {
-            var builder = (ReactiveUIBuilder)AppLocator.CurrentMutable.CreateReactiveUIBuilder();
+            var builder = AppLocator.CurrentMutable.CreateReactiveUIBuilder();
             _ = builder.WithWpf().BuildApp();
 
             var converterService = builder.ConverterService;
@@ -172,7 +172,7 @@ public class WpfReactiveUiBuilderExtensionsTest
 
         using (resolver.WithResolver())
         {
-            var builder = (ReactiveUIBuilder)AppLocator.CurrentMutable.CreateReactiveUIBuilder();
+            var builder = AppLocator.CurrentMutable.CreateReactiveUIBuilder();
             _ = builder.WithWpf().BuildApp();
 
             var converter = builder.ConverterService.TypedConverters.TryGetConverter(typeof(bool), typeof(Visibility));
