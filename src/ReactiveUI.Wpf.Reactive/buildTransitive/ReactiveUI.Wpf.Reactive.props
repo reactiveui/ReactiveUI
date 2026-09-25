@@ -1,0 +1,7 @@
+<Project>
+  <!-- The WPF binding types, such as BooleanToVisibilityTypeConverter and BooleanToVisibilityHints, come from
+       ReactiveUI.Binding.Wpf.Reactive, so their namespace is imported for every consumer. -->
+  <ItemGroup>
+    <Using Include="ReactiveUI.Binding.Reactive.Wpf" />
+  </ItemGroup>
+</Project>

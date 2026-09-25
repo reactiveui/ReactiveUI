@@ -728,7 +728,7 @@ public partial class PropertyBindingTest
         var vm = new PropertyBindViewModel();
         var view = new PropertyBindView { ViewModel = vm };
 
-        _ = view.OneWayBind(vm, static vm => vm.JustABoolean, static v => v.SomeTextBox.Visibility, new BooleanToVisibilityTypeConverter(), BooleanToVisibilityHint.Inverse).DisposeWith(dis);
+        _ = view.OneWayBind(vm, static vm => vm.JustABoolean, static v => v.SomeTextBox.Visibility, new BooleanToVisibilityTypeConverter(), BooleanToVisibilityHints.Inverse).DisposeWith(dis);
         await Assert.That(view.SomeTextBox.Visibility).IsEqualTo(System.Windows.Visibility.Visible);
 
         vm.JustABoolean = true;
@@ -746,7 +746,7 @@ public partial class PropertyBindingTest
         MultipleDisposable? dis = null;
         var vm = new PropertyBindViewModel();
         var view = new PropertyBindView { ViewModel = vm };
-        var binding = view.OneWayBind(vm, static x => x.JustABoolean, static v => v.SomeTextBox.Visibility, new BooleanToVisibilityTypeConverter(), BooleanToVisibilityHint.Inverse);
+        var binding = view.OneWayBind(vm, static x => x.JustABoolean, static v => v.SomeTextBox.Visibility, new BooleanToVisibilityTypeConverter(), BooleanToVisibilityHints.Inverse);
 
         // DisposeWith validates the container, so a null one is an argument error rather than a registration
         // that silently disappears and leaks the binding.
@@ -765,7 +765,7 @@ public partial class PropertyBindingTest
         var vm = new PropertyBindViewModel();
         var view = new PropertyBindView { ViewModel = vm };
         var obs = vm.WhenAnyValue(static x => x.JustABoolean);
-        _ = obs.BindTo(view, static v => v.SomeTextBox.Visibility, BooleanToVisibilityHint.Inverse).DisposeWith(dis);
+        _ = obs.BindTo(view, static v => v.SomeTextBox.Visibility, BooleanToVisibilityHints.Inverse).DisposeWith(dis);
         await Assert.That(view.SomeTextBox.Visibility).IsEqualTo(System.Windows.Visibility.Visible);
 
         vm.JustABoolean = true;

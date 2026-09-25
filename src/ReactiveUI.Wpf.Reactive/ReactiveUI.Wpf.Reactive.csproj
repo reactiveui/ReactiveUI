@@ -33,6 +33,14 @@
     <Using Include="ReactiveUI.Primitives.Reactive.Concurrency"/>
   </ItemGroup>
 
+  <!-- The WPF converters and their hints come from ReactiveUI.Binding.Wpf.Reactive. The packed props import the
+       same namespace for every consumer. -->
+  <Import Project="buildTransitive\ReactiveUI.Wpf.Reactive.props"/>
+  <ItemGroup>
+    <None Remove="buildTransitive\**"/>
+    <None Include="buildTransitive\ReactiveUI.Wpf.Reactive.props" Pack="true" PackagePath="buildTransitive/"/>
+  </ItemGroup>
+
   <!-- The same shared WPF seam source the lean leaf compiles, recompiled here under REACTIVE_SHIM. -->
   <ItemGroup>
     <Compile Include="..\ReactiveUI.Wpf.Shared\**\*.cs" Link="ReactiveUI.Wpf.Shared\%(RecursiveDir)%(Filename)%(Extension)"/>

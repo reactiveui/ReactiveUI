@@ -41,6 +41,14 @@
     <Using Include="ReactiveUI.Primitives.Disposables"/>
   </ItemGroup>
 
+  <!-- The WPF converters and their hints come from ReactiveUI.Binding.Wpf. The packed props import the same
+       namespace for every consumer. -->
+  <Import Project="buildTransitive\ReactiveUI.Wpf.props"/>
+  <ItemGroup>
+    <None Remove="buildTransitive\**"/>
+    <None Include="buildTransitive\ReactiveUI.Wpf.props" Pack="true" PackagePath="buildTransitive/"/>
+  </ItemGroup>
+
   <!-- Internal plumbing + platform sinks compiled per-assembly (no IVT between shipping libs; internal so the
        per-leaf copies stay assembly-private). Multicast subjects come from the ReactiveUI.Primitives package
        (Signal&lt;T&gt;), so they are NOT recompiled here. -->

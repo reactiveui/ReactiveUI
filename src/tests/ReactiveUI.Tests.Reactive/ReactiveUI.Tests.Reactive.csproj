@@ -31,8 +31,4 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
-
-  <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == ''">
-    <Compile Remove="..\ReactiveUI.Tests\Bindings\Converters\PlatformConverterAffinityTests.cs"/>
-  </ItemGroup>
 </Project>

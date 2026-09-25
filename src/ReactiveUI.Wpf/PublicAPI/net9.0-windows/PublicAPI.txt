@@ -23,19 +23,6 @@ namespace ReactiveUI
         public AutoSuspendHelper(System.Windows.Application app) { }
         public System.TimeSpan IdleTimeout { get; set; }
     }
-    [System.Flags]
-    public enum BooleanToVisibilityHint
-    {
-        None = 0,
-        Inverse = 2,
-        UseHidden = 4,
-    }
-    public sealed class BooleanToVisibilityTypeConverter : ReactiveUI.Binding.BindingTypeConverter<bool, System.Windows.Visibility>
-    {
-        public BooleanToVisibilityTypeConverter() { }
-        public override int GetAffinityForObjects() { }
-        public override bool TryConvert(bool from, object? conversionHint, out System.Windows.Visibility result) { }
-    }
     public class PlatformOperations : ReactiveUI.IPlatformOperations
     {
         public PlatformOperations() { }
@@ -137,12 +124,6 @@ namespace ReactiveUI
         public ReactiveUI.Binding.IViewLocator? ViewLocator { get; set; }
         public object? ViewModel { get; set; }
         protected virtual void ResolveViewForViewModel(object? viewModel, string? contract) { }
-    }
-    public sealed class VisibilityToBooleanTypeConverter : ReactiveUI.Binding.BindingTypeConverter<System.Windows.Visibility, bool>
-    {
-        public VisibilityToBooleanTypeConverter() { }
-        public override int GetAffinityForObjects() { }
-        public override bool TryConvert(System.Windows.Visibility from, object? conversionHint, out bool result) { }
     }
     public static class WpfViewForMixins
     {

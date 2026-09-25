@@ -77,7 +77,7 @@ internal class SuspensionHost : ReactiveObject, ISuspensionHost, IDisposable
     /// </remarks>
     public IObservable<RxVoid> IsResuming
     {
-        get => new WhenAnyObservableSwitchSink<RxVoid>(_isResuming);
+        get => new SwitchSignal<RxVoid>(_isResuming);
         set => _isResuming.OnNext(value);
     }
 
@@ -88,7 +88,7 @@ internal class SuspensionHost : ReactiveObject, ISuspensionHost, IDisposable
     /// </remarks>
     public IObservable<RxVoid> IsUnpausing
     {
-        get => new WhenAnyObservableSwitchSink<RxVoid>(_isUnpausing);
+        get => new SwitchSignal<RxVoid>(_isUnpausing);
         set => _isUnpausing.OnNext(value);
     }
 
@@ -99,7 +99,7 @@ internal class SuspensionHost : ReactiveObject, ISuspensionHost, IDisposable
     /// </remarks>
     public IObservable<IDisposable> ShouldPersistState
     {
-        get => new WhenAnyObservableSwitchSink<IDisposable>(_shouldPersistState);
+        get => new SwitchSignal<IDisposable>(_shouldPersistState);
         set => _shouldPersistState.OnNext(value);
     }
 
@@ -110,7 +110,7 @@ internal class SuspensionHost : ReactiveObject, ISuspensionHost, IDisposable
     /// </remarks>
     public IObservable<RxVoid> IsLaunchingNew
     {
-        get => new WhenAnyObservableSwitchSink<RxVoid>(_isLaunchingNew);
+        get => new SwitchSignal<RxVoid>(_isLaunchingNew);
         set => _isLaunchingNew.OnNext(value);
     }
 
@@ -121,7 +121,7 @@ internal class SuspensionHost : ReactiveObject, ISuspensionHost, IDisposable
     /// </remarks>
     public IObservable<RxVoid> ShouldInvalidateState
     {
-        get => new WhenAnyObservableSwitchSink<RxVoid>(_shouldInvalidateState);
+        get => new SwitchSignal<RxVoid>(_shouldInvalidateState);
         set => _shouldInvalidateState.OnNext(value);
     }
 
