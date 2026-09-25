@@ -1,0 +1,30 @@
+<Project>
+  <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))" />
+
+  <!-- Each page of the handbook has one console project under Pages/<page>. The settings they share live here, so a
+       page's project only names the ReactiveUI packages it needs. -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <RootNamespace>ReactiveUI.Documentation</RootNamespace>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>false</IsTestProject>
+    <PackageDescription>Runnable examples for the $(MSBuildProjectName) page of the ReactiveUI handbook.</PackageDescription>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage" />
+    <ProjectReference Include="$(MSBuildThisFileDirectory)../../ReactiveUI/ReactiveUI.csproj" />
+    <Compile Include="$(MSBuildThisFileDirectory)Common/**/*.cs" Link="Common/%(RecursiveDir)%(Filename)%(Extension)" />
+  </ItemGroup>
+
+  <!-- A project reference does not import ReactiveUI's buildTransitive props, which a package reference would, so the
+       same namespaces are imported here. -->
+  <Import Project="$(MSBuildThisFileDirectory)../../ReactiveUI/buildTransitive/ReactiveUI.props" />
+
+  <ItemGroup>
+    <Using Include="ReactiveUI.Primitives" />
+    <Using Include="ReactiveUI.Primitives.Signals" />
+    <Using Include="ReactiveUI.Primitives.Disposables" />
+  </ItemGroup>
+</Project>

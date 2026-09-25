@@ -1,0 +1,10 @@
+[*.cs]
+
+# Examples print their results to the console
+dotnet_diagnostic.SST1449.severity = none
+
+# Examples may use LINQ where it reads better
+dotnet_diagnostic.PSH1100.severity = none
+
+# Examples do not carry performance attributes
+dotnet_diagnostic.PSH1410.severity = none
