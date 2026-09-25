@@ -58,13 +58,17 @@ public static class PropertyExamples
         // [Book dentist appointment]
     }
 
-    /// <summary><c>ObservableForProperty</c> reports changes only, without the current value.</summary>
+    /// <summary>
+    /// Skipping the first value reports changes only, without the current value. <c>ObservableForProperty</c> does the
+    /// same by reflection, so it is not safe to trim; this form is generated at compile time.
+    /// </summary>
     public static void ObserveChangesOnly()
     {
         using TodoListViewModel viewModel = new(InMemoryTodoStore.CreateSeeded());
 
-        using var subscription = viewModel.ObservableForProperty(x => x.NewTitle)
-            .Subscribe(static change => Console.WriteLine(change.Value));
+        using var subscription = viewModel.WhenAnyValue(x => x.NewTitle)
+            .Skip(1)
+            .Subscribe(Console.WriteLine);
 
         viewModel.NewTitle = GroceriesTitle;
 

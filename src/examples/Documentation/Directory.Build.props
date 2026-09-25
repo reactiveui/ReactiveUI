@@ -9,6 +9,8 @@
     <RootNamespace>ReactiveUI.Documentation</RootNamespace>
     <IsPackable>false</IsPackable>
     <IsTestProject>false</IsTestProject>
+    <!-- The examples publish as NativeAOT, so the trimming and AOT analyzers check every example as it builds. -->
+    <PublishAot>true</PublishAot>
     <PackageDescription>Runnable examples for the $(MSBuildProjectName) page of the ReactiveUI handbook.</PackageDescription>
   </PropertyGroup>
 

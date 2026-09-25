@@ -21,16 +21,22 @@ public sealed class TodoListView : ReactiveObject, IViewFor<TodoListViewModel>, 
     private readonly Signal<RxVoid> _deactivated = new();
 
     /// <summary>Initializes a new instance of the <see cref="TodoListView"/> class.</summary>
+    /// <remarks>
+    /// Passing the view's own <c>WhenAnyValue(x =&gt; x.ViewModel)</c> lets <c>WhenActivated</c> activate the view model
+    /// without reflection, so the screen is safe to trim and to publish as NativeAOT.
+    /// </remarks>
     public TodoListView() =>
-        this.WhenActivated(disposables =>
-        {
-            disposables(this.Bind(ViewModel, x => x.NewTitle, v => v.NewTitleBox.Text));
-            disposables(this.Bind(ViewModel, x => x.FilterText, v => v.FilterBox.Text));
-            disposables(this.OneWayBind(ViewModel, x => x.Items, v => v.ItemList.Items));
-            disposables(this.OneWayBind(ViewModel, x => x.RemainingCount, v => v.RemainingLabel.Text, static count => $"{count} left"));
-            disposables(this.OneWayBind(ViewModel, x => x.ErrorMessage, v => v.ErrorLabel.Text));
-            disposables(this.BindCommand(ViewModel, x => x.Add, v => v.AddButton));
-        });
+        this.WhenActivated(
+            disposables =>
+            {
+                disposables(this.Bind(ViewModel, x => x.NewTitle, v => v.NewTitleBox.Text));
+                disposables(this.Bind(ViewModel, x => x.FilterText, v => v.FilterBox.Text));
+                disposables(this.OneWayBind(ViewModel, x => x.Items, v => v.ItemList.Items));
+                disposables(this.OneWayBind(ViewModel, x => x.RemainingCount, v => v.RemainingLabel.Text, static count => $"{count} left"));
+                disposables(this.OneWayBind(ViewModel, x => x.ErrorMessage, v => v.ErrorLabel.Text));
+                disposables(this.BindCommand(ViewModel, x => x.Add, v => v.AddButton));
+            },
+            this.WhenAnyValue(x => x.ViewModel));
 
     /// <summary>Gets the box the user types a new title into.</summary>
     public TextBox NewTitleBox { get; } = new();
