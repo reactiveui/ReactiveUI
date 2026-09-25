@@ -66,8 +66,8 @@ public class TransitioningContentControlTest
     /// <summary>An out-of-range value used to exercise the default arms of the transition switch expressions.</summary>
     private const int InvalidEnumValue = 999;
 
-    /// <summary>The maximum number of dispatcher pump iterations while waiting for a storyboard to complete.</summary>
-    private const int DispatcherPumpCount = 50;
+    /// <summary>The longest time, in seconds, to pump the dispatcher while waiting for a storyboard to complete.</summary>
+    private const int StoryboardTimeoutSeconds = 10;
 
     /// <summary>The delay, in milliseconds, between dispatcher pump iterations.</summary>
     private const int PumpDelayMs = 10;
@@ -982,8 +982,10 @@ public class TransitioningContentControlTest
 
         storyboard.Begin(control, true);
 
-        // Pump the dispatcher so the zero-length animation completes and fires its Completed callback.
-        for (var i = 0; i < DispatcherPumpCount && !completed; i++)
+        // Pump the dispatcher so the zero-length animation completes and fires its Completed callback. A slow runner can
+        // need more than a fixed number of pumps, so keep pumping until it completes or the deadline passes.
+        var started = System.Diagnostics.Stopwatch.GetTimestamp();
+        while (!completed && System.Diagnostics.Stopwatch.GetElapsedTime(started) < TimeSpan.FromSeconds(StoryboardTimeoutSeconds))
         {
             Tests.Xaml.Utilities.DispatcherUtilities.DoEvents();
             await Task.Delay(PumpDelayMs);
