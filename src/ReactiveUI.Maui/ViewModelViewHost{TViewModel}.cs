@@ -9,9 +9,9 @@ using Microsoft.Maui.Controls;
 using Splat;
 
 #if REACTIVE_SHIM
-using RetainedViewLocator = ReactiveUI.Reactive.ViewLocator;
+using static ReactiveUI.Binding.Reactive.ViewLocator;
 #else
-using RetainedViewLocator = ReactiveUI.ViewLocator;
+using static ReactiveUI.Binding.ViewLocator;
 #endif
 
 #if REACTIVE_SHIM
@@ -82,19 +82,19 @@ TViewModel> : ViewModelViewHost, IViewFor<TViewModel>
                 $"View model '{viewModel.GetType().FullName}' is not assignable to '{typeof(TViewModel).FullName}'.");
         }
 
-        if (viewModel is null)
+        if (viewModel is not TViewModel typedViewModel)
         {
             Content = DefaultContent;
             return;
         }
 
-        var viewLocator = ViewLocator ?? RetainedViewLocator.Current;
+        var viewLocator = ViewLocator ?? GetCurrent();
 
-        // Use the generic ResolveView<TViewModel> method - this is AOT-safe!
-        var viewInstance = viewLocator.ResolveView<TViewModel>(contract);
+        // Resolve through the view model's static type, which is AOT-safe and asks a custom locator as well.
+        var viewInstance = viewLocator.ResolveView(typedViewModel, contract);
         if (viewInstance is null && !ContractFallbackByPass)
         {
-            viewInstance = viewLocator.ResolveView<TViewModel>();
+            viewInstance = viewLocator.ResolveView(typedViewModel, null);
         }
 
         if (viewInstance is null)

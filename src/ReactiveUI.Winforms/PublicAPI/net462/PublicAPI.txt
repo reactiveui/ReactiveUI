@@ -80,7 +80,7 @@ namespace ReactiveUI.Winforms
         public System.IObservable<string>? ViewContractObservable { get; set; }
         [System.ComponentModel.Browsable(false)]
         [System.ComponentModel.DesignerSerializationVisibility(System.ComponentModel.DesignerSerializationVisibility.Hidden)]
-        public ReactiveUI.IViewLocator? ViewLocator { get; set; }
+        public ReactiveUI.Binding.IViewLocator? ViewLocator { get; set; }
         public event System.ComponentModel.PropertyChangedEventHandler? PropertyChanged;
         public event System.ComponentModel.PropertyChangingEventHandler? PropertyChanging;
         protected override void Dispose(bool disposing) { }
@@ -120,7 +120,7 @@ namespace ReactiveUI.Winforms
         public System.IObservable<string>? ViewContractObservable { get; set; }
         [System.ComponentModel.Browsable(false)]
         [System.ComponentModel.DesignerSerializationVisibility(System.ComponentModel.DesignerSerializationVisibility.Hidden)]
-        public ReactiveUI.IViewLocator? ViewLocator { get; set; }
+        public ReactiveUI.Binding.IViewLocator? ViewLocator { get; set; }
         [System.ComponentModel.Bindable(true)]
         [System.ComponentModel.Category("ReactiveUI")]
         [System.ComponentModel.Description("The viewmodel to host.")]

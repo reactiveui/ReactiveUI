@@ -23,9 +23,10 @@ namespace ReactiveUI;
 /// {
 ///     public void RegisterViews(DefaultViewLocator locator)
 ///     {
-///         locator.Map<LoginViewModel, LoginView>(() => new LoginView())
-///                .Map<RegisterViewModel, RegisterView>(() => new RegisterView())
-///                .Map<ForgotPasswordViewModel, ForgotPasswordView>(() => new ForgotPasswordView());
+///         locator.CreateMappingBuilder()
+///             .Map<LoginViewModel, LoginView>()
+///             .Map<RegisterViewModel, RegisterView>()
+///             .Map<ForgotPasswordViewModel, ForgotPasswordView>();
 ///     }
 /// }
 /// ]]>

@@ -77,7 +77,7 @@ namespace ReactiveUI.Reactive
         public ReactiveUI.Reactive.RoutingState Router { get; set; }
         public string? ViewContract { get; set; }
         public System.IObservable<string?> ViewContractObservable { get; set; }
-        public ReactiveUI.Reactive.IViewLocator? ViewLocator { get; set; }
+        public ReactiveUI.Binding.Reactive.IViewLocator? ViewLocator { get; set; }
     }
     [System.Diagnostics.DebuggerDisplay("{Transition}, {Direction}")]
     [System.Windows.TemplatePart(Name="PART_Container", Type=typeof(System.Windows.FrameworkElement))]
@@ -132,7 +132,7 @@ namespace ReactiveUI.Reactive
         public object DefaultContent { get; set; }
         public string? ViewContract { get; set; }
         public System.IObservable<string?> ViewContractObservable { get; set; }
-        public ReactiveUI.Reactive.IViewLocator? ViewLocator { get; set; }
+        public ReactiveUI.Binding.Reactive.IViewLocator? ViewLocator { get; set; }
         public object? ViewModel { get; set; }
         protected virtual void ResolveViewForViewModel(object? viewModel, string? contract) { }
     }

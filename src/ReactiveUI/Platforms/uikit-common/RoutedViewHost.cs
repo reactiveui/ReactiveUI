@@ -12,9 +12,9 @@ using ReactiveUI.Internal;
 using NSViewController = UIKit.UIViewController;
 
 #if REACTIVE_SHIM
-using RetainedViewLocator = ReactiveUI.Reactive.ViewLocator;
+using static ReactiveUI.Binding.Reactive.ViewLocator;
 #else
-using RetainedViewLocator = ReactiveUI.ViewLocator;
+using static ReactiveUI.Binding.ViewLocator;
 #endif
 
 #if REACTIVE_SHIM
@@ -286,7 +286,7 @@ public class RoutedViewHost : ReactiveNavigationController
             return null;
         }
 
-        var view = (ViewLocator ?? RetainedViewLocator.Current).ResolveView(viewModel, contract)
+        var view = (ViewLocator ?? GetCurrent()).ResolveView((object)viewModel, contract)
             ?? throw new InvalidOperationException($"Couldn't find a view for view model. You probably need to register an IViewFor<{viewModel.GetType().Name}>");
         view.ViewModel = viewModel;
 

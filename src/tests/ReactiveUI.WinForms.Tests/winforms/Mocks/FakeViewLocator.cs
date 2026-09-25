@@ -14,42 +14,26 @@ internal sealed class FakeViewLocator : IViewLocator
     internal Func<Type, IViewFor>? LocatorFunc { get; set; }
 
     /// <inheritdoc/>
-    public IViewFor<TViewModel>? ResolveView<TViewModel>(string? contract)
-        where TViewModel : class =>
-        LocatorFunc?.Invoke(typeof(TViewModel)) as IViewFor<TViewModel>;
+    public IViewFor? ResolveView<TViewModel>(TViewModel viewModel, string? contract)
+        where TViewModel : class => Resolve(viewModel, typeof(TViewModel));
 
     /// <inheritdoc/>
-    public IViewFor<TViewModel>? ResolveView<TViewModel>()
-        where TViewModel : class =>
-        ResolveView<TViewModel>(null);
+    [RequiresDynamicCode("Resolves a view from the view model's runtime type.")]
+    public IViewFor? ResolveView(object? viewModel, string? contract) =>
+        viewModel is null ? null : Resolve(viewModel, viewModel.GetType());
 
-    /// <inheritdoc/>
-    [RequiresUnreferencedCode(
-        "This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
-    [RequiresDynamicCode(
-        "If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, "
-        + "or generic constraints), trimming can't validate that the requirements of those annotations are met.")]
-    public IViewFor? ResolveView(object? instance, string? contract)
+    /// <summary>Resolves a view for the view model type and hands it the view model.</summary>
+    /// <param name="viewModel">The view model the view displays.</param>
+    /// <param name="viewModelType">The view model type to look the view up by.</param>
+    /// <returns>The view, or <see langword="null"/> when none is configured.</returns>
+    private IViewFor? Resolve(object viewModel, Type viewModelType)
     {
-        if (instance is null)
+        var view = LocatorFunc?.Invoke(viewModelType);
+        if (view is not null)
         {
-            return null;
-        }
-
-        var view = LocatorFunc?.Invoke(instance.GetType());
-        if (view is IViewFor viewFor)
-        {
-            viewFor.ViewModel = instance;
+            view.ViewModel = viewModel;
         }
 
         return view;
     }
-
-    /// <inheritdoc/>
-    [RequiresUnreferencedCode(
-        "This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
-    [RequiresDynamicCode(
-        "If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, "
-        + "or generic constraints), trimming can't validate that the requirements of those annotations are met.")]
-    public IViewFor? ResolveView(object? instance) => ResolveView(instance, null);
 }

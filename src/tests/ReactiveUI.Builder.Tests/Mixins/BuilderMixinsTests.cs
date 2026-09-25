@@ -644,7 +644,7 @@ public class BuilderMixinsTests
     {
         /// <inheritdoc/>
         public void RegisterViews(DefaultViewLocator locator) =>
-            locator.Map<BuilderMixinsTestViewModel, BuilderMixinsTestView>(static () => new());
+            locator.Map<BuilderMixinsTestViewModel, BuilderMixinsTestView>();
     }
 
     /// <summary>App builder that does not implement <see cref="IReactiveUIBuilder"/>, used to verify error handling.</summary>

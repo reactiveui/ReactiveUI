@@ -13,11 +13,9 @@ using ReactiveUI.Reactive.Maui.Internal;
 using ReactiveUI.Maui.Internal;
 #endif
 #if REACTIVE_SHIM
-using RetainedIViewLocator = ReactiveUI.Reactive.IViewLocator;
-using RetainedViewLocator = ReactiveUI.Reactive.ViewLocator;
+using static ReactiveUI.Binding.Reactive.ViewLocator;
 #else
-using RetainedIViewLocator = ReactiveUI.IViewLocator;
-using RetainedViewLocator = ReactiveUI.ViewLocator;
+using static ReactiveUI.Binding.ViewLocator;
 #endif
 #if REACTIVE_SHIM
 namespace ReactiveUI.Reactive;
@@ -72,7 +70,7 @@ public partial class RoutedViewHost<
     /// <value>
     /// The view locator.
     /// </value>
-    public RetainedIViewLocator? ViewLocator { get; set; }
+    public IViewLocator? ViewLocator { get; set; }
 
     /// <summary>Gets or sets the <see cref="RoutingState"/> of the view model stack.</summary>
     public RoutingState Router
@@ -109,6 +107,16 @@ public partial class RoutedViewHost<
         }
     }
 
+    /// <summary>Resolves the view for a routed page, trying the contract first and then the view without one.</summary>
+    /// <param name="viewLocator">The locator to ask.</param>
+    /// <param name="viewModel">The page, or <see langword="null"/> when the page is not a <typeparamref name="TViewModel"/>.</param>
+    /// <param name="contract">The contract to try first.</param>
+    /// <returns>The view, or <see langword="null"/> when none is found.</returns>
+    private static IViewFor? Resolve(IViewLocator viewLocator, TViewModel? viewModel, string? contract) =>
+        viewModel is null
+            ? viewLocator.ResolveView<TViewModel>(contract) ?? viewLocator.ResolveView<TViewModel>()
+            : viewLocator.ResolveView(viewModel, contract) ?? viewLocator.ResolveView(viewModel, null);
+
     /// <inheritdoc/>
     void IMauiRoutedViewHost.SetObservedViewContract(string? contract) => _viewContract = contract;
 
@@ -126,12 +134,14 @@ public partial class RoutedViewHost<
             return;
         }
 
-        var viewLocator = ViewLocator ?? RetainedViewLocator.Current;
+        var viewLocator = ViewLocator ?? GetCurrent();
 
-        // Use the generic ResolveView<TViewModel> method - this is AOT-safe!
-        var view = viewLocator.ResolveView<TViewModel>(route.Contract) ?? viewLocator.ResolveView<TViewModel>()
+        // Resolve through the view model's static type, which is AOT-safe and asks a custom locator as well. A page of
+        // another type still gets the view registered for TViewModel, without a view model.
+        var viewModel = route.ViewModel as TViewModel;
+        var view = Resolve(viewLocator, viewModel, route.Contract)
             ?? throw new InvalidOperationException($"Couldn't find view for '{typeof(TViewModel).Name}'.");
-        view.ViewModel = route.ViewModel as TViewModel;
+        view.ViewModel = viewModel;
         Content = view;
     }
 }

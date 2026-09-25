@@ -9,9 +9,9 @@ using System.Runtime.CompilerServices;
 using ReactiveUI.Internal;
 
 #if REACTIVE_SHIM
-using RetainedViewLocator = ReactiveUI.Reactive.ViewLocator;
+using static ReactiveUI.Binding.Reactive.ViewLocator;
 #else
-using RetainedViewLocator = ReactiveUI.ViewLocator;
+using static ReactiveUI.Binding.ViewLocator;
 #endif
 
 #if REACTIVE_SHIM
@@ -214,7 +214,7 @@ public partial class RoutedControlHost : UserControl, IReactiveObject
                 return;
             }
 
-            var view = (_host.ViewLocator ?? RetainedViewLocator.Current).ResolveView(viewModel, contract);
+            var view = (_host.ViewLocator ?? GetCurrent()).ResolveView((object)viewModel, contract);
             if (view is not null)
             {
                 view.ViewModel = viewModel;

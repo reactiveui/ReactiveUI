@@ -3,6 +3,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics.CodeAnalysis;
+
 namespace ReactiveUI.Tests.WinUI.Mocks;
 
 /// <summary>A view locator whose answers are configured per test and whose requests are recorded.</summary>
@@ -26,18 +28,12 @@ public sealed class StubViewLocator : IViewLocator
     public List<string?> RequestedContracts { get; } = [];
 
     /// <inheritdoc/>
-    public IViewFor<TViewModel>? ResolveView<TViewModel>()
-        where TViewModel : class => Resolve(null) as IViewFor<TViewModel>;
+    public IViewFor? ResolveView<TViewModel>(TViewModel viewModel, string? contract)
+        where TViewModel : class => Resolve(contract);
 
     /// <inheritdoc/>
-    public IViewFor<TViewModel>? ResolveView<TViewModel>(string? contract)
-        where TViewModel : class => Resolve(contract) as IViewFor<TViewModel>;
-
-    /// <inheritdoc/>
-    public IViewFor? ResolveView(object? instance) => Resolve(null);
-
-    /// <inheritdoc/>
-    public IViewFor? ResolveView(object? instance, string? contract) => Resolve(contract);
+    [RequiresDynamicCode("Resolves a view from the view model's runtime type.")]
+    public IViewFor? ResolveView(object? viewModel, string? contract) => Resolve(contract);
 
     /// <summary>Records the request and returns the view configured for the contract.</summary>
     /// <param name="contract">The requested contract.</param>

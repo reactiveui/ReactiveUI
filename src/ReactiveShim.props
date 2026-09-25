@@ -74,14 +74,6 @@
     <!-- ReactiveUI.Binding types shifted for .Reactive build -->
     <Using Include="ReactiveUI.Binding.Reactive" />
     <Using Include="ReactiveUI.Binding.Reactive.Expressions" />
-    <!-- ReactiveUI keeps its own view locator, and ReactiveUI.Binding.Reactive ships one of the same names. The
-         shifted ReactiveUI.Reactive namespace is not an enclosing namespace of the shared source, so both are
-         imported at the same level; these aliases pick ReactiveUI's, as the consumer props in buildTransitive do. -->
-    <Using Include="ReactiveUI.Reactive.IViewLocator" Alias="IViewLocator" />
-    <Using Include="ReactiveUI.Reactive.ViewLocator" Alias="ViewLocator" />
-    <Using Include="ReactiveUI.Reactive.DefaultViewLocator" Alias="DefaultViewLocator" />
-    <Using Include="ReactiveUI.Reactive.ViewMappingBuilder" Alias="ViewMappingBuilder" />
-    <Using Include="ReactiveUI.Reactive.ViewLocatorNotFoundException" Alias="ViewLocatorNotFoundException" />
     <Using Include="ReactiveUI.Primitives.Signals" />
     <!-- Reactive-shim counterpart of the lean leaf's ReactiveUI.Primitives.Advanced import: the same
          seam-neutral concrete signal classes, flipped to the ReactiveUI.Primitives.Reactive.Advanced namespace. -->

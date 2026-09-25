@@ -19,9 +19,9 @@ using ReactiveUI.Primitives;
 using Splat;
 
 #if REACTIVE_SHIM
-using RetainedViewLocator = ReactiveUI.Reactive.ViewLocator;
+using static ReactiveUI.Binding.Reactive.ViewLocator;
 #else
-using RetainedViewLocator = ReactiveUI.ViewLocator;
+using static ReactiveUI.Binding.ViewLocator;
 #endif
 
 #if HAS_UNO
@@ -152,7 +152,7 @@ public
             return;
         }
 
-        var viewLocator = ViewLocator ?? RetainedViewLocator.Current;
+        var viewLocator = ViewLocator ?? GetCurrent();
 
         var viewInstance = viewLocator.ResolveView(viewModel, contract);
         if (viewInstance is null && !ContractFallbackByPass)

@@ -11,7 +11,7 @@ namespace ReactiveUI.Tests.WinUI;
 
 /// <summary>Runs a test on the XAML UI thread with the mock views registered in the service locator.</summary>
 /// <remarks>
-/// The view hosts fall back to <see cref="ViewLocator.Current"/> when no locator is assigned to them, so the tests
+/// The view hosts fall back to <see cref="ViewLocator.GetCurrent"/> when no locator is assigned to them, so the tests
 /// covering that fallback need the registrations this executor installs.
 /// </remarks>
 public sealed class WinUIViewRegistrationExecutor : ITestExecutor
