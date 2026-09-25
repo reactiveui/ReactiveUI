@@ -99,7 +99,10 @@ public class ViewModelViewHost : ReactiveViewController
         Initialize();
     }
 
-    /// <summary>Gets or sets the <see cref="IViewLocator"/> used to resolve views for the current <see cref="ViewModel"/>. Defaults to the locator registered in the service locator if not provided.</summary>
+    /// <summary>
+    /// Gets or sets the <see cref="IViewLocator"/> used to resolve views for the current <see cref="ViewModel"/>.
+    /// Defaults to the locator registered in the service locator if not provided.
+    /// </summary>
     public IViewLocator? ViewLocator
     {
         get => field;
