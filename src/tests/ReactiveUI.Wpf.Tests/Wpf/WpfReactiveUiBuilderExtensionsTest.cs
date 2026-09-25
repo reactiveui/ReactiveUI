@@ -141,11 +141,6 @@ public class WpfReactiveUiBuilderExtensionsTest
             var visibilityToBool = builder.ConverterService.TypedConverters.TryGetConverter(typeof(Visibility), typeof(bool));
             await Assert.That(visibilityToBool).IsNotNull();
             await Assert.That(visibilityToBool).IsTypeOf<VisibilityToBooleanTypeConverter>();
-
-            // Verify ComponentModelFallbackConverter is registered as a fallback converter
-            var fallbackConverters = builder.ConverterService.FallbackConverters.GetAllConverters().ToList();
-            await Assert.That(fallbackConverters).IsNotEmpty();
-            await Assert.That(fallbackConverters.OfType<ComponentModelFallbackConverter>().Any()).IsTrue();
         }
     }
 
@@ -173,11 +168,6 @@ public class WpfReactiveUiBuilderExtensionsTest
             await Assert.That(converterService.TypedConverters.TryGetConverter(typeof(int), typeof(string))).IsNotNull();
             await Assert.That(converterService.TypedConverters.TryGetConverter(typeof(string), typeof(int))).IsNotNull();
             await Assert.That(converterService.TypedConverters.TryGetConverter(typeof(bool), typeof(string))).IsNotNull();
-
-            // Fallback converter
-            var fallbackConverters = converterService.FallbackConverters.GetAllConverters().ToList();
-            await Assert.That(fallbackConverters).IsNotEmpty();
-            await Assert.That(fallbackConverters.OfType<ComponentModelFallbackConverter>().Any()).IsTrue();
         }
     }
 

@@ -12,6 +12,12 @@ using System.Windows.Media;
 using Expression = System.Linq.Expressions.Expression;
 
 #if REACTIVE_SHIM
+using EngineBindingDirection = ReactiveUI.Binding.Reactive.BindingDirection;
+#else
+using EngineBindingDirection = ReactiveUI.Binding.BindingDirection;
+#endif
+
+#if REACTIVE_SHIM
 namespace ReactiveUI.Reactive.Wpf.Binding;
 #else
 namespace ReactiveUI.Wpf.Binding;
@@ -91,9 +97,9 @@ internal class ValidationBindingWpf<TView, TViewModel, TVProp, TVMProp> : IReact
                               nameof(viewProperty));
 
         Changed = new ChangedObservable(
-            Reflection.ViewModelWhenAnyValue(viewModel, view, ViewModelExpression),
+            ViewModelWhenAnyValue(view, ViewModelExpression),
             view.WhenAnyDynamic(ViewExpression, static x => (TVProp?)x.Value));
-        Direction = BindingDirection.TwoWay;
+        Direction = EngineBindingDirection.TwoWay;
         _ = Bind();
     }
 
@@ -107,10 +113,10 @@ internal class ValidationBindingWpf<TView, TViewModel, TVProp, TVMProp> : IReact
     public Expression ViewExpression { get; }
 
     /// <summary>Gets an observable that emits values when either the view model or view property changes.</summary>
-    public IObservable<TVMProp?> Changed { get; }
+    public IObservable<TVMProp> Changed { get; }
 
     /// <summary>Gets the direction of the binding (always TwoWay for validation bindings).</summary>
-    public BindingDirection Direction { get; }
+    public EngineBindingDirection Direction { get; }
 
     /// <summary>Disposes the binding and releases all associated resources.</summary>
     public void Dispose()
@@ -295,6 +301,17 @@ internal class ValidationBindingWpf<TView, TViewModel, TVProp, TVMProp> : IReact
         _inner?.Dispose();
     }
 
+    /// <summary>Observes the view model property through whichever view model the view currently holds.</summary>
+    /// <param name="view">The view instance.</param>
+    /// <param name="expression">The view model property expression, resolved at run time.</param>
+    /// <returns>An observable of the property's value on the current view model, or null while none is set.</returns>
+    [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Dynamic observation uses reflection over members that may be trimmed.")]
+    private static IObservable<object> ViewModelWhenAnyValue(TView view, Expression expression) =>
+        view.WhenAnyValueUnsafe(x => x.ViewModel)
+            .SwitchSelect(x => x is TViewModel typed
+                ? typed.WhenAnyDynamic(expression, static y => y.Value)
+                : Signal.Return<object?>(null))!;
+
     /// <summary>Recursively searches the visual tree for controls matching the specified name.</summary>
     /// <param name="parent">The parent element to search within.</param>
     /// <param name="name">The name to match.</param>
@@ -327,17 +344,17 @@ internal class ValidationBindingWpf<TView, TViewModel, TVProp, TVMProp> : IReact
     /// </summary>
     /// <param name="viewModelValues">The view model value stream.</param>
     /// <param name="viewChanges">The view property change stream.</param>
-    private sealed class ChangedObservable(IObservable<object> viewModelValues, IObservable<TVProp?> viewChanges) : IObservable<TVMProp?>
+    private sealed class ChangedObservable(IObservable<object> viewModelValues, IObservable<TVProp?> viewChanges) : IObservable<TVMProp>
     {
         /// <inheritdoc/>
-        public IDisposable Subscribe(IObserver<TVMProp?> observer)
+        public IDisposable Subscribe(IObserver<TVMProp> observer)
         {
             ArgumentExceptionHelper.ThrowIfNull(observer);
 
             var viewModelSubscription = viewModelValues.Subscribe(
-                new DelegateObserver<object>(value => observer.OnNext((TVMProp?)value), observer.OnError));
+                new DelegateObserver<object>(value => observer.OnNext((TVMProp)value), observer.OnError));
             var viewSubscription = viewChanges.Subscribe(
-                new DelegateObserver<TVProp?>(_ => observer.OnNext(default), observer.OnError));
+                new DelegateObserver<TVProp?>(_ => observer.OnNext(default!), observer.OnError));
 
             return new ActionDisposable(() =>
             {

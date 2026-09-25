@@ -13,11 +13,7 @@ public class InteractionBindViewModel : ReactiveObject
     private Interaction<string, bool> _interaction1;
 
     /// <summary>Initializes a new instance of the <see cref="InteractionBindViewModel" /> class.</summary>
-    /// <remarks>
-    /// Uses <see cref="Sequencer.Immediate"/> so Handle completes synchronously and cannot deadlock on an ambient
-    /// current-thread trampoline left active by another test on the shared (non-parallel) test thread.
-    /// </remarks>
-    public InteractionBindViewModel() => _interaction1 = new(Sequencer.Immediate);
+    public InteractionBindViewModel() => _interaction1 = new();
 
     /// <summary>Gets or sets the interaction1.</summary>
     public Interaction<string, bool> Interaction1

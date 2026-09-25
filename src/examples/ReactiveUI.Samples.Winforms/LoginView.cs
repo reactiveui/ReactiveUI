@@ -17,17 +17,11 @@ public sealed class LoginView : UserControl, IViewFor<LoginViewModel>
     /// <summary>The padding, in pixels, around the vertical layout panel.</summary>
     private const int LayoutPadding = 20;
 
-    /// <summary>The text box bound to the view model's user name.</summary>
-    private readonly TextBox _username = new() { PlaceholderText = "Username", Width = 240, Name = "Username" };
+    /// <summary>The width, in pixels, of each text box.</summary>
+    private const int TextBoxWidth = 240;
 
-    /// <summary>The text box bound to the view model's password.</summary>
-    private readonly TextBox _password = new() { PlaceholderText = "Password", Width = 240, UseSystemPasswordChar = true, Name = "Password" };
-
-    /// <summary>The button bound to the view model's login command.</summary>
-    private readonly Button _login = new() { Text = "Login", Width = 115, Name = "Login" };
-
-    /// <summary>The button bound to the view model's cancel command.</summary>
-    private readonly Button _cancel = new() { Text = "Cancel", Width = 115, Name = "Cancel" };
+    /// <summary>The width, in pixels, of each button.</summary>
+    private const int ButtonWidth = 115;
 
     /// <summary>Initializes a new instance of the <see cref="LoginView"/> class.</summary>
     [SuppressMessage(
@@ -38,10 +32,10 @@ public sealed class LoginView : UserControl, IViewFor<LoginViewModel>
     {
         var layout = new FlowLayoutPanel { Dock = DockStyle.Fill, FlowDirection = FlowDirection.TopDown, Padding = new(LayoutPadding), WrapContents = false };
 
-        layout.Controls.AddRange(_username, _password);
+        layout.Controls.AddRange(UserNameBox, PasswordBox);
 
         var buttons = new FlowLayoutPanel { FlowDirection = FlowDirection.LeftToRight, AutoSize = true };
-        buttons.Controls.AddRange(_login, _cancel);
+        buttons.Controls.AddRange(LoginButton, CancelButton);
         layout.Controls.Add(buttons);
 
         Controls.Add(layout);
@@ -50,16 +44,16 @@ public sealed class LoginView : UserControl, IViewFor<LoginViewModel>
 
         _ = this.WhenActivated(d =>
         {
-            _ = this.Bind(ViewModel, vm => vm.UserName, v => v._username.Text)
+            _ = this.Bind(ViewModel, vm => vm.UserName, v => v.UserNameBox.Text)
                 .DisposeWith(d);
 
-            _ = this.Bind(ViewModel, vm => vm.Password, v => v._password.Text)
+            _ = this.Bind(ViewModel, vm => vm.Password, v => v.PasswordBox.Text)
                 .DisposeWith(d);
 
-            _ = this.BindCommand(ViewModel, vm => vm.Login, v => v._login)
+            _ = this.BindCommand(ViewModel, vm => vm.Login, v => v.LoginButton)
                 .DisposeWith(d);
 
-            _ = this.BindCommand(ViewModel, vm => vm.Cancel, v => v._cancel)
+            _ = this.BindCommand(ViewModel, vm => vm.Cancel, v => v.CancelButton)
                 .DisposeWith(d);
 
             _ = ViewModel.Login
@@ -74,6 +68,18 @@ public sealed class LoginView : UserControl, IViewFor<LoginViewModel>
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public LoginViewModel? ViewModel { get; set; }
 
+    /// <summary>Gets the text box bound to the view model's user name.</summary>
+    internal TextBox UserNameBox { get; } = new() { PlaceholderText = "Username", Width = TextBoxWidth, Name = "Username" };
+
+    /// <summary>Gets the text box bound to the view model's password.</summary>
+    internal TextBox PasswordBox { get; } = new() { PlaceholderText = "Password", Width = TextBoxWidth, UseSystemPasswordChar = true, Name = "Password" };
+
+    /// <summary>Gets the button bound to the view model's login command.</summary>
+    internal Button LoginButton { get; } = new() { Text = "Login", Width = ButtonWidth, Name = "Login" };
+
+    /// <summary>Gets the button bound to the view model's cancel command.</summary>
+    internal Button CancelButton { get; } = new() { Text = "Cancel", Width = ButtonWidth, Name = "Cancel" };
+
     /// <inheritdoc/>
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     object? IViewFor.ViewModel
@@ -87,10 +93,10 @@ public sealed class LoginView : UserControl, IViewFor<LoginViewModel>
     {
         if (disposing)
         {
-            _username.Dispose();
-            _password.Dispose();
-            _login.Dispose();
-            _cancel.Dispose();
+            UserNameBox.Dispose();
+            PasswordBox.Dispose();
+            LoginButton.Dispose();
+            CancelButton.Dispose();
         }
 
         base.Dispose(disposing);

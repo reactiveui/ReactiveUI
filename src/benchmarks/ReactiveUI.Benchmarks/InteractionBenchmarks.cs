@@ -10,8 +10,8 @@ using BenchmarkDotNet.Attributes;
 namespace ReactiveUI.Benchmarks;
 
 /// <summary>
-/// Benchmarks <see cref="Interaction{TInput, TOutput}"/> handler dispatch on the immediate scheduler: repeated
-/// <c>Handle</c> through a registered handler, and a cold register + handle + dispose cycle.
+/// Benchmarks <see cref="Interaction{TInput, TOutput}"/> task-based handler dispatch: repeated
+/// <c>Handle</c> through a registered handler, and a register + handle + dispose cycle.
 /// </summary>
 [MemoryDiagnoser]
 [MarkdownExporterAttribute.GitHub]
@@ -21,20 +21,17 @@ public class InteractionBenchmarks
     /// <summary>The number of <c>Handle</c> calls per benchmark invocation.</summary>
     private const int HandleCount = 10_000;
 
-    /// <summary>Sink for the handled interaction output.</summary>
-    private readonly NoopObserver<int> _sink = new();
-
     /// <summary>The interaction under test.</summary>
     private Interaction<int, int> _interaction = null!;
 
     /// <summary>The registration handle for the standing handler.</summary>
     private IDisposable _handler = null!;
 
-    /// <summary>Creates an interaction on the immediate scheduler and registers a synchronous handler.</summary>
+    /// <summary>Creates an interaction and registers a synchronous handler.</summary>
     [GlobalSetup]
     public void Setup()
     {
-        _interaction = new(Sequencer.Immediate);
+        _interaction = new();
         _handler = _interaction.RegisterHandler(static context => context.SetOutput(context.Input));
     }
 
@@ -44,20 +41,22 @@ public class InteractionBenchmarks
     public void Cleanup() => _handler.Dispose();
 
     /// <summary>Measures repeated handling through the standing handler.</summary>
+    /// <returns>A task that completes after all interaction outputs have been received.</returns>
     [Benchmark]
-    public void Handle()
+    public async Task Handle()
     {
         for (var i = 0; i < HandleCount; i++)
         {
-            using var subscription = _interaction.Handle(i).Subscribe(_sink);
+            _ = await _interaction.Handle(i).ConfigureAwait(false);
         }
     }
 
     /// <summary>Measures a cold register-handler + handle + dispose cycle.</summary>
+    /// <returns>A task that completes after the registered handler responds.</returns>
     [Benchmark]
-    public void RegisterAndHandle()
+    public async Task RegisterAndHandle()
     {
         using var handler = _interaction.RegisterHandler(static context => context.SetOutput(context.Input));
-        using var subscription = _interaction.Handle(1).Subscribe(_sink);
+        _ = await _interaction.Handle(1).ConfigureAwait(false);
     }
 }

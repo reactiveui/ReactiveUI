@@ -1,0 +1,14 @@
+<Project>
+  <!-- The binding engine's namespace is imported for every consumer, so calls such as WhenAnyValue, Bind and
+       BindCommand resolve without a using directive. ReactiveUI keeps its own view locator; ReactiveUI.Binding
+       ships one of the same names for standalone use. The aliases below make the unqualified names mean
+       ReactiveUI's locator, because an alias takes precedence over a type imported from a namespace. -->
+  <ItemGroup>
+    <Using Include="ReactiveUI.Binding.Reactive" />
+    <Using Include="ReactiveUI.Reactive.IViewLocator" Alias="IViewLocator" />
+    <Using Include="ReactiveUI.Reactive.ViewLocator" Alias="ViewLocator" />
+    <Using Include="ReactiveUI.Reactive.DefaultViewLocator" Alias="DefaultViewLocator" />
+    <Using Include="ReactiveUI.Reactive.ViewMappingBuilder" Alias="ViewMappingBuilder" />
+    <Using Include="ReactiveUI.Reactive.ViewLocatorNotFoundException" Alias="ViewLocatorNotFoundException" />
+  </ItemGroup>
+</Project>

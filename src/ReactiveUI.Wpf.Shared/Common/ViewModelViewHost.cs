@@ -18,6 +18,12 @@ using System.Windows;
 using ReactiveUI.Primitives;
 using Splat;
 
+#if REACTIVE_SHIM
+using RetainedViewLocator = ReactiveUI.Reactive.ViewLocator;
+#else
+using RetainedViewLocator = ReactiveUI.ViewLocator;
+#endif
+
 #if HAS_UNO
 namespace ReactiveUI.Uno
 #else
@@ -81,7 +87,7 @@ public
             this.WhenAnyObservable(x => x.ViewContractObservable).Do(x => _viewContract = x),
             ViewContract);
         var viewModelChanged = new StartWithObservable<object?>(
-            this.WhenAnyValue<ViewModelViewHost, object?>(nameof(ViewModel)),
+            this.WhenAnyValue(static x => x.ViewModel),
             ViewModel);
         var viewModelAndContract = contractChanged.CombineLatest(
             viewModelChanged,
@@ -146,7 +152,7 @@ public
             return;
         }
 
-        var viewLocator = ViewLocator ?? ReactiveUI.ViewLocator.Current;
+        var viewLocator = ViewLocator ?? RetainedViewLocator.Current;
 
         var viewInstance = viewLocator.ResolveView(viewModel, contract);
         if (viewInstance is null && !ContractFallbackByPass)

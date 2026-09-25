@@ -28,6 +28,12 @@ public class ReactiveCollectionReusableView : UICollectionReusableView, IReactiv
     /// <summary>The subject used to signal view deactivation.</summary>
     private readonly Signal<RxVoid> _deactivated = new();
 
+    /// <summary>The <see cref="INotifyPropertyChanging.PropertyChanging"/> handlers; subscribing enables the classic event.</summary>
+    private PropertyChangingEventHandler? _propertyChanging;
+
+    /// <summary>The <see cref="INotifyPropertyChanged.PropertyChanged"/> handlers; subscribing enables the classic event.</summary>
+    private PropertyChangedEventHandler? _propertyChanged;
+
     /// <summary>Initializes a new instance of the <see cref="ReactiveCollectionReusableView"/> class.</summary>
     /// <param name="frame">The frame.</param>
     protected ReactiveCollectionReusableView(CGRect frame)
@@ -62,10 +68,28 @@ public class ReactiveCollectionReusableView : UICollectionReusableView, IReactiv
     }
 
     /// <inheritdoc/>
-    public event PropertyChangingEventHandler? PropertyChanging;
+    public event PropertyChangingEventHandler? PropertyChanging
+    {
+        add
+        {
+            this.SubscribePropertyChangingEvents();
+            _propertyChanging += value;
+        }
+
+        remove => _propertyChanging -= value;
+    }
 
     /// <inheritdoc/>
-    public event PropertyChangedEventHandler? PropertyChanged;
+    public event PropertyChangedEventHandler? PropertyChanged
+    {
+        add
+        {
+            this.SubscribePropertyChangedEvents();
+            _propertyChanged += value;
+        }
+
+        remove => _propertyChanged -= value;
+    }
 
     /// <inheritdoc />
     public IObservable<IReactivePropertyChangedEventArgs<ReactiveCollectionReusableView>> Changing => this.GetChangingObservable();
@@ -85,7 +109,7 @@ public class ReactiveCollectionReusableView : UICollectionReusableView, IReactiv
     /// <inheritdoc/>
     void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
     {
-        var handler = PropertyChanging;
+        var handler = _propertyChanging;
         if (handler is null)
         {
             return;
@@ -97,7 +121,7 @@ public class ReactiveCollectionReusableView : UICollectionReusableView, IReactiv
     /// <inheritdoc/>
     void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args)
     {
-        var handler = PropertyChanged;
+        var handler = _propertyChanged;
         if (handler is null)
         {
             return;

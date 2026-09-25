@@ -17,6 +17,12 @@ using AppKit;
 #endif
 
 #if REACTIVE_SHIM
+using RetainedViewLocator = ReactiveUI.Reactive.ViewLocator;
+#else
+using RetainedViewLocator = ReactiveUI.ViewLocator;
+#endif
+
+#if REACTIVE_SHIM
 namespace ReactiveUI.Reactive;
 #else
 namespace ReactiveUI;
@@ -240,7 +246,7 @@ public class ViewModelViewHost : ReactiveViewController
                 .Subscribe(new DelegateObserver<(object? ViewModel, string? Contract)>(
                     x =>
                     {
-                        var view = (ViewLocator ?? ReactiveUI.ViewLocator.Current).ResolveView(x.ViewModel, x.Contract);
+                        var view = (ViewLocator ?? RetainedViewLocator.Current).ResolveView(x.ViewModel, x.Contract);
 
                         if (view is null)
                         {

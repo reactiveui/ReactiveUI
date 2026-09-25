@@ -151,15 +151,17 @@ public class ReactiveObjectTests
         await Assert.That(exceptionList).Count().IsEqualTo(1);
     }
 
-    /// <summary>Tests that ObservableForProperty using expression.</summary>
+    /// <summary>Tests generated observation of property changes.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
-    public async Task ObservableForPropertyUsingExpression()
+    public async Task WhenAnyUsingExpression()
     {
         const int ExpectedCount = 2;
         var fixture = new TestFixture { IsNotNullString = FooText, IsOnlyOneWord = BazText };
-        var output = new List<IObservedChange<TestFixture, string?>>();
-        _ = ObservableMixins.WhereNotNull(fixture.ObservableForProperty(x => x.IsNotNullString)).Subscribe(output.Add);
+        var output = new List<IObservedChange<TestFixture, string?>?>();
+        using var subscription = fixture.WhenAny(static x => x.IsNotNullString, static change => change)
+            .Skip(1)
+            .Subscribe(output.Add);
 
         fixture.IsNotNullString = BarText;
         fixture.IsNotNullString = BazText;
@@ -171,13 +173,13 @@ public class ReactiveObjectTests
 
         using (Assert.Multiple())
         {
-            await Assert.That(output[0].Sender).IsEqualTo(fixture);
-            await Assert.That(output[0].GetPropertyName()).IsEqualTo(IsNotNullStringName);
-            await Assert.That(output[0].Value).IsEqualTo(BarText);
+            await Assert.That(output[0]!.Sender).IsEqualTo(fixture);
+            await Assert.That(output[0]!.Expression).IsNull();
+            await Assert.That(output[0]!.Value).IsEqualTo(BarText);
 
-            await Assert.That(output[1].Sender).IsEqualTo(fixture);
-            await Assert.That(output[1].GetPropertyName()).IsEqualTo(IsNotNullStringName);
-            await Assert.That(output[1].Value).IsEqualTo(BazText);
+            await Assert.That(output[1]!.Sender).IsEqualTo(fixture);
+            await Assert.That(output[1]!.Expression).IsNull();
+            await Assert.That(output[1]!.Value).IsEqualTo(BazText);
         }
     }
 

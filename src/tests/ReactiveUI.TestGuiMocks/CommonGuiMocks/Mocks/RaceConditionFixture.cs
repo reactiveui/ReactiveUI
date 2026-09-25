@@ -22,7 +22,7 @@ public class RaceConditionFixture : ReactiveObject
         "Design",
         "SST2403:'this' escapes before construction finishes",
         Justification = "canonical ObservableAsPropertyHelper initialization requires 'this' in the constructor; the single-threaded fixture never exposes the half-built instance.")]
-    public RaceConditionFixture() => Signal.Emit(true).Do(_ => Count++).ToProperty(this, x => x.A, out _a);
+    public RaceConditionFixture() => Signal.Emit(true).Do(_ => Count++).ToProperty(this, static x => x.A, out _a);
 
     /// <summary>Gets or sets the count.</summary>
     public int Count { get; set; }

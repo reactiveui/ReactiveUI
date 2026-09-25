@@ -42,6 +42,7 @@
     <PackageReference Include="Microsoft.Maui.Controls"/>
     <PackageReference Include="Microsoft.Maui.Controls.Compatibility" Condition="$(TargetFramework.StartsWith('net10'))"/>
     <PackageReference Include="ReactiveUI.Primitives.Maui" ExcludeAssets="analyzers" />
+    <PackageReference Include="ReactiveUI.Binding.Maui" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\Shared\ArgumentValidation.cs" Link="Shared\ArgumentValidation.cs"/>

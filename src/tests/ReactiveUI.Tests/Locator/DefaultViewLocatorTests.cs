@@ -443,7 +443,7 @@ public class DefaultViewLocatorTests
     }
 
     /// <summary>Test view implementing <see cref="IViewFor{TViewModel}" /> for <see cref="TestViewModel" />.</summary>
-    private sealed class TestView : IViewFor<TestViewModel>
+    internal sealed class TestView : IViewFor<TestViewModel>
     {
         /// <summary>Gets or sets the strongly-typed view model.</summary>
         public TestViewModel? ViewModel { get; set; }
@@ -457,7 +457,7 @@ public class DefaultViewLocatorTests
     }
 
     /// <summary>Test view implementing <see cref="IViewFor{TViewModel}" /> for <see cref="TestViewModel2" />.</summary>
-    private sealed class TestView2 : IViewFor<TestViewModel2>
+    internal sealed class TestView2 : IViewFor<TestViewModel2>
     {
         /// <summary>Gets or sets the strongly-typed view model.</summary>
         public TestViewModel2? ViewModel { get; set; }
@@ -471,7 +471,7 @@ public class DefaultViewLocatorTests
     }
 
     /// <summary>Alternative test view for <see cref="TestViewModel" />, used to test contract-specific mappings.</summary>
-    private sealed class TestViewAlt : IViewFor<TestViewModel>
+    internal sealed class TestViewAlt : IViewFor<TestViewModel>
     {
         /// <summary>Gets or sets the strongly-typed view model.</summary>
         public TestViewModel? ViewModel { get; set; }
@@ -489,12 +489,12 @@ public class DefaultViewLocatorTests
         "Minor Code Smell",
         "SST1436:Classes should not be empty",
         Justification = "Empty type used as a test marker.")]
-    private sealed class TestViewModel : ReactiveObject;
+    internal sealed class TestViewModel : ReactiveObject;
 
     /// <summary>Second test view model used for testing multi-mapping scenarios.</summary>
     [SuppressMessage(
         "Minor Code Smell",
         "SST1436:Classes should not be empty",
         Justification = "Empty type used as a test marker.")]
-    private sealed class TestViewModel2 : ReactiveObject;
+    internal sealed class TestViewModel2 : ReactiveObject;
 }

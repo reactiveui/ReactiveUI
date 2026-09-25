@@ -106,17 +106,14 @@ public partial class PropertyBindingTest
     {
         var vm = new PropertyBindViewModel();
         var view = new PropertyBindView { ViewModel = vm };
-        var fixture = new PropertyBinderImplementation();
 
         vm.JustADecimal = InitialDecimal;
         await Assert.That(view.SomeTextBox.Text).IsNotEqualTo(vm.JustADecimal.ToString(CultureInfo.InvariantCulture));
 
-        var disp = fixture.Bind(
+        var disp = view.Bind(
             vm,
-            view,
             static x => x.JustADecimal,
             static x => x.SomeTextBox.Text,
-            (IObservable<RxVoid>?)null,
             static d => d.ToString(CultureInfo.CurrentCulture),
             static t => decimal.TryParse(t, out var res) ? res : decimal.Zero);
 
@@ -146,12 +143,11 @@ public partial class PropertyBindingTest
     {
         var vm = new PropertyBindViewModel();
         var view = new PropertyBindView { ViewModel = vm };
-        var fixture = new PropertyBinderImplementation();
 
         vm.Property1 = "Foo";
         await Assert.That(view.SomeTextBox.Text).IsNotEqualTo(vm.Property1);
 
-        var disp = fixture.Bind(vm, view, static x => x.Property1, static x => x.SomeTextBox.Text, (IObservable<RxVoid>?)null, null);
+        var disp = view.Bind(vm, static x => x.Property1, static x => x.SomeTextBox.Text);
 
         using (Assert.Multiple())
         {
@@ -186,12 +182,11 @@ public partial class PropertyBindingTest
 
         var vm = new PropertyBindViewModel();
         var view = new PropertyBindView { ViewModel = vm };
-        var fixture = new PropertyBinderImplementation();
 
         vm.Property2 = InitialProperty2;
         await Assert.That(view.SomeTextBox.Text).IsNotEqualTo(vm.Property2.ToString());
 
-        var disp = fixture.Bind(vm, view, static x => x.Property2, static x => x.SomeTextBox.Text, (IObservable<RxVoid>?)null, null);
+        var disp = view.Bind(vm, static x => x.Property2, static x => x.SomeTextBox.Text);
 
         using (Assert.Multiple())
         {
@@ -216,7 +211,7 @@ public partial class PropertyBindingTest
         }
 
         vm.JustADecimal = InitialJustADecimal;
-        var disp1 = fixture.Bind(vm, view, static x => x.JustADecimal, static x => x.SomeTextBox.Text, (IObservable<RxVoid>?)null, null);
+        var disp1 = view.Bind(vm, static x => x.JustADecimal, static x => x.SomeTextBox.Text);
 
         using (Assert.Multiple())
         {
@@ -243,7 +238,7 @@ public partial class PropertyBindingTest
 
         // Empty test
         vm.JustAInt32 = InitialJustAInt32;
-        _ = fixture.Bind(vm, view, static x => x.JustAInt32, static x => x.SomeTextBox.Text, (IObservable<RxVoid>?)null, null);
+        _ = view.Bind(vm, static x => x.JustAInt32, static x => x.SomeTextBox.Text);
 
         view.SomeTextBox.Text = string.Empty;
         await Assert.That(vm.JustAInt32).IsEqualTo(InitialJustAInt32);
@@ -338,7 +333,7 @@ public partial class PropertyBindingTest
         var vm = new PropertyBindViewModel();
         var view = new PropertyBindView { ViewModel = vm };
 
-        _ = view.OneWayBind(view.ViewModel, static x => x.SomeCollectionOfStrings[0], static x => x.SomeTextBox.Text);
+        _ = view.OneWayBindUnsafe(view.ViewModel, static x => x.SomeCollectionOfStrings[0], static x => x.SomeTextBox.Text);
         await Assert.That(view.SomeTextBox.Text).IsEqualTo("Foo");
     }
 
@@ -350,7 +345,7 @@ public partial class PropertyBindingTest
         var vm = new PropertyBindViewModel();
         var view = new PropertyBindView { ViewModel = vm };
 
-        _ = view.OneWayBind(view.ViewModel, static x => x.SomeCollectionOfStrings[0], static x => x.SomeTextBox.Text);
+        _ = view.OneWayBindUnsafe(view.ViewModel, static x => x.SomeCollectionOfStrings[0], static x => x.SomeTextBox.Text);
         await Assert.That(view.SomeTextBox.Text).IsEqualTo("Foo");
 
         vm.SomeCollectionOfStrings[0] = "Bar";
@@ -366,7 +361,7 @@ public partial class PropertyBindingTest
         var vm = new PropertyBindViewModel();
         var view = new PropertyBindView { ViewModel = vm };
 
-        _ = view.OneWayBind(view.ViewModel, static x => x.SomeCollectionOfStrings[0].Length, static x => x.SomeTextBox.Text);
+        _ = view.OneWayBindUnsafe(view.ViewModel, static x => x.SomeCollectionOfStrings[0].Length, static x => x.SomeTextBox.Text);
         await Assert.That(view.SomeTextBox.Text).IsEqualTo("3");
     }
 
@@ -558,8 +553,7 @@ public partial class PropertyBindingTest
     {
         var vm = new PropertyBindViewModel();
         var view = new PropertyBindView { ViewModel = vm };
-        var fixture = new PropertyBinderImplementation();
-        _ = fixture.OneWayBind(vm, view, static x => x.JustABoolean, static x => x.SomeTextBox.IsEnabled, static s => s);
+        _ = view.OneWayBind(vm, static x => x.JustABoolean, static x => x.SomeTextBox.IsEnabled, static s => s);
         await Assert.That(view.SomeTextBox.IsEnabled).IsFalse();
     }
 
@@ -672,20 +666,6 @@ public partial class PropertyBindingTest
         await Assert.That(string.IsNullOrEmpty(view.SomeTextBox.Text)).IsTrue();
     }
 
-    /// <summary>Tests BindTo with a converter is not null.</summary>
-    [Test]
-    public void BindExpectsConverterFuncsToNotBeNull()
-    {
-        var vm = new PropertyBindViewModel();
-        var view = new PropertyBindView { ViewModel = vm };
-        var fixture = new PropertyBinderImplementation();
-
-        const Func<string?, string?> NullFunc = null!;
-
-        _ = Assert.Throws<ArgumentNullException>(() => fixture.Bind(vm, view, x => x.Property1, x => x.SomeTextBox.Text, (IObservable<RxVoid>?)null, NullFunc, static s => s));
-        _ = Assert.Throws<ArgumentNullException>(() => fixture.Bind(vm, view, x => x.Property1, x => x.SomeTextBox.Text, (IObservable<RxVoid>?)null, static s => s, NullFunc));
-    }
-
     /// <summary>Tests the BindWith func's should work as extension methods.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
@@ -747,9 +727,8 @@ public partial class PropertyBindingTest
         var dis = new MultipleDisposable();
         var vm = new PropertyBindViewModel();
         var view = new PropertyBindView { ViewModel = vm };
-        var fixture = new PropertyBinderImplementation();
 
-        _ = fixture.OneWayBind(vm, view, static vm => vm.JustABoolean, static v => v.SomeTextBox.Visibility, BooleanToVisibilityHint.Inverse).DisposeWith(dis);
+        _ = view.OneWayBind(vm, static vm => vm.JustABoolean, static v => v.SomeTextBox.Visibility, new BooleanToVisibilityTypeConverter(), BooleanToVisibilityHint.Inverse).DisposeWith(dis);
         await Assert.That(view.SomeTextBox.Visibility).IsEqualTo(System.Windows.Visibility.Visible);
 
         vm.JustABoolean = true;
@@ -767,8 +746,7 @@ public partial class PropertyBindingTest
         MultipleDisposable? dis = null;
         var vm = new PropertyBindViewModel();
         var view = new PropertyBindView { ViewModel = vm };
-        var fixture = new PropertyBinderImplementation();
-        var binding = fixture.OneWayBind(vm, view, static x => x.JustABoolean, static v => v.SomeTextBox.Visibility, BooleanToVisibilityHint.Inverse);
+        var binding = view.OneWayBind(vm, static x => x.JustABoolean, static v => v.SomeTextBox.Visibility, new BooleanToVisibilityTypeConverter(), BooleanToVisibilityHint.Inverse);
 
         // DisposeWith validates the container, so a null one is an argument error rather than a registration
         // that silently disappears and leaks the binding.
@@ -787,7 +765,7 @@ public partial class PropertyBindingTest
         var vm = new PropertyBindViewModel();
         var view = new PropertyBindView { ViewModel = vm };
         var obs = vm.WhenAnyValue(static x => x.JustABoolean);
-        _ = new PropertyBinderImplementation().BindTo(obs, view, static v => v.SomeTextBox.Visibility, BooleanToVisibilityHint.Inverse).DisposeWith(dis);
+        _ = obs.BindTo(view, static v => v.SomeTextBox.Visibility, BooleanToVisibilityHint.Inverse).DisposeWith(dis);
         await Assert.That(view.SomeTextBox.Visibility).IsEqualTo(System.Windows.Visibility.Visible);
 
         vm.JustABoolean = true;
@@ -854,7 +832,7 @@ public partial class PropertyBindingTest
     }
 
     /// <summary>A host view used to verify nested binding update tracking.</summary>
-    private sealed class TrackingHostView : ReactiveObject, IViewFor<TrackingHostViewModel>
+    internal sealed class TrackingHostView : ReactiveObject, IViewFor<TrackingHostViewModel>
     {
         /// <summary>Gets or sets the view model.</summary>
         public TrackingHostViewModel? ViewModel
@@ -872,7 +850,7 @@ public partial class PropertyBindingTest
     }
 
     /// <summary>A host view model that exposes a nested reactive value.</summary>
-    private sealed class TrackingHostViewModel : ReactiveObject
+    internal sealed class TrackingHostViewModel : ReactiveObject
     {
         /// <summary>Gets or sets the nested value.</summary>
         public TrackingNestedValue Nested
@@ -883,7 +861,7 @@ public partial class PropertyBindingTest
     }
 
     /// <summary>A nested reactive value that counts how many times its text is set.</summary>
-    private sealed class TrackingNestedValue : ReactiveObject
+    internal sealed class TrackingNestedValue : ReactiveObject
     {
         /// <summary>Gets the number of times <see cref="SomeText"/> has been set.</summary>
         public int SetCallCount { get; private set; }

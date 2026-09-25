@@ -108,10 +108,10 @@ public class ReactiveShellContentTest
 
     /// <summary>Test view model for testing.</summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "SST1436:Classes should not be empty", Justification = "Marker type for tests.")]
-    private sealed class TestViewModel;
+    internal sealed class TestViewModel;
 
     /// <summary>Test view for the test view model.</summary>
-    private sealed class TestView : ContentView, IViewFor<TestViewModel>
+    internal sealed class TestView : ContentView, IViewFor<TestViewModel>
     {
         /// <inheritdoc/>
         public TestViewModel? ViewModel { get; set; }

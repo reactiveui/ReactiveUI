@@ -141,10 +141,10 @@ public class ConverterServiceIntegrationTests
         await Assert.That(result2).IsEqualTo(stringToInt);
     }
 
-    /// <summary>Verifies that RxConverters.Current works after being set.</summary>
+    /// <summary>Verifies generated bindings use Binding's process-wide converter service.</summary>
     /// <returns>A task representing the asynchronous operation.</returns>
     [Test]
-    public async Task RxConverters_CurrentShouldBeAccessible()
+    public async Task BindingConverters_CurrentShouldBeAccessible()
     {
         // Arrange
         var service = new ConverterService();
@@ -152,14 +152,14 @@ public class ConverterServiceIntegrationTests
         service.TypedConverters.Register(converter);
 
         // Act
-        RxConverters.SetService(service);
-        var result = RxConverters.Current.ResolveConverter(typeof(int), typeof(string));
+        BindingConverters.SetService(service);
+        var result = BindingConverters.Current.ResolveConverter(typeof(int), typeof(string));
 
         // Assert
         await Assert.That(result).IsEqualTo(converter);
 
         // Cleanup - reset to default
-        RxConverters.SetService(new());
+        BindingConverters.SetService(new());
     }
 
     /// <summary>Verifies that set-method converters can be registered and retrieved.</summary>

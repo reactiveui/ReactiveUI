@@ -27,7 +27,7 @@ public partial class PropertyBindingTest
         vm.JustADecimal = InitialDecimal;
         await Assert.That(view.SomeTextBox.Text).IsNotEqualTo(vm.JustADecimal.ToString(CultureInfo.InvariantCulture));
 
-        _ = view.Bind(
+        _ = view.BindTriggered(
             vm,
             static x => x.JustADecimal,
             static x => x.SomeTextBox.Text,
@@ -84,14 +84,12 @@ public partial class PropertyBindingTest
 
         var decimalToStringTypeConverter = new DecimalToStringTypeConverter();
 
-        _ = view.Bind(
+        _ = view.BindTriggered(
             vm,
             static x => x.JustADecimal,
             static x => x.SomeTextBox.Text,
             update.AsObservable(),
-            RoundingHint,
-            decimalToStringTypeConverter,
-            decimalToStringTypeConverter,
+            new(RoundingHint, decimalToStringTypeConverter, decimalToStringTypeConverter),
             TriggerUpdate.ViewModelToView).DisposeWith(dis);
 
         vm.JustADecimal = DecimalOne;
@@ -142,14 +140,12 @@ public partial class PropertyBindingTest
 
         var decimalToStringTypeConverter = new NullableDecimalToStringTypeConverter();
 
-        _ = view.Bind(
+        _ = view.BindTriggered(
             vm,
             static x => x.JustANullDecimal,
             static x => x.SomeTextBox.Text,
             update.AsObservable(),
-            RoundingHint,
-            decimalToStringTypeConverter,
-            decimalToStringTypeConverter,
+            new(RoundingHint, decimalToStringTypeConverter, decimalToStringTypeConverter),
             TriggerUpdate.ViewModelToView).DisposeWith(dis);
 
         vm.JustANullDecimal = DecimalOne;
@@ -202,7 +198,7 @@ public partial class PropertyBindingTest
         vm.JustADecimal = InitialDecimal;
         await Assert.That(view.SomeTextBox.Text).IsNotEqualTo(vm.JustADecimal.ToString(CultureInfo.InvariantCulture));
 
-        _ = view.Bind(
+        _ = view.BindTriggered(
             vm,
             static x => x.JustADecimal,
             static x => x.SomeTextBox.Text,
@@ -259,14 +255,12 @@ public partial class PropertyBindingTest
 
         var toStringConverter = new DoubleToStringTypeConverter();
 
-        _ = view.Bind(
+        _ = view.BindTriggered(
             vm,
             static x => x.JustADouble,
             static x => x.SomeTextBox.Text,
             update.AsObservable(),
-            RoundingHint,
-            toStringConverter,
-            toStringConverter,
+            new(RoundingHint, toStringConverter, toStringConverter),
             TriggerUpdate.ViewModelToView).DisposeWith(dis);
 
         vm.JustADouble = DoubleOne;
@@ -317,14 +311,12 @@ public partial class PropertyBindingTest
 
         var toStringConverter = new NullableDoubleToStringTypeConverter();
 
-        _ = view.Bind(
+        _ = view.BindTriggered(
             vm,
             static x => x.JustANullDouble,
             static x => x.SomeTextBox.Text,
             update.AsObservable(),
-            RoundingHint,
-            toStringConverter,
-            toStringConverter,
+            new(RoundingHint, toStringConverter, toStringConverter),
             TriggerUpdate.ViewModelToView).DisposeWith(dis);
 
         vm.JustANullDouble = DoubleOne;
@@ -377,7 +369,7 @@ public partial class PropertyBindingTest
         vm.JustADouble = InitialDouble;
         await Assert.That(view.SomeTextBox.Text).IsNotEqualTo(vm.JustADouble.ToString(CultureInfo.InvariantCulture));
 
-        _ = view.Bind(vm, static x => x.JustADouble, static x => x.SomeTextBox.Text, update.AsObservable(), null, null, null, triggerUpdate: TriggerUpdate.ViewModelToView).DisposeWith(dis);
+        _ = view.BindTriggered(vm, static x => x.JustADouble, static x => x.SomeTextBox.Text, update.AsObservable(), default, triggerUpdate: TriggerUpdate.ViewModelToView).DisposeWith(dis);
 
         vm.JustADouble = DoubleOne;
 
@@ -427,14 +419,12 @@ public partial class PropertyBindingTest
 
         var toStringConverter = new SingleToStringTypeConverter();
 
-        _ = view.Bind(
+        _ = view.BindTriggered(
             vm,
             static x => x.JustASingle,
             static x => x.SomeTextBox.Text,
             update.AsObservable(),
-            RoundingHint,
-            toStringConverter,
-            toStringConverter,
+            new(RoundingHint, toStringConverter, toStringConverter),
             TriggerUpdate.ViewModelToView).DisposeWith(dis);
 
         vm.JustASingle = SingleOne;
@@ -485,14 +475,12 @@ public partial class PropertyBindingTest
 
         var toStringConverter = new NullableSingleToStringTypeConverter();
 
-        _ = view.Bind(
+        _ = view.BindTriggered(
             vm,
             static x => x.JustANullSingle,
             static x => x.SomeTextBox.Text,
             update.AsObservable(),
-            RoundingHint,
-            toStringConverter,
-            toStringConverter,
+            new(RoundingHint, toStringConverter, toStringConverter),
             TriggerUpdate.ViewModelToView).DisposeWith(dis);
 
         vm.JustANullSingle = SingleOne;
@@ -545,7 +533,7 @@ public partial class PropertyBindingTest
         vm.JustASingle = InitialSingle;
         await Assert.That(view.SomeTextBox.Text).IsNotEqualTo(vm.JustASingle.ToString(CultureInfo.InvariantCulture));
 
-        _ = view.Bind(vm, static x => x.JustASingle, static x => x.SomeTextBox.Text, update.AsObservable(), null, null, null, triggerUpdate: TriggerUpdate.ViewModelToView).DisposeWith(dis);
+        _ = view.BindTriggered(vm, static x => x.JustASingle, static x => x.SomeTextBox.Text, update.AsObservable(), default, triggerUpdate: TriggerUpdate.ViewModelToView).DisposeWith(dis);
 
         vm.JustASingle = SingleOne;
 

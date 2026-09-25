@@ -231,7 +231,7 @@ public static class ReactiveTableViewSourceExtensions
                 _ = initSource(source);
             }
 
-            var bind = sectionsObservable.BindTo(source, static x => x.Data);
+            var bind = sectionsObservable.Subscribe(new DelegateObserver<IReadOnlyList<TableSectionInformation<TSource, TCell>>>(sections => source.Data = sections));
             tableView.Source = source;
 
             return new MultipleDisposable(bind, source);

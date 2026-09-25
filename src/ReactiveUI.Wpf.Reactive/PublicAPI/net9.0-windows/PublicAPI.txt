@@ -4,17 +4,17 @@
 [assembly: System.Windows.ThemeInfo(System.Windows.ResourceDictionaryLocation.None, System.Windows.ResourceDictionaryLocation.SourceAssembly)]
 namespace ReactiveUI.Reactive
 {
-    public class ActivationForViewFetcher : ReactiveUI.IActivationForViewFetcher
+    public class ActivationForViewFetcher : ReactiveUI.Reactive.IActivationForViewFetcher
     {
         public ActivationForViewFetcher() { }
-        public System.IObservable<bool> GetActivationForView(ReactiveUI.IActivatableView view) { }
+        public System.IObservable<bool> GetActivationForView(ReactiveUI.Binding.Reactive.IActivatableView view) { }
         public int GetAffinityForView(System.Type view) { }
     }
-    public class AutoDataTemplateBindingHook : ReactiveUI.IPropertyBindingHook
+    public class AutoDataTemplateBindingHook : ReactiveUI.Binding.Reactive.IPropertyBindingHook
     {
         public AutoDataTemplateBindingHook() { }
         public static System.Lazy<System.Windows.DataTemplate> DefaultItemTemplate { get; }
-        public bool ExecuteHook(object? source, object target, System.Func<ReactiveUI.IObservedChange<object, object>[]> getCurrentViewModelProperties, System.Func<ReactiveUI.IObservedChange<object, object>[]> getCurrentViewProperties, ReactiveUI.BindingDirection direction) { }
+        public bool ExecuteHook(object? source, object target, System.Func<ReactiveUI.Binding.Reactive.IObservedChange<object, object>[]> getCurrentViewModelProperties, System.Func<ReactiveUI.Binding.Reactive.IObservedChange<object, object>[]> getCurrentViewProperties, ReactiveUI.Binding.Reactive.BindingDirection direction) { }
     }
     [System.Diagnostics.DebuggerDisplay("{IdleTimeout}")]
     public class AutoSuspendHelper : Splat.IEnableLogger
@@ -29,24 +29,11 @@ namespace ReactiveUI.Reactive
         Inverse = 2,
         UseHidden = 4,
     }
-    public sealed class BooleanToVisibilityTypeConverter : ReactiveUI.BindingTypeConverter<bool, System.Windows.Visibility>
+    public sealed class BooleanToVisibilityTypeConverter : ReactiveUI.Binding.Reactive.BindingTypeConverter<bool, System.Windows.Visibility>
     {
         public BooleanToVisibilityTypeConverter() { }
         public override int GetAffinityForObjects() { }
         public override bool TryConvert(bool from, object? conversionHint, out System.Windows.Visibility result) { }
-    }
-    [System.Diagnostics.DebuggerDisplay("{Scheduler}")]
-    public class DependencyObjectObservableForProperty : ReactiveUI.ICreatesObservableForProperty
-    {
-        public DependencyObjectObservableForProperty() { }
-        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-        public int GetAffinityForObject(System.Type type, string propertyName) { }
-        public int GetAffinityForObject(System.Type? type, string propertyName, bool beforeChanged) { }
-        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-        public System.IObservable<ReactiveUI.IObservedChange<object, object?>> GetNotificationForProperty(object sender, System.Linq.Expressions.Expression expression, string propertyName) { }
-        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-        public System.IObservable<ReactiveUI.IObservedChange<object, object?>> GetNotificationForProperty(object sender, System.Linq.Expressions.Expression expression, string propertyName, bool beforeChanged) { }
-        public System.IObservable<ReactiveUI.IObservedChange<object, object?>> GetNotificationForProperty(object sender, System.Linq.Expressions.Expression expression, string propertyName, bool beforeChanged, bool suppressWarnings) { }
     }
     public class PlatformOperations : ReactiveUI.IPlatformOperations
     {
@@ -54,34 +41,34 @@ namespace ReactiveUI.Reactive
         public string? GetOrientation() { }
     }
     [System.Diagnostics.DebuggerDisplay("{BindingRoot}, {ViewModel}")]
-    public class ReactivePage<TViewModel> : System.Windows.Controls.Page, ReactiveUI.IViewFor<TViewModel> where TViewModel : class
+    public class ReactivePage<TViewModel> : System.Windows.Controls.Page, ReactiveUI.Binding.Reactive.IViewFor<TViewModel> where TViewModel : class
     {
         public ReactivePage() { }
         public static readonly System.Windows.DependencyProperty ViewModelProperty;
         public TViewModel? BindingRoot { get; }
-        object? ReactiveUI.IViewFor.ViewModel { get; set; }
+        object? ReactiveUI.Binding.Reactive.IViewFor.ViewModel { get; set; }
         public TViewModel? ViewModel { get; set; }
     }
     [System.Diagnostics.DebuggerDisplay("{BindingRoot}, {ViewModel}")]
-    public class ReactiveUserControl<TViewModel> : System.Windows.Controls.UserControl, ReactiveUI.IViewFor<TViewModel> where TViewModel : class
+    public class ReactiveUserControl<TViewModel> : System.Windows.Controls.UserControl, ReactiveUI.Binding.Reactive.IViewFor<TViewModel> where TViewModel : class
     {
         public ReactiveUserControl() { }
         public static readonly System.Windows.DependencyProperty ViewModelProperty;
         public TViewModel? BindingRoot { get; }
-        object? ReactiveUI.IViewFor.ViewModel { get; set; }
+        object? ReactiveUI.Binding.Reactive.IViewFor.ViewModel { get; set; }
         public TViewModel? ViewModel { get; set; }
     }
     [System.Diagnostics.DebuggerDisplay("{BindingRoot}, {ViewModel}")]
-    public class ReactiveWindow<TViewModel> : System.Windows.Window, ReactiveUI.IViewFor<TViewModel> where TViewModel : class
+    public class ReactiveWindow<TViewModel> : System.Windows.Window, ReactiveUI.Binding.Reactive.IViewFor<TViewModel> where TViewModel : class
     {
         public ReactiveWindow() { }
         public static readonly System.Windows.DependencyProperty ViewModelProperty;
         public TViewModel? BindingRoot { get; }
-        object? ReactiveUI.IViewFor.ViewModel { get; set; }
+        object? ReactiveUI.Binding.Reactive.IViewFor.ViewModel { get; set; }
         public TViewModel? ViewModel { get; set; }
     }
     [System.Diagnostics.DebuggerDisplay("{Router}, {DefaultContent}")]
-    public class RoutedViewHost : ReactiveUI.Reactive.TransitioningContentControl, ReactiveUI.IActivatableView, Splat.IEnableLogger
+    public class RoutedViewHost : ReactiveUI.Reactive.TransitioningContentControl, ReactiveUI.Binding.Reactive.IActivatableView, Splat.IEnableLogger
     {
         public RoutedViewHost() { }
         public static readonly System.Windows.DependencyProperty DefaultContentProperty;
@@ -91,7 +78,7 @@ namespace ReactiveUI.Reactive
         public ReactiveUI.Reactive.RoutingState Router { get; set; }
         public string? ViewContract { get; set; }
         public System.IObservable<string?> ViewContractObservable { get; set; }
-        public ReactiveUI.IViewLocator? ViewLocator { get; set; }
+        public ReactiveUI.Reactive.IViewLocator? ViewLocator { get; set; }
     }
     [System.Diagnostics.DebuggerDisplay("{Transition}, {Direction}")]
     [System.Windows.TemplatePart(Name="PART_Container", Type=typeof(System.Windows.FrameworkElement))]
@@ -129,13 +116,13 @@ namespace ReactiveUI.Reactive
     }
     public static class ValidationBindingMixins
     {
-        extension<TView>(TView view) where TView : class, ReactiveUI.IViewFor
+        extension<TView>(TView view) where TView : class, ReactiveUI.Binding.Reactive.IViewFor
         {
-            public ReactiveUI.IReactiveBinding<TView, TType> BindWithValidation<TViewModel, TVProp, TType>(TViewModel viewModel, System.Linq.Expressions.Expression<System.Func<TViewModel, TType?>> viewModelPropertySelector, System.Linq.Expressions.Expression<System.Func<TView, TVProp>> frameworkElementSelector) where TViewModel : class { }
+            public ReactiveUI.Binding.Reactive.IReactiveBinding<TView, TType> BindWithValidation<TViewModel, TVProp, TType>(TViewModel viewModel, System.Linq.Expressions.Expression<System.Func<TViewModel, TType?>> viewModelPropertySelector, System.Linq.Expressions.Expression<System.Func<TView, TVProp>> frameworkElementSelector) where TViewModel : class { }
         }
     }
     [System.Diagnostics.DebuggerDisplay("{ViewContractObservable}, {DefaultContent}")]
-    public class ViewModelViewHost : ReactiveUI.Reactive.TransitioningContentControl, ReactiveUI.IViewFor, Splat.IEnableLogger
+    public class ViewModelViewHost : ReactiveUI.Reactive.TransitioningContentControl, ReactiveUI.Binding.Reactive.IViewFor, Splat.IEnableLogger
     {
         public ViewModelViewHost() { }
         public static readonly System.Windows.DependencyProperty ContractFallbackByPassProperty;
@@ -146,11 +133,11 @@ namespace ReactiveUI.Reactive
         public object DefaultContent { get; set; }
         public string? ViewContract { get; set; }
         public System.IObservable<string?> ViewContractObservable { get; set; }
-        public ReactiveUI.IViewLocator? ViewLocator { get; set; }
+        public ReactiveUI.Reactive.IViewLocator? ViewLocator { get; set; }
         public object? ViewModel { get; set; }
         protected virtual void ResolveViewForViewModel(object? viewModel, string? contract) { }
     }
-    public sealed class VisibilityToBooleanTypeConverter : ReactiveUI.BindingTypeConverter<System.Windows.Visibility, bool>
+    public sealed class VisibilityToBooleanTypeConverter : ReactiveUI.Binding.Reactive.BindingTypeConverter<System.Windows.Visibility, bool>
     {
         public VisibilityToBooleanTypeConverter() { }
         public override int GetAffinityForObjects() { }
@@ -158,7 +145,7 @@ namespace ReactiveUI.Reactive
     }
     public static class WpfViewForMixins
     {
-        extension<TView>(TView item) where TView : System.Windows.FrameworkElement, ReactiveUI.IActivatableView
+        extension<TView>(TView item) where TView : System.Windows.FrameworkElement, ReactiveUI.Binding.Reactive.IActivatableView
         {
             public bool GetIsDesignMode() { }
             [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
@@ -171,11 +158,11 @@ namespace ReactiveUI.Reactive
             [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
             public System.IDisposable WhenActivated(System.Func<System.Collections.Generic.IEnumerable<System.IDisposable>> block) { }
             [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
-            public System.IDisposable WhenActivated(System.Action<ReactiveUI.Primitives.Reactive.Disposables.ContainerDisposable> block, ReactiveUI.IViewFor? view) { }
+            public System.IDisposable WhenActivated(System.Action<ReactiveUI.Primitives.Reactive.Disposables.ContainerDisposable> block, ReactiveUI.Binding.Reactive.IViewFor? view) { }
             [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
-            public System.IDisposable WhenActivated(System.Action<System.Action<System.IDisposable>> block, ReactiveUI.IViewFor view) { }
+            public System.IDisposable WhenActivated(System.Action<System.Action<System.IDisposable>> block, ReactiveUI.Binding.Reactive.IViewFor view) { }
             [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
-            public System.IDisposable WhenActivated(System.Func<System.Collections.Generic.IEnumerable<System.IDisposable>> block, ReactiveUI.IViewFor? view) { }
+            public System.IDisposable WhenActivated(System.Func<System.Collections.Generic.IEnumerable<System.IDisposable>> block, ReactiveUI.Binding.Reactive.IViewFor? view) { }
         }
     }
 }

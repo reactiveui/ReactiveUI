@@ -12,6 +12,12 @@ using ItemsControl = System.Windows.Controls.ItemsControl;
 #endif
 
 #if REACTIVE_SHIM
+using ReactiveUI.Binding.Reactive.ObservableForProperty;
+#else
+using ReactiveUI.Binding.ObservableForProperty;
+#endif
+
+#if REACTIVE_SHIM
 namespace ReactiveUI.Reactive.Internal;
 #else
 namespace ReactiveUI.Internal;

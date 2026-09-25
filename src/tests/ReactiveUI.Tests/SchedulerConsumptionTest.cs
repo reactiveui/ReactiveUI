@@ -100,7 +100,7 @@ public class SchedulerConsumptionTest
     }
 
     /// <summary>Example repository class that uses RxSchedulers without requiring attributes.</summary>
-    private sealed class ExampleRepository : IDisposable
+    public sealed class ExampleRepository : IDisposable
     {
         /// <summary>The subject used to publish data.</summary>
         private readonly Signal<string> _dataSubject = new();
@@ -121,7 +121,7 @@ public class SchedulerConsumptionTest
     ///     Example ViewModel that uses RxSchedulers without requiring attributes.
     ///     This would previously require RequiresUnreferencedCode when using RxApp schedulers.
     /// </summary>
-    private sealed class ExampleViewModel : ReactiveObject
+    internal sealed class ExampleViewModel : ReactiveObject
     {
         /// <summary>The output property helper backing the <see cref="Greeting" /> property.</summary>
         private readonly ObservableAsPropertyHelper<string> _greeting;

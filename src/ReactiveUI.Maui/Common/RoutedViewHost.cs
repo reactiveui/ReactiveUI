@@ -13,6 +13,13 @@ using ReactiveUI.Reactive.Maui.Internal;
 using ReactiveUI.Maui.Internal;
 #endif
 #if REACTIVE_SHIM
+using RetainedIViewLocator = ReactiveUI.Reactive.IViewLocator;
+using RetainedViewLocator = ReactiveUI.Reactive.ViewLocator;
+#else
+using RetainedIViewLocator = ReactiveUI.IViewLocator;
+using RetainedViewLocator = ReactiveUI.ViewLocator;
+#endif
+#if REACTIVE_SHIM
 namespace ReactiveUI.Reactive;
 #else
 namespace ReactiveUI;
@@ -98,7 +105,7 @@ public partial class RoutedViewHost : TransitioningContentControl, IActivatableV
     /// <value>
     /// The view locator.
     /// </value>
-    public IViewLocator? ViewLocator { get; set; }
+    public RetainedIViewLocator? ViewLocator { get; set; }
 
     /// <inheritdoc/>
     void IMauiRoutedViewHost.SetObservedViewContract(string? contract) => _viewContract = contract;
@@ -117,7 +124,7 @@ public partial class RoutedViewHost : TransitioningContentControl, IActivatableV
             return;
         }
 
-        var viewLocator = ViewLocator ?? ReactiveUI.ViewLocator.Current;
+        var viewLocator = ViewLocator ?? RetainedViewLocator.Current;
         var view = (viewLocator.ResolveView(route.ViewModel, route.Contract) ?? viewLocator.ResolveView(route.ViewModel))
             ?? throw new InvalidOperationException($"Couldn't find view for '{route.ViewModel}'.");
         view.ViewModel = route.ViewModel;

@@ -190,7 +190,7 @@ public class AutoSuspendHelper<[DynamicallyAccessedMembers(DynamicallyAccessedMe
     /// Thrown when required lifecycle methods are not declared on appDelegate's runtime type.
     /// </exception>
     /// <remarks>
-    /// Delegates to <see cref="Reflection.ThrowIfMethodsNotOverloaded(string, object, string[])"/> on a cache miss,
+    /// Delegates to <see cref="MethodOverrideGuard.ThrowIfMethodsNotOverloaded"/> on a cache miss,
     /// but avoids repeating the reflection scan for each helper construction.
     /// </remarks>
     private static void EnsureMethodsNotOverloadedCached()
@@ -202,7 +202,7 @@ public class AutoSuspendHelper<[DynamicallyAccessedMembers(DynamicallyAccessedMe
             return;
         }
 
-        Reflection.ThrowIfMethodsNotOverloaded(
+        MethodOverrideGuard.ThrowIfMethodsNotOverloaded(
             nameof(AutoSuspendHelper<>),
             type,
             nameof(ApplicationShouldTerminate),

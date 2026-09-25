@@ -205,6 +205,14 @@ bandwidth.
 
 [Become a sponsor](https://github.com/sponsors/reactivemarbles).
 
+## Migrating bindings to ReactiveUI.Binding
+
+ReactiveUI runs `WhenAnyValue`, `Bind`, `OneWayBind`, `BindCommand` and `ToProperty` on
+[ReactiveUI.Binding](https://github.com/reactiveui/ReactiveUI.Binding.SourceGenerators), which writes the code for
+each binding while your project builds. Most code keeps compiling unchanged. The
+[migration guide](https://reactiveui.net/documentation/upgrading/reactiveui-binding-migration) covers the calls that
+need an `Unsafe` twin, hand-written `IReactiveObject` types, and the behavior that changed.
+
 ## Migration from Xamarin and .NET 8 MAUI
 
 ### Xamarin Users

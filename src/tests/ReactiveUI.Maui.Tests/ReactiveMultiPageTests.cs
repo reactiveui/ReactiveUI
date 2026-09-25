@@ -65,14 +65,14 @@ public class ReactiveMultiPageTests
     }
 
     /// <summary>Concrete implementation of ReactiveMultiPage for testing.</summary>
-    private sealed class TestMultiPage : ReactiveMultiPage<ContentPage, TestViewModel>
+    internal sealed class TestMultiPage : ReactiveMultiPage<ContentPage, TestViewModel>
     {
         /// <inheritdoc/>
         protected override ContentPage CreateDefault(object item) => new();
     }
 
     /// <summary>Test view model.</summary>
-    private sealed class TestViewModel
+    internal sealed class TestViewModel
     {
         /// <summary>Gets or sets the name.</summary>
         public string? Name { get; set; }

@@ -43,10 +43,10 @@ namespace ReactiveUI.Reactive.AndroidX
         public System.IDisposable SuppressChangeNotifications() { }
     }
     [System.Diagnostics.DebuggerDisplay("{ViewModel}")]
-    public class ReactiveAppCompatActivity<TViewModel> : ReactiveUI.Reactive.AndroidX.ReactiveAppCompatActivity, ReactiveUI.IViewFor<TViewModel>, ReactiveUI.Reactive.ICanActivate where TViewModel : class
+    public class ReactiveAppCompatActivity<TViewModel> : ReactiveUI.Reactive.AndroidX.ReactiveAppCompatActivity, ReactiveUI.Binding.Reactive.IViewFor<TViewModel>, ReactiveUI.Reactive.ICanActivate where TViewModel : class
     {
         protected ReactiveAppCompatActivity() { }
-        object? ReactiveUI.IViewFor.ViewModel { get; set; }
+        object? ReactiveUI.Binding.Reactive.IViewFor.ViewModel { get; set; }
         public TViewModel? ViewModel { get; set; }
     }
     [System.Diagnostics.DebuggerDisplay("{Activated}, {Deactivated}")]
@@ -71,10 +71,10 @@ namespace ReactiveUI.Reactive.AndroidX
         public System.IDisposable SuppressChangeNotifications() { }
     }
     [System.Diagnostics.DebuggerDisplay("{ViewModel}")]
-    public class ReactiveDialogFragment<TViewModel> : ReactiveUI.Reactive.AndroidX.ReactiveDialogFragment, ReactiveUI.IViewFor<TViewModel>, ReactiveUI.Reactive.ICanActivate where TViewModel : class
+    public class ReactiveDialogFragment<TViewModel> : ReactiveUI.Reactive.AndroidX.ReactiveDialogFragment, ReactiveUI.Binding.Reactive.IViewFor<TViewModel>, ReactiveUI.Reactive.ICanActivate where TViewModel : class
     {
         protected ReactiveDialogFragment() { }
-        object? ReactiveUI.IViewFor.ViewModel { get; set; }
+        object? ReactiveUI.Binding.Reactive.IViewFor.ViewModel { get; set; }
         public TViewModel? ViewModel { get; set; }
     }
     [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
@@ -100,10 +100,10 @@ namespace ReactiveUI.Reactive.AndroidX
         public System.IDisposable SuppressChangeNotifications() { }
     }
     [System.Diagnostics.DebuggerDisplay("{ViewModel}")]
-    public class ReactiveFragment<TViewModel> : ReactiveUI.Reactive.AndroidX.ReactiveFragment, ReactiveUI.IViewFor<TViewModel>, ReactiveUI.Reactive.ICanActivate where TViewModel : class
+    public class ReactiveFragment<TViewModel> : ReactiveUI.Reactive.AndroidX.ReactiveFragment, ReactiveUI.Binding.Reactive.IViewFor<TViewModel>, ReactiveUI.Reactive.ICanActivate where TViewModel : class
     {
         protected ReactiveFragment() { }
-        object? ReactiveUI.IViewFor.ViewModel { get; set; }
+        object? ReactiveUI.Binding.Reactive.IViewFor.ViewModel { get; set; }
         public TViewModel? ViewModel { get; set; }
     }
     [System.Diagnostics.DebuggerDisplay("{Activated}, {Deactivated}")]
@@ -134,10 +134,10 @@ namespace ReactiveUI.Reactive.AndroidX
         public System.IDisposable SuppressChangeNotifications() { }
     }
     [System.Diagnostics.DebuggerDisplay("{ViewModel}")]
-    public class ReactiveFragmentActivity<TViewModel> : ReactiveUI.Reactive.AndroidX.ReactiveFragmentActivity, ReactiveUI.IViewFor<TViewModel>, ReactiveUI.Reactive.ICanActivate where TViewModel : class
+    public class ReactiveFragmentActivity<TViewModel> : ReactiveUI.Reactive.AndroidX.ReactiveFragmentActivity, ReactiveUI.Binding.Reactive.IViewFor<TViewModel>, ReactiveUI.Reactive.ICanActivate where TViewModel : class
     {
         protected ReactiveFragmentActivity() { }
-        object? ReactiveUI.IViewFor.ViewModel { get; set; }
+        object? ReactiveUI.Binding.Reactive.IViewFor.ViewModel { get; set; }
         public TViewModel? ViewModel { get; set; }
     }
     [System.Diagnostics.DebuggerDisplay("Count = {Count}")]
@@ -179,11 +179,11 @@ namespace ReactiveUI.Reactive.AndroidX
         public System.IDisposable SuppressChangeNotifications() { }
     }
     [System.Diagnostics.DebuggerDisplay("{ViewModel}")]
-    public abstract class ReactivePreferenceFragment<TViewModel> : ReactiveUI.Reactive.AndroidX.ReactivePreferenceFragment, ReactiveUI.IViewFor<TViewModel>, ReactiveUI.Reactive.ICanActivate where TViewModel : class
+    public abstract class ReactivePreferenceFragment<TViewModel> : ReactiveUI.Reactive.AndroidX.ReactivePreferenceFragment, ReactiveUI.Binding.Reactive.IViewFor<TViewModel>, ReactiveUI.Reactive.ICanActivate where TViewModel : class
     {
         protected ReactivePreferenceFragment() { }
         protected ReactivePreferenceFragment(in nint handle, Android.Runtime.JniHandleOwnership ownership) { }
-        object? ReactiveUI.IViewFor.ViewModel { get; set; }
+        object? ReactiveUI.Binding.Reactive.IViewFor.ViewModel { get; set; }
         public TViewModel? ViewModel { get; set; }
     }
     [System.Diagnostics.DebuggerDisplay("ItemCount = {ItemCount}")]
@@ -204,7 +204,7 @@ namespace ReactiveUI.Reactive.AndroidX
     [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("Android property discovery discovery uses reflection that may require dynamic code generation.")]
     [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Android property discovery uses reflection over generated resource types that may be trimmed.")]
     [System.Diagnostics.DebuggerDisplay("{ViewModel}")]
-    public class ReactiveRecyclerViewViewHolder<TViewModel> : AndroidX.RecyclerView.Widget.RecyclerView.ViewHolder, ReactiveUI.IReactiveNotifyPropertyChanged<ReactiveUI.Reactive.AndroidX.ReactiveRecyclerViewViewHolder<TViewModel>>, ReactiveUI.IReactiveObject, ReactiveUI.IViewFor<TViewModel>, ReactiveUI.Reactive.ICanActivate, ReactiveUI.Reactive.ILayoutViewHost where TViewModel : class, ReactiveUI.IReactiveObject
+    public class ReactiveRecyclerViewViewHolder<TViewModel> : AndroidX.RecyclerView.Widget.RecyclerView.ViewHolder, ReactiveUI.Binding.Reactive.IViewFor<TViewModel>, ReactiveUI.IReactiveNotifyPropertyChanged<ReactiveUI.Reactive.AndroidX.ReactiveRecyclerViewViewHolder<TViewModel>>, ReactiveUI.IReactiveObject, ReactiveUI.Reactive.ICanActivate, ReactiveUI.Reactive.ILayoutViewHost where TViewModel : class, ReactiveUI.IReactiveObject
     {
         protected ReactiveRecyclerViewViewHolder(Android.Views.View view) { }
         public System.IObservable<System.Reactive.Unit> Activated { get; }
@@ -220,7 +220,7 @@ namespace ReactiveUI.Reactive.AndroidX
         public System.IObservable<System.Reactive.Unit> Deactivated { get; }
         public System.IObservable<int> LongClicked { get; }
         public System.IObservable<TViewModel?> LongClickedWithViewModel { get; }
-        object? ReactiveUI.IViewFor.ViewModel { get; set; }
+        object? ReactiveUI.Binding.Reactive.IViewFor.ViewModel { get; set; }
         public System.IObservable<int> Selected { get; }
         public System.IObservable<TViewModel?> SelectedWithViewModel { get; }
         [System.Runtime.Serialization.IgnoreDataMember]

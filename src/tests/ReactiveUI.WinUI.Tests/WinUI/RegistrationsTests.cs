@@ -45,9 +45,7 @@ public class RegistrationsTests
         {
             _ = await Assert.That(registrar.For(typeof(IActivationForViewFetcher))).HasSingleItem();
             _ = await Assert.That(registrar.For(typeof(IPlatformOperations))).HasSingleItem();
-            _ = await Assert.That(registrar.For(typeof(ICreatesObservableForProperty))).HasSingleItem();
             _ = await Assert.That(registrar.For(typeof(IPropertyBindingHook))).HasSingleItem();
-            _ = await Assert.That(registrar.For(typeof(IBindingFallbackConverter))).HasSingleItem();
             await Assert.That(registrar.For(typeof(IBindingTypeConverter))).Count().IsEqualTo(WinUIConverterCount);
         }
     }
@@ -65,8 +63,6 @@ public class RegistrationsTests
         {
             _ = await Assert.That(registrar.For(typeof(IActivationForViewFetcher))[0]).IsTypeOf<WinUIActivationForViewFetcher>();
             _ = await Assert.That(registrar.For(typeof(IPlatformOperations))[0]).IsTypeOf<PlatformOperations>();
-            _ = await Assert.That(registrar.For(typeof(ICreatesObservableForProperty))[0])
-                .IsTypeOf<DependencyObjectObservableForProperty>();
             _ = await Assert.That(registrar.For(typeof(IPropertyBindingHook))[0]).IsTypeOf<AutoDataTemplateBindingHook>();
         }
     }

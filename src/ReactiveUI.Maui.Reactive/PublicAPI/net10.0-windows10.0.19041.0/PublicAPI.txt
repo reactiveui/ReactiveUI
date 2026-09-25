@@ -9,11 +9,11 @@
 namespace ReactiveUI.Reactive
 {
     [System.Diagnostics.DebuggerDisplay("AutoDataTemplateBindingHook")]
-    public class AutoDataTemplateBindingHook : ReactiveUI.IPropertyBindingHook
+    public class AutoDataTemplateBindingHook : ReactiveUI.Binding.Reactive.IPropertyBindingHook
     {
         public AutoDataTemplateBindingHook() { }
         public static System.Lazy<Microsoft.UI.Xaml.DataTemplate> DefaultItemTemplate { get; }
-        public bool ExecuteHook(object? source, object target, System.Func<ReactiveUI.IObservedChange<object, object>[]> getCurrentViewModelProperties, System.Func<ReactiveUI.IObservedChange<object, object>[]> getCurrentViewProperties, ReactiveUI.BindingDirection direction) { }
+        public bool ExecuteHook(object? source, object target, System.Func<ReactiveUI.Binding.Reactive.IObservedChange<object, object>[]> getCurrentViewModelProperties, System.Func<ReactiveUI.Binding.Reactive.IObservedChange<object, object>[]> getCurrentViewProperties, ReactiveUI.Binding.Reactive.BindingDirection direction) { }
     }
     [System.Flags]
     public enum BooleanToVisibilityHint
@@ -21,21 +21,6 @@ namespace ReactiveUI.Reactive
         None = 0,
         Inverse = 2,
         UseHidden = 4,
-    }
-    [System.Diagnostics.DebuggerDisplay("DependencyObjectObservableForProperty")]
-    public class DependencyObjectObservableForProperty : ReactiveUI.ICreatesObservableForProperty
-    {
-        public DependencyObjectObservableForProperty() { }
-        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("GetAffinityForObject uses methods that may require unreferenced code")]
-        public int GetAffinityForObject(System.Type type, string propertyName) { }
-        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("GetAffinityForObject uses methods that may require unreferenced code")]
-        public int GetAffinityForObject(System.Type? type, string propertyName, bool beforeChanged) { }
-        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("GetNotificationForProperty uses methods that may require unreferenced code")]
-        public System.IObservable<ReactiveUI.IObservedChange<object, object?>> GetNotificationForProperty(object sender, System.Linq.Expressions.Expression expression, string propertyName) { }
-        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("GetNotificationForProperty uses methods that may require unreferenced code")]
-        public System.IObservable<ReactiveUI.IObservedChange<object, object?>> GetNotificationForProperty(object sender, System.Linq.Expressions.Expression expression, string propertyName, bool beforeChanged) { }
-        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("GetNotificationForProperty uses methods that may require unreferenced code")]
-        public System.IObservable<ReactiveUI.IObservedChange<object, object?>> GetNotificationForProperty(object sender, System.Linq.Expressions.Expression expression, string propertyName, bool beforeChanged, bool suppressWarnings) { }
     }
     public class PlatformOperations : ReactiveUI.IPlatformOperations
     {
@@ -68,10 +53,10 @@ namespace ReactiveUI.Reactive.Builder
 }
 namespace ReactiveUI.Reactive.Maui
 {
-    public class ActivationForViewFetcher : ReactiveUI.IActivationForViewFetcher
+    public class ActivationForViewFetcher : ReactiveUI.Reactive.IActivationForViewFetcher
     {
         public ActivationForViewFetcher() { }
-        public System.IObservable<bool> GetActivationForView(ReactiveUI.IActivatableView view) { }
+        public System.IObservable<bool> GetActivationForView(ReactiveUI.Binding.Reactive.IActivatableView view) { }
         public int GetAffinityForView(System.Type view) { }
     }
     [System.Diagnostics.DebuggerDisplay("AutoSuspendHelper")]
@@ -90,7 +75,7 @@ namespace ReactiveUI.Reactive.Maui
         [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
         public void OnStart() { }
     }
-    public sealed class BooleanToVisibilityTypeConverter : ReactiveUI.BindingTypeConverter<bool, Microsoft.UI.Xaml.Visibility>
+    public sealed class BooleanToVisibilityTypeConverter : ReactiveUI.Binding.Reactive.BindingTypeConverter<bool, Microsoft.UI.Xaml.Visibility>
     {
         public BooleanToVisibilityTypeConverter() { }
         public override int GetAffinityForObjects() { }
@@ -102,38 +87,38 @@ namespace ReactiveUI.Reactive.Maui
         public DisableAnimationAttribute() { }
     }
     [System.Diagnostics.DebuggerDisplay("{ViewModel}")]
-    public class ReactiveCarouselView<TViewModel> : Microsoft.Maui.Controls.CarouselView, ReactiveUI.IViewFor<TViewModel> where TViewModel : class
+    public class ReactiveCarouselView<TViewModel> : Microsoft.Maui.Controls.CarouselView, ReactiveUI.Binding.Reactive.IViewFor<TViewModel> where TViewModel : class
     {
         public ReactiveCarouselView() { }
         public static readonly Microsoft.Maui.Controls.BindableProperty ViewModelProperty;
-        object? ReactiveUI.IViewFor.ViewModel { get; set; }
+        object? ReactiveUI.Binding.Reactive.IViewFor.ViewModel { get; set; }
         public TViewModel? ViewModel { get; set; }
         protected override void OnBindingContextChanged() { }
     }
     [System.Diagnostics.DebuggerDisplay("{ViewModel}")]
-    public class ReactiveContentPage<TViewModel> : Microsoft.Maui.Controls.ContentPage, ReactiveUI.IViewFor<TViewModel> where TViewModel : class
+    public class ReactiveContentPage<TViewModel> : Microsoft.Maui.Controls.ContentPage, ReactiveUI.Binding.Reactive.IViewFor<TViewModel> where TViewModel : class
     {
         public ReactiveContentPage() { }
         public static readonly Microsoft.Maui.Controls.BindableProperty ViewModelProperty;
-        object? ReactiveUI.IViewFor.ViewModel { get; set; }
+        object? ReactiveUI.Binding.Reactive.IViewFor.ViewModel { get; set; }
         public TViewModel? ViewModel { get; set; }
         protected override void OnBindingContextChanged() { }
     }
     [System.Diagnostics.DebuggerDisplay("{ViewModel}")]
-    public class ReactiveContentView<TViewModel> : Microsoft.Maui.Controls.ContentView, ReactiveUI.IViewFor<TViewModel> where TViewModel : class
+    public class ReactiveContentView<TViewModel> : Microsoft.Maui.Controls.ContentView, ReactiveUI.Binding.Reactive.IViewFor<TViewModel> where TViewModel : class
     {
         public ReactiveContentView() { }
         public static readonly Microsoft.Maui.Controls.BindableProperty ViewModelProperty;
-        object? ReactiveUI.IViewFor.ViewModel { get; set; }
+        object? ReactiveUI.Binding.Reactive.IViewFor.ViewModel { get; set; }
         public TViewModel? ViewModel { get; set; }
         protected override void OnBindingContextChanged() { }
     }
     [System.Diagnostics.DebuggerDisplay("{ViewModel}")]
-    public class ReactiveFlyoutPage<TViewModel> : Microsoft.Maui.Controls.FlyoutPage, ReactiveUI.IViewFor<TViewModel> where TViewModel : class
+    public class ReactiveFlyoutPage<TViewModel> : Microsoft.Maui.Controls.FlyoutPage, ReactiveUI.Binding.Reactive.IViewFor<TViewModel> where TViewModel : class
     {
         public ReactiveFlyoutPage() { }
         public static readonly Microsoft.Maui.Controls.BindableProperty ViewModelProperty;
-        object? ReactiveUI.IViewFor.ViewModel { get; set; }
+        object? ReactiveUI.Binding.Reactive.IViewFor.ViewModel { get; set; }
         public TViewModel? ViewModel { get; set; }
         protected override void OnBindingContextChanged() { }
     }
@@ -153,54 +138,54 @@ namespace ReactiveUI.Reactive.Maui
         public Microsoft.Maui.Graphics.Color TextColor { get; set; }
     }
     [System.Diagnostics.DebuggerDisplay("{ViewModel}")]
-    public class ReactiveMasterDetailPage<TViewModel> : Microsoft.Maui.Controls.FlyoutPage, ReactiveUI.IViewFor<TViewModel> where TViewModel : class
+    public class ReactiveMasterDetailPage<TViewModel> : Microsoft.Maui.Controls.FlyoutPage, ReactiveUI.Binding.Reactive.IViewFor<TViewModel> where TViewModel : class
     {
         public ReactiveMasterDetailPage() { }
         public static readonly Microsoft.Maui.Controls.BindableProperty ViewModelProperty;
-        object? ReactiveUI.IViewFor.ViewModel { get; set; }
+        object? ReactiveUI.Binding.Reactive.IViewFor.ViewModel { get; set; }
         public TViewModel? ViewModel { get; set; }
         protected override void OnBindingContextChanged() { }
     }
     [System.Diagnostics.DebuggerDisplay("{ViewModel}")]
-    public abstract class ReactiveMultiPage<TPage, TViewModel> : Microsoft.Maui.Controls.MultiPage<TPage>, ReactiveUI.IViewFor<TViewModel> where TPage : Microsoft.Maui.Controls.Page where TViewModel : class
+    public abstract class ReactiveMultiPage<TPage, TViewModel> : Microsoft.Maui.Controls.MultiPage<TPage>, ReactiveUI.Binding.Reactive.IViewFor<TViewModel> where TPage : Microsoft.Maui.Controls.Page where TViewModel : class
     {
         protected ReactiveMultiPage() { }
         public static readonly Microsoft.Maui.Controls.BindableProperty ViewModelProperty;
-        object? ReactiveUI.IViewFor.ViewModel { get; set; }
+        object? ReactiveUI.Binding.Reactive.IViewFor.ViewModel { get; set; }
         public TViewModel? ViewModel { get; set; }
         protected override void OnBindingContextChanged() { }
     }
     [System.Diagnostics.DebuggerDisplay("{ViewModel}")]
-    public class ReactiveNavigationPage<TViewModel> : Microsoft.Maui.Controls.NavigationPage, ReactiveUI.IViewFor<TViewModel> where TViewModel : class
+    public class ReactiveNavigationPage<TViewModel> : Microsoft.Maui.Controls.NavigationPage, ReactiveUI.Binding.Reactive.IViewFor<TViewModel> where TViewModel : class
     {
         public ReactiveNavigationPage() { }
         public static readonly Microsoft.Maui.Controls.BindableProperty ViewModelProperty;
-        object? ReactiveUI.IViewFor.ViewModel { get; set; }
+        object? ReactiveUI.Binding.Reactive.IViewFor.ViewModel { get; set; }
         public TViewModel? ViewModel { get; set; }
         protected override void OnBindingContextChanged() { }
     }
     [System.Diagnostics.DebuggerDisplay("{BindingRoot}, {ViewModel}")]
     [WinRT.WinRTExposedType(typeof(WinRT.ReactiveUI_Maui_ReactiveVtableClasses.ReactiveUI_Reactive_Maui_ReactivePage_TViewModel_WinRTTypeDetails))]
     [WinRT.WinRTRuntimeClassName("Microsoft.UI.Xaml.IUIElementOverrides")]
-    public class ReactivePage<TViewModel> : Microsoft.UI.Xaml.Controls.Page, ReactiveUI.IViewFor<TViewModel> where TViewModel : class
+    public class ReactivePage<TViewModel> : Microsoft.UI.Xaml.Controls.Page, ReactiveUI.Binding.Reactive.IViewFor<TViewModel> where TViewModel : class
     {
         public ReactivePage() { }
         public static readonly Microsoft.UI.Xaml.DependencyProperty ViewModelProperty;
         public TViewModel? BindingRoot { get; }
-        object? ReactiveUI.IViewFor.ViewModel { get; set; }
+        object? ReactiveUI.Binding.Reactive.IViewFor.ViewModel { get; set; }
         public TViewModel? ViewModel { get; set; }
     }
     [System.Diagnostics.DebuggerDisplay("{ViewModel}")]
-    public class ReactiveShell<TViewModel> : Microsoft.Maui.Controls.Shell, ReactiveUI.IViewFor<TViewModel> where TViewModel : class
+    public class ReactiveShell<TViewModel> : Microsoft.Maui.Controls.Shell, ReactiveUI.Binding.Reactive.IViewFor<TViewModel> where TViewModel : class
     {
         public ReactiveShell() { }
         public static readonly Microsoft.Maui.Controls.BindableProperty ViewModelProperty;
-        object? ReactiveUI.IViewFor.ViewModel { get; set; }
+        object? ReactiveUI.Binding.Reactive.IViewFor.ViewModel { get; set; }
         public TViewModel? ViewModel { get; set; }
         protected override void OnBindingContextChanged() { }
     }
     [System.Diagnostics.DebuggerDisplay("{ViewModel}, {Contract}")]
-    public class ReactiveShellContent<TViewModel> : Microsoft.Maui.Controls.ShellContent, ReactiveUI.IActivatableView where TViewModel : class
+    public class ReactiveShellContent<TViewModel> : Microsoft.Maui.Controls.ShellContent, ReactiveUI.Binding.Reactive.IActivatableView where TViewModel : class
     {
         public ReactiveShellContent() { }
         public static readonly Microsoft.Maui.Controls.BindableProperty ContractProperty;
@@ -209,11 +194,11 @@ namespace ReactiveUI.Reactive.Maui
         public TViewModel? ViewModel { get; set; }
     }
     [System.Diagnostics.DebuggerDisplay("{ViewModel}")]
-    public class ReactiveTabbedPage<TViewModel> : Microsoft.Maui.Controls.TabbedPage, ReactiveUI.IViewFor<TViewModel> where TViewModel : class
+    public class ReactiveTabbedPage<TViewModel> : Microsoft.Maui.Controls.TabbedPage, ReactiveUI.Binding.Reactive.IViewFor<TViewModel> where TViewModel : class
     {
         public ReactiveTabbedPage() { }
         public static readonly Microsoft.Maui.Controls.BindableProperty ViewModelProperty;
-        object? ReactiveUI.IViewFor.ViewModel { get; set; }
+        object? ReactiveUI.Binding.Reactive.IViewFor.ViewModel { get; set; }
         public TViewModel? ViewModel { get; set; }
         protected override void OnBindingContextChanged() { }
     }
@@ -231,31 +216,31 @@ namespace ReactiveUI.Reactive.Maui
         public Microsoft.Maui.Graphics.Color TextColor { get; set; }
     }
     [System.Diagnostics.DebuggerDisplay("{ViewModel}")]
-    public class ReactiveTitleBar<TViewModel> : Microsoft.Maui.Controls.TitleBar, ReactiveUI.IViewFor<TViewModel> where TViewModel : class
+    public class ReactiveTitleBar<TViewModel> : Microsoft.Maui.Controls.TitleBar, ReactiveUI.Binding.Reactive.IViewFor<TViewModel> where TViewModel : class
     {
         public ReactiveTitleBar() { }
         public static readonly Microsoft.Maui.Controls.BindableProperty ViewModelProperty;
-        object? ReactiveUI.IViewFor.ViewModel { get; set; }
+        object? ReactiveUI.Binding.Reactive.IViewFor.ViewModel { get; set; }
         public TViewModel? ViewModel { get; set; }
         protected override void OnBindingContextChanged() { }
     }
     [System.Diagnostics.DebuggerDisplay("ViewModel = {ViewModel}")]
     [WinRT.WinRTExposedType(typeof(WinRT.ReactiveUI_Maui_ReactiveVtableClasses.ReactiveUI_Reactive_Maui_ReactiveUserControl_TViewModel_WinRTTypeDetails))]
     [WinRT.WinRTRuntimeClassName("Microsoft.UI.Xaml.IUIElementOverrides")]
-    public class ReactiveUserControl<TViewModel> : Microsoft.UI.Xaml.Controls.UserControl, ReactiveUI.IViewFor<TViewModel> where TViewModel : class
+    public class ReactiveUserControl<TViewModel> : Microsoft.UI.Xaml.Controls.UserControl, ReactiveUI.Binding.Reactive.IViewFor<TViewModel> where TViewModel : class
     {
         public ReactiveUserControl() { }
         public static readonly Microsoft.UI.Xaml.DependencyProperty ViewModelProperty;
         public TViewModel? BindingRoot { get; }
-        object? ReactiveUI.IViewFor.ViewModel { get; set; }
+        object? ReactiveUI.Binding.Reactive.IViewFor.ViewModel { get; set; }
         public TViewModel? ViewModel { get; set; }
     }
     [System.Diagnostics.DebuggerDisplay("{ViewModel}")]
-    public class ReactiveWindow<TViewModel> : Microsoft.Maui.Controls.Window, ReactiveUI.IViewFor<TViewModel> where TViewModel : class
+    public class ReactiveWindow<TViewModel> : Microsoft.Maui.Controls.Window, ReactiveUI.Binding.Reactive.IViewFor<TViewModel> where TViewModel : class
     {
         public ReactiveWindow() { }
         public static readonly Microsoft.Maui.Controls.BindableProperty ViewModelProperty;
-        object? ReactiveUI.IViewFor.ViewModel { get; set; }
+        object? ReactiveUI.Binding.Reactive.IViewFor.ViewModel { get; set; }
         public TViewModel? ViewModel { get; set; }
         protected override void OnBindingContextChanged() { }
     }
@@ -265,7 +250,7 @@ namespace ReactiveUI.Reactive.Maui
         public void Register(ReactiveUI.IRegistrar registrar) { }
     }
     [System.Diagnostics.DebuggerDisplay("{Router}, {SetTitleOnNavigate}")]
-    public class RoutedViewHost : Microsoft.Maui.Controls.NavigationPage, ReactiveUI.IActivatableView, Splat.IEnableLogger
+    public class RoutedViewHost : Microsoft.Maui.Controls.NavigationPage, ReactiveUI.Binding.Reactive.IActivatableView, Splat.IEnableLogger
     {
         [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("ViewLocator.ResolveView uses reflection which is incompatible with AOT compilation.")]
         [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("This class uses reflection to determine view model types at runtime through ViewLocator, which may be incompatible with trimming.")]
@@ -300,7 +285,7 @@ namespace ReactiveUI.Reactive.Maui
     [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, or generic constraints), trimming can't validate that the requirements of those annotations are met.")]
     [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
     [System.Diagnostics.DebuggerDisplay("{ViewModel}, {DefaultContent}")]
-    public class ViewModelViewHost : Microsoft.Maui.Controls.ContentView, ReactiveUI.IViewFor
+    public class ViewModelViewHost : Microsoft.Maui.Controls.ContentView, ReactiveUI.Binding.Reactive.IViewFor
     {
         public ViewModelViewHost() { }
         public static readonly Microsoft.Maui.Controls.BindableProperty ContractFallbackByPassProperty;
@@ -311,7 +296,7 @@ namespace ReactiveUI.Reactive.Maui
         public Microsoft.Maui.Controls.View DefaultContent { get; set; }
         public string? ViewContract { get; set; }
         public System.IObservable<string?> ViewContractObservable { get; set; }
-        public ReactiveUI.IViewLocator? ViewLocator { get; set; }
+        public ReactiveUI.Reactive.IViewLocator? ViewLocator { get; set; }
         public object? ViewModel { get; set; }
         [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, or generic constraints), trimming can't validate that the requirements of those annotations are met.")]
         [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
@@ -320,17 +305,17 @@ namespace ReactiveUI.Reactive.Maui
     [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, or generic constraints), trimming can't validate that the requirements of those annotations are met.")]
     [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
     [System.Diagnostics.DebuggerDisplay("{ViewModel}")]
-    public class ViewModelViewHost<TViewModel> : ReactiveUI.Reactive.Maui.ViewModelViewHost, ReactiveUI.IViewFor<TViewModel> where TViewModel : class
+    public class ViewModelViewHost<TViewModel> : ReactiveUI.Reactive.Maui.ViewModelViewHost, ReactiveUI.Binding.Reactive.IViewFor<TViewModel> where TViewModel : class
     {
         public ViewModelViewHost() { }
-        object? ReactiveUI.IViewFor.ViewModel { get; set; }
+        object? ReactiveUI.Binding.Reactive.IViewFor.ViewModel { get; set; }
         public TViewModel? ViewModel { get; set; }
         [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
         [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, or generic constraints), trimming can't validate that the requirements of those annotations are met.")]
         [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
         protected override void ResolveViewForViewModel(object? viewModel, string? contract) { }
     }
-    public sealed class VisibilityToBooleanTypeConverter : ReactiveUI.BindingTypeConverter<Microsoft.UI.Xaml.Visibility, bool>
+    public sealed class VisibilityToBooleanTypeConverter : ReactiveUI.Binding.Reactive.BindingTypeConverter<Microsoft.UI.Xaml.Visibility, bool>
     {
         public VisibilityToBooleanTypeConverter() { }
         public override int GetAffinityForObjects() { }

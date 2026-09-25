@@ -9,6 +9,12 @@ using Microsoft.Maui.Controls;
 using Splat;
 
 #if REACTIVE_SHIM
+using RetainedViewLocator = ReactiveUI.Reactive.ViewLocator;
+#else
+using RetainedViewLocator = ReactiveUI.ViewLocator;
+#endif
+
+#if REACTIVE_SHIM
 namespace ReactiveUI.Reactive.Maui;
 #else
 namespace ReactiveUI.Maui;
@@ -82,7 +88,7 @@ TViewModel> : ViewModelViewHost, IViewFor<TViewModel>
             return;
         }
 
-        var viewLocator = ViewLocator ?? ReactiveUI.ViewLocator.Current;
+        var viewLocator = ViewLocator ?? RetainedViewLocator.Current;
 
         // Use the generic ResolveView<TViewModel> method - this is AOT-safe!
         var viewInstance = viewLocator.ResolveView<TViewModel>(contract);

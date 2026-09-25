@@ -7,12 +7,12 @@ namespace ReactiveUI.Reactive.Blazor
         public string? GetOrientation() { }
     }
     [System.Diagnostics.DebuggerDisplay("{ViewModel}, {Activated}")]
-    public class ReactiveComponentBase<T> : Microsoft.AspNetCore.Components.ComponentBase, ReactiveUI.IViewFor<T>, ReactiveUI.Reactive.ICanActivate, System.ComponentModel.INotifyPropertyChanged, System.IDisposable where T : class, System.ComponentModel.INotifyPropertyChanged
+    public class ReactiveComponentBase<T> : Microsoft.AspNetCore.Components.ComponentBase, ReactiveUI.Binding.Reactive.IViewFor<T>, ReactiveUI.Reactive.ICanActivate, System.ComponentModel.INotifyPropertyChanged, System.IDisposable where T : class, System.ComponentModel.INotifyPropertyChanged
     {
         public ReactiveComponentBase() { }
         public System.IObservable<System.Reactive.Unit> Activated { get; }
         public System.IObservable<System.Reactive.Unit> Deactivated { get; }
-        object? ReactiveUI.IViewFor.ViewModel { get; set; }
+        object? ReactiveUI.Binding.Reactive.IViewFor.ViewModel { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public T? ViewModel { get; set; }
         public event System.ComponentModel.PropertyChangedEventHandler? PropertyChanged;
@@ -23,12 +23,12 @@ namespace ReactiveUI.Reactive.Blazor
         protected virtual void OnPropertyChanged(string? propertyName = null) { }
     }
     [System.Diagnostics.DebuggerDisplay("{ViewModel}, {Activated}")]
-    public class ReactiveInjectableComponentBase<T> : Microsoft.AspNetCore.Components.ComponentBase, ReactiveUI.IViewFor<T>, ReactiveUI.Reactive.ICanActivate, System.ComponentModel.INotifyPropertyChanged, System.IDisposable where T : class, System.ComponentModel.INotifyPropertyChanged
+    public class ReactiveInjectableComponentBase<T> : Microsoft.AspNetCore.Components.ComponentBase, ReactiveUI.Binding.Reactive.IViewFor<T>, ReactiveUI.Reactive.ICanActivate, System.ComponentModel.INotifyPropertyChanged, System.IDisposable where T : class, System.ComponentModel.INotifyPropertyChanged
     {
         public ReactiveInjectableComponentBase() { }
         public System.IObservable<System.Reactive.Unit> Activated { get; }
         public System.IObservable<System.Reactive.Unit> Deactivated { get; }
-        object? ReactiveUI.IViewFor.ViewModel { get; set; }
+        object? ReactiveUI.Binding.Reactive.IViewFor.ViewModel { get; set; }
         [Microsoft.AspNetCore.Components.Inject]
         public T? ViewModel { get; set; }
         public event System.ComponentModel.PropertyChangedEventHandler? PropertyChanged;
@@ -39,12 +39,12 @@ namespace ReactiveUI.Reactive.Blazor
         protected virtual void OnPropertyChanged(string? propertyName = null) { }
     }
     [System.Diagnostics.DebuggerDisplay("{ViewModel}, {Activated}")]
-    public class ReactiveLayoutComponentBase<T> : Microsoft.AspNetCore.Components.LayoutComponentBase, ReactiveUI.IViewFor<T>, ReactiveUI.Reactive.ICanActivate, System.ComponentModel.INotifyPropertyChanged, System.IDisposable where T : class, System.ComponentModel.INotifyPropertyChanged
+    public class ReactiveLayoutComponentBase<T> : Microsoft.AspNetCore.Components.LayoutComponentBase, ReactiveUI.Binding.Reactive.IViewFor<T>, ReactiveUI.Reactive.ICanActivate, System.ComponentModel.INotifyPropertyChanged, System.IDisposable where T : class, System.ComponentModel.INotifyPropertyChanged
     {
         public ReactiveLayoutComponentBase() { }
         public System.IObservable<System.Reactive.Unit> Activated { get; }
         public System.IObservable<System.Reactive.Unit> Deactivated { get; }
-        object? ReactiveUI.IViewFor.ViewModel { get; set; }
+        object? ReactiveUI.Binding.Reactive.IViewFor.ViewModel { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public T? ViewModel { get; set; }
         public event System.ComponentModel.PropertyChangedEventHandler? PropertyChanged;
@@ -55,12 +55,12 @@ namespace ReactiveUI.Reactive.Blazor
         protected virtual void OnPropertyChanged(string? propertyName = null) { }
     }
     [System.Diagnostics.DebuggerDisplay("{ViewModel}, {Activated}")]
-    public class ReactiveOwningComponentBase<T> : Microsoft.AspNetCore.Components.OwningComponentBase<T>, ReactiveUI.IViewFor<T>, ReactiveUI.Reactive.ICanActivate, System.ComponentModel.INotifyPropertyChanged where T : class, System.ComponentModel.INotifyPropertyChanged
+    public class ReactiveOwningComponentBase<T> : Microsoft.AspNetCore.Components.OwningComponentBase<T>, ReactiveUI.Binding.Reactive.IViewFor<T>, ReactiveUI.Reactive.ICanActivate, System.ComponentModel.INotifyPropertyChanged where T : class, System.ComponentModel.INotifyPropertyChanged
     {
         public ReactiveOwningComponentBase() { }
         public System.IObservable<System.Reactive.Unit> Activated { get; }
         public System.IObservable<System.Reactive.Unit> Deactivated { get; }
-        object? ReactiveUI.IViewFor.ViewModel { get; set; }
+        object? ReactiveUI.Binding.Reactive.IViewFor.ViewModel { get; set; }
         [Microsoft.AspNetCore.Components.Parameter]
         public T? ViewModel { get; set; }
         public event System.ComponentModel.PropertyChangedEventHandler? PropertyChanged;

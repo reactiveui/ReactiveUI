@@ -9,34 +9,21 @@ using ReactiveUI.Tests.ReactiveObjects.Mocks;
 
 namespace ReactiveUI.Tests.WhenAny;
 
-/// <summary>Tests targeting the "missed update" race between <c>WhenAnyValue</c>'s initial value read and the <see cref="INotifyPropertyChanged.PropertyChanged"/> handler attachment.</summary>
-/// <remarks>
-/// In <c>ExpressionChainSink.Sink.Level.SetParent</c>, the subscribing thread (1) reads the current
-/// property value via the cached getter and emits it downstream, then (2) subscribes to
-/// <c>PropertyChanged</c>. Any mutation that fires <c>PropertyChanged</c> between steps (1) and (2)
-/// runs against an empty subscriber list and is silently lost, leaving downstream stuck on the
-/// pre-mutation value until the next mutation.
-/// </remarks>
+/// <summary>Tests that <c>WhenAnyValue</c> delivers updates made while its initial value is emitted.</summary>
 public class WhenAnyValueSubscribeRaceTests
 {
     /// <summary>The property value written mid-race to prove the update was not lost.</summary>
     private const string RacedWord = "raced";
 
-    /// <summary>
-    /// Deterministically reproduces the missed-update race using a synchronous wedge: the subscriber's
-    /// initial <c>OnNext</c> mutates the source property before <c>WhenAnyValue</c> has had a chance to
-    /// attach its <c>PropertyChanged</c> handler. With the bug present, the new value is never observed.
-    /// </summary>
+    /// <summary>Mutates the source property during the initial emission and verifies delivery.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public async Task WhenAnyValue_MutationBetweenInitialEmitAndHandlerAttach_IsLost()
+    public async Task WhenAnyValue_MutationDuringInitialEmit_IsDelivered()
     {
         var fixture = new TestFixture { IsOnlyOneWord = "initial" };
         var values = new List<string?>();
 
-        // Mutate during the initial emission. We are still inside ExpressionChainSink's SetParent,
-        // between the value read (already done) and the PropertyChanged handler attachment (not
-        // yet done). The PropertyChanged event raised by this setter has no subscriber and is lost.
+        // Mutate while the observer is delivering its initial value.
         using var subscription = fixture.WhenAnyValue(x => x.IsOnlyOneWord).Subscribe(value =>
         {
             values.Add(value);
@@ -48,23 +35,14 @@ public class WhenAnyValueSubscribeRaceTests
             fixture.IsOnlyOneWord = RacedWord;
         });
 
-        // Sanity check: the property actually holds the racing value.
         await Assert.That(fixture.IsOnlyOneWord).IsEqualTo(RacedWord);
-
-        // The subscriber must eventually see the racing value: either because the initial read
-        // captured it, or because the PropertyChanged handler picked it up. With the bug, the
-        // handler was attached after the event fired, so neither path delivered the update.
         await Assert.That(values).Contains(RacedWord);
     }
 
-    /// <summary>
-    /// Same race, but using a hand-rolled <see cref="INotifyPropertyChanged"/> source rather than
-    /// <see cref="ReactiveObject"/>, to confirm the bug is in the chain sink (subscriber-side) and
-    /// not in any <see cref="ReactiveObject"/> specifics.
-    /// </summary>
+    /// <summary>Checks delivery with a plain <see cref="INotifyPropertyChanged"/> source.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public async Task WhenAnyValue_MutationBetweenInitialEmitAndHandlerAttach_IsLost_PlainInpc()
+    public async Task WhenAnyValue_MutationDuringInitialEmit_IsDelivered_PlainInpc()
     {
         var notifier = new PlainInpc { Value = 1 };
         var values = new List<int>();
@@ -85,22 +63,8 @@ public class WhenAnyValueSubscribeRaceTests
         await Assert.That(values).Contains(RacedValue);
     }
 
-    /// <summary>
-    /// Multi-threaded stress test that proves the race condition itself, not just the underlying
-    /// ordering defect. One mutator thread writes the property a fixed number of times in a tight
-    /// loop while the main thread subscribes via <c>WhenAnyValue</c>. In every iteration, after both
-    /// threads have finished, the subscriber's last observed value must equal the property's final
-    /// value. Any divergence means a real <c>PropertyChanged</c> raised on the mutator thread fired
-    /// during the main thread's read-then-subscribe window and was dropped on the floor.
-    /// </summary>
+    /// <summary>Checks that concurrent mutation during subscription delivers the final value.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-    /// <remarks>
-    /// Without the fix in <c>ExpressionChainSink.Level.SetParent</c>, this test fails reliably (on
-    /// the order of 5-10% of iterations drop the final mutation). With the fix, the handler is
-    /// attached before the kicker read, the mutator's <c>PropertyChanged</c> invocation runs the
-    /// handler on the mutator's thread, the handler blocks on <c>sink._gate</c> until the main
-    /// thread releases it, and then re-emits the post-mutation value. Every iteration converges.
-    /// </remarks>
     [Test]
     public async Task WhenAnyValue_ConcurrentMutationDuringSubscribe_NeverLosesFinalValue_Stress()
     {
@@ -145,8 +109,8 @@ public class WhenAnyValueSubscribeRaceTests
         await Assert.That(divergences).IsEmpty();
     }
 
-    /// <summary>A minimal hand-rolled <see cref="INotifyPropertyChanged"/> source used to isolate the chain sink's behaviour from <see cref="ReactiveObject"/>.</summary>
-    private sealed class PlainInpc : INotifyPropertyChanged
+    /// <summary>A plain <see cref="INotifyPropertyChanged"/> source for the subscription test.</summary>
+    internal sealed class PlainInpc : INotifyPropertyChanged
     {
         /// <summary>Occurs when a property value changes.</summary>
         public event PropertyChangedEventHandler? PropertyChanged;

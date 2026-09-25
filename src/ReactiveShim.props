@@ -31,6 +31,8 @@
        ReactiveUI.Primitives types. The *.Reactive leaves are excluded; they rebind below. -->
   <ItemGroup Condition="'$(RxReactiveSeam)' != 'true'">
     <Using Include="ReactiveUI.Primitives.RxVoid" Alias="RxVoid"/>
+    <Using Include="ReactiveUI.Binding" Condition="'$(MSBuildProjectName)' != 'ReactiveUI.Core'" />
+    <Using Include="ReactiveUI.Binding.Expressions" Condition="'$(MSBuildProjectName)' != 'ReactiveUI.Core'" />
     <!-- Scheduler seam: the shared source names only ISequencer (the type), the Sequencer static
          (Immediate/Default/CurrentThread/Normalize), TaskPoolSequencer, and the Schedule(...) extensions.
          Lean binds them to ReactiveUI.Primitives.Concurrency; the *.Reactive leaves rebind to System.Reactive
@@ -69,6 +71,17 @@
     <Using Include="ReactiveUI.Reactive.Internal" />
     <Using Include="ReactiveUI.Reactive.Builder" />
     <Using Include="ReactiveUI.Reactive.Interfaces" />
+    <!-- ReactiveUI.Binding types shifted for .Reactive build -->
+    <Using Include="ReactiveUI.Binding.Reactive" />
+    <Using Include="ReactiveUI.Binding.Reactive.Expressions" />
+    <!-- ReactiveUI keeps its own view locator, and ReactiveUI.Binding.Reactive ships one of the same names. The
+         shifted ReactiveUI.Reactive namespace is not an enclosing namespace of the shared source, so both are
+         imported at the same level; these aliases pick ReactiveUI's, as the consumer props in buildTransitive do. -->
+    <Using Include="ReactiveUI.Reactive.IViewLocator" Alias="IViewLocator" />
+    <Using Include="ReactiveUI.Reactive.ViewLocator" Alias="ViewLocator" />
+    <Using Include="ReactiveUI.Reactive.DefaultViewLocator" Alias="DefaultViewLocator" />
+    <Using Include="ReactiveUI.Reactive.ViewMappingBuilder" Alias="ViewMappingBuilder" />
+    <Using Include="ReactiveUI.Reactive.ViewLocatorNotFoundException" Alias="ViewLocatorNotFoundException" />
     <Using Include="ReactiveUI.Primitives.Signals" />
     <!-- Reactive-shim counterpart of the lean leaf's ReactiveUI.Primitives.Advanced import: the same
          seam-neutral concrete signal classes, flipped to the ReactiveUI.Primitives.Reactive.Advanced namespace. -->
@@ -101,6 +114,15 @@
   <Target Name="StripPrimitivesBridgeAnalyzers" BeforeTargets="CoreCompile">
     <ItemGroup>
       <Analyzer Remove="@(Analyzer)" Condition="$([System.String]::Copy('%(Analyzer.FileName)').Contains('ReactiveUI.Primitives.R3Bridge.Generator')) or $([System.String]::Copy('%(Analyzer.FileName)').Contains('ReactiveUI.Primitives.SystemReactiveBridge.Generator'))"/>
+    </ItemGroup>
+  </Target>
+
+  <!-- ReactiveUI.Core brings the lean Binding assembly into .Reactive projects for its public contracts.
+       NuGet also flows the lean generator despite ExcludeAssets. WPF markup projects copy analyzer items
+       without NuGetPackageId metadata, so select the lean package by its path in both project shapes. -->
+  <Target Name="StripLeanBindingAnalyzers" BeforeTargets="CoreCompile" Condition="'$(RxReactiveSeam)' == 'true'">
+    <ItemGroup>
+      <Analyzer Remove="@(Analyzer)" Condition="$([System.String]::Copy('%(Analyzer.FullPath)').Contains('reactiveui.binding')) and !$([System.String]::Copy('%(Analyzer.FullPath)').Contains('reactiveui.binding.reactive'))"/>
     </ItemGroup>
   </Target>
 </Project>

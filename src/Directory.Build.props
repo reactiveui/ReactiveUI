@@ -112,17 +112,15 @@
     <ReactiveUITestingUITargets>$(ReactiveUITestingTargets)</ReactiveUITestingUITargets>
     <ReactiveUITestingUITargets Condition="$([MSBuild]::IsOsPlatform('Windows'))">net8.0-windows10.0.19041.0;net9.0-windows10.0.19041.0;net10.0-windows10.0.19041.0;net11.0-windows10.0.19041.0</ReactiveUITestingUITargets>
 
-    <!-- Start with core targets available on all platforms -->
-    <ReactiveUIFinalTargetFrameworks>$(ReactiveUICoreTargets)</ReactiveUIFinalTargetFrameworks>
+    <!-- Libraries with no platform-specific code: every platform consumes the plain .NET or .NET Framework build. -->
+    <ReactiveUIPortableTargetFrameworks>$(ReactiveUICoreTargets);$(ReactiveUIFrameworkTargets)</ReactiveUIPortableTargetFrameworks>
 
-    <!-- Add Android targets (available on all platforms with Android SDK) -->
-    <ReactiveUIFinalTargetFrameworks>$(ReactiveUIFinalTargetFrameworks);$(ReactiveUIAndroidTargets)</ReactiveUIFinalTargetFrameworks>
+    <!-- Libraries with Windows-specific code only. -->
+    <ReactiveUIPortableWindowsTargetFrameworks>$(ReactiveUIPortableTargetFrameworks);$(ReactiveUIWindowsTargets)</ReactiveUIPortableWindowsTargetFrameworks>
 
-    <!-- Add Windows-specific targets (.NET Framework and Windows-specific TFMs) on Windows, or anywhere EnableWindowsTargeting is set (reference-only compile on Linux/macOS). -->
-    <ReactiveUIFinalTargetFrameworks>$(ReactiveUIFinalTargetFrameworks);$(ReactiveUIFrameworkTargets);$(ReactiveUIWindowsTargets)</ReactiveUIFinalTargetFrameworks>
-
-    <!-- Add Apple targets on macOS and Windows -->
-    <ReactiveUIFinalTargetFrameworks Condition="$([MSBuild]::IsOsPlatform('Windows')) or $([MSBuild]::IsOsPlatform('OSX'))">$(ReactiveUIFinalTargetFrameworks);$(ReactiveUIAppleTargets)</ReactiveUIFinalTargetFrameworks>
+    <!-- Libraries with Android and Apple platform code. Apple targets build on macOS and Windows only. -->
+    <ReactiveUIPlatformTargetFrameworks>$(ReactiveUIPortableTargetFrameworks);$(ReactiveUIAndroidTargets)</ReactiveUIPlatformTargetFrameworks>
+    <ReactiveUIPlatformTargetFrameworks Condition="$([MSBuild]::IsOsPlatform('Windows')) or $([MSBuild]::IsOsPlatform('OSX'))">$(ReactiveUIPlatformTargetFrameworks);$(ReactiveUIAppleTargets)</ReactiveUIPlatformTargetFrameworks>
 
     <!-- Final target frameworks for tests/benchmarks (modern .NET only, with platform-specific additions) -->
     <ReactiveUIFinalModernTargetFrameworks>$(ReactiveUIModernTargets)</ReactiveUIFinalModernTargetFrameworks>

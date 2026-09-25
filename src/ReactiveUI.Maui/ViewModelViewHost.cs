@@ -11,6 +11,12 @@ using ReactiveUI.Primitives;
 using Splat;
 
 #if REACTIVE_SHIM
+using RetainedViewLocator = ReactiveUI.Reactive.ViewLocator;
+#else
+using RetainedViewLocator = ReactiveUI.ViewLocator;
+#endif
+
+#if REACTIVE_SHIM
 namespace ReactiveUI.Reactive.Maui;
 #else
 namespace ReactiveUI.Maui;
@@ -144,7 +150,7 @@ public class ViewModelViewHost : ContentView, IViewFor
             return;
         }
 
-        var viewLocator = ViewLocator ?? ReactiveUI.ViewLocator.Current;
+        var viewLocator = ViewLocator ?? RetainedViewLocator.Current;
 
         var viewInstance = viewLocator.ResolveView(viewModel, contract);
         if (viewInstance is null && !ContractFallbackByPass)

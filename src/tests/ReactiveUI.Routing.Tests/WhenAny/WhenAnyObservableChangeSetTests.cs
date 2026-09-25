@@ -33,7 +33,7 @@ public class WhenAnyObservableChangeSetTests
     }
 
     /// <summary>A view model whose change-set property is rebuilt whenever its backing list is reassigned.</summary>
-    private sealed class ChangeSetWhenAnyViewModel : ReactiveObject
+    internal sealed class ChangeSetWhenAnyViewModel : ReactiveObject
     {
         /// <summary>Gets the change set produced from <see cref="MyListOfInts" />.</summary>
         public IObservable<IChangeSet<int>>? Changes

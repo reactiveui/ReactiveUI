@@ -29,14 +29,12 @@ public partial class PropertyBindingTest
 
         var toStringConverter = new ByteToStringTypeConverter();
 
-        _ = view.Bind(
+        _ = view.BindTriggered(
             vm,
             static x => x.JustAByte,
             static x => x.SomeTextBox.Text,
             update.AsObservable(),
-            FormatHint,
-            toStringConverter,
-            toStringConverter,
+            new(FormatHint, toStringConverter, toStringConverter),
             TriggerUpdate.ViewModelToView).DisposeWith(dis);
 
         vm.JustAByte = 1;
@@ -87,14 +85,12 @@ public partial class PropertyBindingTest
 
         var toStringConverter = new NullableByteToStringTypeConverter();
 
-        _ = view.Bind(
+        _ = view.BindTriggered(
             vm,
             static x => x.JustANullByte,
             static x => x.SomeTextBox.Text,
             update.AsObservable(),
-            FormatHint,
-            toStringConverter,
-            toStringConverter,
+            new(FormatHint, toStringConverter, toStringConverter),
             TriggerUpdate.ViewModelToView).DisposeWith(dis);
 
         vm.JustANullByte = 1;
@@ -147,7 +143,7 @@ public partial class PropertyBindingTest
         vm.JustAByte = InitialIntegral;
         await Assert.That(view.SomeTextBox.Text).IsNotEqualTo(vm.JustAByte.ToString(CultureInfo.InvariantCulture));
 
-        _ = view.Bind(vm, static x => x.JustAByte, static x => x.SomeTextBox.Text, update.AsObservable(), null, null, null, triggerUpdate: TriggerUpdate.ViewModelToView).DisposeWith(dis);
+        _ = view.BindTriggered(vm, static x => x.JustAByte, static x => x.SomeTextBox.Text, update.AsObservable(), default, triggerUpdate: TriggerUpdate.ViewModelToView).DisposeWith(dis);
 
         vm.JustAByte = 1;
 
@@ -197,14 +193,12 @@ public partial class PropertyBindingTest
 
         var toStringConverter = new ShortToStringTypeConverter();
 
-        _ = view.Bind(
+        _ = view.BindTriggered(
             vm,
             static x => x.JustAInt16,
             static x => x.SomeTextBox.Text,
             update.AsObservable(),
-            FormatHint,
-            toStringConverter,
-            toStringConverter,
+            new(FormatHint, toStringConverter, toStringConverter),
             TriggerUpdate.ViewModelToView).DisposeWith(dis);
 
         vm.JustAInt16 = 1;
@@ -255,14 +249,12 @@ public partial class PropertyBindingTest
 
         var toStringConverter = new NullableShortToStringTypeConverter();
 
-        _ = view.Bind(
+        _ = view.BindTriggered(
             vm,
             static x => x.JustANullInt16,
             static x => x.SomeTextBox.Text,
             update.AsObservable(),
-            FormatHint,
-            toStringConverter,
-            toStringConverter,
+            new(FormatHint, toStringConverter, toStringConverter),
             TriggerUpdate.ViewModelToView).DisposeWith(dis);
 
         vm.JustANullInt16 = 1;
@@ -315,7 +307,7 @@ public partial class PropertyBindingTest
         vm.JustAInt16 = InitialIntegral;
         await Assert.That(view.SomeTextBox.Text).IsNotEqualTo(vm.JustAInt16.ToString(CultureInfo.InvariantCulture));
 
-        _ = view.Bind(vm, static x => x.JustAInt16, static x => x.SomeTextBox.Text, update.AsObservable(), null, null, null, triggerUpdate: TriggerUpdate.ViewModelToView).DisposeWith(dis);
+        _ = view.BindTriggered(vm, static x => x.JustAInt16, static x => x.SomeTextBox.Text, update.AsObservable(), default, triggerUpdate: TriggerUpdate.ViewModelToView).DisposeWith(dis);
 
         vm.JustAInt16 = 1;
 
@@ -365,14 +357,12 @@ public partial class PropertyBindingTest
 
         var toStringConverter = new IntegerToStringTypeConverter();
 
-        _ = view.Bind(
+        _ = view.BindTriggered(
             vm,
             static x => x.JustAInt32,
             static x => x.SomeTextBox.Text,
             update.AsObservable(),
-            FormatHint,
-            toStringConverter,
-            toStringConverter,
+            new(FormatHint, toStringConverter, toStringConverter),
             TriggerUpdate.ViewModelToView).DisposeWith(dis);
 
         vm.JustAInt32 = 1;
@@ -423,14 +413,12 @@ public partial class PropertyBindingTest
 
         var toStringConverter = new NullableIntegerToStringTypeConverter();
 
-        _ = view.Bind(
+        _ = view.BindTriggered(
             vm,
             static x => x.JustANullInt32,
             static x => x.SomeTextBox.Text,
             update.AsObservable(),
-            FormatHint,
-            toStringConverter,
-            toStringConverter,
+            new(FormatHint, toStringConverter, toStringConverter),
             TriggerUpdate.ViewModelToView).DisposeWith(dis);
 
         vm.JustANullInt32 = 1;
@@ -483,7 +471,7 @@ public partial class PropertyBindingTest
         vm.JustAInt32 = InitialIntegral;
         await Assert.That(view.SomeTextBox.Text).IsNotEqualTo(vm.JustAInt32.ToString(CultureInfo.InvariantCulture));
 
-        _ = view.Bind(vm, static x => x.JustAInt32, static x => x.SomeTextBox.Text, update.AsObservable(), null, null, null, triggerUpdate: TriggerUpdate.ViewModelToView).DisposeWith(dis);
+        _ = view.BindTriggered(vm, static x => x.JustAInt32, static x => x.SomeTextBox.Text, update.AsObservable(), default, triggerUpdate: TriggerUpdate.ViewModelToView).DisposeWith(dis);
 
         vm.JustAInt32 = 1;
 
@@ -533,14 +521,12 @@ public partial class PropertyBindingTest
 
         var toStringConverter = new LongToStringTypeConverter();
 
-        _ = view.Bind(
+        _ = view.BindTriggered(
             vm,
             static x => x.JustAInt64,
             static x => x.SomeTextBox.Text,
             update.AsObservable(),
-            FormatHint,
-            toStringConverter,
-            toStringConverter,
+            new(FormatHint, toStringConverter, toStringConverter),
             TriggerUpdate.ViewModelToView).DisposeWith(dis);
 
         vm.JustAInt64 = 1;
@@ -589,7 +575,7 @@ public partial class PropertyBindingTest
         vm.JustAInt64 = InitialIntegral;
         await Assert.That(view.SomeTextBox.Text).IsNotEqualTo(vm.JustAInt64.ToString(CultureInfo.InvariantCulture));
 
-        _ = view.Bind(vm, static x => x.JustAInt64, static x => x.SomeTextBox.Text, update.AsObservable(), null, null, null, triggerUpdate: TriggerUpdate.ViewModelToView).DisposeWith(dis);
+        _ = view.BindTriggered(vm, static x => x.JustAInt64, static x => x.SomeTextBox.Text, update.AsObservable(), default, triggerUpdate: TriggerUpdate.ViewModelToView).DisposeWith(dis);
 
         vm.JustAInt64 = 1;
 

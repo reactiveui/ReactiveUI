@@ -51,7 +51,7 @@ public class FinalAOTValidationTests
 
         // 5. Test the complete workflow
         property.Value = TestValue;
-        var validationResult = await interaction.Handle("long string").FirstAsync();
+        var validationResult = await interaction.Handle("long string");
         messageBus.SendMessage("workflow complete");
 
         using (Assert.Multiple())
@@ -134,7 +134,7 @@ public class FinalAOTValidationTests
         // AOT-compatible: Activation
         var activationCount = 0;
         string? propertyValue = null;
-        bool? interactionResult = null;
+        Task<bool>? interactionTask = null;
         viewModel.WhenActivated(d =>
         {
             activationCount++;
@@ -153,11 +153,12 @@ public class FinalAOTValidationTests
 
             // Execute mixed workflow
             _ = command.Execute().Subscribe();
-            interactionResult = interaction.Handle(RxVoid.Default).GetAwaiter().GetResult();
+            interactionTask = interaction.Handle(RxVoid.Default);
             propertyValue = property.Value;
         });
 
         _ = viewModel.Activator.Activate();
+        var interactionResult = await interactionTask!;
 
         using (Assert.Multiple())
         {

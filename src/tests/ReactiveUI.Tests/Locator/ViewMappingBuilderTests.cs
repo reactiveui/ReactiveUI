@@ -356,24 +356,24 @@ public class ViewMappingBuilderTests
         "Minor Code Smell",
         "SST1436:Classes should not be empty",
         Justification = "Empty type used as a test marker.")]
-    private sealed class TestViewModel : ReactiveObject;
+    internal sealed class TestViewModel : ReactiveObject;
 
     /// <summary>Alternate test view model used for testing multi-mapping scenarios.</summary>
     [SuppressMessage(
         "Minor Code Smell",
         "SST1436:Classes should not be empty",
         Justification = "Empty type used as a test marker.")]
-    private sealed class AlternateViewModel : ReactiveObject;
+    internal sealed class AlternateViewModel : ReactiveObject;
 
     /// <summary>Third test view model used for testing mixed registration scenarios.</summary>
     [SuppressMessage(
         "Minor Code Smell",
         "SST1436:Classes should not be empty",
         Justification = "Empty type used as a test marker.")]
-    private sealed class AnotherViewModel : ReactiveObject;
+    internal sealed class AnotherViewModel : ReactiveObject;
 
     /// <summary>Test view implementing <see cref="IViewFor{TViewModel}" /> for <see cref="TestViewModel" />.</summary>
-    private sealed class TestView : IViewFor<TestViewModel>
+    internal sealed class TestView : IViewFor<TestViewModel>
     {
         /// <summary>Gets or sets the strongly-typed view model.</summary>
         public TestViewModel? ViewModel { get; set; }
@@ -387,7 +387,7 @@ public class ViewMappingBuilderTests
     }
 
     /// <summary>Alternate test view implementing <see cref="IViewFor{TViewModel}" /> for <see cref="AlternateViewModel" />.</summary>
-    private sealed class AlternateView : IViewFor<AlternateViewModel>
+    internal sealed class AlternateView : IViewFor<AlternateViewModel>
     {
         /// <summary>Gets or sets the strongly-typed view model.</summary>
         public AlternateViewModel? ViewModel { get; set; }
@@ -401,7 +401,7 @@ public class ViewMappingBuilderTests
     }
 
     /// <summary>Third test view implementing <see cref="IViewFor{TViewModel}" /> for <see cref="AnotherViewModel" />.</summary>
-    private sealed class AnotherView : IViewFor<AnotherViewModel>
+    internal sealed class AnotherView : IViewFor<AnotherViewModel>
     {
         /// <summary>Gets or sets the strongly-typed view model.</summary>
         public AnotherViewModel? ViewModel { get; set; }

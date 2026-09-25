@@ -21,47 +21,6 @@ public partial class WhenAnyMixinTests
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
-    /// <summary>Verifies the WhenAny overload for 1 properties with a selector and distinct-until-changed flag.</summary>
-    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
-    [Test]
-    public async Task WhenAny_1Props_Sel_Dist()
-    {
-        var vm = new WhenAnyArityTestViewModel();
-        var list = new List<string>();
-        _ = vm.WhenAny(
-            x => x.Property1,
-            static _ => "x",
-            true).ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
-        await Assert.That(list).Count().IsGreaterThan(0);
-    }
-
-    /// <summary>Verifies the string-based WhenAny overload for 1 properties with a selector.</summary>
-    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
-    [Test]
-    public async Task WhenAny_1Props_Sel_Str()
-    {
-        var vm = new WhenAnyArityTestViewModel();
-        var list = new List<string>();
-        _ = vm.WhenAny<WhenAnyArityTestViewModel, string, string?>(
-            nameof(WhenAnyArityTestViewModel.Property1),
-            static _ => "x").ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
-        await Assert.That(list).Count().IsGreaterThan(0);
-    }
-
-    /// <summary>Verifies the string-based WhenAny overload for 1 properties with a selector and distinct-until-changed flag.</summary>
-    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
-    [Test]
-    public async Task WhenAny_1Props_Sel_Str_Dist()
-    {
-        var vm = new WhenAnyArityTestViewModel();
-        var list = new List<string>();
-        _ = vm.WhenAny<WhenAnyArityTestViewModel, string, string?>(
-            nameof(WhenAnyArityTestViewModel.Property1),
-            static _ => "x",
-            false).ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
-        await Assert.That(list).Count().IsGreaterThan(0);
-    }
-
     /// <summary>Verifies the expression-based WhenAnyValue overload for 1 property.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
@@ -75,39 +34,6 @@ public partial class WhenAnyMixinTests
         await Assert.That(list).Count().IsGreaterThan(1);
     }
 
-    /// <summary>Verifies the expression-based WhenAnyValue overload for 1 property with a distinct-until-changed flag.</summary>
-    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
-    [Test]
-    public async Task WhenAnyValue_1Prop_Expr_Dist()
-    {
-        var vm = new WhenAnyArityTestViewModel();
-        var list = new List<string?>();
-        _ = vm.WhenAnyValue(x => x.Property1, true).ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
-        await Assert.That(list).Count().IsGreaterThan(0);
-    }
-
-    /// <summary>Verifies the string-based WhenAnyValue overload for 1 property.</summary>
-    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
-    [Test]
-    public async Task WhenAnyValue_1Prop_Str()
-    {
-        var vm = new WhenAnyArityTestViewModel();
-        var list = new List<string?>();
-        _ = vm.WhenAnyValue<WhenAnyArityTestViewModel, string?>(nameof(WhenAnyArityTestViewModel.Property1)).ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
-        await Assert.That(list).Count().IsGreaterThan(0);
-    }
-
-    /// <summary>Verifies the string-based WhenAnyValue overload for 1 property with a distinct-until-changed flag.</summary>
-    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
-    [Test]
-    public async Task WhenAnyValue_1Prop_Str_Dist()
-    {
-        var vm = new WhenAnyArityTestViewModel();
-        var list = new List<string?>();
-        _ = vm.WhenAnyValue<WhenAnyArityTestViewModel, string?>(nameof(WhenAnyArityTestViewModel.Property1), false).ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
-        await Assert.That(list).Count().IsGreaterThan(0);
-    }
-
     /// <summary>Verifies the WhenAnyValue overload for 1 property with a selector.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
@@ -117,45 +43,6 @@ public partial class WhenAnyMixinTests
         var list = new List<string>();
         Func<string?, string> selector = static _ => "x";
         _ = vm.WhenAnyValue(x => x.Property1, selector).ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
-        await Assert.That(list).Count().IsGreaterThan(0);
-    }
-
-    /// <summary>Verifies the WhenAnyValue overload for 1 property with a selector and distinct-until-changed flag.</summary>
-    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
-    [Test]
-    public async Task WhenAnyValue_1Props_Sel_Dist()
-    {
-        var vm = new WhenAnyArityTestViewModel();
-        var list = new List<string>();
-        Func<string?, string> selector = static _ => "x";
-        _ = vm.WhenAnyValue(x => x.Property1, selector, true).ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
-        await Assert.That(list).Count().IsGreaterThan(0);
-    }
-
-    /// <summary>Verifies the string-based WhenAnyValue overload for 1 properties with a selector.</summary>
-    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
-    [Test]
-    public async Task WhenAnyValue_1Props_Sel_Str()
-    {
-        var vm = new WhenAnyArityTestViewModel();
-        var list = new List<string>();
-        _ = vm.WhenAnyValue<WhenAnyArityTestViewModel, string, string?>(
-            nameof(WhenAnyArityTestViewModel.Property1),
-            static _ => "x").ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
-        await Assert.That(list).Count().IsGreaterThan(0);
-    }
-
-    /// <summary>Verifies the string-based WhenAnyValue overload for 1 properties with a selector and distinct-until-changed flag.</summary>
-    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
-    [Test]
-    public async Task WhenAnyValue_1Props_Sel_Str_Dist()
-    {
-        var vm = new WhenAnyArityTestViewModel();
-        var list = new List<string>();
-        _ = vm.WhenAnyValue<WhenAnyArityTestViewModel, string, string?>(
-            nameof(WhenAnyArityTestViewModel.Property1),
-            static _ => "x",
-            false).ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 }

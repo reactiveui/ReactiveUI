@@ -48,10 +48,9 @@ public class ChatRoomViewModel : ReactiveObject, IRoutableViewModel
         _senderInstanceId = (hostScreen as AppBootstrapper)?.CircuitId
                             ?? throw new InvalidOperationException("Expected HostScreen to be AppBootstrapper.");
 
-        var canSend =
-            this.WhenAnyValue<ChatRoomViewModel, bool, string>(
-                nameof(MessageText),
-                static txt => !string.IsNullOrWhiteSpace(txt));
+        var canSend = this.WhenAnyValue(
+            static vm => vm.MessageText,
+            static txt => !string.IsNullOrWhiteSpace(txt));
         SendMessage = ReactiveCommand.Create(SendMessageImpl, canSend);
 
         NavigateBack = ReactiveCommand.CreateFromObservable(

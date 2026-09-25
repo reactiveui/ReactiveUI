@@ -26,11 +26,8 @@ public class ReactiveUIBuilderMauiTests
             .WithMaui()
             .BuildApp();
 
-        var observableProperty = locator.GetService<ICreatesObservableForProperty>();
-        await Assert.That(observableProperty).IsNotNull();
-
-        var typeConverters = locator.GetServices<IBindingTypeConverter>();
-        await Assert.That(typeConverters).IsNotNull();
+        await Assert.That(locator.GetService<IViewLocator>()).IsNotNull();
+        await Assert.That(locator.GetService<IActivationForViewFetcher>()).IsNotNull();
     }
 
     /// <summary>Verifies that WithMaui registers the MAUI activation fetcher rather than only the core registrations.</summary>

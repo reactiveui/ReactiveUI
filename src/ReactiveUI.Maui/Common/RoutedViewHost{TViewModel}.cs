@@ -13,6 +13,13 @@ using ReactiveUI.Reactive.Maui.Internal;
 using ReactiveUI.Maui.Internal;
 #endif
 #if REACTIVE_SHIM
+using RetainedIViewLocator = ReactiveUI.Reactive.IViewLocator;
+using RetainedViewLocator = ReactiveUI.Reactive.ViewLocator;
+#else
+using RetainedIViewLocator = ReactiveUI.IViewLocator;
+using RetainedViewLocator = ReactiveUI.ViewLocator;
+#endif
+#if REACTIVE_SHIM
 namespace ReactiveUI.Reactive;
 #else
 namespace ReactiveUI;
@@ -65,7 +72,7 @@ public partial class RoutedViewHost<
     /// <value>
     /// The view locator.
     /// </value>
-    public IViewLocator? ViewLocator { get; set; }
+    public RetainedIViewLocator? ViewLocator { get; set; }
 
     /// <summary>Gets or sets the <see cref="RoutingState"/> of the view model stack.</summary>
     public RoutingState Router
@@ -119,7 +126,7 @@ public partial class RoutedViewHost<
             return;
         }
 
-        var viewLocator = ViewLocator ?? ReactiveUI.ViewLocator.Current;
+        var viewLocator = ViewLocator ?? RetainedViewLocator.Current;
 
         // Use the generic ResolveView<TViewModel> method - this is AOT-safe!
         var view = viewLocator.ResolveView<TViewModel>(route.Contract) ?? viewLocator.ResolveView<TViewModel>()

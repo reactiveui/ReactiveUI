@@ -172,7 +172,7 @@ public class CanActivateViewFetcherTests
     }
 
     /// <summary>A test view that implements <see cref="ICanActivate" /> and can be activated and deactivated on demand.</summary>
-    private sealed class TestCanActivateView : ReactiveObject, IViewFor<TestViewModel>, ICanActivateContract
+    public sealed class TestCanActivateView : ReactiveObject, IViewFor<TestViewModel>, ICanActivateContract
     {
         /// <summary>The subject used to signal that the view has been activated.</summary>
         private readonly Signal<RxVoid> _activated = new();
@@ -207,6 +207,13 @@ public class CanActivateViewFetcherTests
         public void Deactivate() => _deactivated.OnNext(RxVoid.Default);
     }
 
+    /// <summary>A simple view model used by the test views.</summary>
+    [SuppressMessage(
+        "Minor Code Smell",
+        "SST1436:Classes should not be empty",
+        Justification = "Empty type used as a test marker.")]
+    public sealed class TestViewModel : ReactiveObject;
+
     /// <summary>A test view that does not implement <see cref="ICanActivate" />.</summary>
     private sealed class TestNonActivatableView : ReactiveObject, IViewFor<TestViewModel>
     {
@@ -224,11 +231,4 @@ public class CanActivateViewFetcherTests
             set => ViewModel = (TestViewModel?)value;
         }
     }
-
-    /// <summary>A simple view model used by the test views.</summary>
-    [SuppressMessage(
-        "Minor Code Smell",
-        "SST1436:Classes should not be empty",
-        Justification = "Empty type used as a test marker.")]
-    private sealed class TestViewModel : ReactiveObject;
 }

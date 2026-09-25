@@ -66,7 +66,7 @@ public class ExceptionTests
         var fixture = new ViewLocatorNotFoundException();
 
         // Assert
-        await Assert.That(fixture.Message).IsEqualTo("Exception of type 'ReactiveUI.ViewLocatorNotFoundException' was thrown.");
+        await Assert.That(fixture.Message).IsEqualTo($"Exception of type '{typeof(ViewLocatorNotFoundException).FullName}' was thrown.");
     }
 
     /// <summary>Tests that ViewLocatorNotFoundException can be instantiated with message and inner exception.</summary>

@@ -64,7 +64,7 @@ public class ViewLocatorAOTMappingTests
     }
 
     /// <summary>Default view for <see cref="VmA"/> used to test fallback resolution.</summary>
-    private sealed class ViewADefault : IViewFor<VmA>
+    internal sealed class ViewADefault : IViewFor<VmA>
     {
         /// <inheritdoc/>
         object? IViewFor.ViewModel
@@ -78,7 +78,7 @@ public class ViewLocatorAOTMappingTests
     }
 
     /// <summary>View for <see cref="VmB"/> used to test contract-based resolution.</summary>
-    private sealed class ViewB : IViewFor<VmB>
+    internal sealed class ViewB : IViewFor<VmB>
     {
         /// <inheritdoc/>
         object? IViewFor.ViewModel
@@ -93,11 +93,11 @@ public class ViewLocatorAOTMappingTests
 
     /// <summary>Sample view model used for view locator resolution tests.</summary>
     [SuppressMessage("Minor Code Smell", "SST1436:Classes should not be empty", Justification = "Marker type for tests.")]
-    private sealed class VmA : ReactiveObject;
+    internal sealed class VmA : ReactiveObject;
 
     /// <summary>Sample view model used for view locator resolution tests.</summary>
     [SuppressMessage("Minor Code Smell", "SST1436:Classes should not be empty", Justification = "Marker type for tests.")]
-    private sealed class VmB : ReactiveObject;
+    internal sealed class VmB : ReactiveObject;
 
     /// <summary>View for <see cref="VmA"/> used to test contract-based resolution.</summary>
     private sealed class ViewA : IViewFor<VmA>

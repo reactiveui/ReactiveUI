@@ -423,18 +423,18 @@ public class BlazorReactiveUIBuilderExtensionsTests
             throw new NotSupportedException();
 
         /// <inheritdoc/>
-        public IReactiveUIBuilder WithConverter<TFrom, TTo>(BindingTypeConverter<TFrom, TTo> converter) =>
-            throw new NotSupportedException();
-
-        /// <inheritdoc/>
         public IReactiveUIBuilder WithConverter(IBindingTypeConverter converter) => throw new NotSupportedException();
 
         /// <inheritdoc/>
-        public IReactiveUIBuilder WithConverter<TFrom, TTo>(Func<BindingTypeConverter<TFrom, TTo>> factory) =>
+        public IReactiveUIBuilder WithConverter<TFrom, TTo>(IBindingTypeConverter<TFrom, TTo> converter) =>
             throw new NotSupportedException();
 
         /// <inheritdoc/>
         public IReactiveUIBuilder WithConverter(Func<IBindingTypeConverter> factory) =>
+            throw new NotSupportedException();
+
+        /// <inheritdoc/>
+        public IReactiveUIBuilder WithConverter<TFrom, TTo>(Func<IBindingTypeConverter<TFrom, TTo>> factory) =>
             throw new NotSupportedException();
 
         /// <inheritdoc/>

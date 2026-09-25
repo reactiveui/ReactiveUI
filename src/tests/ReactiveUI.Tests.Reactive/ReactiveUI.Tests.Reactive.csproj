@@ -18,6 +18,7 @@
     <PackageReference Include="Microsoft.Reactive.Testing"/>
   </ItemGroup>
 
+
   <ItemGroup>
     <ProjectReference Include="..\..\ReactiveUI.Reactive\ReactiveUI.Reactive.csproj"/>
   </ItemGroup>

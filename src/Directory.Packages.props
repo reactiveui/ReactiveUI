@@ -7,6 +7,7 @@
   <PropertyGroup Label="Shared Version Variables">
     <SplatVersion>21.0.0</SplatVersion>
     <PrimitivesVersion>8.2.0</PrimitivesVersion>
+    <BindingVersion>7.8.0</BindingVersion>
     <TUnitVersion>1.69.0</TUnitVersion>
     <!-- StyleSharp.Analyzers, PerformanceSharp.Analyzers and SecuritySharp.Analyzers ship from the
          same release pipeline and always share a version. -->
@@ -54,6 +55,17 @@
     <PackageVersion Include="ReactiveUI.Primitives.Maui.Reactive" Version="$(PrimitivesVersion)"/>
     <PackageVersion Include="ReactiveUI.Primitives.Blazor" Version="$(PrimitivesVersion)"/>
     <PackageVersion Include="ReactiveUI.Primitives.Blazor.Reactive" Version="$(PrimitivesVersion)"/>
+  </ItemGroup>
+
+  <ItemGroup Label="ReactiveUI Binding">
+    <PackageVersion Include="ReactiveUI.Binding" Version="$(BindingVersion)"/>
+    <PackageVersion Include="ReactiveUI.Binding.Reactive" Version="$(BindingVersion)"/>
+    <PackageVersion Include="ReactiveUI.Binding.Wpf" Version="$(BindingVersion)"/>
+    <PackageVersion Include="ReactiveUI.Binding.Wpf.Reactive" Version="$(BindingVersion)"/>
+    <PackageVersion Include="ReactiveUI.Binding.WinForms" Version="$(BindingVersion)"/>
+    <PackageVersion Include="ReactiveUI.Binding.WinForms.Reactive" Version="$(BindingVersion)"/>
+    <PackageVersion Include="ReactiveUI.Binding.Maui" Version="$(BindingVersion)"/>
+    <PackageVersion Include="ReactiveUI.Binding.Maui.Reactive" Version="$(BindingVersion)"/>
   </ItemGroup>
 
   <ItemGroup Label="Rx Ecosystem">

@@ -61,7 +61,7 @@ public class ViewLocatorTests
         await Assert.That(view).IsTypeOf<TestView>();
     }
 
-    /// <summary>Verifies that <see cref="ViewLocator.Current" /> returns a default <see cref="IViewLocator" /> when ReactiveUI is initialized with core services.</summary>
+    /// <summary>Verifies that <see cref="ViewLocator.Current" /> returns a default locator when ReactiveUI is initialized with core services.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
     [Test]
     public async Task Current_ReturnsDefaultViewLocator()
@@ -114,7 +114,7 @@ public class ViewLocatorTests
     }
 
     /// <summary>Test view implementing <see cref="IViewFor{TViewModel}" /> for <see cref="TestViewModel" />.</summary>
-    private sealed class TestView : IViewFor<TestViewModel>
+    internal sealed class TestView : IViewFor<TestViewModel>
     {
         /// <summary>Gets or sets the strongly-typed view model.</summary>
         public TestViewModel? ViewModel { get; set; }
@@ -132,5 +132,5 @@ public class ViewLocatorTests
         "Minor Code Smell",
         "SST1436:Classes should not be empty",
         Justification = "Empty type used as a test marker.")]
-    private sealed class TestViewModel : ReactiveObject;
+    internal sealed class TestViewModel : ReactiveObject;
 }
