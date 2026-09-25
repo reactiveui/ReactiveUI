@@ -277,7 +277,7 @@ namespace ReactiveUI.Reactive.Maui
         public Microsoft.Maui.Controls.View DefaultContent { get; set; }
         public string? ViewContract { get; set; }
         public System.IObservable<string?> ViewContractObservable { get; set; }
-        public ReactiveUI.Reactive.IViewLocator? ViewLocator { get; set; }
+        public ReactiveUI.Binding.Reactive.IViewLocator? ViewLocator { get; set; }
         public object? ViewModel { get; set; }
         [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, or generic constraints), trimming can't validate that the requirements of those annotations are met.")]
         [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
