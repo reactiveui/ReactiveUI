@@ -60,10 +60,10 @@ public class ComprehensiveAOTTests
 
         _ = interaction.RegisterHandler(static context => context.SetOutput(context.Input == "test"));
 
-        result = await interaction.Handle("test").FirstAsync();
+        result = await interaction.Handle("test");
         await Assert.That(result).IsTrue();
 
-        result = await interaction.Handle("fail").FirstAsync();
+        result = await interaction.Handle("fail");
         await Assert.That(result).IsFalse();
     }
 

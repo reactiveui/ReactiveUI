@@ -195,7 +195,7 @@ public class ViewModelViewHostTest
         }
     }
 
-    /// <summary>Resolving with a <see langword="null"/> <see cref="ViewModelViewHost.ViewLocator"/> falls back to the ambient <see cref="ViewLocator.Current"/>.</summary>
+    /// <summary>Resolving with a <see langword="null"/> <see cref="ViewModelViewHost.ViewLocator"/> falls back to the ambient <see cref="ViewLocator.GetCurrent"/>.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     [TestExecutor<ViewModelViewHostViewLocatorExecutor>]
@@ -216,7 +216,7 @@ public class ViewModelViewHostTest
         return new(static () => ModeDetector.OverrideModeDetector(new DefaultModeDetector()));
     }
 
-    /// <summary>Test executor that sets up the MAUI environment and registers a view in <see cref="ViewLocator.Current"/> for the null-locator fallback test.</summary>
+    /// <summary>Test executor that sets up the MAUI environment and registers a view in <see cref="ViewLocator.GetCurrent"/> for the null-locator fallback test.</summary>
     [NotInParallel]
     public sealed class ViewModelViewHostViewLocatorExecutor : MauiTestExecutor
     {
@@ -251,11 +251,11 @@ public class ViewModelViewHostTest
         public bool? InUnitTestRunner() => false;
     }
 
-    /// <summary>A view model that is registered in <see cref="ViewLocator.Current"/> for the fallback test.</summary>
+    /// <summary>A view model that is registered in <see cref="ViewLocator.GetCurrent"/> for the fallback test.</summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "SST1436:Classes should not be empty", Justification = "Marker type for tests.")]
     private sealed class RegisteredViewModel;
 
-    /// <summary>The view resolved for <see cref="RegisteredViewModel"/> via <see cref="ViewLocator.Current"/>.</summary>
+    /// <summary>The view resolved for <see cref="RegisteredViewModel"/> via <see cref="ViewLocator.GetCurrent"/>.</summary>
     private sealed class RegisteredView : ContentView, IViewFor<RegisteredViewModel>
     {
         /// <inheritdoc/>
@@ -298,28 +298,12 @@ public class ViewModelViewHostTest
         public MockViewLocator(IViewFor view) => _view = view;
 
         /// <inheritdoc/>
-        public IViewFor<T>? ResolveView<T>(string? contract)
-            where T : class => ResolveView<T>();
+        public IViewFor? ResolveView<TViewModel>(TViewModel viewModel, string? contract)
+            where TViewModel : class => _view;
 
         /// <inheritdoc/>
-        public IViewFor<T>? ResolveView<T>()
-            where T : class => _view as IViewFor<T>;
-
-        /// <inheritdoc/>
-        [RequiresUnreferencedCode(
-            "This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
-        [RequiresDynamicCode(
-            "If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, "
-            + "or generic constraints), trimming can't validate that the requirements of those annotations are met.")]
-        public IViewFor? ResolveView(object? instance, string? contract) => _view;
-
-        /// <inheritdoc/>
-        [RequiresUnreferencedCode(
-            "This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
-        [RequiresDynamicCode(
-            "If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, "
-            + "or generic constraints), trimming can't validate that the requirements of those annotations are met.")]
-        public IViewFor? ResolveView(object? instance) => _view;
+        [RequiresDynamicCode("Resolves a view from an object.")]
+        public IViewFor? ResolveView(object? viewModel, string? contract) => _view;
     }
 
     /// <summary>Testable ViewModelViewHost that exposes the protected view model resolution.</summary>
@@ -333,28 +317,12 @@ public class ViewModelViewHostTest
     private sealed class TestViewLocator : IViewLocator
     {
         /// <inheritdoc/>
-        public IViewFor<TViewModel>? ResolveView<TViewModel>(string? contract)
+        public IViewFor? ResolveView<TViewModel>(TViewModel viewModel, string? contract)
             where TViewModel : class => null;
 
         /// <inheritdoc/>
-        public IViewFor<TViewModel>? ResolveView<TViewModel>()
-            where TViewModel : class => null;
-
-        /// <inheritdoc/>
-        [RequiresUnreferencedCode(
-            "This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
-        [RequiresDynamicCode(
-            "If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, "
-            + "or generic constraints), trimming can't validate that the requirements of those annotations are met.")]
-        public IViewFor? ResolveView(object? instance, string? contract) => null;
-
-        /// <inheritdoc/>
-        [RequiresUnreferencedCode(
-            "This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
-        [RequiresDynamicCode(
-            "If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, "
-            + "or generic constraints), trimming can't validate that the requirements of those annotations are met.")]
-        public IViewFor? ResolveView(object? instance) => null;
+        [RequiresDynamicCode("Resolves a view from an object.")]
+        public IViewFor? ResolveView(object? viewModel, string? contract) => null;
     }
 
     /// <summary>A view that implements <see cref="IViewFor"/> but is not a MAUI <see cref="View"/>.</summary>
@@ -378,27 +346,11 @@ public class ViewModelViewHostTest
         private readonly NonView _view = new();
 
         /// <inheritdoc/>
-        public IViewFor<T>? ResolveView<T>(string? contract)
-            where T : class => ResolveView<T>();
+        public IViewFor? ResolveView<TViewModel>(TViewModel viewModel, string? contract)
+            where TViewModel : class => _view;
 
         /// <inheritdoc/>
-        public IViewFor<T>? ResolveView<T>()
-            where T : class => _view as IViewFor<T>;
-
-        /// <inheritdoc/>
-        [RequiresUnreferencedCode(
-            "This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
-        [RequiresDynamicCode(
-            "If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, "
-            + "or generic constraints), trimming can't validate that the requirements of those annotations are met.")]
-        public IViewFor? ResolveView(object? instance, string? contract) => _view;
-
-        /// <inheritdoc/>
-        [RequiresUnreferencedCode(
-            "This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
-        [RequiresDynamicCode(
-            "If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, "
-            + "or generic constraints), trimming can't validate that the requirements of those annotations are met.")]
-        public IViewFor? ResolveView(object? instance) => _view;
+        [RequiresDynamicCode("Resolves a view from an object.")]
+        public IViewFor? ResolveView(object? viewModel, string? contract) => _view;
     }
 }

@@ -3,8 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Diagnostics.CodeAnalysis;
-
 namespace ReactiveUI.AOT.Tests;
 
 /// <summary>
@@ -77,20 +75,15 @@ public class AOTCompatibilityTests
         await Assert.That(helper.Value).IsEqualTo("computed value");
     }
 
-    /// <summary>Tests that WhenAnyValue works with string property names in AOT.</summary>
+    /// <summary>Verifies generated property observation works in an AOT consumer.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [UnconditionalSuppressMessage(
-        "Trimming",
-        "IL2026:Members annotated with RequiresUnreferencedCodeAttribute may break when trimming",
-        Justification = "Test deliberately exercises the string/expression-based reflection API to verify runtime behavior.")]
-    public async Task WhenAnyValue_StringPropertyNames_WorksInAOT()
+    public async Task WhenAnyValue_GeneratedPropertyPath_WorksInAOT()
     {
         var obj = new TestReactiveObject();
         string? observedValue = null;
 
-        // Using string property names should work in AOT
-        _ = obj.WhenAnyValue<TestReactiveObject, string>(nameof(TestReactiveObject.TestProperty))
+        _ = obj.WhenAnyValue(static x => x.TestProperty)
             .Subscribe(value => observedValue = value);
 
         obj.TestProperty = "test value";
@@ -112,7 +105,7 @@ public class AOTCompatibilityTests
             context.SetOutput(true);
         });
 
-        var result = await interaction.Handle("test").FirstAsync();
+        var result = await interaction.Handle("test");
 
         using (Assert.Multiple())
         {

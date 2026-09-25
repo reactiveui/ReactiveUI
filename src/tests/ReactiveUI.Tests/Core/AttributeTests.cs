@@ -3,7 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.ComponentModel;
 using System.Reflection;
 
 namespace ReactiveUI.Tests.Core;
@@ -11,30 +10,6 @@ namespace ReactiveUI.Tests.Core;
 /// <summary>Tests for ReactiveUI attribute types.</summary>
 public class AttributeTests
 {
-    /// <summary>Tests that LocalizableAttribute stores false value correctly.</summary>
-    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
-    [Test]
-    public async Task LocalizableAttribute_FalseValue_StoresFalse()
-    {
-        // Act
-        var attribute = new LocalizableAttribute(false);
-
-        // Assert
-        await Assert.That(attribute.IsLocalizable).IsFalse();
-    }
-
-    /// <summary>Tests that LocalizableAttribute stores true value correctly.</summary>
-    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
-    [Test]
-    public async Task LocalizableAttribute_TrueValue_StoresTrue()
-    {
-        // Act
-        var attribute = new LocalizableAttribute(true);
-
-        // Assert
-        await Assert.That(attribute.IsLocalizable).IsTrue();
-    }
-
     /// <summary>Tests that PreserveAttribute can be instantiated.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]

@@ -65,7 +65,7 @@ public class ViewActivationAOTTests
     }
 
     /// <summary>A minimal activatable view driven by explicit loaded/unloaded signals.</summary>
-    private sealed class TestActivatableView : ReactiveObject, IViewFor<TestActivatableViewModel>, ICanActivate, IDisposable
+    internal sealed class TestActivatableView : ReactiveObject, IViewFor<TestActivatableViewModel>, ICanActivate, IDisposable
     {
         /// <summary>Gets the signal raised when the view is loaded.</summary>
         public Signal<RxVoid> Loaded { get; } = new();

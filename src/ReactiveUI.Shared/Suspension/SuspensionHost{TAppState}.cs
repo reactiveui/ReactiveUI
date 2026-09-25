@@ -85,7 +85,7 @@ public class SuspensionHost<TAppState> : ReactiveObject, ISuspensionHost<TAppSta
     /// </remarks>
     public IObservable<RxVoid> IsLaunchingNew
     {
-        get => new WhenAnyObservableSwitchSink<RxVoid>(_isLaunchingNew);
+        get => new SwitchSignal<RxVoid>(_isLaunchingNew);
         set
         {
             ArgumentExceptionHelper.ThrowIfNull(value);
@@ -100,7 +100,7 @@ public class SuspensionHost<TAppState> : ReactiveObject, ISuspensionHost<TAppSta
     /// </remarks>
     public IObservable<RxVoid> IsResuming
     {
-        get => new WhenAnyObservableSwitchSink<RxVoid>(_isResuming);
+        get => new SwitchSignal<RxVoid>(_isResuming);
         set
         {
             ArgumentExceptionHelper.ThrowIfNull(value);
@@ -115,7 +115,7 @@ public class SuspensionHost<TAppState> : ReactiveObject, ISuspensionHost<TAppSta
     /// </remarks>
     public IObservable<RxVoid> IsUnpausing
     {
-        get => new WhenAnyObservableSwitchSink<RxVoid>(_isUnpausing);
+        get => new SwitchSignal<RxVoid>(_isUnpausing);
         set
         {
             ArgumentExceptionHelper.ThrowIfNull(value);
@@ -131,7 +131,7 @@ public class SuspensionHost<TAppState> : ReactiveObject, ISuspensionHost<TAppSta
     /// </remarks>
     public IObservable<RxVoid> IsContinuing
     {
-        get => new WhenAnyObservableSwitchSink<RxVoid>(_isContinuing);
+        get => new SwitchSignal<RxVoid>(_isContinuing);
         set
         {
             ArgumentExceptionHelper.ThrowIfNull(value);
@@ -146,7 +146,7 @@ public class SuspensionHost<TAppState> : ReactiveObject, ISuspensionHost<TAppSta
     /// </remarks>
     public IObservable<IDisposable> ShouldPersistState
     {
-        get => new WhenAnyObservableSwitchSink<IDisposable>(_shouldPersistState);
+        get => new SwitchSignal<IDisposable>(_shouldPersistState);
         set
         {
             ArgumentExceptionHelper.ThrowIfNull(value);
@@ -161,7 +161,7 @@ public class SuspensionHost<TAppState> : ReactiveObject, ISuspensionHost<TAppSta
     /// </remarks>
     public IObservable<RxVoid> ShouldInvalidateState
     {
-        get => new WhenAnyObservableSwitchSink<RxVoid>(_shouldInvalidateState);
+        get => new SwitchSignal<RxVoid>(_shouldInvalidateState);
         set
         {
             ArgumentExceptionHelper.ThrowIfNull(value);

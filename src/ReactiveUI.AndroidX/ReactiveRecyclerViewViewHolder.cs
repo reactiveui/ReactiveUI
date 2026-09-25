@@ -35,6 +35,12 @@ public class ReactiveRecyclerViewViewHolder<TViewModel> : RecyclerView.ViewHolde
     /// <summary>The subject that signals when the view is deactivated.</summary>
     private readonly Signal<RxVoid> _deactivated = new();
 
+    /// <summary>The <see cref="INotifyPropertyChanging.PropertyChanging"/> handlers; subscribing enables the classic event.</summary>
+    private PropertyChangingEventHandler? _propertyChanging;
+
+    /// <summary>The <see cref="INotifyPropertyChanged.PropertyChanged"/> handlers; subscribing enables the classic event.</summary>
+    private PropertyChangedEventHandler? _propertyChanged;
+
     /// <summary>Initializes a new instance of the <see cref="ReactiveRecyclerViewViewHolder{TViewModel}"/> class.</summary>
     /// <param name="view">The view.</param>
     protected ReactiveRecyclerViewViewHolder(View view)
@@ -76,10 +82,28 @@ public class ReactiveRecyclerViewViewHolder<TViewModel> : RecyclerView.ViewHolde
     }
 
     /// <inheritdoc/>
-    public event PropertyChangingEventHandler? PropertyChanging;
+    public event PropertyChangingEventHandler? PropertyChanging
+    {
+        add
+        {
+            this.SubscribePropertyChangingEvents();
+            _propertyChanging += value;
+        }
+
+        remove => _propertyChanging -= value;
+    }
 
     /// <inheritdoc/>
-    public event PropertyChangedEventHandler? PropertyChanged;
+    public event PropertyChangedEventHandler? PropertyChanged
+    {
+        add
+        {
+            this.SubscribePropertyChangedEvents();
+            _propertyChanged += value;
+        }
+
+        remove => _propertyChanged -= value;
+    }
 
     /// <summary>
     /// Gets an observable that signals that this ViewHolder has been selected.
@@ -167,11 +191,11 @@ public class ReactiveRecyclerViewViewHolder<TViewModel> : RecyclerView.ViewHolde
 
     /// <inheritdoc/>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args) => PropertyChanging?.Invoke(this, args);
+    void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args) => _propertyChanging?.Invoke(this, args);
 
     /// <inheritdoc/>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args) => PropertyChanged?.Invoke(this, args);
+    void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args) => _propertyChanged?.Invoke(this, args);
 
     /// <inheritdoc/>
     protected override void Dispose(bool disposing)

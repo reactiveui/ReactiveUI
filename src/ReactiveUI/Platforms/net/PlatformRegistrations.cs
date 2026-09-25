@@ -20,8 +20,6 @@ public class PlatformRegistrations : IWantsToRegisterStuff
     {
         ArgumentExceptionHelper.ThrowIfNull(registrar);
 
-        registrar.RegisterConstant<IBindingFallbackConverter>(static () => new ComponentModelFallbackConverter());
-
         if (ModeDetector.InUnitTestRunner())
         {
             return;

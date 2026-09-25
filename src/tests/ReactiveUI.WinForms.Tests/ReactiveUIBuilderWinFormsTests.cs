@@ -39,8 +39,8 @@ public class ReactiveUIBuilderWinFormsTests
 
         builder.WithWinForms().Build();
 
-        var observableProperty = locator.GetService<ICreatesObservableForProperty>();
-        await Assert.That(observableProperty).IsNotNull();
+        var viewLocator = locator.GetService<IViewLocator>();
+        await Assert.That(viewLocator).IsNotNull();
 
         var platformOperations = locator.GetService<IPlatformOperations>();
         await Assert.That(platformOperations).IsNotNull();

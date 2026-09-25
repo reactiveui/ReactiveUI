@@ -19,8 +19,5 @@ public class PlatformRegistrations : IWantsToRegisterStuff
     /// <inheritdoc/>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Register(IRegistrar registrar) =>
-        ApplePlatformRegistrations.Register(
-            registrar,
-            static () => new UIKitObservableForProperty(),
-            static () => new UIKitCommandBinders());
+        ApplePlatformRegistrations.Register(registrar);
 }

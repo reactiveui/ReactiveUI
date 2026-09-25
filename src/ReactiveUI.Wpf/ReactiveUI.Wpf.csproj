@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <PackageReference Include="ReactiveUI.Primitives.Wpf" ExcludeAssets="analyzers" />
+    <PackageReference Include="ReactiveUI.Binding.Wpf" />
     <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj"/>
   </ItemGroup>
 
@@ -38,6 +39,14 @@
     <Using Include="ReactiveUI.Builder"/>
     <Using Include="ReactiveUI.Interfaces"/>
     <Using Include="ReactiveUI.Primitives.Disposables"/>
+  </ItemGroup>
+
+  <!-- The WPF converters and their hints come from ReactiveUI.Binding.Wpf. The packed props import the same
+       namespace for every consumer. -->
+  <Import Project="buildTransitive\ReactiveUI.Wpf.props"/>
+  <ItemGroup>
+    <None Remove="buildTransitive\**"/>
+    <None Include="buildTransitive\ReactiveUI.Wpf.props" Pack="true" PackagePath="buildTransitive/"/>
   </ItemGroup>
 
   <!-- Internal plumbing + platform sinks compiled per-assembly (no IVT between shipping libs; internal so the

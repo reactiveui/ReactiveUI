@@ -28,7 +28,7 @@ public sealed partial class ReactiveUIBuilder
 
         InitializeStaticState();
 
-        RxConverters.SetService(ConverterService);
+        BindingConverters.SetService(ConverterService);
 
         if (_messageBus is not null)
         {

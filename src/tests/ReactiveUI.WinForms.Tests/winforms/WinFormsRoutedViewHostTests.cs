@@ -145,7 +145,7 @@ public class WinFormsRoutedViewHostTests
         }
     }
 
-    /// <summary>When no ViewLocator is configured, the host falls back to the ambient ViewLocator.Current.</summary>
+    /// <summary>When no ViewLocator is configured, the host falls back to the ambient ViewLocator.GetCurrent().</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task NavigatingWithoutViewLocator_UsesAmbientViewLocator()
@@ -153,7 +153,7 @@ public class WinFormsRoutedViewHostTests
         var router = new RoutingState(Sequencer.Immediate);
         using var target = new WinFormsRoutedViewHost { Router = router };
 
-        // No ViewLocator is assigned, so navigation exercises the ViewLocator.Current fallback path.
+        // No ViewLocator is assigned, so navigation exercises the ViewLocator.GetCurrent() fallback path.
         _ = router.Navigate.Execute(new FakeWinformViewModel()).Subscribe();
 
         await Assert.That(target).IsNotNull();

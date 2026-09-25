@@ -27,11 +27,35 @@ public class ReactiveFragmentActivity : FragmentActivity, IReactiveObject,
     /// <summary>The subject that signals activity results.</summary>
     private readonly Signal<(int RequestCode, Result Result, Intent? Intent)> _activityResult = new();
 
-    /// <inheritdoc/>
-    public event PropertyChangingEventHandler? PropertyChanging;
+    /// <summary>The <see cref="INotifyPropertyChanging.PropertyChanging"/> handlers; subscribing enables the classic event.</summary>
+    private PropertyChangingEventHandler? _propertyChanging;
+
+    /// <summary>The <see cref="INotifyPropertyChanged.PropertyChanged"/> handlers; subscribing enables the classic event.</summary>
+    private PropertyChangedEventHandler? _propertyChanged;
 
     /// <inheritdoc/>
-    public event PropertyChangedEventHandler? PropertyChanged;
+    public event PropertyChangingEventHandler? PropertyChanging
+    {
+        add
+        {
+            this.SubscribePropertyChangingEvents();
+            _propertyChanging += value;
+        }
+
+        remove => _propertyChanging -= value;
+    }
+
+    /// <inheritdoc/>
+    public event PropertyChangedEventHandler? PropertyChanged
+    {
+        add
+        {
+            this.SubscribePropertyChangedEvents();
+            _propertyChanged += value;
+        }
+
+        remove => _propertyChanged -= value;
+    }
 
     /// <inheritdoc />
     public IObservable<IReactivePropertyChangedEventArgs<ReactiveFragmentActivity>> Changing =>
@@ -56,11 +80,11 @@ public class ReactiveFragmentActivity : FragmentActivity, IReactiveObject,
 
     /// <inheritdoc/>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args) => PropertyChanging?.Invoke(this, args);
+    void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args) => _propertyChanging?.Invoke(this, args);
 
     /// <inheritdoc/>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args) => PropertyChanged?.Invoke(this, args);
+    void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args) => _propertyChanged?.Invoke(this, args);
 
     /// <inheritdoc />
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

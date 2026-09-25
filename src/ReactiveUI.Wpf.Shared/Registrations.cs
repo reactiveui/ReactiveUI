@@ -20,22 +20,12 @@ public class Registrations : IWantsToRegisterStuff
 
         registrar.RegisterConstant<IPlatformOperations>(static () => new PlatformOperations());
         registrar.RegisterConstant<IActivationForViewFetcher>(static () => new ActivationForViewFetcher());
-        registrar.RegisterConstant<ICreatesObservableForProperty>(static () =>
-            new DependencyObjectObservableForProperty());
-
-        // WPF property binder that resolves inherited DependencyProperty metadata (see #4350).
-        registrar.RegisterConstant<IPropertyBinderImplementation>(static () => new WpfPropertyBinderImplementation());
-
-        // WPF-specific command rebinding optimization
-        registrar.RegisterConstant<ICreatesCustomizedCommandRebinding>(static () =>
-            new WpfCommandRebindingCustomizer());
 
         // WPF-specific converters
         registrar.RegisterConstant<IBindingTypeConverter>(static () => new BooleanToVisibilityTypeConverter());
         registrar.RegisterConstant<IBindingTypeConverter>(static () => new VisibilityToBooleanTypeConverter());
 
         registrar.RegisterConstant<IPropertyBindingHook>(static () => new AutoDataTemplateBindingHook());
-        registrar.RegisterConstant<IBindingFallbackConverter>(static () => new ComponentModelFallbackConverter());
 
         RxSchedulers.SuppressViewCommandBindingMessage = true;
     }

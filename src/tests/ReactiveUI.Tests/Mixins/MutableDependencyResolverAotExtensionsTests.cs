@@ -143,7 +143,7 @@ public class MutableDependencyResolverAotExtensionsTests
     }
 
     /// <summary>A test view used to verify AOT view registration.</summary>
-    private sealed class TestView : IViewFor<TestViewModel>
+    internal sealed class TestView : IViewFor<TestViewModel>
     {
         /// <summary>Gets or sets the strongly typed view model.</summary>
         public TestViewModel? ViewModel { get; set; }
@@ -161,5 +161,5 @@ public class MutableDependencyResolverAotExtensionsTests
         "Minor Code Smell",
         "SST1436:Classes should not be empty",
         Justification = "Empty type used as a test marker.")]
-    private sealed class TestViewModel : ReactiveObject;
+    internal sealed class TestViewModel : ReactiveObject;
 }

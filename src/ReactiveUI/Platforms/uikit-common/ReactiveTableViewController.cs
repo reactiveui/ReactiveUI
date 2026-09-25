@@ -29,6 +29,12 @@ public class ReactiveTableViewController : NSTableViewController, IReactiveNotif
     /// <summary>The subject used to signal view deactivation.</summary>
     private readonly Signal<RxVoid> _deactivated = new();
 
+    /// <summary>The <see cref="INotifyPropertyChanging.PropertyChanging"/> handlers; subscribing enables the classic event.</summary>
+    private PropertyChangingEventHandler? _propertyChanging;
+
+    /// <summary>The <see cref="INotifyPropertyChanged.PropertyChanged"/> handlers; subscribing enables the classic event.</summary>
+    private PropertyChangedEventHandler? _propertyChanged;
+
     /// <summary>Initializes a new instance of the <see cref="ReactiveTableViewController"/> class.</summary>
     /// <param name="withStyle">The table view style.</param>
     protected ReactiveTableViewController(NSTableViewStyle withStyle)
@@ -71,10 +77,28 @@ public class ReactiveTableViewController : NSTableViewController, IReactiveNotif
     }
 
     /// <inheritdoc/>
-    public event PropertyChangingEventHandler? PropertyChanging;
+    public event PropertyChangingEventHandler? PropertyChanging
+    {
+        add
+        {
+            this.SubscribePropertyChangingEvents();
+            _propertyChanging += value;
+        }
+
+        remove => _propertyChanging -= value;
+    }
 
     /// <inheritdoc/>
-    public event PropertyChangedEventHandler? PropertyChanged;
+    public event PropertyChangedEventHandler? PropertyChanged
+    {
+        add
+        {
+            this.SubscribePropertyChangedEvents();
+            _propertyChanged += value;
+        }
+
+        remove => _propertyChanged -= value;
+    }
 
     /// <inheritdoc />
     public IObservable<IReactivePropertyChangedEventArgs<ReactiveTableViewController>> Changing => this.GetChangingObservable();
@@ -117,11 +141,11 @@ public class ReactiveTableViewController : NSTableViewController, IReactiveNotif
 
     /// <inheritdoc/>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args) => PropertyChanging?.Invoke(this, args);
+    void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args) => _propertyChanging?.Invoke(this, args);
 
     /// <inheritdoc/>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args) => PropertyChanged?.Invoke(this, args);
+    void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args) => _propertyChanged?.Invoke(this, args);
 
     /// <inheritdoc/>
     protected override void Dispose(bool disposing)

@@ -4,7 +4,6 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Globalization;
-using System.Linq.Expressions;
 
 using ReactiveUI.WinForms.Tests.Winforms.Mocks;
 using TUnit.Core.Executors;
@@ -31,105 +30,20 @@ public class DefaultPropertyBindingTests
     /// <summary>The expected affinity for a matching panel binding converter.</summary>
     private const int ExpectedAffinity = 10;
 
-    /// <summary>The message thrown when a property name cannot be resolved from an expression.</summary>
-    private const string PropertyNameNullMessage = "propertyName should not be null.";
-
-    /// <summary>Tests Winforms creates observable for property works for textboxes.</summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-    /// <exception cref="InvalidOperationException">The property name cannot be resolved from the expression.</exception>
+    /// <summary>Verifies generated observation of a WinForms component delivers its initial value and changes.</summary>
+    /// <returns>A task representing the asynchronous test operation.</returns>
     [Test]
-    public async Task WinformsCreatesObservableForPropertyWorksForTextboxes()
+    public async Task WhenAnyValue_ToolStripButtonChecked_DeliversInitialAndChange()
     {
-        var input = new TextBox();
-        var fixture = new WinformsCreatesObservableForProperty();
+        using var button = new ToolStripButton();
+        var values = new List<bool>();
+        using var subscription = button.WhenAnyValue(static x => x.Checked).Subscribe(values.Add);
 
-        await Assert.That(fixture.GetAffinityForObject(typeof(TextBox), "Text")).IsNotEqualTo(0);
+        await Assert.That(values).IsEquivalentTo([false]);
 
-        Expression<Func<TextBox, string>> expression = static x => x.Text;
+        button.Checked = true;
 
-        var propertyName = expression.Body.GetMemberInfo()?.Name ?? throw new InvalidOperationException(PropertyNameNullMessage);
-        var output = new List<IObservedChange<object, object?>>();
-        var dispose = fixture.GetNotificationForProperty(input, expression.Body, propertyName)
-            .Subscribe(output.Add);
-        await Assert.That(output).IsEmpty();
-
-        input.Text = "Foo";
-        await Assert.That(output).Count().IsEqualTo(1);
-        using (Assert.Multiple())
-        {
-            await Assert.That(output[0].Sender).IsEqualTo(input);
-            await Assert.That(output[0].GetPropertyName()).IsEqualTo("Text");
-        }
-
-        dispose.Dispose();
-
-        input.Text = "Bar";
-        await Assert.That(output).Count().IsEqualTo(1);
-    }
-
-    /// <summary>Tests that Winform creates observable for property works for components.</summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-    /// <exception cref="InvalidOperationException">The property name cannot be resolved from the expression.</exception>
-    [Test]
-    public async Task WinformsCreatesObservableForPropertyWorksForComponents()
-    {
-        var input = new ToolStripButton(); // ToolStripButton is a Component, not a Control
-        var fixture = new WinformsCreatesObservableForProperty();
-
-        await Assert.That(fixture.GetAffinityForObject(typeof(ToolStripButton), "Checked")).IsNotEqualTo(0);
-
-        Expression<Func<ToolStripButton, bool>> expression = static x => x.Checked;
-        var propertyName = expression.Body.GetMemberInfo()?.Name ?? throw new InvalidOperationException(PropertyNameNullMessage);
-        var output = new List<IObservedChange<object, object?>>();
-        var dispose = fixture.GetNotificationForProperty(input, expression.Body, propertyName)
-            .Subscribe(output.Add);
-        await Assert.That(output).IsEmpty();
-
-        input.Checked = true;
-        await Assert.That(output).Count().IsEqualTo(1);
-        using (Assert.Multiple())
-        {
-            await Assert.That(output[0].Sender).IsEqualTo(input);
-            await Assert.That(output[0].GetPropertyName()).IsEqualTo("Checked");
-        }
-
-        dispose.Dispose();
-
-        // Since we disposed the derived list, we should no longer receive updates
-        input.Checked = false;
-        await Assert.That(output).Count().IsEqualTo(1);
-    }
-
-    /// <summary>Tests that winforms creates observable for property works for third party controls.</summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-    /// <exception cref="InvalidOperationException">The property name cannot be resolved from the expression.</exception>
-    [Test]
-    public async Task WinformsCreatesObservableForPropertyWorksForThirdPartyControls()
-    {
-        var input = new ThirdPartyControl();
-        var fixture = new WinformsCreatesObservableForProperty();
-
-        await Assert.That(fixture.GetAffinityForObject(typeof(ThirdPartyControl), "Value")).IsNotEqualTo(0);
-
-        Expression<Func<ThirdPartyControl, string?>> expression = static x => x.Value;
-        var propertyName = expression.Body.GetMemberInfo()?.Name ?? throw new InvalidOperationException(PropertyNameNullMessage);
-        var output = new List<IObservedChange<object, object?>>();
-        var dispose = fixture.GetNotificationForProperty(input, expression.Body, propertyName)
-            .Subscribe(output.Add);
-        await Assert.That(output).IsEmpty();
-
-        input.Value = "Foo";
-        await Assert.That(output).Count().IsEqualTo(1);
-        using (Assert.Multiple())
-        {
-            await Assert.That(output[0].Sender).IsEqualTo(input);
-            await Assert.That(output[0].GetPropertyName()).IsEqualTo("Value");
-        }
-
-        dispose.Dispose();
-
-        input.Value = "Bar";
-        await Assert.That(output).Count().IsEqualTo(1);
+        await Assert.That(values).IsEquivalentTo([false, true]);
     }
 
     /// <summary>Tests that Winforms controled can bind to View Model.</summary>
@@ -218,62 +132,5 @@ public class DefaultPropertyBindingTests
             await Assert.That(test3).IsEqualTo(ExpectedAffinity);
             await Assert.That(test4).IsEqualTo(0);
         }
-    }
-
-    /// <summary>Tests that GetAffinityForObject returns zero when beforeChanged is requested.</summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-    [Test]
-    public async Task WinformsCreatesObservableForProperty_GetAffinityForObject_Returns_Zero_For_BeforeChanged()
-    {
-        var fixture = new WinformsCreatesObservableForProperty();
-        var affinity = fixture.GetAffinityForObject(typeof(TextBox), "Text", beforeChanged: true);
-
-        await Assert.That(affinity).IsEqualTo(0);
-    }
-
-    /// <summary>Tests that GetAffinityForObject returns zero for a non-Component type.</summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-    [Test]
-    public async Task WinformsCreatesObservableForProperty_GetAffinityForObject_Returns_Zero_For_NonComponent()
-    {
-        var fixture = new WinformsCreatesObservableForProperty();
-        var affinity = fixture.GetAffinityForObject(typeof(string), "Length", beforeChanged: false);
-
-        await Assert.That(affinity).IsEqualTo(0);
-    }
-
-    /// <summary>Tests that GetAffinityForObject returns zero for a property with no corresponding event.</summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-    [Test]
-    public async Task WinformsCreatesObservableForProperty_GetAffinityForObject_Returns_Zero_For_NonExistent_Event()
-    {
-        var fixture = new WinformsCreatesObservableForProperty();
-        var affinity = fixture.GetAffinityForObject(typeof(TextBox), "NonExistentProperty", beforeChanged: false);
-
-        await Assert.That(affinity).IsEqualTo(0);
-    }
-
-    /// <summary>Tests that GetNotificationForProperty throws for a property with no corresponding event.</summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-    [Test]
-    public async Task WinformsCreatesObservableForProperty_GetNotificationForProperty_Throws_For_NonExistent_Event()
-    {
-        var input = new TextBox();
-        var fixture = new WinformsCreatesObservableForProperty();
-
-        Expression<Func<TextBox, string>> expression = static x => x.Text;
-        const string? propertyName = "NonExistentProperty"; // Property with no corresponding event
-
-        var exception = await Assert.ThrowsAsync<InvalidOperationException>(() =>
-        {
-            var observable = fixture.GetNotificationForProperty(input, expression.Body, propertyName)
-                .ObserveOn(Sequencer.Immediate);
-
-            // Need to subscribe to actually execute the observable creation
-            _ = observable.Subscribe();
-            return Task.CompletedTask;
-        });
-
-        await Assert.That(exception!.Message).Contains("Could not find a valid event");
     }
 }

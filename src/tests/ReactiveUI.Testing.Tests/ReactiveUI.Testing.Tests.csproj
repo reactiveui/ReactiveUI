@@ -14,6 +14,14 @@
     <ProjectReference Include="..\..\ReactiveUI.Testing.Reactive\ReactiveUI.Testing.Reactive.csproj" Aliases="reactive_testing" />
   </ItemGroup>
 
+  <!-- This test assembly compiles lean source while referencing the Reactive assembly through an alias.
+       Keep the lean Binding generator; the Reactive package's generator would emit duplicate members. -->
+  <Target Name="StripReactiveBindingAnalyzers" BeforeTargets="CoreCompile">
+    <ItemGroup>
+      <Analyzer Remove="@(Analyzer)" Condition="$([System.String]::Copy('%(Analyzer.FullPath)').Contains('reactiveui.binding.reactive'))"/>
+    </ItemGroup>
+  </Target>
+
   <ItemGroup>
     <None Include="API\**\*.txt" CopyToOutputDirectory="PreserveNewest" LinkBase="/"/>
   </ItemGroup>

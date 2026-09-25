@@ -6,8 +6,12 @@
 using System.Diagnostics.CodeAnalysis;
 
 #if REACTIVE_SHIM
+using WinFormsBindingModule = ReactiveUI.Binding.Reactive.WinForms.WinFormsBindingModule;
+
 namespace ReactiveUI.Reactive.Builder;
 #else
+using WinFormsBindingModule = ReactiveUI.Binding.WinForms.WinFormsBindingModule;
+
 namespace ReactiveUI.Builder;
 #endif
 
@@ -45,7 +49,8 @@ public static class WinFormsReactiveUIBuilderExtensions
             return ((IReactiveUIBuilder)builder.WithCoreServices())
                 .WithMainThreadScheduler(WinFormsMainThreadScheduler)
                 .WithTaskPoolScheduler(TaskPoolSequencer.Default)
-                .WithPlatformModule<Winforms.Registrations>();
+                .WithPlatformModule<Winforms.Registrations>()
+                .UsingSplatModule(new WinFormsBindingModule());
         }
 
         /// <summary>Withes the win UI scheduler.</summary>

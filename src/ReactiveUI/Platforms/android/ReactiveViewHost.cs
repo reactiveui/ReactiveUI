@@ -45,6 +45,12 @@ public class ReactiveViewHost<TViewModel> :
     /// <summary>Backing field for <see cref="ViewModel"/>.</summary>
     private TViewModel? _viewModel;
 
+    /// <summary>The <see cref="INotifyPropertyChanging.PropertyChanging"/> handlers; subscribing enables the classic event.</summary>
+    private PropertyChangingEventHandler? _propertyChanging;
+
+    /// <summary>The <see cref="INotifyPropertyChanged.PropertyChanged"/> handlers; subscribing enables the classic event.</summary>
+    private PropertyChangedEventHandler? _propertyChanged;
+
     /// <summary>Initializes a new instance of the <see cref="ReactiveViewHost{TViewModel}"/> class.</summary>
     /// <remarks>
     /// This constructor performs no inflation or wiring and is AOT-safe.
@@ -140,10 +146,28 @@ public class ReactiveViewHost<TViewModel> :
         SetupRxObjLegacyReflection();
 
     /// <inheritdoc/>
-    public event PropertyChangedEventHandler? PropertyChanged;
+    public event PropertyChangedEventHandler? PropertyChanged
+    {
+        add
+        {
+            this.SubscribePropertyChangedEvents();
+            _propertyChanged += value;
+        }
+
+        remove => _propertyChanged -= value;
+    }
 
     /// <inheritdoc/>
-    public event PropertyChangingEventHandler? PropertyChanging;
+    public event PropertyChangingEventHandler? PropertyChanging
+    {
+        add
+        {
+            this.SubscribePropertyChangingEvents();
+            _propertyChanging += value;
+        }
+
+        remove => _propertyChanging -= value;
+    }
 
     /// <inheritdoc/>
     public TViewModel? ViewModel
@@ -155,7 +179,7 @@ public class ReactiveViewHost<TViewModel> :
     /// <inheritdoc/>
     object? IViewFor.ViewModel
     {
-        get => _viewModel;
+        get => (object?)_viewModel;
         set => ViewModel = (TViewModel?)value;
     }
 
@@ -200,11 +224,11 @@ public class ReactiveViewHost<TViewModel> :
 
     /// <inheritdoc/>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args) => PropertyChanging?.Invoke(this, args);
+    void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args) => _propertyChanging?.Invoke(this, args);
 
     /// <inheritdoc/>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args) => PropertyChanged?.Invoke(this, args);
+    void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args) => _propertyChanged?.Invoke(this, args);
 
     /// <summary>Reinitializes reactive infrastructure after deserialization.</summary>
     /// <param name="sc">The streaming context.</param>

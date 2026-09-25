@@ -23,27 +23,13 @@ public class ReactiveUIBuilderCoreTests
         await Assert.That(builder).IsTypeOf<ReactiveUIBuilder>();
     }
 
-    /// <summary>Verifies that core services register an observable-for-property and a binding type converter.</summary>
+    /// <summary>Verifies that core services register the retained view locator and activation fetcher.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task WithCoreServices_Should_Register_Core_Services()
     {
-        var observableProperty = Locator.Current.GetService<ICreatesObservableForProperty>();
-        await Assert.That(observableProperty).IsNotNull();
-
-        var typeConverter = Locator.Current.GetService<IBindingTypeConverter>();
-        await Assert.That(typeConverter).IsNotNull();
-    }
-
-    /// <summary>Verifies that platform services register at least one binding type converter.</summary>
-    /// <returns>A task representing the asynchronous test.</returns>
-    [Test]
-    [TestExecutor<WithPlatformServicesExecutor>]
-    public async Task WithPlatformServices_Should_Register_Platform_Services()
-    {
-        var services = Locator.Current.GetServices<IBindingTypeConverter>();
-        await Assert.That(services).IsNotNull();
-        await Assert.That(services.Any()).IsTrue();
+        await Assert.That(Locator.Current.GetService<IViewLocator>()).IsNotNull();
+        await Assert.That(Locator.Current.GetService<IActivationForViewFetcher>()).IsNotNull();
     }
 
     /// <summary>Verifies that a custom registration action runs and registers its service.</summary>
@@ -60,11 +46,8 @@ public class ReactiveUIBuilderCoreTests
     /// <summary>Verifies that building always registers core services.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
-    public async Task Build_Should_Always_Register_Core_Services()
-    {
-        var observableProperty = Locator.Current.GetService<ICreatesObservableForProperty>();
-        await Assert.That(observableProperty).IsNotNull();
-    }
+    public async Task Build_Should_Always_Register_Core_Services() =>
+        await Assert.That(Locator.Current.GetService<IViewLocator>()).IsNotNull();
 
     /// <summary>Verifies that a null custom registration action throws <see cref="ArgumentNullException"/>.</summary>
     [Test]
@@ -93,16 +76,6 @@ public class ReactiveUIBuilderCoreTests
         _ = Assert.Throws<ArgumentNullException>(() => builder.WithViewsFromAssembly(null!));
     }
 
-    /// <summary>Verifies that calling core services multiple times does not duplicate registrations.</summary>
-    /// <returns>A task representing the asynchronous test.</returns>
-    [Test]
-    public async Task WithCoreServices_Called_Multiple_Times_Should_Not_Register_Twice()
-    {
-        var services = Locator.Current.GetServices<ICreatesObservableForProperty>();
-        await Assert.That(services).IsNotNull();
-        await Assert.That(services.Any()).IsTrue();
-    }
-
     /// <summary>Verifies that the builder supports fluent chaining of registration calls.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
@@ -113,8 +86,7 @@ public class ReactiveUIBuilderCoreTests
         var service = Locator.Current.GetService<string>();
         await Assert.That(service).IsEqualTo("Test");
 
-        var observableProperty = Locator.Current.GetService<ICreatesObservableForProperty>();
-        await Assert.That(observableProperty).IsNotNull();
+        await Assert.That(Locator.Current.GetService<IViewLocator>()).IsNotNull();
     }
 
     /// <summary>Verifies that creating a builder from a null resolver throws <see cref="ArgumentNullException"/>.</summary>
@@ -174,16 +146,6 @@ public class ReactiveUIBuilderCoreTests
         var builder = RxAppBuilder.CreateReactiveUIBuilder();
 
         _ = Assert.Throws<ArgumentNullException>(() => builder.ForPlatforms(null!));
-    }
-
-    /// <summary>Executor that builds the app with platform services registered.</summary>
-    internal sealed class WithPlatformServicesExecutor : BuilderTestExecutorBase
-    {
-        /// <inheritdoc/>
-        protected override void ConfigureBuilder() =>
-            RxAppBuilder.CreateReactiveUIBuilder()
-                .WithPlatformServices()
-                .BuildApp();
     }
 
     /// <summary>Executor that builds the app with a custom registration action.</summary>

@@ -114,7 +114,7 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
             return Signal.None<Page>();
         }
 
-        var ret = ViewLocator.Current.ResolveView(vm);
+        var ret = ViewLocator.GetCurrent().ResolveView((object)vm);
         if (ret is null)
         {
             var msg =
@@ -148,7 +148,7 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
     {
         ArgumentNullException.ThrowIfNull(vm);
 
-        var ret = ViewLocator.Current.ResolveView(vm);
+        var ret = ViewLocator.GetCurrent().ResolveView((object)vm);
         if (ret is null)
         {
             var msg =

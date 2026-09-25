@@ -3,6 +3,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -11,8 +13,12 @@ using Splat;
 using Splat.Builder;
 
 #if REACTIVE_SHIM
+using BindingModule = ReactiveUI.Binding.Reactive.Builder.ReactiveUIBindingModule;
+
 namespace ReactiveUI.Reactive.Builder;
 #else
+using BindingModule = ReactiveUI.Binding.Builder.ReactiveUIBindingModule;
+
 namespace ReactiveUI.Builder;
 #endif
 /// <summary>
@@ -71,7 +77,7 @@ public sealed partial class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, 
     {
         CurrentMutable.InitializeSplat();
 
-        CurrentMutable.RegisterConstant(() => ConverterService);
+        CurrentMutable.RegisterConstant(ConverterService);
     }
 
     /// <summary>
@@ -202,7 +208,8 @@ public sealed partial class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, 
     {
         if (!_coreRegistered)
         {
-            RegisterStandardConverters();
+            DefaultConverterRegistration.RegisterDefaults(ConverterService);
+            new BindingModule().Configure(CurrentMutable);
 
             _ = WithPlatformModule<Registrations>();
             _coreRegistered = true;
@@ -363,7 +370,7 @@ public sealed partial class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, 
     ///     .BuildApp();
     /// </code>
     /// </example>
-    public IReactiveUIBuilder WithConverter<TFrom, TTo>(BindingTypeConverter<TFrom, TTo> converter)
+    public IReactiveUIBuilder WithConverter<TFrom, TTo>(IBindingTypeConverter<TFrom, TTo> converter)
     {
         ArgumentExceptionHelper.ThrowIfNull(converter);
         ConverterService.TypedConverters.Register(converter);
@@ -402,7 +409,7 @@ public sealed partial class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, 
     ///     .BuildApp();
     /// </code>
     /// </example>
-    public IReactiveUIBuilder WithConverter<TFrom, TTo>(Func<BindingTypeConverter<TFrom, TTo>> factory)
+    public IReactiveUIBuilder WithConverter<TFrom, TTo>(Func<IBindingTypeConverter<TFrom, TTo>> factory)
     {
         ArgumentExceptionHelper.ThrowIfNull(factory);
         ConverterService.TypedConverters.Register(factory());
@@ -657,117 +664,6 @@ public sealed partial class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, 
         where TViewModel : class, IReactiveObject =>
         WithRegistration(static resolver =>
             resolver.RegisterLazySingleton<IViewFor<TViewModel>>(static () => new TView()));
-
-    /// <summary>
-    /// Registers all standard ReactiveUI converters to the ConverterService.
-    /// This mirrors the converters registered in Registrations.cs but targets the new ConverterService.
-    /// </summary>
-    private void RegisterStandardConverters()
-    {
-        RegisterNumericStringConverters();
-        RegisterFormattingConverters();
-        RegisterNullableNumericConverters();
-    }
-
-    /// <summary>Registers the equality, string, numeric-to-string, and string-to-numeric converters.</summary>
-    private void RegisterNumericStringConverters()
-    {
-        ConverterService.TypedConverters.Register(new EqualityTypeConverter());
-        ConverterService.TypedConverters.Register(new StringConverter());
-
-        ConverterService.TypedConverters.Register(new ByteToStringTypeConverter());
-        ConverterService.TypedConverters.Register(new NullableByteToStringTypeConverter());
-        ConverterService.TypedConverters.Register(new ShortToStringTypeConverter());
-        ConverterService.TypedConverters.Register(new NullableShortToStringTypeConverter());
-        ConverterService.TypedConverters.Register(new IntegerToStringTypeConverter());
-        ConverterService.TypedConverters.Register(new NullableIntegerToStringTypeConverter());
-        ConverterService.TypedConverters.Register(new LongToStringTypeConverter());
-        ConverterService.TypedConverters.Register(new NullableLongToStringTypeConverter());
-        ConverterService.TypedConverters.Register(new SingleToStringTypeConverter());
-        ConverterService.TypedConverters.Register(new NullableSingleToStringTypeConverter());
-        ConverterService.TypedConverters.Register(new DoubleToStringTypeConverter());
-        ConverterService.TypedConverters.Register(new NullableDoubleToStringTypeConverter());
-        ConverterService.TypedConverters.Register(new DecimalToStringTypeConverter());
-        ConverterService.TypedConverters.Register(new NullableDecimalToStringTypeConverter());
-
-        ConverterService.TypedConverters.Register(new StringToByteTypeConverter());
-        ConverterService.TypedConverters.Register(new StringToNullableByteTypeConverter());
-        ConverterService.TypedConverters.Register(new StringToShortTypeConverter());
-        ConverterService.TypedConverters.Register(new StringToNullableShortTypeConverter());
-        ConverterService.TypedConverters.Register(new StringToIntegerTypeConverter());
-        ConverterService.TypedConverters.Register(new StringToNullableIntegerTypeConverter());
-        ConverterService.TypedConverters.Register(new StringToLongTypeConverter());
-        ConverterService.TypedConverters.Register(new StringToNullableLongTypeConverter());
-        ConverterService.TypedConverters.Register(new StringToSingleTypeConverter());
-        ConverterService.TypedConverters.Register(new StringToNullableSingleTypeConverter());
-        ConverterService.TypedConverters.Register(new StringToDoubleTypeConverter());
-        ConverterService.TypedConverters.Register(new StringToNullableDoubleTypeConverter());
-        ConverterService.TypedConverters.Register(new StringToDecimalTypeConverter());
-        ConverterService.TypedConverters.Register(new StringToNullableDecimalTypeConverter());
-    }
-
-    /// <summary>Registers the boolean, guid, date/time, and uri string converters.</summary>
-    private void RegisterFormattingConverters()
-    {
-        ConverterService.TypedConverters.Register(new BooleanToStringTypeConverter());
-        ConverterService.TypedConverters.Register(new NullableBooleanToStringTypeConverter());
-        ConverterService.TypedConverters.Register(new StringToBooleanTypeConverter());
-        ConverterService.TypedConverters.Register(new StringToNullableBooleanTypeConverter());
-
-        ConverterService.TypedConverters.Register(new GuidToStringTypeConverter());
-        ConverterService.TypedConverters.Register(new NullableGuidToStringTypeConverter());
-        ConverterService.TypedConverters.Register(new StringToGuidTypeConverter());
-        ConverterService.TypedConverters.Register(new StringToNullableGuidTypeConverter());
-
-        ConverterService.TypedConverters.Register(new DateTimeToStringTypeConverter());
-        ConverterService.TypedConverters.Register(new NullableDateTimeToStringTypeConverter());
-        ConverterService.TypedConverters.Register(new StringToDateTimeTypeConverter());
-        ConverterService.TypedConverters.Register(new StringToNullableDateTimeTypeConverter());
-
-        ConverterService.TypedConverters.Register(new DateTimeOffsetToStringTypeConverter());
-        ConverterService.TypedConverters.Register(new NullableDateTimeOffsetToStringTypeConverter());
-        ConverterService.TypedConverters.Register(new StringToDateTimeOffsetTypeConverter());
-        ConverterService.TypedConverters.Register(new StringToNullableDateTimeOffsetTypeConverter());
-
-        ConverterService.TypedConverters.Register(new TimeSpanToStringTypeConverter());
-        ConverterService.TypedConverters.Register(new NullableTimeSpanToStringTypeConverter());
-        ConverterService.TypedConverters.Register(new StringToTimeSpanTypeConverter());
-        ConverterService.TypedConverters.Register(new StringToNullableTimeSpanTypeConverter());
-
-#if NET6_0_OR_GREATER
-        ConverterService.TypedConverters.Register(new DateOnlyToStringTypeConverter());
-        ConverterService.TypedConverters.Register(new NullableDateOnlyToStringTypeConverter());
-        ConverterService.TypedConverters.Register(new StringToDateOnlyTypeConverter());
-        ConverterService.TypedConverters.Register(new StringToNullableDateOnlyTypeConverter());
-
-        ConverterService.TypedConverters.Register(new TimeOnlyToStringTypeConverter());
-        ConverterService.TypedConverters.Register(new NullableTimeOnlyToStringTypeConverter());
-        ConverterService.TypedConverters.Register(new StringToTimeOnlyTypeConverter());
-        ConverterService.TypedConverters.Register(new StringToNullableTimeOnlyTypeConverter());
-#endif
-
-        ConverterService.TypedConverters.Register(new UriToStringTypeConverter());
-        ConverterService.TypedConverters.Register(new StringToUriTypeConverter());
-    }
-
-    /// <summary>Registers the numeric to and from nullable numeric converters.</summary>
-    private void RegisterNullableNumericConverters()
-    {
-        ConverterService.TypedConverters.Register(new ByteToNullableByteTypeConverter());
-        ConverterService.TypedConverters.Register(new NullableByteToByteTypeConverter());
-        ConverterService.TypedConverters.Register(new ShortToNullableShortTypeConverter());
-        ConverterService.TypedConverters.Register(new NullableShortToShortTypeConverter());
-        ConverterService.TypedConverters.Register(new IntegerToNullableIntegerTypeConverter());
-        ConverterService.TypedConverters.Register(new NullableIntegerToIntegerTypeConverter());
-        ConverterService.TypedConverters.Register(new LongToNullableLongTypeConverter());
-        ConverterService.TypedConverters.Register(new NullableLongToLongTypeConverter());
-        ConverterService.TypedConverters.Register(new SingleToNullableSingleTypeConverter());
-        ConverterService.TypedConverters.Register(new NullableSingleToSingleTypeConverter());
-        ConverterService.TypedConverters.Register(new DoubleToNullableDoubleTypeConverter());
-        ConverterService.TypedConverters.Register(new NullableDoubleToDoubleTypeConverter());
-        ConverterService.TypedConverters.Register(new DecimalToNullableDecimalTypeConverter());
-        ConverterService.TypedConverters.Register(new NullableDecimalToDecimalTypeConverter());
-    }
 
     /// <summary>
     /// Initializes the static state for ReactiveUI based on builder configuration.

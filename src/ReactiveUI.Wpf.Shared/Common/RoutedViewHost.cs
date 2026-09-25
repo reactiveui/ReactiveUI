@@ -7,6 +7,12 @@ using System.Diagnostics;
 using ReactiveUI.Primitives;
 using Splat;
 
+#if REACTIVE_SHIM
+using static ReactiveUI.Binding.Reactive.ViewLocator;
+#else
+using static ReactiveUI.Binding.ViewLocator;
+#endif
+
 #if HAS_WINUI
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -145,8 +151,9 @@ public
             return;
         }
 
-        var viewLocator = ViewLocator ?? ReactiveUI.ViewLocator.Current;
-        var view = (viewLocator.ResolveView(x.ViewModel, x.Contract) ?? viewLocator.ResolveView(x.ViewModel))
+        var viewLocator = ViewLocator ?? GetCurrent();
+        object viewModel = x.ViewModel;
+        var view = (viewLocator.ResolveView(viewModel, x.Contract) ?? viewLocator.ResolveView(viewModel))
                    ?? throw new InvalidOperationException($"Couldn't find view for '{x.ViewModel}'.");
         view.ViewModel = x.ViewModel;
         Content = view;

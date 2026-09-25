@@ -9,7 +9,7 @@ using Image = System.Windows.Controls.Image;
 namespace ReactiveUI.Tests.Xaml.Mocks;
 
 /// <summary>Mock command binding view.</summary>
-public class CommandBindView : IViewFor<CommandBindViewModel>
+public class CommandBindView : ReactiveObject, IViewFor<CommandBindViewModel>
 {
     /// <summary>Initializes a new instance of the <see cref="CommandBindView"/> class.</summary>
     public CommandBindView()
@@ -26,7 +26,11 @@ public class CommandBindView : IViewFor<CommandBindViewModel>
     }
 
     /// <inheritdoc/>
-    public CommandBindViewModel? ViewModel { get; set; }
+    public CommandBindViewModel? ViewModel
+    {
+        get;
+        set => this.RaiseAndSetIfChanged(ref field, value);
+    }
 
     /// <summary>Gets the command1.</summary>
     public CustomClickButton Command1 { get; protected set; }

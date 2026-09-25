@@ -11,12 +11,12 @@
 
     <VerticalStackLayout Padding="30" Spacing="16" VerticalOptions="Center">
 
-        <Entry x:Name="Username" Placeholder="Username" />
-        <Entry x:Name="Password" Placeholder="Password" IsPassword="True" />
+        <Entry x:Name="Username" x:FieldModifier="internal" Placeholder="Username" />
+        <Entry x:Name="Password" x:FieldModifier="internal" Placeholder="Password" IsPassword="True" />
 
         <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
-            <Button x:Name="CancelButton" Text="Cancel" Grid.Column="0" />
-            <Button x:Name="LoginButton" Text="Login" Grid.Column="1" BackgroundColor="{StaticResource Primary}"
+            <Button x:Name="CancelButton" x:FieldModifier="internal" Text="Cancel" Grid.Column="0" />
+            <Button x:Name="LoginButton" x:FieldModifier="internal" Text="Login" Grid.Column="1" BackgroundColor="{StaticResource Primary}"
                     TextColor="White" />
         </Grid>
 

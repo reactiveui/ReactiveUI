@@ -50,9 +50,8 @@ public static class WinUIReactiveUIBuilderExtensions
         /// <summary>Registers WinUI-specific converters to the ConverterService.</summary>
         /// <returns>The builder instance for chaining.</returns>
         /// <remarks>
-        /// This method registers WinUI-specific converters (<see cref="BooleanToVisibilityTypeConverter"/>,
-        /// <see cref="VisibilityToBooleanTypeConverter"/>) and the <see cref="ComponentModelFallbackConverter"/>
-        /// to the <c>ConverterService</c> so they are available when using the builder pattern.
+        /// This method registers WinUI-specific converters (<see cref="BooleanToVisibilityTypeConverter"/> and
+        /// <see cref="VisibilityToBooleanTypeConverter"/>) with the binding converter service.
         /// </remarks>
         public IReactiveUIBuilder WithWinUIConverters()
         {
@@ -60,8 +59,7 @@ public static class WinUIReactiveUIBuilderExtensions
 
             return builder
                 .WithConverter(new BooleanToVisibilityTypeConverter())
-                .WithConverter(new VisibilityToBooleanTypeConverter())
-                .WithFallbackConverter(new ComponentModelFallbackConverter());
+                .WithConverter(new VisibilityToBooleanTypeConverter());
         }
     }
 }

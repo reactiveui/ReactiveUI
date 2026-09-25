@@ -100,8 +100,8 @@ public static class SuspensionHostExtensions
         {
             ArgumentExceptionHelper.ThrowIfNull(item);
 
-            return new NonNullCastObservable<T>(item.WhenAny<ISuspensionHost, object?, object?>(
-                nameof(item.AppState),
+            return new NonNullCastObservable<T>(item.WhenAnyUnsafe(
+                x => x.AppState,
                 static observedChange => observedChange.Value));
         }
 

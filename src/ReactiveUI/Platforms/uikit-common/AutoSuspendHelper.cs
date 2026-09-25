@@ -58,13 +58,13 @@ public class AutoSuspendHelper<
     /// This validation runs exactly once per closed generic type and avoids repeated reflection and cache/lock overhead.
     /// </para>
     /// <para>
-    /// The call uses the Type-based overload of <c>ThrowIfMethodsNotOverloaded</c> and expresses trimming requirements via
+    /// The call uses <see cref="MethodOverrideGuard.ThrowIfMethodsNotOverloaded"/>, which expresses trimming requirements via
     /// <see cref="DynamicallyAccessedMembersAttribute"/> on <typeparamref name="T"/>, avoiding <c>RequiresUnreferencedCode</c>
     /// propagation.
     /// </para>
     /// </remarks>
     static AutoSuspendHelper() =>
-        Reflection.ThrowIfMethodsNotOverloaded(
+        MethodOverrideGuard.ThrowIfMethodsNotOverloaded(
             nameof(AutoSuspendHelper<>),
             typeof(T),
             nameof(FinishedLaunching),

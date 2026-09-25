@@ -3,6 +3,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using Splat;
@@ -217,7 +219,7 @@ public interface IReactiveUIBuilder : IAppBuilder
     /// <typeparam name="TTo">The target type for the conversion.</typeparam>
     /// <param name="converter">The converter instance to register.</param>
     /// <returns>The builder instance for chaining.</returns>
-    IReactiveUIBuilder WithConverter<TFrom, TTo>(BindingTypeConverter<TFrom, TTo> converter);
+    IReactiveUIBuilder WithConverter<TFrom, TTo>(IBindingTypeConverter<TFrom, TTo> converter);
 
     /// <summary>Registers a typed binding converter using the interface.</summary>
     /// <param name="converter">The converter instance to register.</param>
@@ -229,7 +231,7 @@ public interface IReactiveUIBuilder : IAppBuilder
     /// <typeparam name="TTo">The target type for the conversion.</typeparam>
     /// <param name="factory">The factory function that creates the converter.</param>
     /// <returns>The builder instance for chaining.</returns>
-    IReactiveUIBuilder WithConverter<TFrom, TTo>(Func<BindingTypeConverter<TFrom, TTo>> factory);
+    IReactiveUIBuilder WithConverter<TFrom, TTo>(Func<IBindingTypeConverter<TFrom, TTo>> factory);
 
     /// <summary>Registers a typed binding converter via factory (interface, lazy instantiation).</summary>
     /// <param name="factory">The factory function that creates the converter.</param>

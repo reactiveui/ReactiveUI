@@ -22,6 +22,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="ReactiveUI.Primitives.WinForms.Reactive" ExcludeAssets="analyzers" />
+    <PackageReference Include="ReactiveUI.Binding.WinForms.Reactive" />
     <ProjectReference Include="..\ReactiveUI.Reactive\ReactiveUI.Reactive.csproj"/>
   </ItemGroup>
 
@@ -35,7 +36,6 @@
     <Compile Include="..\Shared\ArgumentValidation.cs" Link="Shared\ArgumentValidation.cs"/>
     <Compile Include="..\Shared\DelegateObserver.cs" Link="Shared\DelegateObserver.cs"/>
     <Compile Include="..\Shared\Platform\FromEventObservable.cs" Link="Shared\Platform\FromEventObservable.cs"/>
-    <Compile Include="..\Shared\Platform\EventPatternObservable.cs" Link="Shared\Platform\EventPatternObservable.cs"/>
     <Compile Include="..\Shared\Platform\CombineLatestSink.cs" Link="Shared\Platform\CombineLatestSink.cs"/>
   </ItemGroup>
 

@@ -10,6 +10,12 @@ using System.Runtime.CompilerServices;
 using ReactiveUI.Internal;
 
 #if REACTIVE_SHIM
+using static ReactiveUI.Binding.Reactive.ViewLocator;
+#else
+using static ReactiveUI.Binding.ViewLocator;
+#endif
+
+#if REACTIVE_SHIM
 namespace ReactiveUI.Reactive.Winforms;
 #else
 namespace ReactiveUI.Winforms;
@@ -36,6 +42,12 @@ public partial class ViewModelControlHost : UserControl, IReactiveObject, IViewF
     /// <summary>Backing field indicating whether resolved views are cached and reused.</summary>
     private bool _cacheViews;
 
+    /// <summary>The <see cref="INotifyPropertyChanging.PropertyChanging"/> handlers; subscribing enables the classic event.</summary>
+    private PropertyChangingEventHandler? _propertyChanging;
+
+    /// <summary>The <see cref="INotifyPropertyChanged.PropertyChanged"/> handlers; subscribing enables the classic event.</summary>
+    private PropertyChangedEventHandler? _propertyChanged;
+
     /// <summary>Initializes a new instance of the <see cref="ViewModelControlHost"/> class.</summary>
     [SuppressMessage(
         "Design",
@@ -49,10 +61,28 @@ public partial class ViewModelControlHost : UserControl, IReactiveObject, IViewF
     }
 
     /// <inheritdoc/>
-    public event PropertyChangingEventHandler? PropertyChanging;
+    public event PropertyChangingEventHandler? PropertyChanging
+    {
+        add
+        {
+            this.SubscribePropertyChangingEvents();
+            _propertyChanging += value;
+        }
+
+        remove => _propertyChanging -= value;
+    }
 
     /// <inheritdoc/>
-    public event PropertyChangedEventHandler? PropertyChanged;
+    public event PropertyChangedEventHandler? PropertyChanged
+    {
+        add
+        {
+            this.SubscribePropertyChangedEvents();
+            _propertyChanged += value;
+        }
+
+        remove => _propertyChanged -= value;
+    }
 
     /// <summary>Gets or sets a value indicating whether [default cache views enabled].</summary>
     public static bool DefaultCacheViewsEnabled { get; set; }
@@ -122,11 +152,11 @@ public partial class ViewModelControlHost : UserControl, IReactiveObject, IViewF
 
     /// <inheritdoc/>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args) => PropertyChanging?.Invoke(this, args);
+    void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args) => _propertyChanging?.Invoke(this, args);
 
     /// <inheritdoc/>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args) => PropertyChanged?.Invoke(this, args);
+    void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args) => _propertyChanged?.Invoke(this, args);
 
     /// <summary>Clean up any resources being used.</summary>
     /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
@@ -181,7 +211,7 @@ public partial class ViewModelControlHost : UserControl, IReactiveObject, IViewF
             return;
         }
 
-        var view = (ViewLocator ?? ReactiveUI.ViewLocator.Current).ResolveView(viewModel, contract);
+        var view = (ViewLocator ?? GetCurrent()).ResolveView(viewModel, contract);
         if (view is null)
         {
             return;
@@ -241,18 +271,18 @@ public partial class ViewModelControlHost : UserControl, IReactiveObject, IViewF
             _host = host;
 
             // Content -> swap the hosted control (the type check replaces WhereNotNull().OfType<Control>()).
-            _contentSubscription = host.WhenAnyValue<ViewModelControlHost, object?>(nameof(Content))
+            _contentSubscription = host.WhenAnyValue(static x => x.Content)
                 .Subscribe(new DelegateObserver<object?>(OnContentChanged));
 
             // DefaultContent -> show it as the current content once it is set.
-            _defaultContentSubscription = host.WhenAnyValue<ViewModelControlHost, Control?>(nameof(DefaultContent))
+            _defaultContentSubscription = host.WhenAnyValue(static x => x.DefaultContent)
                 .Subscribe(new DelegateObserver<Control?>(OnDefaultContentChanged));
 
             host.ViewContractObservable = Signal.Emit(string.Empty);
 
             // ViewModel + ViewContractObservable -> resolve and show the matching view.
             _viewModelContract = new(
-                host.WhenAnyValue<ViewModelControlHost, object?>(nameof(ViewModel)),
+                host.WhenAnyValue(static x => x.ViewModel),
                 host.WhenAnyObservable(x => x.ViewContractObservable!),
                 host.UpdateContentForViewModel,
                 RxState.DefaultExceptionHandler.OnNext);

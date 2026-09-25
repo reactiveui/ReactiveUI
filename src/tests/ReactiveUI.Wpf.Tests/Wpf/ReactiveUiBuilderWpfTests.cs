@@ -28,8 +28,8 @@ public class ReactiveUiBuilderWpfTests
         var activationFetcher = locator.GetService<IActivationForViewFetcher>();
         await Assert.That(activationFetcher).IsNotNull();
 
-        var propertyBinder = locator.GetService<IPropertyBinderImplementation>();
-        await Assert.That(propertyBinder).IsNotNull();
+        var templateHook = locator.GetService<IPropertyBindingHook>();
+        await Assert.That(templateHook).IsNotNull();
     }
 
     /// <summary>Verifies that combining core services with <c>WithWpf</c> registers all expected services.</summary>
@@ -42,8 +42,8 @@ public class ReactiveUiBuilderWpfTests
 
         _ = builder.WithWpf().Build();
 
-        var observableProperty = locator.GetService<ICreatesObservableForProperty>();
-        await Assert.That(observableProperty).IsNotNull();
+        var viewLocator = locator.GetService<IViewLocator>();
+        await Assert.That(viewLocator).IsNotNull();
 
         var platformOperations = locator.GetService<IPlatformOperations>();
         await Assert.That(platformOperations).IsNotNull();

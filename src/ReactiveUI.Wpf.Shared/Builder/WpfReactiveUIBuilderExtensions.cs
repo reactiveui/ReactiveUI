@@ -7,8 +7,12 @@ using System.Runtime.CompilerServices;
 using Splat.Builder;
 
 #if REACTIVE_SHIM
+using WpfBindingModule = ReactiveUI.Binding.Reactive.Wpf.WpfBindingModule;
+
 namespace ReactiveUI.Reactive.Builder;
 #else
+using WpfBindingModule = ReactiveUI.Binding.Wpf.WpfBindingModule;
+
 namespace ReactiveUI.Builder;
 #endif
 /// <summary>WPF-specific extensions for the ReactiveUI builder.</summary>
@@ -43,6 +47,7 @@ public static class WpfReactiveUIBuilderExtensions
 
             return ((IReactiveUIBuilder)builder.WithCoreServices())
                 .WithPlatformModule<Wpf.Registrations>()
+                .UsingSplatModule(new WpfBindingModule())
                 .WithPlatformServices()
                 .WithWpfConverters()
                 .WithWpfScheduler()
@@ -61,9 +66,8 @@ public static class WpfReactiveUIBuilderExtensions
         /// <summary>Registers WPF-specific converters to the ConverterService.</summary>
         /// <returns>The builder instance for chaining.</returns>
         /// <remarks>
-        /// This method registers WPF-specific converters (<see cref="BooleanToVisibilityTypeConverter"/>,
-        /// <see cref="VisibilityToBooleanTypeConverter"/>) and the <see cref="ComponentModelFallbackConverter"/>
-        /// to the <c>ConverterService</c> so they are available when using the builder pattern.
+        /// This method registers WPF-specific converters (<see cref="BooleanToVisibilityTypeConverter"/> and
+        /// <see cref="VisibilityToBooleanTypeConverter"/>) with the binding converter service.
         /// </remarks>
         public IReactiveUIBuilder WithWpfConverters()
         {
@@ -71,8 +75,7 @@ public static class WpfReactiveUIBuilderExtensions
 
             return builder
                 .WithConverter(new BooleanToVisibilityTypeConverter())
-                .WithConverter(new VisibilityToBooleanTypeConverter())
-                .WithFallbackConverter(new ComponentModelFallbackConverter());
+                .WithConverter(new VisibilityToBooleanTypeConverter());
         }
     }
 }

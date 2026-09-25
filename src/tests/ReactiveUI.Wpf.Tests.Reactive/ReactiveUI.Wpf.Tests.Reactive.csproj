@@ -52,6 +52,7 @@
         <ProjectReference Include="..\..\ReactiveUI.Blend.Reactive\ReactiveUI.Blend.Reactive.csproj"/>
         <Using Include="ReactiveUI.Reactive.Blend"/>
         <Using Include="ReactiveUI.Reactive.Wpf.Binding"/>
+        <Using Include="ReactiveUI.Binding.Reactive.Wpf"/>
         <Using Include="ReactiveUI.Primitives.Reactive.Concurrency"/>
         <Compile Include="..\ReactiveUI.Wpf.Tests\Wpf\**\*.cs" Link="Wpf\%(RecursiveDir)%(Filename)%(Extension)"/>
         <Compile Include="..\ReactiveUI.Wpf.Tests\Xaml\**\*.cs" Link="Xaml\%(RecursiveDir)%(Filename)%(Extension)"/>

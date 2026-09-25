@@ -12,7 +12,7 @@ namespace ReactiveUI.Builder.Tests.Platforms.Blazor;
 /// <summary>Tests for registering Blazor platform services through the ReactiveUI builder.</summary>
 public class ReactiveUIBuilderBlazorTests
 {
-    /// <summary>Verifies that the Blazor builder registers platform operations and binding type converters.</summary>
+    /// <summary>Verifies that the Blazor builder registers platform operations.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     [TestExecutor<WithBlazorExecutor>]
@@ -20,9 +20,6 @@ public class ReactiveUIBuilderBlazorTests
     {
         var platformOperations = Locator.Current.GetService<IPlatformOperations>();
         await Assert.That(platformOperations).IsNotNull();
-
-        var typeConverters = Locator.Current.GetServices<IBindingTypeConverter>();
-        await Assert.That(typeConverters).IsNotEmpty();
     }
 
     /// <summary>Verifies that combining core and Blazor services registers both core and platform services.</summary>
@@ -31,8 +28,7 @@ public class ReactiveUIBuilderBlazorTests
     [TestExecutor<WithBlazorExecutor>]
     public async Task WithCoreServices_AndBlazor_Should_Register_All_Services()
     {
-        var observableProperty = Locator.Current.GetService<ICreatesObservableForProperty>();
-        await Assert.That(observableProperty).IsNotNull();
+        await Assert.That(Locator.Current.GetService<IViewLocator>()).IsNotNull();
 
         var platformOperations = Locator.Current.GetService<IPlatformOperations>();
         await Assert.That(platformOperations).IsNotNull();

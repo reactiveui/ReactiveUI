@@ -9,6 +9,12 @@ using System.Runtime.CompilerServices;
 using ReactiveUI.Internal;
 
 #if REACTIVE_SHIM
+using static ReactiveUI.Binding.Reactive.ViewLocator;
+#else
+using static ReactiveUI.Binding.ViewLocator;
+#endif
+
+#if REACTIVE_SHIM
 namespace ReactiveUI.Reactive.Winforms;
 #else
 namespace ReactiveUI.Winforms;
@@ -22,6 +28,12 @@ public partial class RoutedControlHost : UserControl, IReactiveObject
     /// <summary>Holds the subscriptions created during construction so they can be disposed together.</summary>
     private readonly MultipleDisposable _disposables = [];
 
+    /// <summary>The <see cref="INotifyPropertyChanging.PropertyChanging"/> handlers; subscribing enables the classic event.</summary>
+    private PropertyChangingEventHandler? _propertyChanging;
+
+    /// <summary>The <see cref="INotifyPropertyChanged.PropertyChanged"/> handlers; subscribing enables the classic event.</summary>
+    private PropertyChangedEventHandler? _propertyChanged;
+
     /// <summary>Initializes a new instance of the <see cref="RoutedControlHost"/> class.</summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Design",
@@ -34,10 +46,28 @@ public partial class RoutedControlHost : UserControl, IReactiveObject
     }
 
     /// <inheritdoc/>
-    public event PropertyChangingEventHandler? PropertyChanging;
+    public event PropertyChangingEventHandler? PropertyChanging
+    {
+        add
+        {
+            this.SubscribePropertyChangingEvents();
+            _propertyChanging += value;
+        }
+
+        remove => _propertyChanging -= value;
+    }
 
     /// <inheritdoc/>
-    public event PropertyChangedEventHandler? PropertyChanged;
+    public event PropertyChangedEventHandler? PropertyChanged
+    {
+        add
+        {
+            this.SubscribePropertyChangedEvents();
+            _propertyChanged += value;
+        }
+
+        remove => _propertyChanged -= value;
+    }
 
     /// <summary>Gets or sets the default content.</summary>
     /// <value>
@@ -78,11 +108,11 @@ public partial class RoutedControlHost : UserControl, IReactiveObject
 
     /// <inheritdoc/>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args) => PropertyChanging?.Invoke(this, args);
+    void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args) => _propertyChanging?.Invoke(this, args);
 
     /// <inheritdoc/>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args) => PropertyChanged?.Invoke(this, args);
+    void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args) => _propertyChanged?.Invoke(this, args);
 
     /// <summary>Clean up any resources being used.</summary>
     /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
@@ -129,7 +159,7 @@ public partial class RoutedControlHost : UserControl, IReactiveObject
         {
             _host = host;
 
-            _defaultContentSubscription = host.WhenAnyValue<RoutedControlHost, Control?>(nameof(DefaultContent))
+            _defaultContentSubscription = host.WhenAnyValue(static x => x.DefaultContent)
                 .Subscribe(new DelegateObserver<Control?>(OnDefaultContentChanged));
 
             host.ViewContractObservable = Signal.Emit<string>(null!);
@@ -184,7 +214,7 @@ public partial class RoutedControlHost : UserControl, IReactiveObject
                 return;
             }
 
-            var view = (_host.ViewLocator ?? ReactiveUI.ViewLocator.Current).ResolveView(viewModel, contract);
+            var view = (_host.ViewLocator ?? GetCurrent()).ResolveView((object)viewModel, contract);
             if (view is not null)
             {
                 view.ViewModel = viewModel;

@@ -42,9 +42,7 @@ public class Registrations : IWantsToRegisterStuff
 
 #if WINUI_TARGET
         registrar.RegisterConstant<IPlatformOperations>(static () => new PlatformOperations());
-        registrar.RegisterConstant<ICreatesObservableForProperty>(static () => new DependencyObjectObservableForProperty());
         registrar.RegisterConstant<IPropertyBindingHook>(static () => new AutoDataTemplateBindingHook());
-        registrar.RegisterConstant<IBindingFallbackConverter>(static () => new ComponentModelFallbackConverter());
 
         RxSchedulers.SuppressViewCommandBindingMessage = true;
 #endif

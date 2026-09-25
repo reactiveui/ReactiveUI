@@ -8,8 +8,10 @@ using Microsoft.Maui.Dispatching;
 using Microsoft.Maui.Hosting;
 #if REACTIVE_SHIM
 using ReactiveUI.Reactive.Maui;
+using MauiBindingModule = ReactiveUI.Binding.Reactive.Maui.MauiBindingModule;
 #else
 using ReactiveUI.Maui;
+using MauiBindingModule = ReactiveUI.Binding.Maui.MauiBindingModule;
 #endif
 using Splat;
 
@@ -49,6 +51,7 @@ public static class MauiReactiveUIBuilderExtensions
                 .WithMauiScheduler(dispatcher)
                 .WithTaskPoolScheduler(TaskPoolSequencer.Default)
                 .WithPlatformModule<Maui.Registrations>()
+                .UsingSplatModule(new MauiBindingModule())
                 .WithMauiConverters()
                 .WithPlatformServices();
         }
@@ -72,9 +75,8 @@ public static class MauiReactiveUIBuilderExtensions
         /// <summary>Registers Maui-specific converters to the ConverterService.</summary>
         /// <returns>The builder instance for chaining.</returns>
         /// <remarks>
-        /// This method registers Maui-specific converters (<see cref="BooleanToVisibilityTypeConverter"/>,
-        /// <see cref="VisibilityToBooleanTypeConverter"/>) and the <see cref="ComponentModelFallbackConverter"/>
-        /// to the <c>ConverterService</c> so they are available when using the builder pattern.
+        /// This method registers Maui-specific converters (<see cref="BooleanToVisibilityTypeConverter"/> and
+        /// <see cref="VisibilityToBooleanTypeConverter"/>) with the binding converter service.
         /// </remarks>
         public IReactiveUIBuilder WithMauiConverters()
         {
@@ -82,8 +84,7 @@ public static class MauiReactiveUIBuilderExtensions
 
             return builder
                 .WithConverter(new BooleanToVisibilityTypeConverter())
-                .WithConverter(new VisibilityToBooleanTypeConverter())
-                .WithFallbackConverter(new ComponentModelFallbackConverter());
+                .WithConverter(new VisibilityToBooleanTypeConverter());
         }
     }
 

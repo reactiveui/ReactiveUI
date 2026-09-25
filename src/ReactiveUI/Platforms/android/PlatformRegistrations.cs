@@ -20,9 +20,6 @@ public class PlatformRegistrations : IWantsToRegisterStuff
         ArgumentExceptionHelper.ThrowIfNull(registrar);
 
         registrar.RegisterConstant<IPlatformOperations>(static () => new PlatformOperations());
-        registrar.RegisterConstant<IBindingFallbackConverter>(static () => new ComponentModelFallbackConverter());
-        registrar.RegisterConstant<ICreatesObservableForProperty>(static () => new AndroidObservableForWidgets());
-        registrar.RegisterConstant<ICreatesCommandBinding>(static () => new AndroidCommandBinders());
 
         if (!ModeDetector.InUnitTestRunner())
         {

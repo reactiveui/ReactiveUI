@@ -14,27 +14,18 @@ namespace ReactiveUI.Reactive.Builder
 namespace ReactiveUI.Reactive.Winforms
 {
     [System.Diagnostics.DebuggerDisplay("ActivationForViewFetcher")]
-    public class ActivationForViewFetcher : ReactiveUI.IActivationForViewFetcher, Splat.IEnableLogger
+    public class ActivationForViewFetcher : ReactiveUI.Reactive.IActivationForViewFetcher, Splat.IEnableLogger
     {
         public ActivationForViewFetcher() { }
-        public System.IObservable<bool> GetActivationForView(ReactiveUI.IActivatableView view) { }
+        public System.IObservable<bool> GetActivationForView(ReactiveUI.Binding.Reactive.IActivatableView view) { }
         public int GetAffinityForView(System.Type view) { }
     }
-    public class ContentControlBindingHook : ReactiveUI.IPropertyBindingHook
+    public class ContentControlBindingHook : ReactiveUI.Binding.Reactive.IPropertyBindingHook
     {
         public ContentControlBindingHook() { }
-        public bool ExecuteHook(object? source, object target, System.Func<ReactiveUI.IObservedChange<object, object>[]> getCurrentViewModelProperties, System.Func<ReactiveUI.IObservedChange<object, object>[]> getCurrentViewProperties, ReactiveUI.BindingDirection direction) { }
+        public bool ExecuteHook(object? source, object target, System.Func<ReactiveUI.Binding.Reactive.IObservedChange<object, object>[]> getCurrentViewModelProperties, System.Func<ReactiveUI.Binding.Reactive.IObservedChange<object, object>[]> getCurrentViewProperties, ReactiveUI.Binding.Reactive.BindingDirection direction) { }
     }
-    public sealed class CreatesWinformsCommandBinding : ReactiveUI.ICreatesCommandBinding
-    {
-        public CreatesWinformsCommandBinding() { }
-        public System.IDisposable? BindCommandToObject<T>(System.Windows.Input.ICommand? command, T? target, System.IObservable<object?> commandParameter) where T : class { }
-        public System.IDisposable? BindCommandToObject<T>(System.Windows.Input.ICommand? command, T? target, System.IObservable<object?> commandParameter, System.Action<System.EventHandler> addHandler, System.Action<System.EventHandler> removeHandler) where T : class { }
-        public System.IDisposable? BindCommandToObject<T, TEventArgs>(System.Windows.Input.ICommand? command, T? target, System.IObservable<object?> commandParameter, string eventName) where T : class { }
-        public System.IDisposable? BindCommandToObject<T, TEventArgs>(System.Windows.Input.ICommand? command, T? target, System.IObservable<object?> commandParameter, System.Action<System.EventHandler<TEventArgs>> addHandler, System.Action<System.EventHandler<TEventArgs>> removeHandler) where T : class where TEventArgs : System.EventArgs { }
-        public int GetAffinityForObject<T>(bool hasEventTarget) { }
-    }
-    public class PanelSetMethodBindingConverter : ReactiveUI.ISetMethodBindingConverter
+    public class PanelSetMethodBindingConverter : ReactiveUI.Binding.Reactive.ISetMethodBindingConverter
     {
         public PanelSetMethodBindingConverter() { }
         public int GetAffinityForObjects(System.Type? fromType, System.Type? toType) { }
@@ -47,10 +38,10 @@ namespace ReactiveUI.Reactive.Winforms
         public string? GetOrientation() { }
     }
     [System.Diagnostics.DebuggerDisplay("{ViewModel}")]
-    public class ReactiveUserControl<TViewModel> : System.Windows.Forms.UserControl, ReactiveUI.IViewFor<TViewModel> where TViewModel : class
+    public class ReactiveUserControl<TViewModel> : System.Windows.Forms.UserControl, ReactiveUI.Binding.Reactive.IViewFor<TViewModel> where TViewModel : class
     {
         public ReactiveUserControl() { }
-        object? ReactiveUI.IViewFor.ViewModel { get; set; }
+        object? ReactiveUI.Binding.Reactive.IViewFor.ViewModel { get; set; }
         [System.ComponentModel.Bindable(true)]
         [System.ComponentModel.Category("ReactiveUI")]
         [System.ComponentModel.Description("The ViewModel.")]
@@ -59,10 +50,10 @@ namespace ReactiveUI.Reactive.Winforms
         protected override void Dispose(bool disposing) { }
     }
     [System.Diagnostics.DebuggerDisplay("ReactiveUserControlNonGeneric")]
-    public class ReactiveUserControlNonGeneric : System.Windows.Forms.UserControl, ReactiveUI.IViewFor
+    public class ReactiveUserControlNonGeneric : System.Windows.Forms.UserControl, ReactiveUI.Binding.Reactive.IViewFor
     {
         public ReactiveUserControlNonGeneric() { }
-        object? ReactiveUI.IViewFor.ViewModel { get; set; }
+        object? ReactiveUI.Binding.Reactive.IViewFor.ViewModel { get; set; }
         protected override void Dispose(bool disposing) { }
     }
     public class Registrations : ReactiveUI.IWantsToRegisterStuff
@@ -88,7 +79,7 @@ namespace ReactiveUI.Reactive.Winforms
         public System.IObservable<string>? ViewContractObservable { get; set; }
         [System.ComponentModel.Browsable(false)]
         [System.ComponentModel.DesignerSerializationVisibility(System.ComponentModel.DesignerSerializationVisibility.Hidden)]
-        public ReactiveUI.IViewLocator? ViewLocator { get; set; }
+        public ReactiveUI.Binding.Reactive.IViewLocator? ViewLocator { get; set; }
         public event System.ComponentModel.PropertyChangedEventHandler? PropertyChanged;
         public event System.ComponentModel.PropertyChangingEventHandler? PropertyChanging;
         protected override void Dispose(bool disposing) { }
@@ -97,7 +88,7 @@ namespace ReactiveUI.Reactive.Winforms
         [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
         void ReactiveUI.IReactiveObject.RaisePropertyChanging(System.ComponentModel.PropertyChangingEventArgs args) { }
     }
-    public class TableContentSetMethodBindingConverter : ReactiveUI.ISetMethodBindingConverter
+    public class TableContentSetMethodBindingConverter : ReactiveUI.Binding.Reactive.ISetMethodBindingConverter
     {
         public TableContentSetMethodBindingConverter() { }
         public int GetAffinityForObjects(System.Type? fromType, System.Type? toType) { }
@@ -105,7 +96,7 @@ namespace ReactiveUI.Reactive.Winforms
     }
     [System.ComponentModel.DefaultProperty("ViewModel")]
     [System.Diagnostics.DebuggerDisplay("{CurrentView}, {DefaultContent}")]
-    public class ViewModelControlHost : System.Windows.Forms.UserControl, ReactiveUI.IReactiveObject, ReactiveUI.IViewFor
+    public class ViewModelControlHost : System.Windows.Forms.UserControl, ReactiveUI.Binding.Reactive.IViewFor, ReactiveUI.IReactiveObject
     {
         public ViewModelControlHost() { }
         [System.ComponentModel.Bindable(true)]
@@ -128,7 +119,7 @@ namespace ReactiveUI.Reactive.Winforms
         public System.IObservable<string>? ViewContractObservable { get; set; }
         [System.ComponentModel.Browsable(false)]
         [System.ComponentModel.DesignerSerializationVisibility(System.ComponentModel.DesignerSerializationVisibility.Hidden)]
-        public ReactiveUI.IViewLocator? ViewLocator { get; set; }
+        public ReactiveUI.Binding.Reactive.IViewLocator? ViewLocator { get; set; }
         [System.ComponentModel.Bindable(true)]
         [System.ComponentModel.Category("ReactiveUI")]
         [System.ComponentModel.Description("The viewmodel to host.")]
@@ -142,17 +133,5 @@ namespace ReactiveUI.Reactive.Winforms
         void ReactiveUI.IReactiveObject.RaisePropertyChanged(System.ComponentModel.PropertyChangedEventArgs args) { }
         [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
         void ReactiveUI.IReactiveObject.RaisePropertyChanging(System.ComponentModel.PropertyChangingEventArgs args) { }
-    }
-    public class WinformsCreatesObservableForProperty : ReactiveUI.ICreatesObservableForProperty
-    {
-        public WinformsCreatesObservableForProperty() { }
-        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-        public int GetAffinityForObject(System.Type type, string propertyName) { }
-        public int GetAffinityForObject(System.Type? type, string propertyName, bool beforeChanged) { }
-        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-        public System.IObservable<ReactiveUI.IObservedChange<object, object?>> GetNotificationForProperty(object sender, System.Linq.Expressions.Expression expression, string propertyName) { }
-        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-        public System.IObservable<ReactiveUI.IObservedChange<object, object?>> GetNotificationForProperty(object sender, System.Linq.Expressions.Expression expression, string propertyName, bool beforeChanged) { }
-        public System.IObservable<ReactiveUI.IObservedChange<object, object?>> GetNotificationForProperty(object sender, System.Linq.Expressions.Expression expression, string propertyName, bool beforeChanged, bool suppressWarnings) { }
     }
 }

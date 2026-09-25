@@ -90,8 +90,7 @@ public static partial class BuilderMixins
                                   "DefaultViewLocator must be registered before calling RegisterViews. "
                                   + "Ensure you've called WithPlatformModule() or manually registered DefaultViewLocator.");
 
-            ViewMappingBuilder mappingBuilder = new(viewLocator);
-            configure(mappingBuilder);
+            configure(viewLocator.CreateMappingBuilder());
             return builder;
         }
 
@@ -110,8 +109,9 @@ public static partial class BuilderMixins
         /// {
         ///     public void RegisterViews(DefaultViewLocator locator)
         ///     {
-        ///         locator.Map<LoginViewModel, LoginView>(() => new LoginView())
-        ///                .Map<RegisterViewModel, RegisterView>(() => new RegisterView());
+        ///         locator.CreateMappingBuilder()
+        ///             .Map<LoginViewModel, LoginView>()
+        ///             .Map<RegisterViewModel, RegisterView>();
         ///     }
         /// }
         ///

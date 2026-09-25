@@ -1,0 +1,8 @@
+<Project>
+  <!-- The binding engine's namespaces are imported for every consumer, so calls such as WhenAnyValue,
+       ObservableForProperty, Bind and BindCommand, and the view locator, resolve without a using directive. -->
+  <ItemGroup>
+    <Using Include="ReactiveUI.Binding" />
+    <Using Include="ReactiveUI.Binding.ObservableForProperty" />
+  </ItemGroup>
+</Project>

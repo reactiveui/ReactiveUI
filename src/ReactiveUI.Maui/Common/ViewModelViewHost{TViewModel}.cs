@@ -14,6 +14,12 @@ using ReactiveUI.Maui.Internal;
 using Splat;
 
 #if REACTIVE_SHIM
+using static ReactiveUI.Binding.Reactive.ViewLocator;
+#else
+using static ReactiveUI.Binding.ViewLocator;
+#endif
+
+#if REACTIVE_SHIM
 namespace ReactiveUI.Reactive;
 #else
 namespace ReactiveUI;
@@ -126,13 +132,13 @@ public partial class ViewModelViewHost<
             return;
         }
 
-        var viewLocator = ViewLocator ?? ReactiveUI.ViewLocator.Current;
+        var viewLocator = ViewLocator ?? GetCurrent();
 
-        // Use the generic ResolveView<TViewModel> method - this is AOT-safe!
-        var viewInstance = viewLocator.ResolveView<TViewModel>(contract);
+        // Resolve through the view model's static type, which is AOT-safe and asks a custom locator as well.
+        var viewInstance = viewLocator.ResolveView(viewModel, contract);
         if (viewInstance is null && !ContractFallbackByPass)
         {
-            viewInstance = viewLocator.ResolveView<TViewModel>();
+            viewInstance = viewLocator.ResolveView(viewModel, null);
         }
 
         if (viewInstance is null)

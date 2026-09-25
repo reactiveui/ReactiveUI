@@ -44,6 +44,7 @@
     <PackageReference Include="Microsoft.Maui.Controls"/>
     <PackageReference Include="Microsoft.Maui.Controls.Compatibility" Condition="$(TargetFramework.StartsWith('net10'))"/>
     <PackageReference Include="ReactiveUI.Primitives.Maui.Reactive" ExcludeAssets="analyzers" />
+    <PackageReference Include="ReactiveUI.Binding.Maui.Reactive" />
   </ItemGroup>
   <ItemGroup>
     <Using Include="ReactiveUI.Primitives.Reactive.Concurrency"/>

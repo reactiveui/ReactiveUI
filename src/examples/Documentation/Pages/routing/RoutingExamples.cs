@@ -1,0 +1,105 @@
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
+// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for full license information.
+
+using ReactiveUI.Documentation.Todo;
+
+namespace ReactiveUI.Documentation.Routing;
+
+/// <summary>Shows routing: a window's <see cref="RoutingState"/> keeps a stack of pages, and the view locator finds the view for the page on top.</summary>
+public static class RoutingExamples
+{
+    /// <summary>Navigating pushes a page and going back pops it; the stack reads like the path in a browser.</summary>
+    /// <returns>A task that completes when the user is back on the list.</returns>
+    public static async Task NavigateAndGoBack()
+    {
+        AppShell shell = new();
+        var list = await OpenListAsync(shell);
+
+        _ = await list.Open.Execute(list.Items[0]);
+        Console.WriteLine(Path(shell));
+
+        _ = await shell.Router.NavigateBack.Execute();
+        Console.WriteLine(Path(shell));
+
+        // Output:
+        // todos > todos/1
+        // todos
+    }
+
+    /// <summary>Going back is possible only when there is a page to go back to, so the back button follows <c>CanExecute</c>.</summary>
+    /// <returns>A task that completes when an item is opened.</returns>
+    public static async Task EnableTheBackButton()
+    {
+        AppShell shell = new();
+        using var subscription = shell.Router.NavigateBack.CanExecute.Subscribe(Console.WriteLine);
+
+        var list = await OpenListAsync(shell);
+        _ = await list.Open.Execute(list.Items[0]);
+
+        // Output:
+        // False
+        // True
+    }
+
+    /// <summary>
+    /// A routed host follows <c>CurrentViewModel</c> and asks the view locator for each page's view, which is what
+    /// <c>RoutedViewHost</c> does on every platform. Before the first navigation there is no page, and the host shows its
+    /// default content.
+    /// </summary>
+    /// <returns>A task that completes when the user is back on the list.</returns>
+    public static async Task ShowTheViewForTheCurrentPage()
+    {
+        AppShell shell = new();
+        var locator = ViewLocator.GetCurrent();
+        using var host = shell.Router.CurrentViewModel
+            .Select(page => locator.ResolveView<object>(page, null))
+            .Subscribe(static view => Console.WriteLine(view?.GetType().Name ?? "(default content)"));
+
+        var list = await OpenListAsync(shell);
+        _ = await list.Open.Execute(list.Items[0]);
+        _ = await shell.Router.NavigateBack.Execute();
+
+        // Output:
+        // (default content)
+        // TodoListPageView
+        // TodoDetailPageView
+        // TodoListPageView
+    }
+
+    /// <summary><c>NavigateAndReset</c> replaces the whole stack, as signing out returns the user to a fresh start page.</summary>
+    /// <returns>A task that completes when the stack is reset.</returns>
+    public static async Task ResetTheStack()
+    {
+        AppShell shell = new();
+        var list = await OpenListAsync(shell);
+        _ = await list.Open.Execute(list.Items[0]);
+        _ = await list.Open.Execute(list.Items[1]);
+        Console.WriteLine(Path(shell));
+
+        _ = await shell.Router.NavigateAndReset.Execute(new TodoListPage(shell, list.Items));
+        Console.WriteLine(Path(shell));
+
+        // Output:
+        // todos > todos/1 > todos/2
+        // todos
+    }
+
+    /// <summary>Loads the seeded to-do items and navigates to the list page.</summary>
+    /// <param name="shell">The window to navigate in.</param>
+    /// <returns>The list page.</returns>
+    private static async Task<TodoListPage> OpenListAsync(AppShell shell)
+    {
+        var items = await InMemoryTodoStore.CreateSeeded().QueryAsync(CancellationToken.None);
+        TodoListPage list = new(shell, items);
+        _ = await shell.Router.Navigate.Execute(list);
+        return list;
+    }
+
+    /// <summary>Joins the segments of the pages on the stack, oldest first.</summary>
+    /// <param name="shell">The window whose stack to read.</param>
+    /// <returns>The path of pages.</returns>
+    private static string Path(AppShell shell) =>
+        string.Join(" > ", shell.Router.NavigationStack.Select(static page => page.UrlPathSegment));
+}

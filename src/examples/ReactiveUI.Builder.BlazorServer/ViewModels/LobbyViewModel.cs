@@ -43,16 +43,15 @@ public class LobbyViewModel : ReactiveObject, IRoutableViewModel
         HostScreen = hostScreen;
         UrlPathSegment = "lobby";
 
-        var canDelete = this.WhenAnyValue(nameof(SelectedChatRoom), static (ChatRoom? room) => room is not null);
+        var canDelete = this.WhenAnyValue(static vm => vm.SelectedChatRoom, static (ChatRoom? room) => room is not null);
 
-        var canCreate =
-            this.WhenAnyValue<LobbyViewModel, bool, string>(nameof(RoomName), static rn => !string.IsNullOrWhiteSpace(rn));
+        var canCreate = this.WhenAnyValue(static vm => vm.RoomName, static rn => !string.IsNullOrWhiteSpace(rn));
         CreateRoom = ReactiveCommand.Create(CreateRoomImpl, canCreate);
 
         _createRoomDisabledHelper = canCreate
-            .ToProperty(this, x => x.CreateRoomDisabled);
+            .ToProperty(this, static x => x.CreateRoomDisabled);
         _deleteRoomDisabledHelper = canDelete
-            .ToProperty(this, x => x.DeleteRoomDisabled);
+            .ToProperty(this, static x => x.DeleteRoomDisabled);
 
         DeleteRoom = ReactiveCommand.Create<ChatRoom>(DeleteRoomImpl);
 

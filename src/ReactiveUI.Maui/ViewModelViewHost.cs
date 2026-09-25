@@ -11,6 +11,12 @@ using ReactiveUI.Primitives;
 using Splat;
 
 #if REACTIVE_SHIM
+using static ReactiveUI.Binding.Reactive.ViewLocator;
+#else
+using static ReactiveUI.Binding.ViewLocator;
+#endif
+
+#if REACTIVE_SHIM
 namespace ReactiveUI.Reactive.Maui;
 #else
 namespace ReactiveUI.Maui;
@@ -124,7 +130,7 @@ public class ViewModelViewHost : ContentView, IViewFor
         set => SetValue(ContractFallbackByPassProperty, value);
     }
 
-    /// <summary>Gets or sets the override for the view locator to use when resolving the view. If unspecified, <see cref="ViewLocator.Current"/> will be used.</summary>
+    /// <summary>Gets or sets the override for the view locator to use when resolving the view. If unspecified, the locator registered in the service locator is used.</summary>
     public IViewLocator? ViewLocator { get; set; }
 
     /// <summary>Resolves a view for the view model using the specified contract.</summary>
@@ -144,7 +150,7 @@ public class ViewModelViewHost : ContentView, IViewFor
             return;
         }
 
-        var viewLocator = ViewLocator ?? ReactiveUI.ViewLocator.Current;
+        var viewLocator = ViewLocator ?? GetCurrent();
 
         var viewInstance = viewLocator.ResolveView(viewModel, contract);
         if (viewInstance is null && !ContractFallbackByPass)

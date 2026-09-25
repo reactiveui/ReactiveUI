@@ -3,26 +3,17 @@
     <!-- Type-agnostic core: the seam-free (no RxVoid/ISequencer in public API) layer of ReactiveUI,
          compiled once and referenced by both the lean ReactiveUI leaf and the ReactiveUI.Reactive leaf.
          Keeps the ReactiveUI root namespace so split-out types stay where consumers expect them. -->
-    <TargetFrameworks>$(ReactiveUIFinalTargetFrameworks)</TargetFrameworks>
+    <TargetFrameworks>$(ReactiveUIPortableTargetFrameworks)</TargetFrameworks>
     <AssemblyName>ReactiveUI.Core</AssemblyName>
     <RootNamespace>ReactiveUI</RootNamespace>
     <PackageId>ReactiveUI.Core</PackageId>
     <PackageDescription>Type-agnostic core shared by ReactiveUI and ReactiveUI.Reactive.</PackageDescription>
-    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">15.0</SupportedOSPlatformVersion>
-    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">15.0</SupportedOSPlatformVersion>
-    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">35.0</SupportedOSPlatformVersion>
-    <SupportedOSPlatformVersion Condition="$([System.String]::Copy('$(TargetFramework)').EndsWith('-windows10.0.19041.0'))">10.0.19041.0</SupportedOSPlatformVersion>
-    <TargetPlatformMinVersion Condition="$([System.String]::Copy('$(TargetFramework)').EndsWith('-windows10.0.19041.0'))">10.0.19041.0</TargetPlatformMinVersion>
   </PropertyGroup>
   <!-- Neutral (non-seam) namespaces the recompiled/shared source uses; the seam set lives in ReactiveShim.props. -->
   <ItemGroup>
     <Using Include="ReactiveUI.Internal"/>
     <Using Include="ReactiveUI.Primitives.Disposables"/>
   </ItemGroup>
-  <PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">
-    <WindowsSdkPackageVersion Condition="$([System.String]::Copy('$(TargetFramework)').EndsWith('-windows10.0.19041.0'))">10.0.19041.57</WindowsSdkPackageVersion>
-    <DefineConstants>$(DefineConstants);WINUI_TARGET</DefineConstants>
-  </PropertyGroup>
   <PropertyGroup Condition="$(TargetFramework.StartsWith('net8.0')) or $(TargetFramework.StartsWith('net9.0')) or $(TargetFramework.StartsWith('net10.0')) or $(TargetFramework.StartsWith('net11.0'))">
     <IsAotCompatible>true</IsAotCompatible>
   </PropertyGroup>
@@ -33,22 +24,11 @@
   </ItemGroup>
 
   <!-- Cross-lib helper sources from src/Shared. Core owns the non-platform helpers (the leaves and
-       platform libs reach them via the Core reference + IVT). EventPatternObservable is consumed by
-       core's CreatesCommandBindingViaEvent, so it is linked here too. -->
+       platform libs reach them via the Core reference + IVT). -->
   <ItemGroup>
     <Compile Include="..\Shared\ArgumentValidation.cs" Link="Shared\ArgumentValidation.cs"/>
     <Compile Include="..\Shared\DelegateObserver.cs" Link="Shared\DelegateObserver.cs"/>
     <Compile Include="..\Shared\TaskObserverBridge.cs" Link="Shared\TaskObserverBridge.cs"/>
-    <Compile Include="..\Shared\Platform\EventPatternObservable.cs" Link="Shared\Platform\EventPatternObservable.cs"/>
-    <Compile Remove="EventHandlers\LocalizableAttribute.cs" Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) != 'android'"/>
-    <Compile Remove="Bindings\Converter\DateOnlyToStringTypeConverter.cs" Condition="$(TargetFramework.StartsWith('net4'))"/>
-    <Compile Remove="Bindings\Converter\NullableDateOnlyToStringTypeConverter.cs" Condition="$(TargetFramework.StartsWith('net4'))"/>
-    <Compile Remove="Bindings\Converter\NullableTimeOnlyToStringTypeConverter.cs" Condition="$(TargetFramework.StartsWith('net4'))"/>
-    <Compile Remove="Bindings\Converter\StringToDateOnlyTypeConverter.cs" Condition="$(TargetFramework.StartsWith('net4'))"/>
-    <Compile Remove="Bindings\Converter\StringToNullableDateOnlyTypeConverter.cs" Condition="$(TargetFramework.StartsWith('net4'))"/>
-    <Compile Remove="Bindings\Converter\StringToNullableTimeOnlyTypeConverter.cs" Condition="$(TargetFramework.StartsWith('net4'))"/>
-    <Compile Remove="Bindings\Converter\StringToTimeOnlyTypeConverter.cs" Condition="$(TargetFramework.StartsWith('net4'))"/>
-    <Compile Remove="Bindings\Converter\TimeOnlyToStringTypeConverter.cs" Condition="$(TargetFramework.StartsWith('net4'))"/>
   </ItemGroup>
 
   <ItemGroup>

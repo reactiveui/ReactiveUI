@@ -14,6 +14,12 @@ using ReactiveUI.Maui.Internal;
 using Splat;
 
 #if REACTIVE_SHIM
+using static ReactiveUI.Binding.Reactive.ViewLocator;
+#else
+using static ReactiveUI.Binding.ViewLocator;
+#endif
+
+#if REACTIVE_SHIM
 namespace ReactiveUI.Reactive;
 #else
 namespace ReactiveUI;
@@ -120,7 +126,7 @@ public partial class ViewModelViewHost : TransitioningContentControl, IViewFor, 
             return;
         }
 
-        var viewLocator = ViewLocator ?? ReactiveUI.ViewLocator.Current;
+        var viewLocator = ViewLocator ?? GetCurrent();
         var viewInstance = viewLocator.ResolveView(viewModel, contract);
         if (viewInstance is null && !ContractFallbackByPass)
         {

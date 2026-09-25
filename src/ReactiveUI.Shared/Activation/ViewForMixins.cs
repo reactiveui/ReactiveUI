@@ -456,8 +456,12 @@ public static class ViewForMixins
     /// Callers that already have a ViewModel-change observable should use that overload to stay trim- and AOT-safe.</remarks>
     [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static MultipleDisposable HandleViewModelActivation(IViewFor view, IObservable<bool> activation) =>
-        HandleViewModelActivation(view.WhenAnyValue<IViewFor, object?>(nameof(view.ViewModel)), activation);
+    private static MultipleDisposable HandleViewModelActivation(
+        IViewFor view,
+        IObservable<bool> activation) =>
+        HandleViewModelActivation(
+            view.WhenAnyValueUnsafe(x => x.ViewModel),
+            activation);
 
     /// <summary>Manages the activation and deactivation lifecycle of a view's ViewModel in response to an activation observable, without reflection.</summary>
     /// <param name="viewModelChanged">An observable that emits the view's ViewModel whenever it changes (including its current value).</param>

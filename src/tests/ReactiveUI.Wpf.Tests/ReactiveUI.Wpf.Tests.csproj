@@ -43,6 +43,7 @@
         <ProjectReference Include="..\..\ReactiveUI.Blend\ReactiveUI.Blend.csproj"/>
         <Using Include="ReactiveUI.Blend"/>
         <Using Include="ReactiveUI.Wpf.Binding"/>
+        <Using Include="ReactiveUI.Binding.Wpf"/>
         <Compile Include="Wpf\**\*.cs"/>
         <Compile Include="Xaml\**\*.cs"/>
         <Compile Include="WhenAny\**\*.cs"/>

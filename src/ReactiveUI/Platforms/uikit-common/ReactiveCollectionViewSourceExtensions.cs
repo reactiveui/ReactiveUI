@@ -215,7 +215,7 @@ public static class ReactiveCollectionViewSourceExtensions
             var source = new ReactiveCollectionViewSource<TSource>(collectionView);
             initSource?.Invoke(source);
 
-            var bind = sectionsObservable.BindTo(source, static x => x.Data);
+            var bind = sectionsObservable.Subscribe(new DelegateObserver<IReadOnlyList<CollectionViewSectionInformation<TSource, TCell>>>(sections => source.Data = sections));
             collectionView.Source = source;
             return new MultipleDisposable(bind, source);
         }

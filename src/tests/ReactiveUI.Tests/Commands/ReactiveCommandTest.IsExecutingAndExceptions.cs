@@ -373,13 +373,14 @@ public partial class ReactiveCommandTest
         var isExecuting = command.IsExecuting.Collect();
         var exceptions = command.ThrownExceptions.Collect();
 
-        const int DelayMilliseconds = 100;
+        // Wait for the exception itself rather than a fixed delay, so a slow runner cannot read the list too early.
+        var thrown = command.ThrownExceptions.FirstAsync().ToTask();
 
         _ = command.Execute().Subscribe();
 
-        await Task.Delay(DelayMilliseconds);
         tcsStart.SetResult(RxVoid.Default);
-        await Task.Delay(DelayMilliseconds);
+        const int ExceptionTimeoutSeconds = 10;
+        _ = await thrown.WaitAsync(TimeSpan.FromSeconds(ExceptionTimeoutSeconds));
 
         using (Assert.Multiple())
         {

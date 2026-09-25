@@ -134,7 +134,7 @@ public class ComprehensiveAOTMarkupTests
         // Test the workflow
         property.Value = UpdatedValue;
         messageBus.SendMessage("workflow test");
-        var result = await interaction.Handle("test").FirstAsync();
+        var result = await interaction.Handle("test");
 
         using (Assert.Multiple())
         {

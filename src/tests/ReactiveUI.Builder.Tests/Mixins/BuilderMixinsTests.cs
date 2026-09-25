@@ -618,12 +618,33 @@ public class BuilderMixinsTests
         }
     }
 
+    /// <summary>Test view model used in builder registration tests.</summary>
+    [SuppressMessage(
+        "Major Code Smell",
+        "SST1436:Classes should not be empty",
+        Justification = "Marker type for tests.")]
+    internal sealed class BuilderMixinsTestViewModel : ReactiveObject;
+
+    /// <summary>Test view bound to <see cref="BuilderMixinsTestViewModel"/>.</summary>
+    internal sealed class BuilderMixinsTestView : IViewFor<BuilderMixinsTestViewModel>
+    {
+        /// <summary>Gets or sets the strongly typed view model bound to this view.</summary>
+        public BuilderMixinsTestViewModel? ViewModel { get; set; }
+
+        /// <summary>Gets or sets the weakly typed view model bound to this view.</summary>
+        object? IViewFor.ViewModel
+        {
+            get => ViewModel;
+            set => ViewModel = (BuilderMixinsTestViewModel?)value;
+        }
+    }
+
     /// <summary>Test view module that maps a test view model to a test view.</summary>
     private sealed class TestViewModule : IViewModule
     {
         /// <inheritdoc/>
         public void RegisterViews(DefaultViewLocator locator) =>
-            locator.Map<BuilderMixinsTestViewModel, BuilderMixinsTestView>(static () => new());
+            locator.Map<BuilderMixinsTestViewModel, BuilderMixinsTestView>();
     }
 
     /// <summary>App builder that does not implement <see cref="IReactiveUIBuilder"/>, used to verify error handling.</summary>
@@ -667,27 +688,6 @@ public class BuilderMixinsTests
         public void Dispose()
         {
             // No-op: test stub holds no resources to release.
-        }
-    }
-
-    /// <summary>Test view model used in builder registration tests.</summary>
-    [SuppressMessage(
-        "Major Code Smell",
-        "SST1436:Classes should not be empty",
-        Justification = "Marker type for tests.")]
-    private sealed class BuilderMixinsTestViewModel : ReactiveObject;
-
-    /// <summary>Test view bound to <see cref="BuilderMixinsTestViewModel"/>.</summary>
-    private sealed class BuilderMixinsTestView : IViewFor<BuilderMixinsTestViewModel>
-    {
-        /// <summary>Gets or sets the strongly typed view model bound to this view.</summary>
-        public BuilderMixinsTestViewModel? ViewModel { get; set; }
-
-        /// <summary>Gets or sets the weakly typed view model bound to this view.</summary>
-        object? IViewFor.ViewModel
-        {
-            get => ViewModel;
-            set => ViewModel = (BuilderMixinsTestViewModel?)value;
         }
     }
 

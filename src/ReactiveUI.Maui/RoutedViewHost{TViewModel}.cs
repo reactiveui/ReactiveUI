@@ -49,7 +49,7 @@ public class RoutedViewHost<
         }
 
         // Use the generic ResolveView<TViewModel> method - this is AOT-safe!
-        var ret = ViewLocator.Current.ResolveView<TViewModel>();
+        var ret = ViewLocator.GetCurrent().ResolveView<TViewModel>();
         if (ret is null)
         {
             var msg =
@@ -84,7 +84,7 @@ public class RoutedViewHost<
         ArgumentNullException.ThrowIfNull(vm);
 
         // Use the generic ResolveView<TViewModel> method - this is AOT-safe!
-        var ret = ViewLocator.Current.ResolveView<TViewModel>();
+        var ret = ViewLocator.GetCurrent().ResolveView<TViewModel>();
         if (ret is null)
         {
             var msg =
