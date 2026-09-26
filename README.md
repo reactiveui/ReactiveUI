@@ -147,15 +147,14 @@ your project references and write code for that flavour.
 
 - **Remove your own reference to ReactiveUI.SourceGenerators**, or set it to the version ReactiveUI brings or later.
   An older version fails to restore with error NU1605.
-- **Use a partial property for any property you pass to `WhenAnyValue`.** `[Reactive]` also works on a field, but
-  ReactiveUI.Binding cannot see a property the generators write from a field. A `WhenAnyValue` call on that property
-  throws at run time.
 
 ### Analyzers
 
 An **analyzer** checks your code as you type and reports problems as warnings or errors. ReactiveUI.Binding and
 ReactiveUI.SourceGenerators run their analyzers in your project. They report binding calls and attributes that the
-generators cannot handle.
+generators cannot handle. Diagnostic RXUIBIND021 flags a binding call with no generated binding behind it, such as
+one that targets a member another source generator adds or a stored lambda; that call throws at run time, so treat
+the warning as a bug to fix rather than suppress.
 
 The analyzers inside ReactiveUI.Primitives stay out of your project. ReactiveUI references ReactiveUI.Primitives with
 `ExcludeAssets="analyzers"`. To use them, reference ReactiveUI.Primitives directly:
