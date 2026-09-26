@@ -19,8 +19,11 @@ public sealed class DelegateViewLocator(Func<object, string?, IViewFor?> resolve
         where TViewModel : class => Resolve(viewModel, contract);
 
     /// <inheritdoc/>
-    [RequiresDynamicCode("Resolves a view from the view model's runtime type.")]
     public IViewFor? ResolveView(object? viewModel, string? contract) => Resolve(viewModel, contract);
+
+    /// <inheritdoc/>
+    [RequiresDynamicCode("Matches IViewLocator.ResolveViewUnsafe; this locator itself builds no types at run time.")]
+    public IViewFor? ResolveViewUnsafe(object? viewModel, string? contract) => ResolveView(viewModel, contract);
 
     /// <summary>Records the contract and resolves the view.</summary>
     /// <param name="viewModel">The view model.</param>

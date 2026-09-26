@@ -81,13 +81,13 @@ public class ReactiveViewHostTests
         await Assert.That(host.HasLegacyPropertyMetadata).IsFalse();
     }
 
-    /// <summary>The legacy constructor wires controls by reflection and prepares the legacy property metadata.</summary>
+    /// <summary>The Unsafe host's constructor wires controls by reflection and prepares the legacy property metadata.</summary>
     /// <returns>A task representing the test.</returns>
     [Test]
-    public async Task LegacyConstructor_WiresByReflection()
+    public async Task UnsafeConstructor_WiresByReflection()
     {
         var host = await MainThread.RunAsync(static () =>
-            new TestViewHost(ActivityLauncher.TargetContext, new FrameLayout(ActivityLauncher.TargetContext), ResolveStrategy.Implicit));
+            new UnsafeTestViewHost(ActivityLauncher.TargetContext, new FrameLayout(ActivityLauncher.TargetContext), ResolveStrategy.Implicit));
 
         await Assert.That(host.TitleText).IsNotNull();
         await Assert.That(host.TitleText!.Id).IsEqualTo(Resource.Id.TitleText);

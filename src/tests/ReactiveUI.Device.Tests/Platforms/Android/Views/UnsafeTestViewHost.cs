@@ -9,14 +9,14 @@ using static ReactiveUI.ControlFetcherMixins;
 
 namespace ReactiveUI.Device.Tests;
 
-/// <summary>A layout host that inflates <c>wireup_layout</c> and wires it by reflection with a chosen strategy.</summary>
-public sealed class AutoWiredHost : LayoutViewHostUnsafe
+/// <summary>A <see cref="ReactiveViewHostUnsafe{TViewModel}"/> over <c>wireup_layout</c> that wires its controls by reflection.</summary>
+public sealed class UnsafeTestViewHost : ReactiveViewHostUnsafe<TestViewModel>
 {
-    /// <summary>Initializes a new instance of the <see cref="AutoWiredHost"/> class.</summary>
+    /// <summary>Initializes a new instance of the <see cref="UnsafeTestViewHost"/> class, wiring by reflection.</summary>
     /// <param name="context">The Android context.</param>
     /// <param name="parent">The parent the layout is inflated against.</param>
     /// <param name="strategy">The wire-up strategy.</param>
-    public AutoWiredHost(Context context, ViewGroup parent, ResolveStrategy strategy)
+    public UnsafeTestViewHost(Context context, ViewGroup parent, ResolveStrategy strategy)
         : base(context, Resource.Layout.wireup_layout, parent, false, true, strategy)
     {
     }
@@ -24,15 +24,6 @@ public sealed class AutoWiredHost : LayoutViewHostUnsafe
     /// <summary>Gets or sets the title control; wired by its property name.</summary>
     public TextView? TitleText { get; set; }
 
-    /// <summary>Gets or sets the save button; opted in explicitly.</summary>
-    [WireUpResource]
-    public Button? SaveButton { get; set; }
-
-    /// <summary>Gets or sets the input; wired through a resource-name override.</summary>
-    [WireUpResource("renamed_input")]
-    public EditText? Input { get; set; }
-
-    /// <summary>Gets or sets a control that opts out of wire-up.</summary>
-    [IgnoreResource]
-    public TextView? Ignored { get; set; }
+    /// <summary>Gets a value indicating whether the reflection constructor prepared the legacy property metadata.</summary>
+    public bool HasLegacyPropertyMetadata => AllPublicProperties is not null;
 }

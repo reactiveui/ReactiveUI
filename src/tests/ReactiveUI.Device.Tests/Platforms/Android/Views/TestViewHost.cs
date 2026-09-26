@@ -5,7 +5,6 @@
 
 using Android.Views;
 using Android.Widget;
-using static ReactiveUI.ControlFetcherMixins;
 
 namespace ReactiveUI.Device.Tests;
 
@@ -33,21 +32,12 @@ public sealed class TestViewHost : ReactiveViewHost<TestViewModel>
             static (host, view) => ((TestViewHost)host).TitleText = view.FindViewById<TextView>(Resource.Id.TitleText)) =>
         BoundByCallback = bindTitle;
 
-    /// <summary>Initializes a new instance of the <see cref="TestViewHost"/> class, wiring by reflection.</summary>
-    /// <param name="context">The Android context.</param>
-    /// <param name="parent">The parent the layout is inflated against.</param>
-    /// <param name="strategy">The wire-up strategy.</param>
-    public TestViewHost(Context context, ViewGroup parent, ResolveStrategy strategy)
-        : base(context, Resource.Layout.wireup_layout, parent, false, true, strategy)
-    {
-    }
-
     /// <summary>Gets or sets the title control.</summary>
     public TextView? TitleText { get; set; }
 
     /// <summary>Gets a value indicating whether the bind-callback constructor built this host.</summary>
     public bool BoundByCallback { get; }
 
-    /// <summary>Gets the reflection metadata the legacy constructor prepares.</summary>
+    /// <summary>Gets a value indicating whether the legacy reflection metadata was prepared (only the Unsafe host does).</summary>
     public bool HasLegacyPropertyMetadata => AllPublicProperties is not null;
 }
