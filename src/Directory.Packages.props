@@ -69,7 +69,6 @@
   </ItemGroup>
 
   <ItemGroup Label="Rx Ecosystem">
-    <PackageVersion Include="DynamicData" Version="9.4.33"/>
     <PackageVersion Include="Splat" Version="$(SplatVersion)"/>
     <PackageVersion Include="Splat.Autofac" Version="$(SplatVersion)"/>
     <PackageVersion Include="Splat.Drawing" Version="$(SplatVersion)"/>

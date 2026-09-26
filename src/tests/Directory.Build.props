@@ -21,10 +21,8 @@
   <ItemGroup Condition="'$(RxReactiveSeam)' != 'true'">
     <Using Include="ReactiveUI.Internal" />
   </ItemGroup>
-  <!-- The Routing test leaf references DynamicData, which transitively pulls in System.Reactive (System.ObservableExtensions).
-       Importing ReactiveUI.Primitives there would make Subscribe/operator calls ambiguous, so the Routing tests bind to the
-       System.Reactive surface instead. All other lean test projects are System.Reactive-free and use the Primitives surface. -->
-  <ItemGroup Condition="'$(RxReactiveSeam)' != 'true' and !$(MSBuildProjectName.Contains('Routing'))">
+  <!-- The lean test projects are System.Reactive-free and use the Primitives surface. -->
+  <ItemGroup Condition="'$(RxReactiveSeam)' != 'true'">
     <Using Include="ReactiveUI.Primitives" />
     <!-- Concrete signal classes (ReturnSignal/StartSignal/ImmutableReturnRxVoidSignal) the tests construct
          directly in place of the removed in-repo SingleValueObservable/SyncExecuteObservable sinks. -->
@@ -39,7 +37,7 @@
          collide with System.Reactive.Disposables, so it is safe for the .Reactive leaves too. -->
     <Using Include="ReactiveUI.Primitives.Disposables" />
   </ItemGroup>
-  <ItemGroup Condition="'$(RxReactiveSeam)' == 'true' and !$(MSBuildProjectName.Contains('Routing'))">
+  <ItemGroup Condition="'$(RxReactiveSeam)' == 'true'">
     <Using Include="ReactiveUI.Primitives.Reactive" />
     <Using Include="ReactiveUI.Primitives.Reactive.Advanced" />
     <!-- The generic Signal<T> subject (and ReplaySignal/ScheduledSignal) is neutral — it ships in

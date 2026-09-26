@@ -3,7 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
@@ -31,7 +30,7 @@ namespace ReactiveUI;
 /// </para>
 /// <para>
 /// Setting <see cref="Router"/> subscribes the host to <see cref="RoutingState.Navigate"/>,
-/// <see cref="RoutingState.NavigateBack"/>, and collection change notifications. Manual calls to
+/// <see cref="RoutingState.NavigateBack"/>, and <see cref="RoutingState.NavigationStackChanged"/>. Manual calls to
 /// <see cref="PushViewController(NSViewController?, bool)"/> and <see cref="PopViewController(bool)"/> also update the
 /// router so that imperative navigation cannot desynchronize the stacks.
 /// </para>
@@ -71,6 +70,9 @@ public class RoutedViewHost : ReactiveNavigationController
     /// <summary>Whether the current navigation event was initiated by the router rather than the user.</summary>
     private bool _routerInstigated;
 
+    /// <summary>The router's stack count after the last change the host mirrored.</summary>
+    private int _stackCount;
+
     /// <summary>Initializes a new instance of the <see cref="RoutedViewHost"/> class.</summary>
     public RoutedViewHost()
     {
@@ -81,10 +83,7 @@ public class RoutedViewHost : ReactiveNavigationController
         {
             d(SubscribeToInitialStack());
 
-            var navigationStackChanged = BuildNavigationStackChangedObservable();
-
-            d(SubscribeToStackAdded(navigationStackChanged));
-            d(SubscribeToStackReset(navigationStackChanged));
+            d(SubscribeToStackChanges());
             d(SubscribeToNavigateBack());
         });
     }
@@ -168,13 +167,6 @@ public class RoutedViewHost : ReactiveNavigationController
                 static vm => vm.WhenAnyValue(static x => x.UrlPathSegment),
                 title => viewController.NavigationItem.Title = title);
 
-    /// <summary>Builds the observable that emits collection-change events for the active navigation stack.</summary>
-    /// <returns>An observable of collection-changed notifications for the router's navigation stack.</returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private IObservable<CollectionChanged> BuildNavigationStackChangedObservable() =>
-        this.WhenAnyValue(static x => x.Router)
-            .SwitchSelect(static router => router.NavigationStack.ObserveCollectionChanges());
-
     /// <summary>Subscribes to the initial router state and pushes any pre-existing view models onto the navigation stack.</summary>
     /// <returns>A disposable that represents the subscription.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -182,6 +174,9 @@ public class RoutedViewHost : ReactiveNavigationController
         this.WhenAnyValue(static x => x.Router)
             .Subscribe(new DelegateObserver<RoutingState?>(x =>
             {
+                // A new router starts a new stack history: later stack changes are compared with this count.
+                _stackCount = x?.NavigationStack.Count ?? 0;
+
                 if (x is null || Router is null || x.NavigationStack.Count == 0 || ViewControllers?.Length != 0)
                 {
                     return;
@@ -205,59 +200,57 @@ public class RoutedViewHost : ReactiveNavigationController
                 _routerInstigated = false;
             }));
 
-    /// <summary>Subscribes to stack-add events and pushes the resolved view controller.</summary>
-    /// <param name="navigationStackChanged">The observable that emits navigation-stack change events.</param>
+    /// <summary>
+    /// Subscribes to <see cref="RoutingState.NavigationStackChanged"/> on the current router. A stack that grew pushes
+    /// the view for the new current view model; an emptied stack pops to the root view controller.
+    /// </summary>
     /// <returns>A disposable that represents the subscription.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private IDisposable SubscribeToStackAdded(
-        IObservable<CollectionChanged> navigationStackChanged) =>
-        navigationStackChanged
-            .Subscribe(new DelegateObserver<CollectionChanged>(change =>
-            {
-                if (change.EventArgs.Action != NotifyCollectionChangedAction.Add)
-                {
-                    return;
-                }
+    private IDisposable SubscribeToStackChanges() =>
+        this.WhenAnyValue(static x => x.Router)
+            .SwitchSelect(static router => router.NavigationStackChanged)
+            .Subscribe(new DelegateObserver<IReadOnlyList<IRoutableViewModel>>(OnStackChanged));
 
-                var view = ResolveView(Router?.GetCurrentViewModel(), null);
-                var animate = Router?.NavigationStack.Count > 1;
+    /// <summary>Mirrors one change of the router's stack into the navigation controller.</summary>
+    /// <param name="stack">The router's stack after the change.</param>
+    private void OnStackChanged(IReadOnlyList<IRoutableViewModel> stack)
+    {
+        var previousCount = _stackCount;
+        _stackCount = stack.Count;
 
-                if (_routerInstigated || Router is null)
-                {
-                    return;
-                }
+        if (stack.Count == 0)
+        {
+            _routerInstigated = true;
+            _ = PopToRootViewController(true);
+            _routerInstigated = false;
+            return;
+        }
 
-                if (view is not null)
-                {
-                    _titleUpdater.Disposable = SubscribeToTitleUpdates(Router, view);
-                }
+        if (stack.Count <= previousCount)
+        {
+            return;
+        }
 
-                _routerInstigated = true;
+        var view = ResolveView(stack[stack.Count - 1], null);
+        var animate = stack.Count > 1;
 
-                // Animate must be false for the first view pushed; otherwise iOS calls PushViewController twice.
-                PushViewController(view, animate);
+        if (_routerInstigated || Router is null)
+        {
+            return;
+        }
 
-                _routerInstigated = false;
-            }));
+        if (view is not null)
+        {
+            _titleUpdater.Disposable = SubscribeToTitleUpdates(Router, view);
+        }
 
-    /// <summary>Subscribes to stack-reset events and pops to the root view controller.</summary>
-    /// <param name="navigationStackChanged">The observable that emits navigation-stack change events.</param>
-    /// <returns>A disposable that represents the subscription.</returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private IDisposable SubscribeToStackReset(
-        IObservable<CollectionChanged> navigationStackChanged) =>
-        navigationStackChanged
-            .Subscribe(new DelegateObserver<CollectionChanged>(change =>
-            {
-                if (change.EventArgs.Action != NotifyCollectionChangedAction.Reset)
-                {
-                    return;
-                }
+        _routerInstigated = true;
 
-                _routerInstigated = true;
-                _ = PopToRootViewController(true);
-                _routerInstigated = false;
-            }));
+        // Animate must be false for the first view pushed; otherwise iOS calls PushViewController twice.
+        PushViewController(view, animate);
+
+        _routerInstigated = false;
+    }
 
     /// <summary>Subscribes to the router's <see cref="RoutingState.NavigateBack"/> signal and pops the top view controller.</summary>
     /// <returns>A disposable that represents the subscription.</returns>

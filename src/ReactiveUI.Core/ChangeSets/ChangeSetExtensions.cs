@@ -93,9 +93,8 @@ public static class ChangeSetExtensions
 
                 // Emit an initial batch on subscribe even when the collection is empty, matching the
                 // DynamicData ToObservableChangeSet() behaviour the change layer replaced. Downstream projections
-                // such as RoutingState.CurrentViewModel rely on this seed emission to surface the current value
-                // (e.g. a null "no current view model") immediately on subscription. The empty change set carries
-                // no adds/removes, so count-gated consumers (WhenCountChanged) correctly ignore it.
+                // rely on this seed emission to surface the current state immediately on subscription. The empty
+                // change set carries no adds/removes, so count-gated consumers (WhenCountChanged) correctly ignore it.
                 var initial = new List<ReactiveChange<T>>(_shadow.Count);
                 for (var i = 0; i < _shadow.Count; i++)
                 {

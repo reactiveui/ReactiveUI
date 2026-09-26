@@ -49,8 +49,6 @@
         <Project Path="tests/ReactiveUI.Builder.Maui.Tests/ReactiveUI.Builder.Maui.Tests.csproj" />
         <Project Path="tests/ReactiveUI.Builder.Tests/ReactiveUI.Builder.Tests.csproj" />
         <Project Path="tests/ReactiveUI.Maui.Tests/ReactiveUI.Maui.Tests.csproj" />
-        <Project Path="tests/ReactiveUI.Routing.Tests/ReactiveUI.Routing.Tests.csproj" />
-        <Project Path="tests/ReactiveUI.Routing.Tests.Reactive/ReactiveUI.Routing.Tests.Reactive.csproj" />
         <Project Path="tests/ReactiveUI.Splat.Tests/ReactiveUI.Splat.Tests.csproj" />
         <Project Path="tests/ReactiveUI.Test.Utilities/ReactiveUI.Test.Utilities.csproj" />
         <Project Path="tests/ReactiveUI.TestGuiMocks/ReactiveUI.TestGuiMocks.csproj" />
@@ -70,7 +68,6 @@
         <Project Path="ReactiveUI.Drawing.Reactive/ReactiveUI.Drawing.Reactive.csproj" />
         <Project Path="ReactiveUI.Maui.Reactive/ReactiveUI.Maui.Reactive.csproj" />
         <Project Path="ReactiveUI.Reactive/ReactiveUI.Reactive.csproj" />
-        <Project Path="ReactiveUI.Routing.Reactive/ReactiveUI.Routing.Reactive.csproj" />
         <Project Path="ReactiveUI.WinUI.Reactive/ReactiveUI.WinUI.Reactive.csproj" />
         <Project Path="ReactiveUI.Testing.Reactive/ReactiveUI.Testing.Reactive.csproj" />
         <Project Path="ReactiveUI.Winforms.Reactive/ReactiveUI.Winforms.Reactive.csproj" />
@@ -86,7 +83,6 @@
     <Project Path="ReactiveUI.Core/ReactiveUI.Core.csproj" />
     <Project Path="ReactiveUI.Drawing/ReactiveUI.Drawing.csproj" />
     <Project Path="ReactiveUI.Maui/ReactiveUI.Maui.csproj" />
-    <Project Path="ReactiveUI.Routing/ReactiveUI.Routing.csproj" />
     <Project Path="ReactiveUI.Testing/ReactiveUI.Testing.csproj" />
     <Project Path="ReactiveUI.Winforms/ReactiveUI.Winforms.csproj" />
     <Project Path="ReactiveUI.WinUI/ReactiveUI.WinUI.csproj" />

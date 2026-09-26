@@ -3,7 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
@@ -61,8 +60,8 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
         Justification = "'this' is passed to the main-thread scheduler to marshal the initial navigation-stack sync onto the UI thread; the scheduled work runs after construction completes.")]
     public RoutedViewHost()
     {
-        // Resolve the Router before wiring the subscriptions: SubscribeToNavigationStackChanges hooks
-        // Router.NavigationStack directly, so Router must already be set or it would dereference null.
+        // Resolve the Router before wiring the subscriptions: SubscribeToNavigationStackChanges subscribes to
+        // Router.NavigationStackChanged, so Router must already be set or it would dereference null.
         var screen = AppLocator.Current.GetService<IScreen>()
                      ?? throw new InvalidOperationException("You *must* register an IScreen class representing your App's main Screen");
         Router = screen.Router;
@@ -257,7 +256,7 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
         }
     }
 
-    /// <summary>Subscribes to <see cref="RoutingState.NavigationStack"/> changes and resyncs when the stack is cleared.</summary>
+    /// <summary>Subscribes to <see cref="RoutingState.NavigationStackChanged"/> and resyncs when the stack is cleared.</summary>
     [RequiresUnreferencedCode(
         "This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
     [RequiresDynamicCode(
@@ -265,16 +264,10 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
         + "trimming can't validate that the requirements of those annotations are met.")]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void SubscribeToNavigationStackChanges() =>
-        new FromEventObservable<RxVoid>(onNext =>
+        Router.NavigationStackChanged
+            .Subscribe(new DelegateObserver<IReadOnlyList<IRoutableViewModel>>(stack =>
             {
-                NotifyCollectionChangedEventHandler handler = (_, _) => onNext(RxVoid.Default);
-                Router.NavigationStack.CollectionChanged += handler;
-                return new ActionDisposable(() => Router.NavigationStack.CollectionChanged -= handler);
-            })
-            .Subscribe(new DelegateObserver<RxVoid>(changed =>
-            {
-                // Replaces .Where(_ => !_currentlyNavigating && Router?.NavigationStack.Count == 0).
-                if (_currentlyNavigating || Router?.NavigationStack.Count != 0)
+                if (_currentlyNavigating || stack.Count != 0)
                 {
                     return;
                 }

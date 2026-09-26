@@ -76,10 +76,12 @@ If you take the default packages, note the public reactive types change: `ISched
 with **zero source changes**, reference the matching `*.Reactive` packages instead — they keep `IScheduler`, `Unit`
 and `Subject<T>`.
 
-Core routing (`RoutingState`, `IScreen`, `RoutedViewHost`) stays in the main package, but the **DynamicData** change-set
-routing/collection/auto-persist helpers now live in a separate **`ReactiveUI.Routing`** package (`ReactiveUI.Routing.Reactive`
-for the System.Reactive flavor), so core no longer depends on DynamicData. Add `ReactiveUI.Routing` if you use those
-extensions.
+Routing (`RoutingState`, `IScreen`, `RoutedViewHost`) lives in the main package and has no DynamicData dependency.
+`RoutingState` reports navigation through plain observables of values: `CurrentViewModel` emits the view model on top of
+the stack, `NavigationStackChanged` emits a read-only snapshot of the whole stack after each change, and `CanNavigateBack`
+emits whether there is a view model to go back to. The `ReactiveUI.Routing` and `ReactiveUI.Routing.Reactive` packages
+are discontinued. If you used `NavigationChanges` or the DynamicData change-set helpers, subscribe to
+`NavigationStackChanged` instead.
 
 ### Analyzers are opt-in
 

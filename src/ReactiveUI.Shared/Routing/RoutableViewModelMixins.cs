@@ -42,9 +42,7 @@ public static class RoutableViewModelMixins
             ArgumentExceptionHelper.ThrowIfNull(item);
             ArgumentExceptionHelper.ThrowIfNull(onNavigatedTo);
 
-            var router = item.HostScreen.Router;
-            return new NavigationFocusScope(router, item, onNavigatedTo)
-                .Run(router.NavigationChanges.WhenCountChanged());
+            return new NavigationFocusScope(item, onNavigatedTo).Run(item.HostScreen.Router);
         }
 
         /// <summary>
@@ -69,13 +67,7 @@ public static class RoutableViewModelMixins
         {
             ArgumentExceptionHelper.ThrowIfNull(item);
 
-            var router = item.HostScreen.Router;
-
-            return new NavigationFocusObservable(
-                router.NavigationChanges.WhenCountChanged(),
-                router,
-                item,
-                NavigationFocusTransition.Arrival);
+            return new NavigationFocusObservable(item.HostScreen.Router, item, NavigationFocusTransition.Arrival);
         }
 
         /// <summary>
@@ -99,13 +91,7 @@ public static class RoutableViewModelMixins
         {
             ArgumentExceptionHelper.ThrowIfNull(item);
 
-            var router = item.HostScreen.Router;
-
-            return new NavigationFocusObservable(
-                router.NavigationChanges.WhenCountChanged(),
-                router,
-                item,
-                NavigationFocusTransition.Departure);
+            return new NavigationFocusObservable(item.HostScreen.Router, item, NavigationFocusTransition.Departure);
         }
     }
 
@@ -121,15 +107,12 @@ public static class RoutableViewModelMixins
 
     /// <summary>
     /// Emits on one side of a navigation-focus change for the watched view model, and completes when that view
-    /// model is removed from the stack. Fuses the prior <c>Scan</c>/<c>Where</c>/<c>Select</c>/<c>TakeUntil</c>
-    /// pipelines into one sink; the two focus directions differ only in the transition test.
+    /// model is removed from the stack. The two focus directions differ only in the transition test.
     /// </summary>
-    /// <param name="source">The navigation-stack change stream.</param>
-    /// <param name="router">The router whose current view model is inspected.</param>
+    /// <param name="router">The router whose navigation stack is watched.</param>
     /// <param name="item">The view model being watched.</param>
     /// <param name="transition">Which side of the focus change to report.</param>
     private sealed class NavigationFocusObservable(
-        IObservable<IReactiveChangeSet<IRoutableViewModel>> source,
         RoutingState router,
         IRoutableViewModel item,
         NavigationFocusTransition transition) : IObservable<RxVoid>
@@ -138,46 +121,57 @@ public static class RoutableViewModelMixins
         public IDisposable Subscribe(IObserver<RxVoid> observer)
         {
             ArgumentExceptionHelper.ThrowIfNull(observer);
-            return new Sink(observer, router, item, transition).Run(source);
+            return new Sink(observer, item, transition).Run(router);
         }
 
         /// <summary>Emits a unit on each matching focus change, completing once the watched view model is removed.</summary>
         /// <param name="downstream">The observer receiving the focus signal.</param>
-        /// <param name="router">The router whose current view model is inspected.</param>
         /// <param name="item">The view model being watched.</param>
         /// <param name="transition">Which side of the focus change to report.</param>
         private sealed class Sink(
             IObserver<RxVoid> downstream,
-            RoutingState router,
             IRoutableViewModel item,
-            NavigationFocusTransition transition) : IObserver<IReactiveChangeSet<IRoutableViewModel>>, IDisposable
+            NavigationFocusTransition transition) : IObserver<IReadOnlyList<IRoutableViewModel>>, IDisposable
         {
-            /// <summary>The subscription to the navigation-stack change stream.</summary>
+            /// <summary>The subscription to the navigation-stack stream.</summary>
             private readonly OnceDisposable _subscription = new();
 
             /// <summary>The current view model recorded at the previous change; only used for departures.</summary>
             private IRoutableViewModel? _previousCurrent;
 
+            /// <summary>The stack count recorded at the previous change.</summary>
+            private int _previousCount;
+
+            /// <summary>Whether the watched view model was in the stack at the previous change.</summary>
+            private bool _wasInStack;
+
             /// <summary>Whether the downstream has terminated; latched to 1 by the first thread to terminate it.</summary>
             private int _stopped;
 
             /// <inheritdoc/>
-            public void OnNext(IReactiveChangeSet<IRoutableViewModel> value)
+            public void OnNext(IReadOnlyList<IRoutableViewModel> value)
             {
                 if (Volatile.Read(ref _stopped) != 0)
                 {
                     return;
                 }
 
-                if (WasItemRemoved(value, item))
+                // Every piece of bookkeeping advances before anything is handed downstream, so a downstream handler
+                // that synchronously drives more navigation sees state that is already current.
+                var isInStack = Contains(value, item);
+                var removed = _wasInStack && !isInStack;
+                _wasInStack = isInStack;
+
+                var countChanged = value.Count != _previousCount;
+                _previousCount = value.Count;
+
+                if (removed)
                 {
                     Complete();
                     return;
                 }
 
-                // The transition test advances the sink's own state before anything is handed downstream, so a
-                // downstream handler that synchronously drives more navigation sees state that is already current.
-                if (!HasTransitioned())
+                if (!countChanged || !HasTransitioned(RoutingState.Top(value)))
                 {
                     return;
                 }
@@ -205,27 +199,25 @@ public static class RoutableViewModelMixins
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public void Dispose() => _subscription.Dispose();
 
-            /// <summary>Subscribes to the source.</summary>
-            /// <param name="changes">The navigation-stack change stream.</param>
+            /// <summary>Judges the stack as it is now, then subscribes to its later changes.</summary>
+            /// <param name="router">The router whose navigation stack is watched.</param>
             /// <returns>The sink, which stops the run when disposed.</returns>
-            internal Sink Run(IObservable<IReactiveChangeSet<IRoutableViewModel>> changes)
+            internal Sink Run(RoutingState router)
             {
-                _subscription.Disposable = changes.Subscribe(this);
+                OnNext(router.NavigationStack);
+                _subscription.Disposable = router.NavigationStackChanged.Subscribe(this);
                 return this;
             }
 
-            /// <summary>Determines whether the watched view model was removed by this change set.</summary>
-            /// <param name="changeSet">The set of changes to evaluate for item removal.</param>
-            /// <param name="watched">The item to check for removal within the change set.</param>
-            /// <returns><see langword="true"/> if the item was removed; otherwise <see langword="false"/>.</returns>
-            private static bool WasItemRemoved(IReactiveChangeSet<IRoutableViewModel> changeSet, IRoutableViewModel watched)
+            /// <summary>Determines whether a stack snapshot holds the watched view model.</summary>
+            /// <param name="stack">The stack snapshot.</param>
+            /// <param name="watched">The view model to look for.</param>
+            /// <returns><see langword="true"/> if the snapshot holds the view model; otherwise <see langword="false"/>.</returns>
+            private static bool Contains(IReadOnlyList<IRoutableViewModel> stack, IRoutableViewModel watched)
             {
-                // A reset/clear is flattened to one Remove per prior item, so a removal of this item (directly or
-                // via a clear) always appears as a Remove change carrying the item.
-                for (var i = 0; i < changeSet.Count; i++)
+                for (var i = 0; i < stack.Count; i++)
                 {
-                    var change = changeSet[i];
-                    if (change.Reason == ReactiveChangeReason.Remove && ReferenceEquals(change.Current, watched))
+                    if (ReferenceEquals(stack[i], watched))
                     {
                         return true;
                     }
@@ -235,16 +227,17 @@ public static class RoutableViewModelMixins
             }
 
             /// <summary>Determines whether this change is the focus transition being watched for.</summary>
+            /// <param name="current">The view model now on top of the stack.</param>
             /// <returns><see langword="true"/> when the watched transition happened; otherwise <see langword="false"/>.</returns>
-            private bool HasTransitioned()
+            private bool HasTransitioned(IRoutableViewModel? current)
             {
                 if (transition == NavigationFocusTransition.Arrival)
                 {
-                    return ReferenceEquals(router.GetCurrentViewModel(), item);
+                    return ReferenceEquals(current, item);
                 }
 
                 var departed = ReferenceEquals(_previousCurrent, item);
-                _previousCurrent = router.GetCurrentViewModel();
+                _previousCurrent = current;
                 return departed;
             }
 
@@ -264,29 +257,37 @@ public static class RoutableViewModelMixins
 
     /// <summary>
     /// Runs a caller-supplied scope for exactly as long as the watched view model is the topmost one, replacing it
-    /// on every navigation change and disposing it along with the handle returned to the caller.
+    /// on every change to the stack's size and disposing it along with the handle returned to the caller.
     /// </summary>
-    /// <param name="router">The router whose current view model is inspected.</param>
     /// <param name="item">The view model being watched.</param>
     /// <param name="onNavigatedTo">Builds the scope that lives while the view model has focus.</param>
     private sealed class NavigationFocusScope(
-        RoutingState router,
         IRoutableViewModel item,
-        Func<IDisposable> onNavigatedTo) : IObserver<IReactiveChangeSet<IRoutableViewModel>>, IDisposable
+        Func<IDisposable> onNavigatedTo) : IObserver<IReadOnlyList<IRoutableViewModel>>, IDisposable
     {
         /// <summary>The scope currently in force; replacing or clearing it disposes the previous one.</summary>
         private readonly SwapDisposable _scope = new();
 
-        /// <summary>The subscription to the navigation-stack change stream.</summary>
+        /// <summary>The subscription to the navigation-stack stream.</summary>
         private readonly OnceDisposable _subscription = new();
 
+        /// <summary>The stack count recorded at the previous change.</summary>
+        private int _previousCount;
+
         /// <inheritdoc/>
-        public void OnNext(IReactiveChangeSet<IRoutableViewModel> value)
+        public void OnNext(IReadOnlyList<IRoutableViewModel> value)
         {
+            if (value.Count == _previousCount)
+            {
+                return;
+            }
+
+            _previousCount = value.Count;
+
             // Tear the old scope down before building the new one, so the two never overlap.
             _scope.Disposable = null;
 
-            if (!ReferenceEquals(router.GetCurrentViewModel(), item))
+            if (!ReferenceEquals(RoutingState.Top(value), item))
             {
                 return;
             }
@@ -297,7 +298,7 @@ public static class RoutableViewModelMixins
         /// <inheritdoc/>
         public void OnError(Exception error)
         {
-            // The navigation-change stream is a property-change projection and does not fault in practice. A
+            // The navigation-stack stream is a collection-change projection and does not fault in practice. A
             // fault leaves the scope in force: the view model has not lost focus, and the caller's handle still
             // owns the teardown.
         }
@@ -316,12 +317,13 @@ public static class RoutableViewModelMixins
             _scope.Dispose();
         }
 
-        /// <summary>Subscribes to the source.</summary>
-        /// <param name="changes">The navigation-stack change stream.</param>
+        /// <summary>Judges the stack as it is now, then subscribes to its later changes.</summary>
+        /// <param name="router">The router whose navigation stack is watched.</param>
         /// <returns>The scope, which stops the run and disposes the active scope when disposed.</returns>
-        internal NavigationFocusScope Run(IObservable<IReactiveChangeSet<IRoutableViewModel>> changes)
+        internal NavigationFocusScope Run(RoutingState router)
         {
-            _subscription.Disposable = changes.Subscribe(this);
+            OnNext(router.NavigationStack);
+            _subscription.Disposable = router.NavigationStackChanged.Subscribe(this);
             return this;
         }
     }

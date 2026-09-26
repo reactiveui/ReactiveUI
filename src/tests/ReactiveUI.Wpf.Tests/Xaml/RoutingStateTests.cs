@@ -117,8 +117,8 @@ public class RoutingStateTests
     {
         // TestScreen seeds a default Router in its constructor, so subscribing observes that router's
         // CurrentViewModel seed (empty stack -> null) immediately, and swapping Router emits the new router's
-        // seed too. CurrentViewModel emits a value on subscribe for an empty stack by design (the change layer's
-        // initial batch), so both seeds count. This matches the released System.Reactive build's behaviour.
+        // seed too. CurrentViewModel emits the current value on subscribe, null for an empty stack, so both
+        // seeds count. This matches the released System.Reactive build's behaviour.
         var fixture = new TestScreen();
         var output = new List<IRoutableViewModel?>();
         _ = fixture.WhenAnyObservable(static x => x.Router!.CurrentViewModel)
