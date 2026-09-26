@@ -66,17 +66,8 @@ public class TransitioningContentControlTest
     /// <summary>An out-of-range value used to exercise the default arms of the transition switch expressions.</summary>
     private const int InvalidEnumValue = 999;
 
-    /// <summary>The longest time, in seconds, to pump the dispatcher while waiting for a storyboard to complete.</summary>
-    private const int StoryboardTimeoutSeconds = 10;
-
-    /// <summary>The delay, in milliseconds, between dispatcher pump iterations.</summary>
-    private const int PumpDelayMs = 10;
-
     /// <summary>The duration, in milliseconds, of the transition driven through the visual state manager.</summary>
     private const int TransitionDurationMs = 50;
-
-    /// <summary>How long, in milliseconds, to keep pumping after a transition completes to catch a repeated event.</summary>
-    private const int SettleTimeMs = 300;
 
     /// <summary>The label recorded when <c>TransitionStarted</c> fires.</summary>
     private const string StartedEvent = "started";
@@ -960,10 +951,15 @@ public class TransitioningContentControlTest
     }
 
     /// <summary>
-    /// When the completing storyboard runs to completion, the control aborts the transition (returns to Normal, clears
-    /// the previous-image snapshot) and raises <c>TransitionCompleted</c>.
+    /// When the completing storyboard's clock reports completion, the control aborts the transition (returns to Normal,
+    /// clears the previous-image snapshot) and raises <c>TransitionCompleted</c>.
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    /// <remarks>
+    /// The test raises the completion itself rather than running the storyboard. A running storyboard only completes
+    /// when WPF's per-thread render loop ticks its clock, and that loop depends on the composition engine answering;
+    /// on CI runners it sometimes never ticks, which made a pumped wait fail after its full deadline.
+    /// </remarks>
     [Test]
     public async Task CompletingTransition_Completes_AbortsTransitionAndRaisesCompleted()
     {
@@ -973,48 +969,33 @@ public class TransitioningContentControlTest
         // Seed a previous-image snapshot so AbortTransition exercises its render-target clearing branch.
         control.PrepareTransitionImages(new TextBlock { Text = "snapshot" });
 
-        // A real, zero-duration storyboard targeting an existing element so it actually completes and fires Completed.
         // Two children are required because the Fade defaults read Children[0] and Children[1].
         var storyboard = new Storyboard();
-        var opacityAnimation = new DoubleAnimation(1.0, 1.0, new Duration(TimeSpan.Zero));
-        Storyboard.SetTarget(opacityAnimation, control);
-        Storyboard.SetTargetProperty(opacityAnimation, new(UIElement.OpacityProperty));
-        storyboard.Children.Add(opacityAnimation);
-
-        var secondAnimation = new DoubleAnimation(1.0, 1.0, new Duration(TimeSpan.Zero));
-        Storyboard.SetTarget(secondAnimation, control);
-        Storyboard.SetTargetProperty(secondAnimation, new(UIElement.OpacityProperty));
-        storyboard.Children.Add(secondAnimation);
+        storyboard.Children.Add(CreateOpacityAnimation(control));
+        storyboard.Children.Add(CreateOpacityAnimation(control));
 
         var completed = false;
         control.TransitionCompleted += (_, _) => completed = true;
 
-        // Assigning CompletingTransition hooks OnTransitionCompleted onto the storyboard's Completed event.
         control.CompletingTransition = storyboard;
 
-        storyboard.Begin(control, true);
-
-        // Pump the dispatcher so the zero-length animation completes and fires its Completed callback. A slow runner can
-        // need more than a fixed number of pumps, so keep pumping until it completes or the deadline passes.
-        var started = System.Diagnostics.Stopwatch.GetTimestamp();
-        while (!completed && System.Diagnostics.Stopwatch.GetElapsedTime(started) < TimeSpan.FromSeconds(StoryboardTimeoutSeconds))
-        {
-            Tests.Xaml.Utilities.DispatcherUtilities.DoEvents();
-            await Task.Delay(PumpDelayMs);
-        }
+        control.OnTransitionCompleted(storyboard.CreateClock(), EventArgs.Empty);
 
         await Assert.That(completed).IsTrue();
     }
 
     /// <summary>
-    /// A content change that runs a real visual-state transition raises <c>TransitionStarted</c> once and
-    /// <c>TransitionCompleted</c> once. WPF raises the storyboard's <c>Completed</c> event a second time for the same
-    /// clock when the handler moves the control back to the <c>Normal</c> state, and that repeat must not surface as a
-    /// second <c>TransitionCompleted</c>.
+    /// A transition raises <c>TransitionStarted</c> once and <c>TransitionCompleted</c> once, even though WPF raises the
+    /// storyboard's <c>Completed</c> event a second time for the same clock when the handler moves the control back to
+    /// the <c>Normal</c> state. The next transition runs on a new clock and completes again.
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    /// <remarks>
+    /// The test raises the clock's completion itself, twice for the same clock as WPF does, rather than waiting for
+    /// WPF's render loop to tick the storyboard; see <see cref="CompletingTransition_Completes_AbortsTransitionAndRaisesCompleted"/>.
+    /// </remarks>
     [Test]
-    public async Task OnContentChanged_RealTransition_RaisesTransitionCompletedOnce()
+    public async Task OnTransitionCompleted_RepeatedForSameClock_RaisesTransitionCompletedOnce()
     {
         var control = CreateRealizedControl();
         control.Transition = TransitioningContentControl.TransitionType.Fade;
@@ -1026,23 +1007,14 @@ public class TransitioningContentControlTest
         control.TransitionCompleted += (_, _) => events.Add(CompletedEvent);
 
         control.Content = new TextBlock { Text = NewContentText };
+        var firstClock = control.CompletingTransition!.CreateClock();
+        control.OnTransitionCompleted(firstClock, EventArgs.Empty);
+        control.OnTransitionCompleted(firstClock, EventArgs.Empty);
 
-        // Pump until the transition completes, then keep pumping so a repeated Completed has time to arrive.
-        var started = System.Diagnostics.Stopwatch.GetTimestamp();
-        while (!events.Contains(CompletedEvent) && System.Diagnostics.Stopwatch.GetElapsedTime(started) < TimeSpan.FromSeconds(StoryboardTimeoutSeconds))
-        {
-            Tests.Xaml.Utilities.DispatcherUtilities.DoEvents();
-            await Task.Delay(PumpDelayMs);
-        }
+        control.Content = new TextBlock { Text = "second" };
+        control.OnTransitionCompleted(control.CompletingTransition!.CreateClock(), EventArgs.Empty);
 
-        var settled = System.Diagnostics.Stopwatch.GetTimestamp();
-        while (System.Diagnostics.Stopwatch.GetElapsedTime(settled) < TimeSpan.FromMilliseconds(SettleTimeMs))
-        {
-            Tests.Xaml.Utilities.DispatcherUtilities.DoEvents();
-            await Task.Delay(PumpDelayMs);
-        }
-
-        await Assert.That(events).IsEquivalentTo([StartedEvent, CompletedEvent]);
+        await Assert.That(events).IsEquivalentTo([StartedEvent, CompletedEvent, StartedEvent, CompletedEvent]);
     }
 
     /// <summary>
