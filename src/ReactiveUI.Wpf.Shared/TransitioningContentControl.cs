@@ -198,6 +198,9 @@ public class TransitioningContentControl : ContentControl
     /// <summary>A value indicating whether a transition is currently in progress.</summary>
     private bool _isTransitioning;
 
+    /// <summary>The storyboard clock whose Completed event last ended a transition.</summary>
+    private Clock? _completedClock;
+
     /// <summary>Initializes a new instance of the <see cref="TransitioningContentControl"/> class.</summary>
     /// <remarks>
     /// The control’s default style key is set to <see cref="TransitioningContentControl"/> so that it can locate its
@@ -703,6 +706,18 @@ public class TransitioningContentControl : ContentControl
     /// <param name="e">An EventArgs object that contains the event data.</param>
     private void OnTransitionCompleted(object? sender, EventArgs e)
     {
+        // Returning to Normal from inside this handler makes WPF raise Completed a second time for the same clock.
+        // Only the first one ends the transition.
+        if (sender is Clock clock)
+        {
+            if (ReferenceEquals(clock, _completedClock))
+            {
+                return;
+            }
+
+            _completedClock = clock;
+        }
+
         AbortTransition();
 
         TransitionCompleted?.Invoke(this, new());
