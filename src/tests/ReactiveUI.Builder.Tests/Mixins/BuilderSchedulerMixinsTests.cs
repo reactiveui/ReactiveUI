@@ -8,26 +8,10 @@ using TUnit.Core.Executors;
 
 namespace ReactiveUI.Builder.Tests.Mixins;
 
-/// <summary>Tests for the scheduler-related builder mixin extension methods.</summary>
+/// <summary>Tests for the scheduler members of <see cref="IReactiveUIBuilder"/>.</summary>
 [NotInParallel]
 public class BuilderSchedulerMixinsTests
 {
-    /// <summary>Verifies that setting the task pool scheduler on a null builder throws <see cref="ArgumentNullException"/>.</summary>
-    [Test]
-    public void WithTaskPoolScheduler_Throws_When_Builder_Null()
-    {
-        var scheduler = Sequencer.Immediate;
-        _ = Assert.Throws<ArgumentNullException>(() => BuilderMixins.WithTaskPoolScheduler(null!, scheduler));
-    }
-
-    /// <summary>Verifies that setting the main thread scheduler on a null builder throws <see cref="ArgumentNullException"/>.</summary>
-    [Test]
-    public void WithMainThreadScheduler_Throws_When_Builder_Null()
-    {
-        var scheduler = Sequencer.Immediate;
-        _ = Assert.Throws<ArgumentNullException>(() => BuilderMixins.WithMainThreadScheduler(null!, scheduler));
-    }
-
     /// <summary>Verifies that setting the task pool scheduler updates both the builder and <see cref="RxSchedulers"/>.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
@@ -82,28 +66,28 @@ public class BuilderSchedulerMixinsTests
         }
     }
 
-    /// <summary>Verifies that the task pool scheduler extension method returns the same builder for chaining.</summary>
+    /// <summary>Verifies that setting the task pool scheduler returns the same builder for chaining.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     [TestExecutor<ResetOnlyExecutor>]
-    public async Task WithTaskPoolScheduler_Extension_Method_Returns_Builder()
+    public async Task WithTaskPoolScheduler_Returns_Builder()
     {
         var builder = RxAppBuilder.CreateReactiveUIBuilder();
 
-        var result = BuilderMixins.WithTaskPoolScheduler(builder, Sequencer.Immediate);
+        var result = builder.WithTaskPoolScheduler(Sequencer.Immediate);
 
         await Assert.That(result).IsSameReferenceAs(builder);
     }
 
-    /// <summary>Verifies that the main thread scheduler extension method returns the same builder for chaining.</summary>
+    /// <summary>Verifies that setting the main thread scheduler returns the same builder for chaining.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     [TestExecutor<ResetOnlyExecutor>]
-    public async Task WithMainThreadScheduler_Extension_Method_Returns_Builder()
+    public async Task WithMainThreadScheduler_Returns_Builder()
     {
         var builder = RxAppBuilder.CreateReactiveUIBuilder();
 
-        var result = BuilderMixins.WithMainThreadScheduler(builder, Sequencer.Immediate);
+        var result = builder.WithMainThreadScheduler(Sequencer.Immediate);
 
         await Assert.That(result).IsSameReferenceAs(builder);
     }
