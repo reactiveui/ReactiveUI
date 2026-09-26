@@ -372,6 +372,49 @@ public partial class SuspensionHostExtensionsAotTests
         await Assert.That(driver.LastSavedState).IsSameReferenceAs(createdState);
     }
 
+    /// <summary>Verifies that two typed hosts set up with different drivers each load and save through their own driver.</summary>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task SetupDefaultSuspendResume_Typed_TwoHostsWithDifferentDrivers_EachHostUsesItsOwnDriver()
+    {
+        var firstPersist = new Signal<IDisposable>();
+        using var firstHost = new SuspensionHost<TestAppState>
+        {
+            IsLaunchingNew = Signal.Silent<RxVoid>(),
+            IsResuming = Signal.Silent<RxVoid>(),
+            ShouldInvalidateState = Signal.Silent<RxVoid>(),
+            ShouldPersistState = firstPersist.ObserveOn(Sequencer.Immediate),
+        };
+        var secondPersist = new Signal<IDisposable>();
+        using var secondHost = new SuspensionHost<TestAppState>
+        {
+            IsLaunchingNew = Signal.Silent<RxVoid>(),
+            IsResuming = Signal.Silent<RxVoid>(),
+            ShouldInvalidateState = Signal.Silent<RxVoid>(),
+            ShouldPersistState = secondPersist.ObserveOn(Sequencer.Immediate),
+        };
+
+        var firstDriver = new TestSuspensionDriver<TestAppState> { StateToLoad = new() { Value = SampleStateValue } };
+        var secondDriver = new TestSuspensionDriver<TestAppState> { StateToLoad = new() { Value = LoadedStateValue } };
+
+        using var firstSetup = firstHost.SetupDefaultSuspendResume(TestAppStateContext.Default.TestAppState, firstDriver);
+        using var secondSetup = secondHost.SetupDefaultSuspendResume(TestAppStateContext.Default.TestAppState, secondDriver);
+
+        var firstState = firstHost.GetAppState();
+        var secondState = secondHost.GetAppState();
+        firstPersist.OnNext(Scope.Empty);
+        secondPersist.OnNext(Scope.Empty);
+
+        await Assert.That(firstState).IsSameReferenceAs(firstDriver.StateToLoad);
+        await Assert.That(secondState).IsSameReferenceAs(secondDriver.StateToLoad);
+        await Assert.That(firstDriver.LoadStateCallCount).IsEqualTo(1);
+        await Assert.That(secondDriver.LoadStateCallCount).IsEqualTo(1);
+        await Assert.That(firstDriver.SaveStateCallCount).IsEqualTo(1);
+        await Assert.That(secondDriver.SaveStateCallCount).IsEqualTo(1);
+        await Assert.That(firstDriver.LastSavedState).IsSameReferenceAs(firstDriver.StateToLoad);
+        await Assert.That(secondDriver.LastSavedState).IsSameReferenceAs(secondDriver.StateToLoad);
+    }
+
     /// <summary>A simple application state used by the typed suspension host tests.</summary>
     private sealed class TestAppState
     {

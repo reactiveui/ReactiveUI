@@ -231,10 +231,10 @@ public partial class SuspensionHostExtensionsAotTests
         await Assert.That((object?)state).IsNull();
     }
 
-    /// <summary>Verifies the typed EnsureLoadAppState logs an error and leaves state null when the driver becomes null.</summary>
+    /// <summary>Verifies the typed EnsureLoadAppState still loads through the setup driver after the locator loses its drivers.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
-    public async Task EnsureLoadAppState_Typed_DriverBecomesNull_LogsErrorAndStateRemainsNull()
+    public async Task EnsureLoadAppState_Typed_LocatorDriversRemovedAfterSetup_LoadsThroughSetupDriver()
     {
         using var host = new SuspensionHost<TestAppState>
         {
@@ -253,11 +253,10 @@ public partial class SuspensionHostExtensionsAotTests
         Splat.Locator.CurrentMutable.UnregisterAll<ISuspensionDriver>();
         try
         {
-            SuspensionHostExtensions.SuspensionDriver = null;
-
             var state = host.GetAppState();
 
-            await Assert.That((object?)state).IsNull();
+            await Assert.That(state).IsSameReferenceAs(driver.StateToLoad);
+            await Assert.That(driver.LoadStateCallCount).IsEqualTo(1);
         }
         finally
         {
