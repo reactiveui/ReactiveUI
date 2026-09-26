@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- One row of the RecyclerView and pager tests. -->
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/ItemText"
+    android:layout_width="match_parent"
+    android:layout_height="48dp"
+    android:clickable="true"
+    android:longClickable="true" />
