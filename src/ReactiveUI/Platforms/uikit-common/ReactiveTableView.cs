@@ -126,6 +126,12 @@ public class ReactiveTableView : UITableView, IReactiveNotifyPropertyChanged<Rea
     /// <inheritdoc/>
     public override void WillMoveToSuperview(UIView? newsuper)
     {
+        // A UIKit callback that arrives after Dispose does nothing.
+        if (_activated.IsDisposed)
+        {
+            return;
+        }
+
         base.WillMoveToSuperview(newsuper);
         (newsuper is not null ? _activated : _deactivated).OnNext(RxVoid.Default);
     }

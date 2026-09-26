@@ -115,6 +115,12 @@ public class ReactiveCollectionView : UICollectionView, IReactiveNotifyPropertyC
     /// <inheritdoc/>
     public override void WillMoveToSuperview(UIView? newsuper)
     {
+        // A UIKit callback that arrives after Dispose does nothing.
+        if (_activated.IsDisposed)
+        {
+            return;
+        }
+
         base.WillMoveToSuperview(newsuper);
         _activated.OnNext(RxVoid.Default);
     }
@@ -123,7 +129,7 @@ public class ReactiveCollectionView : UICollectionView, IReactiveNotifyPropertyC
     public override void RemoveFromSuperview()
     {
         base.RemoveFromSuperview();
-        _deactivated.OnNext(RxVoid.Default);
+        ActivationSignals.Raise(_deactivated);
     }
 
     /// <inheritdoc/>

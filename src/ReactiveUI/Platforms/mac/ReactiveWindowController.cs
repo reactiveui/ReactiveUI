@@ -157,13 +157,20 @@ public class ReactiveWindowController : NSWindowController, IReactiveNotifyPrope
     /// <inheritdoc/>
     public override void WindowDidLoad()
     {
+        // An AppKit callback that arrives after Dispose does nothing.
+        if (_activated.IsDisposed)
+        {
+            return;
+        }
+
         base.WindowDidLoad();
 
         // subscribe to listen to window closing
-        // notification to support (de)activation
+        // notification to support (de)activation. The window can close after
+        // this controller is disposed, and Raise ignores a disposed signal.
         _ = NSNotificationCenter
             .DefaultCenter
-            .AddObserver(NSWindow.WillCloseNotification, _ => _deactivated.OnNext(RxVoid.Default), Window);
+            .AddObserver(NSWindow.WillCloseNotification, _ => ActivationSignals.Raise(_deactivated), Window);
 
         _activated.OnNext(RxVoid.Default);
     }

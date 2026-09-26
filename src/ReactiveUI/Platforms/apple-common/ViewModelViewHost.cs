@@ -305,10 +305,11 @@ public class ViewModelViewHost : ReactiveViewController
         view.ViewModel = viewModel;
         Adopt(this, viewController);
 
+        // The bag disposes in order: take the controller out of the hierarchy first, then dispose it.
         _currentView.Disposable =
             new DisposableBag(
-                viewController,
-                new ActionDisposable(() => Disown(viewController)));
+                new ActionDisposable(() => Disown(viewController)),
+                viewController);
     }
 
     /// <summary>Updates the <see cref="ViewContract"/> backing field and raises property changed notifications.</summary>

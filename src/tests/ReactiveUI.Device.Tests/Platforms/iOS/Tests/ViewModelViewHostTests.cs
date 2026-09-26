@@ -73,6 +73,77 @@ public class ViewModelViewHostTests
         }
     }
 
+    /// <summary>Replacing the view model takes the old controller out of the hierarchy before the host disposes it.</summary>
+    /// <returns>A task representing the test.</returns>
+    [Test]
+    public async Task ReplacingViewModel_DisownsTheOldControllerBeforeDisposingIt()
+    {
+        List<TestViewController> created = [];
+        var host = await CreateHostAsync(new((_, _) =>
+        {
+            var view = new TestViewController();
+            created.Add(view);
+            return view;
+        }));
+        try
+        {
+            await MainThread.RunAsync(() => host.ViewModel = new TestViewModel("first"));
+            await UIKitHarness.UntilAsync(() => created is [{ ParentViewController: not null }], "the first child");
+
+            await MainThread.RunAsync(() => host.ViewModel = new TestViewModel("second"));
+            await UIKitHarness.UntilAsync(() => created is [_, { ParentViewController: not null }], "the second child");
+
+            using (Assert.Multiple())
+            {
+                await Assert.That(created[0].IsDisposed).IsTrue();
+                await Assert.That(created[0].HadParentWhenDisposed).IsFalse();
+            }
+        }
+        finally
+        {
+            await UIKitHarness.ResetAsync();
+        }
+    }
+
+    /// <summary>
+    /// Swapping the child controllers of an on-screen host survives the appearance callbacks UIKit sends the disposed
+    /// controllers later, after a Core Animation commit.
+    /// </summary>
+    /// <returns>A task representing the test.</returns>
+    /// <remarks>A callback that threw would terminate the app rather than fail this test.</remarks>
+    [Test]
+    public async Task ReplacingViewModelRepeatedly_SurvivesLateCallbacksToDisposedControllers()
+    {
+        const int swaps = 5;
+        List<TestViewController> created = [];
+        var host = await CreateHostAsync(new((_, _) =>
+        {
+            var view = new TestViewController();
+            created.Add(view);
+            return view;
+        }));
+        try
+        {
+            for (var i = 0; i < swaps; i++)
+            {
+                var viewModel = new TestViewModel($"swap {i}");
+                var expected = i + 1;
+                await MainThread.RunAsync(() => host.ViewModel = viewModel);
+                await UIKitHarness.UntilAsync(() => created.Count == expected && created[^1].ParentViewController is not null, "the new child");
+            }
+
+            await UIKitHarness.SettleAsync();
+
+            await Assert.That(created.Count(static view => view.IsDisposed)).IsEqualTo(swaps - 1);
+        }
+        finally
+        {
+            await UIKitHarness.ResetAsync();
+        }
+
+        await UIKitHarness.SettleAsync();
+    }
+
     /// <summary>With no view model, the host shows its default content.</summary>
     /// <returns>A task representing the test.</returns>
     [Test]

@@ -35,6 +35,21 @@ internal static class UIKitHarness
     internal static Task ResetAsync() =>
         MainThread.RunAsync(static () => IosTestHost.Window.RootViewController = new());
 
+    /// <summary>
+    /// Lets the main run loop turn a few times, so UIKit runs the appearance callbacks it defers until after a
+    /// Core Animation commit, and any work queued on the main thread scheduler runs.
+    /// </summary>
+    /// <returns>A task that completes after the run loop has turned.</returns>
+    internal static async Task SettleAsync()
+    {
+        const int turns = 4;
+        for (var i = 0; i < turns; i++)
+        {
+            await Task.Delay(PollInterval).ConfigureAwait(false);
+            await MainThread.RunAsync(static () => { }).ConfigureAwait(false);
+        }
+    }
+
     /// <summary>Polls <paramref name="condition"/> on the main thread until it holds or the device test timeout passes.</summary>
     /// <param name="condition">The condition, which reads UIKit state.</param>
     /// <param name="what">What the test waits for, used in the failure message.</param>

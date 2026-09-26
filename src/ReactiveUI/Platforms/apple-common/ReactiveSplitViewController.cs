@@ -135,6 +135,12 @@ public class ReactiveSplitViewController : NSSplitViewController, IReactiveNotif
     /// <inheritdoc/>
     public override void ViewWillAppear(bool animated)
     {
+        // A UIKit callback that arrives after Dispose does nothing.
+        if (_activated.IsDisposed)
+        {
+            return;
+        }
+
         base.ViewWillAppear(animated);
         this.RaiseActivation(_activated, _deactivated, true);
     }
@@ -142,6 +148,12 @@ public class ReactiveSplitViewController : NSSplitViewController, IReactiveNotif
     /// <inheritdoc/>
     public override void ViewDidDisappear(bool animated)
     {
+        // A UIKit callback that arrives after Dispose does nothing.
+        if (_activated.IsDisposed)
+        {
+            return;
+        }
+
         base.ViewDidDisappear(animated);
         this.RaiseActivation(_activated, _deactivated, false);
     }
@@ -150,6 +162,12 @@ public class ReactiveSplitViewController : NSSplitViewController, IReactiveNotif
     /// <inheritdoc/>
     public override void ViewWillAppear()
     {
+        // An AppKit callback that arrives after Dispose does nothing.
+        if (_activated.IsDisposed)
+        {
+            return;
+        }
+
         base.ViewWillAppear();
         this.RaiseActivation(_activated, _deactivated, true);
     }
@@ -157,6 +175,12 @@ public class ReactiveSplitViewController : NSSplitViewController, IReactiveNotif
     /// <inheritdoc/>
     public override void ViewDidDisappear()
     {
+        // An AppKit callback that arrives after Dispose does nothing.
+        if (_activated.IsDisposed)
+        {
+            return;
+        }
+
         base.ViewDidDisappear();
         this.RaiseActivation(_activated, _deactivated, false);
     }
