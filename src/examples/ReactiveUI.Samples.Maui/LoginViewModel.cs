@@ -4,12 +4,13 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Diagnostics;
+using ReactiveUI.SourceGenerators;
 
 namespace ReactiveUI.Samples.Maui;
 
 /// <summary>A view model that handles user login with reactive validation and async execution.</summary>
 [DebuggerDisplay("LoginViewModel UserName={UserName}")]
-public class LoginViewModel : ReactiveObject, IDisposable
+public partial class LoginViewModel : ReactiveObject, IDisposable
 {
     /// <summary>Cancellation source for the in-flight login operation, signalled by the <see cref="Cancel"/> command.</summary>
     private CancellationTokenSource? _loginCancellation;
@@ -52,18 +53,12 @@ public class LoginViewModel : ReactiveObject, IDisposable
     }
 
     /// <summary>Gets or sets the user name.</summary>
-    public string? UserName
-    {
-        get;
-        set => this.RaiseAndSetIfChanged(ref field, value);
-    }
+    [Reactive]
+    public partial string? UserName { get; set; }
 
     /// <summary>Gets or sets the password.</summary>
-    public string? Password
-    {
-        get;
-        set => this.RaiseAndSetIfChanged(ref field, value);
-    }
+    [Reactive]
+    public partial string? Password { get; set; }
 
     /// <summary>Gets the login command. Returns true on success, false on failure.</summary>
     public ReactiveCommand<RxVoid, bool> Login { get; }
