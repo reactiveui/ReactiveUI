@@ -53,7 +53,8 @@ public class ViewModelViewHost : ContentView, IViewFor
         nameof(ViewContractObservable),
         typeof(IObservable<string>),
         typeof(ViewModelViewHost),
-        Signal.Silent<string>());
+        Signal.Silent<string>(),
+        propertyChanged: OnViewContractObservablePropertyChanged);
 
     /// <summary>The ContractFallbackByPass dependency property.</summary>
     public static readonly BindableProperty ContractFallbackByPassProperty = BindableProperty.Create(
@@ -62,8 +63,8 @@ public class ViewModelViewHost : ContentView, IViewFor
         typeof(ViewModelViewHost),
         false);
 
-    /// <summary>The disposables for the view resolution subscriptions.</summary>
-    private readonly MultipleDisposable _subscriptions = [];
+    /// <summary>The subscription to the current <see cref="ViewContractObservable"/>, replaced when the property changes.</summary>
+    private IDisposable? _viewContractSubscription;
 
     /// <summary>The most recently observed view contract.</summary>
     private string? _viewContract;
@@ -78,16 +79,9 @@ public class ViewModelViewHost : ContentView, IViewFor
             return;
         }
 
+        // Assigning the property subscribes through OnViewContractObservablePropertyChanged, which re-resolves on
+        // every contract; ViewModel changes are handled by OnViewModelPropertyChanged.
         ViewContractObservable = Signal.Emit<string?>(null);
-
-        // Re-resolve when the contract changes; ViewModel changes are handled by OnViewModelPropertyChanged.
-        _ = ViewContractObservable
-            .Subscribe(new DelegateObserver<string?>(contract =>
-            {
-                _viewContract = contract;
-                ResolveViewForViewModel(ViewModel, contract);
-            }))
-            .DisposeWith(_subscriptions);
     }
 
     /// <summary>Gets or sets the view model whose associated view is to be displayed.</summary>
@@ -186,5 +180,26 @@ public class ViewModelViewHost : ContentView, IViewFor
         }
 
         host.ResolveViewForViewModel(newValue, host._viewContract);
+    }
+
+    /// <summary>Handles changes to the <see cref="ViewContractObservable"/> property by switching the contract subscription to the new observable.</summary>
+    /// <param name="bindable">The object whose property changed.</param>
+    /// <param name="_">The previous value.</param>
+    /// <param name="newValue">The new value.</param>
+    private static void OnViewContractObservablePropertyChanged(BindableObject bindable, object? _, object? newValue)
+    {
+        if (bindable is not ViewModelViewHost host || ModeDetector.InUnitTestRunner())
+        {
+            return;
+        }
+
+        // Drop the previous subscription so only the latest observable drives the view.
+        host._viewContractSubscription?.Dispose();
+        host._viewContractSubscription = (newValue as IObservable<string?>)?
+            .Subscribe(new DelegateObserver<string?>(contract =>
+            {
+                host._viewContract = contract;
+                host.ResolveViewForViewModel(host.ViewModel, contract);
+            }));
     }
 }
