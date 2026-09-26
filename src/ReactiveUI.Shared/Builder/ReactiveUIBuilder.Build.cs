@@ -19,11 +19,22 @@ public sealed partial class ReactiveUIBuilder
     /// <summary>Builds the application and returns the ReactiveUI instance wrapper.</summary>
     /// <returns>IReactiveUIInstance instance for chaining.</returns>
     /// <exception cref="InvalidOperationException">Thrown if building the app instance fails.</exception>
+    /// <remarks>
+    /// Only the first build in a process applies. The Splat builder skips the registrations of every later build,
+    /// so a later build also leaves the global converter service, message bus and other static state unchanged.
+    /// </remarks>
     public new IReactiveUIInstance Build()
     {
+        var alreadyBuilt = HasBeenBuilt;
+
         if (base.Build() is not IReactiveUIInstance appInstance || appInstance.Current is null)
         {
             throw new InvalidOperationException("Failed to create ReactiveUIInstance instance");
+        }
+
+        if (alreadyBuilt)
+        {
+            return appInstance;
         }
 
         InitializeStaticState();
