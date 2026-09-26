@@ -29,9 +29,9 @@ public class WpfTestExecutor : DispatcherThreadExecutor
     private readonly AppBuilderTestHelper _helper = new();
 
     /// <inheritdoc/>
-    protected override void Initialize()
+    protected override void SetUp()
     {
-        base.Initialize();
+        base.SetUp();
 
         _helper.Initialize(static builder =>
         {
@@ -45,16 +45,16 @@ public class WpfTestExecutor : DispatcherThreadExecutor
         // applies it to RxSchedulers.MainThreadScheduler, so setting it inside the builder callback would be
         // overwritten. Main is process-wide and binds to the application's dispatcher once any test creates an
         // Application, which DispatcherUtilities.DoEvents on this thread never pumps. Binding this executor's
-        // dedicated STA dispatcher keeps marshalled work on the dispatcher the test pumps. Initialize and the test
-        // body run on the same dedicated thread (see DedicatedThreadExecutor).
+        // dedicated STA dispatcher keeps marshalled work on the dispatcher the test pumps. SetUp and the test body
+        // run on the same dedicated thread (see DispatcherThreadExecutor).
         RxSchedulers.MainThreadScheduler = DispatcherSequencer.Current;
         RxSchedulers.TaskpoolScheduler = TaskPoolSequencer.Default;
     }
 
     /// <inheritdoc/>
-    protected override void CleanUp()
+    protected override void TearDown()
     {
         _helper.CleanUp();
-        base.CleanUp();
+        base.TearDown();
     }
 }

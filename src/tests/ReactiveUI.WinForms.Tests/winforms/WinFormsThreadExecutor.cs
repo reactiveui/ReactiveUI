@@ -4,28 +4,20 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Runtime.Versioning;
-using System.Windows.Threading;
 using TUnit.Core.Interfaces;
 
-namespace ReactiveUI.Tests.Wpf;
+namespace ReactiveUI.WinForms.Tests.Winforms;
 
-/// <summary>Runs a test on an STA thread that owns a WPF dispatcher, as a WPF UI thread does.</summary>
+/// <summary>Runs a test on an STA thread, as a WinForms UI thread does, between a setup and a teardown.</summary>
 /// <remarks>
-/// <para>
-/// <see cref="DispatcherSequencer.Main"/> never creates a dispatcher, so <c>WithWpf()</c> throws on a thread that has
-/// none. A real application configures ReactiveUI once its <see cref="System.Windows.Application"/> exists; tests
-/// have no application, so this executor gives the test thread its dispatcher before the test configures anything.
-/// </para>
-/// <para>
 /// Derived executors configure global state in <see cref="SetUp"/> and restore it in <see cref="TearDown"/>, not in
 /// <c>Initialize</c> and <c>CleanUp</c>. <see cref="DedicatedThreadExecutor"/> reports the test finished before it
 /// calls <c>CleanUp</c>, so the next test would start while that cleanup still resets the app builder, the service
 /// locator and the schedulers underneath it. <see cref="SetUp"/> and <see cref="TearDown"/> run inside the test's own
 /// task, so the test only finishes once its teardown has.
-/// </para>
 /// </remarks>
 [SupportedOSPlatform("windows")]
-public class DispatcherThreadExecutor : STAThreadExecutor, ITestExecutor
+public class WinFormsThreadExecutor : STAThreadExecutor, ITestExecutor
 {
     /// <inheritdoc/>
     ValueTask ITestExecutor.ExecuteTest(TestContext context, Func<ValueTask> action)
@@ -35,8 +27,9 @@ public class DispatcherThreadExecutor : STAThreadExecutor, ITestExecutor
     }
 
     /// <summary>Prepares the test on its dedicated thread, before the test body runs.</summary>
-    /// <remarks>The base implementation gives the thread its dispatcher. Call it before configuring anything.</remarks>
-    protected virtual void SetUp() => _ = Dispatcher.CurrentDispatcher;
+    protected virtual void SetUp()
+    {
+    }
 
     /// <summary>Restores what <see cref="SetUp"/> changed, on the dedicated thread, before the test reports finished.</summary>
     protected virtual void TearDown()

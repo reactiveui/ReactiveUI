@@ -11,6 +11,11 @@ using Splat.Builder;
 namespace ReactiveUI.WinForms.Tests.Winforms;
 
 /// <summary>Tests for resolving WinForms views registered for view models.</summary>
+/// <remarks>
+/// Each test resets the app builder and the shared view instance counters in its constructor, and swaps the global
+/// locator, so the tests must not run alongside each other.
+/// </remarks>
+[NotInParallel]
 public sealed class WinFormsViewDependencyResolverTests : IDisposable
 {
     /// <summary>The contract name used by contract-based view registrations.</summary>
