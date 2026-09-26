@@ -17,45 +17,12 @@ namespace ReactiveUI.Builder.Tests.Mixins;
 [TestExecutor<ResetOnlyExecutor>]
 public class BuilderMixinsTests
 {
-    /// <summary>The set of mixin invocations that should each throw when given a null builder.</summary>
-    private static readonly Action[] NullBuilderCases;
-
-    /// <summary>Initializes static members of the <see cref="BuilderMixinsTests"/> class.</summary>
-    static BuilderMixinsTests()
-    {
-        var scheduler = Sequencer.Immediate;
-        NullBuilderCases =
-        [
-            () => BuilderMixins.WithTaskPoolScheduler(null!, scheduler),
-            () => BuilderMixins.WithMainThreadScheduler(null!, scheduler),
-            static () => BuilderMixins.WithRegistrationOnBuild(null!, static _ => { }),
-            static () => BuilderMixins.WithRegistration(null!, static _ => { }),
-            static () => BuilderMixins.WithViewsFromAssembly(null!, typeof(BuilderMixinsTests).Assembly),
-            static () => BuilderMixins.WithPlatformModule<TestRegistrationModule>(null!),
-            static () => BuilderMixins.UsingSplatModule(null!, new TestSplatModule()),
-            static () => BuilderMixins.UsingSplatBuilder(null!, static _ => { }),
-            () => BuilderMixins.ForCustomPlatform(null!, scheduler, static _ => { }),
-            static () => BuilderMixins.ForPlatforms(null!, static _ => { }),
-            static () => BuilderMixins.WithMessageBus(null!, static _ => { }),
-            static () => BuilderMixins.ConfigureViewLocator(null!, static _ => { }),
-            static () => BuilderMixins.ConfigureSuspensionDriver(null!, static _ => { }),
-            static () => BuilderMixins.RegisterViewModel<BuilderMixinsTestViewModel>(null!),
-            static () => BuilderMixins.RegisterSingletonViewModel<BuilderMixinsTestViewModel>(null!),
-            static () => BuilderMixins.RegisterView<BuilderMixinsTestView, BuilderMixinsTestViewModel>(null!),
-            static () => BuilderMixins.RegisterSingletonView<BuilderMixinsTestView, BuilderMixinsTestViewModel>(null!)
-        ];
-    }
-
-    /// <summary>Verifies that every builder extension method throws <see cref="ArgumentNullException"/> when given a null builder.</summary>
+    /// <summary>Verifies that UsingSplatBuilder throws <see cref="ArgumentNullException"/> when given a null builder.</summary>
+    /// <returns>A task representing the asynchronous test.</returns>
     [Test]
-    public void Builder_extension_methods_throw_when_builder_null()
-    {
-        foreach (var action in NullBuilderCases)
-        {
-            ArgumentNullException.ThrowIfNull(action);
-            _ = Assert.Throws<ArgumentNullException>(action);
-        }
-    }
+    public async Task UsingSplatBuilder_throws_when_builder_null() =>
+        await Assert.That(static () => BuilderMixins.UsingSplatBuilder(null!, static _ => { }))
+            .Throws<ArgumentNullException>();
 
     /// <summary>Verifies that setting the task pool scheduler updates both the builder and <see cref="RxSchedulers"/>.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
@@ -116,7 +83,7 @@ public class BuilderMixinsTests
     {
         var builder = RxAppBuilder.CreateReactiveUIBuilder();
 
-        _ = BuilderMixins.WithRegistrationOnBuild(builder, static r => r.RegisterConstant("mixins", typeof(string)));
+        _ = builder.WithRegistrationOnBuild(static r => r.RegisterConstant("mixins", typeof(string)));
         _ = builder.WithCoreServices().Build();
 
         await Assert.That(Locator.Current.GetService<string>()).IsEqualTo("mixins");
@@ -130,7 +97,7 @@ public class BuilderMixinsTests
         const int ExpectedRegisteredValue = 42;
         var builder = RxAppBuilder.CreateReactiveUIBuilder();
 
-        _ = BuilderMixins.WithRegistration(builder, static r => r.RegisterConstant(ExpectedRegisteredValue, typeof(int)));
+        _ = builder.WithRegistration(static r => r.RegisterConstant(ExpectedRegisteredValue, typeof(int)));
 
         await Assert.That(Locator.Current.GetService<int>()).IsEqualTo(ExpectedRegisteredValue);
     }
@@ -142,7 +109,7 @@ public class BuilderMixinsTests
     {
         var builder = RxAppBuilder.CreateReactiveUIBuilder();
 
-        _ = BuilderMixins.WithViewsFromAssembly(builder, typeof(BuilderMixinsTestView).Assembly);
+        _ = builder.WithViewsFromAssembly(typeof(BuilderMixinsTestView).Assembly);
         _ = builder.WithCoreServices().Build();
 
         var view = Locator.Current.GetService<IViewFor<BuilderMixinsTestViewModel>>();
@@ -156,7 +123,7 @@ public class BuilderMixinsTests
     {
         var builder = RxAppBuilder.CreateReactiveUIBuilder();
 
-        _ = BuilderMixins.WithPlatformModule<TestRegistrationModule>(builder);
+        _ = builder.WithPlatformModule<TestRegistrationModule>();
         _ = builder.WithCoreServices().Build();
 
         await Assert.That(Locator.Current.GetService<PlatformRegistrationMarker>()).IsNotNull();
@@ -170,7 +137,7 @@ public class BuilderMixinsTests
         var builder = RxAppBuilder.CreateReactiveUIBuilder();
         var module = new TestSplatModule();
 
-        _ = BuilderMixins.UsingSplatModule(builder, module);
+        _ = builder.UsingSplatModule(module);
         _ = builder.WithCoreServices().Build();
 
         using (Assert.Multiple())
@@ -205,23 +172,27 @@ public class BuilderMixinsTests
         await Assert.That(result).IsSameReferenceAs(builder);
     }
 
-    /// <summary>Verifies that configuring a custom platform sets the scheduler and applies platform registrations.</summary>
+    /// <summary>
+    /// Verifies that configuring a custom platform sets the scheduler and applies the platform registrations when the
+    /// builder is built, not before.
+    /// </summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
-    public async Task ForCustomPlatform_sets_scheduler_and_platform_registrations()
+    public async Task ForCustomPlatform_sets_scheduler_and_platform_registrations_on_build()
     {
         var builder = RxAppBuilder.CreateReactiveUIBuilder();
         var scheduler = Sequencer.Immediate;
 
-        _ = BuilderMixins.ForCustomPlatform(
-            builder,
+        _ = builder.ForCustomPlatform(
             scheduler,
             static r => r.RegisterConstant(new PlatformRegistrationMarker(), typeof(PlatformRegistrationMarker)));
+        var registeredBeforeBuild = Locator.Current.GetService<PlatformRegistrationMarker>();
         _ = builder.WithCoreServices().Build();
 
         using (Assert.Multiple())
         {
             await Assert.That(builder.MainThreadScheduler).IsSameReferenceAs(scheduler);
+            await Assert.That(registeredBeforeBuild).IsNull();
             await Assert.That(Locator.Current.GetService<PlatformRegistrationMarker>()).IsNotNull();
         }
     }
@@ -234,8 +205,7 @@ public class BuilderMixinsTests
         var builder = RxAppBuilder.CreateReactiveUIBuilder();
         var executed = new List<string>();
 
-        _ = BuilderMixins.ForPlatforms(
-            builder,
+        _ = builder.ForPlatforms(
             b =>
             {
                 _ = b;
@@ -258,7 +228,7 @@ public class BuilderMixinsTests
         var builder = RxAppBuilder.CreateReactiveUIBuilder();
         var configured = false;
 
-        _ = BuilderMixins.WithMessageBus(builder, _ => configured = true);
+        _ = builder.WithMessageBus(_ => configured = true);
         _ = builder.WithCoreServices().Build();
 
         using (Assert.Multiple())
@@ -276,7 +246,7 @@ public class BuilderMixinsTests
         var builder = RxAppBuilder.CreateReactiveUIBuilder();
         var configured = false;
 
-        _ = BuilderMixins.ConfigureViewLocator(builder, _ => configured = true);
+        _ = builder.ConfigureViewLocator(_ => configured = true);
         _ = builder.WithCoreServices().Build();
 
         using (Assert.Multiple())
@@ -296,7 +266,7 @@ public class BuilderMixinsTests
         Locator.CurrentMutable.RegisterConstant(driver, typeof(ISuspensionDriver));
         ISuspensionDriver? observed = null;
 
-        _ = BuilderMixins.ConfigureSuspensionDriver(builder, d => observed = d);
+        _ = builder.ConfigureSuspensionDriver(d => observed = d);
         _ = builder.WithCoreServices().Build();
 
         await Assert.That(observed).IsSameReferenceAs(driver);
@@ -309,7 +279,7 @@ public class BuilderMixinsTests
     {
         var builder = RxAppBuilder.CreateReactiveUIBuilder();
 
-        _ = BuilderMixins.RegisterViewModel<BuilderMixinsTestViewModel>(builder);
+        _ = builder.RegisterViewModel<BuilderMixinsTestViewModel>();
 
         var first = Locator.Current.GetService<BuilderMixinsTestViewModel>();
         var second = Locator.Current.GetService<BuilderMixinsTestViewModel>();
@@ -329,7 +299,7 @@ public class BuilderMixinsTests
     {
         var builder = RxAppBuilder.CreateReactiveUIBuilder();
 
-        _ = BuilderMixins.RegisterSingletonViewModel<BuilderMixinsTestViewModel>(builder);
+        _ = builder.RegisterSingletonViewModel<BuilderMixinsTestViewModel>();
 
         var first = Locator.Current.GetService<BuilderMixinsTestViewModel>();
         var second = Locator.Current.GetService<BuilderMixinsTestViewModel>();
@@ -348,7 +318,7 @@ public class BuilderMixinsTests
     {
         var builder = RxAppBuilder.CreateReactiveUIBuilder();
 
-        _ = BuilderMixins.RegisterView<BuilderMixinsTestView, BuilderMixinsTestViewModel>(builder);
+        _ = builder.RegisterView<BuilderMixinsTestView, BuilderMixinsTestViewModel>();
 
         var first = Locator.Current.GetService<IViewFor<BuilderMixinsTestViewModel>>();
         var second = Locator.Current.GetService<IViewFor<BuilderMixinsTestViewModel>>();
@@ -368,7 +338,7 @@ public class BuilderMixinsTests
     {
         var builder = RxAppBuilder.CreateReactiveUIBuilder();
 
-        _ = BuilderMixins.RegisterSingletonView<BuilderMixinsTestView, BuilderMixinsTestViewModel>(builder);
+        _ = builder.RegisterSingletonView<BuilderMixinsTestView, BuilderMixinsTestViewModel>();
 
         var first = Locator.Current.GetService<IViewFor<BuilderMixinsTestViewModel>>();
         var second = Locator.Current.GetService<IViewFor<BuilderMixinsTestViewModel>>();
@@ -518,17 +488,6 @@ public class BuilderMixinsTests
         await Assert.That(result).IsSameReferenceAs(builder);
     }
 
-    /// <summary>Verifies that WithMessageBus throws <see cref="ArgumentNullException"/> when the builder is null.</summary>
-    /// <returns>A task representing the asynchronous test.</returns>
-    [Test]
-    public async Task WithMessageBus_WithNullBuilder_ThrowsArgumentNullException()
-    {
-        var messageBus = new MessageBus();
-
-        await Assert.That(() => BuilderMixins.WithMessageBus(null!, messageBus))
-            .Throws<ArgumentNullException>();
-    }
-
     /// <summary>Verifies that WithMessageBus registers the supplied custom message bus.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
@@ -537,7 +496,7 @@ public class BuilderMixinsTests
         var builder = RxAppBuilder.CreateReactiveUIBuilder();
         var customMessageBus = new MessageBus();
 
-        _ = BuilderMixins.WithMessageBus(builder, customMessageBus);
+        _ = builder.WithMessageBus(customMessageBus);
         _ = builder.WithCoreServices().Build();
 
         var registered = Locator.Current.GetService<IMessageBus>();
