@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Collections.Concurrent;
 using System.Collections.ObjectModel;
 
 namespace ReactiveUI.Documentation.DataPersistence;
@@ -48,11 +49,13 @@ public static class CollectionPersistExamples
         ObservableCollection<Note> notes = new();
         AutoPersistHelperMixins.AutoPersistMetadata metadata = AutoPersistHelperMixins.CreateMetadata<Note>();
 
-        List<string> saved = [];
+        // Each note saves on a background thread, so two notes can save at the same moment.
+        // A ConcurrentQueue keeps both titles where a List<T> could lose one.
+        ConcurrentQueue<string> saved = new();
         using IDisposable subscription = notes.AutoPersistCollection(
             note =>
             {
-                saved.Add(note.Title);
+                saved.Enqueue(note.Title);
                 return Signal.Emit(RxVoid.Default);
             },
             metadata,
@@ -68,9 +71,8 @@ public static class CollectionPersistExamples
         chores.Title = "Chores";
         await Task.Delay(TimeSpan.FromMilliseconds(100));
 
-        saved.Sort(StringComparer.Ordinal);
         Console.WriteLine(saved.Count);
-        Console.WriteLine(string.Join(", ", saved));
+        Console.WriteLine(string.Join(", ", saved.Order(StringComparer.Ordinal)));
 
         // Output:
         // 2

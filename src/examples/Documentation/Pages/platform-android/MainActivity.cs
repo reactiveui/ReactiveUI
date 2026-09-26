@@ -52,8 +52,7 @@ public sealed class MainActivity : AndroidX.ReactiveAppCompatActivity<TimetableV
 
         ViewModel = new TimetableViewModel();
 
-        // GetOrientation() reports an empty value here; see the report for why (a binding-layer defect, not an
-        // emulator artifact).
+        // GetOrientation() returns the display's current rotation by name, such as "Rotation0" for the natural orientation.
         PlatformOperations platformOperations = new();
         string? orientation = platformOperations.GetOrientation();
         TimetableLog.Info($"Device orientation: {orientation}.");

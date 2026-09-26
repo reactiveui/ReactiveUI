@@ -51,13 +51,8 @@ public static class ViewModelViewHostExamples
         // DefaultContent
     }
 
-    /// <summary>
-    /// <c>ViewContract</c> and <c>ViewContractObservable</c> read back exactly what was assigned to them, but assigning
-    /// either one after construction does not re-resolve <c>Content</c>: the host only reacts to the single
-    /// <c>ViewContractObservable</c> it captures in its constructor. See the library findings in this page's report
-    /// for a minimal repro.
-    /// </summary>
-    public static void ContractPropertiesDoNotReResolveAfterConstruction()
+    /// <summary>Setting <c>ViewContract</c> resolves the view registered under that contract and shows it.</summary>
+    public static void ViewContractPicksTheViewForTheContract()
     {
         AppLocator.CurrentMutable.Register<IViewFor<RecipeListViewModel>>(static () => new RecipeListContentView());
         AppLocator.CurrentMutable.Register<IViewFor<RecipeListViewModel>>(static () => new RecipeListWideContentView(), "Wide");
@@ -66,33 +61,73 @@ public static class ViewModelViewHostExamples
         Console.WriteLine(host.Content?.GetType().Name);
 
         host.ViewContract = "Wide";
-        Console.WriteLine(host.ViewContract ?? "(null)");
+        Console.WriteLine(host.ViewContract);
+        Console.WriteLine(host.Content?.GetType().Name);
+
+        // Output:
+        // RecipeListContentView
+        // Wide
+        // RecipeListWideContentView
+    }
+
+    /// <summary>Each contract <c>ViewContractObservable</c> emits resolves the view again, so a layout stream can switch views as it changes.</summary>
+    public static void ViewContractObservableSwitchesTheView()
+    {
+        AppLocator.CurrentMutable.Register<IViewFor<RecipeListViewModel>>(static () => new RecipeListContentView());
+        AppLocator.CurrentMutable.Register<IViewFor<RecipeListViewModel>>(static () => new RecipeListWideContentView(), "Wide");
+
+        using Signal<string?> layout = new();
+        ViewModelViewHost host = new()
+        {
+            ViewModel = new RecipeListViewModel(new RecipeBookScreen()),
+            ViewContractObservable = layout,
+        };
+
+        layout.OnNext("Wide");
+        Console.WriteLine(host.Content?.GetType().Name);
+
+        layout.OnNext(null);
         Console.WriteLine(host.Content?.GetType().Name);
         Console.WriteLine(ViewModelViewHost.ViewContractObservableProperty.PropertyName);
 
         // Output:
-        // RecipeListContentView
-        // (null)
+        // RecipeListWideContentView
         // RecipeListContentView
         // ViewContractObservable
     }
 
     /// <summary>
-    /// <c>ContractFallbackByPass</c> is a plain bindable property: reading it back gives whatever was last assigned.
-    /// It stops <c>ResolveViewForViewModel</c> falling back to the default view when the requested contract has no
-    /// registered view, but every resolution after construction runs with a null contract (see
-    /// <see cref="ContractPropertiesDoNotReResolveAfterConstruction"/>), so a null contract always finds the default
-    /// view and this branch never runs from application code.
+    /// A contract with no registered view falls back to the default view. With <c>ContractFallbackByPass</c> set,
+    /// the host throws instead.
     /// </summary>
-    public static void ContractFallbackByPassIsABindableProperty()
+    public static void ContractFallbackByPassStopsTheFallbackToTheDefaultView()
     {
-        ViewModelViewHost host = new() { ContractFallbackByPass = true };
+        AppLocator.CurrentMutable.Register<IViewFor<RecipeListViewModel>>(static () => new RecipeListContentView());
 
-        Console.WriteLine(host.ContractFallbackByPass);
+        ViewModelViewHost fallingBack = new() { ViewModel = new RecipeListViewModel(new RecipeBookScreen()) };
+        fallingBack.ViewContract = "Print";
+        Console.WriteLine(fallingBack.Content?.GetType().Name);
+
+        ViewModelViewHost strict = new()
+        {
+            ContractFallbackByPass = true,
+            ViewModel = new RecipeListViewModel(new RecipeBookScreen()),
+        };
+
+        try
+        {
+            strict.ViewContract = "Print";
+        }
+        catch (InvalidOperationException exception)
+        {
+            Console.WriteLine(exception.GetType().Name);
+        }
+
         Console.WriteLine(ViewModelViewHost.ContractFallbackByPassProperty.PropertyName);
 
         // Output:
-        // True
+        // RecipeListContentView
+        // InvalidOperationException
         // ContractFallbackByPass
     }
 

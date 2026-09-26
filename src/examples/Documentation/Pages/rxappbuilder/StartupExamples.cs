@@ -11,9 +11,8 @@ namespace ReactiveUI.Documentation.Rxappbuilder;
 /// <summary>
 /// Shows the whole life cycle of starting ReactiveUI with the builder: a guard that fires before the app is built,
 /// building the recipe book app end to end, then resolving what it registered. <see cref="BuildTheRecipeBookApp"/>
-/// is the only method on this page that calls <c>BuildApp</c>: a second call in the same process would not build a
-/// second, independent app (see this page's report for what happens instead), so every other example configures a
-/// builder of its own and stops short of building it.
+/// is the only method on this page that calls <c>BuildApp</c>, as an app does once at start-up. Only the first build
+/// in a process applies, so every other example configures a builder of its own and stops short of building it.
 /// </summary>
 public static class StartupExamples
 {
@@ -35,7 +34,7 @@ public static class StartupExamples
 
     /// <summary>
     /// Builds the recipe book app: its platform services, its schedulers, its exception handler, its message bus,
-    /// its lifecycle settings, two plain Splat modules and its views and view models.
+    /// its lifecycle settings, two plain Splat modules, its views and view models, and a print layout on its view locator.
     /// </summary>
     /// <returns>The built app, so later examples on this page can resolve what it registered.</returns>
     public static ReactiveUIBuilder BuildTheRecipeBookApp()
@@ -62,6 +61,7 @@ public static class StartupExamples
             .RegisterViewModel<IngredientListViewModel>()
             .RegisterConstantViewModel<AppSettingsViewModel>()
             .RegisterSingletonViewModel<PantryViewModel>()
+            .ConfigureViewLocator(static locator => locator.Map<RecipeBookViewModel, PrintableRecipeBookView>("Print"))
             .ConfigureSuspensionDriver(static driver =>
             {
                 using IDisposable invalidated = driver.InvalidateState().Subscribe();
@@ -132,12 +132,16 @@ public static class StartupExamples
         // 12
     }
 
-    /// <summary>Resolves the views <c>RegisterViews</c> and <c>WithViewModule</c> mapped, and the services the two plain Splat modules registered.</summary>
+    /// <summary>
+    /// Resolves the views <c>ConfigureViewLocator</c>, <c>RegisterViews</c> and <c>WithViewModule</c> mapped, and the
+    /// services the two plain Splat modules registered.
+    /// </summary>
     /// <param name="builder">The app <see cref="BuildTheRecipeBookApp"/> built.</param>
     public static void ResolveRecipeBookModulesAndViews(ReactiveUIBuilder builder)
     {
         IViewLocator? locator = null;
         _ = builder.WithInstance<IViewLocator>(resolved => locator = resolved);
+        Console.WriteLine(locator?.ResolveView(new RecipeBookViewModel(), "Print")?.GetType().Name);
         Console.WriteLine(locator?.ResolveView(new MealPlanViewModel(), null)?.GetType().Name);
         Console.WriteLine(locator?.ResolveView(new PantryViewModel(), null)?.GetType().Name);
 
@@ -150,6 +154,7 @@ public static class StartupExamples
             });
 
         // Output:
+        // PrintableRecipeBookView
         // MealPlanView
         // PantryView
         // 3

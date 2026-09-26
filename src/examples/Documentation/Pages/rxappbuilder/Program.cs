@@ -7,9 +7,9 @@ using ReactiveUI.Builder;
 using ReactiveUI.Documentation.Rxappbuilder;
 
 // This page is about starting ReactiveUI itself, so it never calls ExampleApp.Start(). Each example below builds
-// its own app on its own Splat resolver instead, so the examples stay independent of one another. RxAppBuilder can
-// only ever finish building an app once per process (see BuildTheRecipeBookApp's report), so that example runs
-// first and is the only one that calls BuildApp().
+// its own app on its own Splat resolver instead, so the examples stay independent of one another. Only the first
+// build in a process applies, and a later one changes nothing, so BuildTheRecipeBookApp is the only example that
+// calls BuildApp(), the way an app builds once at start-up.
 StartupExamples.EnsureInitializedThrowsBeforeBuild();
 
 ReactiveUIBuilder recipeBookApp = StartupExamples.BuildTheRecipeBookApp();

@@ -20,6 +20,8 @@ await RoutingExamples.ShowTheViewForTheCurrentPage();
 
 await RoutingExamples.ResetTheStack();
 
+await RoutingExamples.AwaitNavigationOnABackgroundSequencer();
+
 RoutingExamples.DeliverNavigationImmediately();
 
 await RoutingExamples.WatchDetailedChangeSets();

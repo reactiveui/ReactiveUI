@@ -3,12 +3,13 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using ReactiveUI.Documentation;
 using ReactiveUI.Documentation.DefaultExceptionHandler;
 
-ExampleApp.Start();
+// This page is about the handler an app installs when it starts ReactiveUI, so it starts ReactiveUI itself
+// instead of calling ExampleApp.Start(). The app builds once, with its handler in place.
+DefaultExceptionHandlerExamples.InstallTheHandlerAtStartup();
 
-await DefaultExceptionHandlerExamples.ReplaceTheDefaultExceptionHandler();
+await DefaultExceptionHandlerExamples.ReportAnUnwatchedCommandError();
 
 DefaultExceptionHandlerExamples.ConstructAnUnhandledErrorException();
 

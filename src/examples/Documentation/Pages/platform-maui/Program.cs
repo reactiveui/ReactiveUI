@@ -28,6 +28,8 @@ RoutedViewHostExamples.ConstructingWithoutAScreenThrows();
 
 RoutedViewHostExamples.RouterAndSetTitleOnNavigateAreBindableProperties();
 
+await RoutedViewHostExamples.NavigatingTheRouterPushesEachPage();
+
 await RoutedViewHostExamples.SyncingPushesTheRouterStackOntoTheNavigationPage();
 
 RoutedViewHostExamples.ResolvingAPageForAViewModel();
@@ -40,9 +42,11 @@ ViewModelViewHostExamples.ViewModelResolvesTheRegisteredView();
 
 ViewModelViewHostExamples.NoViewModelShowsTheDefaultContent();
 
-ViewModelViewHostExamples.ContractPropertiesDoNotReResolveAfterConstruction();
+ViewModelViewHostExamples.ViewContractPicksTheViewForTheContract();
 
-ViewModelViewHostExamples.ContractFallbackByPassIsABindableProperty();
+ViewModelViewHostExamples.ViewContractObservableSwitchesTheView();
+
+ViewModelViewHostExamples.ContractFallbackByPassStopsTheFallbackToTheDefaultView();
 
 ViewModelViewHostExamples.ViewLocatorOverridesTheDefaultLocator();
 

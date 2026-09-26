@@ -9,28 +9,18 @@ namespace ReactiveUI.Documentation.ReactiveObjects;
 public static class CourseResultExamples
 {
     /// <summary>
-    /// A <see cref="ReactiveRecord"/> prints like any other record: <c>ToString</c> lists every public property in
-    /// declaration order, starting with the <c>Changing</c>, <c>Changed</c> and <c>ThrownExceptions</c> properties it
-    /// inherits from <see cref="ReactiveRecord"/> itself, then the ones the derived record adds. The last four entries
-    /// here are this record's own properties.
+    /// A <see cref="ReactiveRecord"/> prints like any other record: <c>ToString</c> lists the derived record's own
+    /// public properties in declaration order, and none of the notification members it inherits.
     /// </summary>
     public static void CreateAndDisplayAResult()
     {
         CourseResult result = new() { StudentName = "Grace Hopper", Course = "Compilers", Grade = 95 };
-        string[] parts = result.ToString().Split(", ");
+        result.AddModeratorNote("Checked twice");
 
-        Console.WriteLine(parts.Length);
-        Console.WriteLine(parts[^4]);
-        Console.WriteLine(parts[^3]);
-        Console.WriteLine(parts[^2]);
-        Console.WriteLine(parts[^1]);
+        Console.WriteLine(result);
 
         // Output:
-        // 7
-        // StudentName = Grace Hopper
-        // Course = Compilers
-        // Grade = 95
-        // ModeratorNotes =  }
+        // CourseResult { StudentName = Grace Hopper, Course = Compilers, Grade = 95, ModeratorNotes = Checked twice }
     }
 
     /// <summary>Setting <c>ModeratorNotes</c> raises <c>Changing</c> then <c>Changed</c>, the same as a mutable property on a <see cref="ReactiveObject"/>.</summary>
@@ -96,21 +86,24 @@ public static class CourseResultExamples
     }
 
     /// <summary>
-    /// <c>ReactiveRecord.Equals(ReactiveRecord)</c> compares two records by value even when both are only known
-    /// through their base type, such as inside a routine that audits every record type in the school's data layer.
+    /// <c>ReactiveRecord.Equals(ReactiveRecord)</c> compares two records by the derived record's own values, even when
+    /// both are only known through their base type, such as inside a routine that audits every record type in the
+    /// school's data layer. Two separately created results with the same values are equal.
     /// </summary>
     public static void CompareTwoResultsAsBaseRecords()
     {
         CourseResult original = new() { StudentName = "Katherine Johnson", Course = "Orbital Mechanics", Grade = 99 };
-        CourseResult unchangedCopy = original with { };
+        CourseResult enteredAgain = new() { StudentName = "Katherine Johnson", Course = "Orbital Mechanics", Grade = 99 };
         CourseResult correctedCopy = original with { Grade = 100 };
         ReactiveRecord originalAsRecord = original;
 
-        Console.WriteLine(originalAsRecord.Equals(unchangedCopy));
+        Console.WriteLine(originalAsRecord.Equals(enteredAgain));
         Console.WriteLine(originalAsRecord.Equals(correctedCopy));
+        Console.WriteLine(original == enteredAgain);
 
         // Output:
         // True
         // False
+        // True
     }
 }

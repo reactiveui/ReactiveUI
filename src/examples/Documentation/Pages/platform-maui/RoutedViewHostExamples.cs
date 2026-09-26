@@ -10,10 +10,10 @@ namespace ReactiveUI.Documentation.PlatformMaui;
 
 /// <summary>
 /// Shows <see cref="RoutedViewHost"/>, the <c>NavigationPage</c> that keeps its own navigation stack in step with a
-/// <see cref="RoutingState"/>. Everyday navigation through <c>Router.Navigate</c> and <c>Router.NavigateBack</c> is
-/// covered on the routing page, using the platform-independent router; see that page's <c>RoutingExamples</c>. This
-/// page instead shows the members <see cref="RoutedViewHost"/> itself adds: the constructor's screen requirement, its
-/// two bindable properties, and the protected page-resolution members an app overrides for a custom policy.
+/// <see cref="RoutingState"/>. The routing page covers <c>Router.Navigate</c> and <c>Router.NavigateBack</c> in full;
+/// this page shows the host following them, then the members <see cref="RoutedViewHost"/> itself adds: the
+/// constructor's screen requirement, its two bindable properties, and the protected page-resolution members an app
+/// overrides for a custom policy.
 /// </summary>
 public static class RoutedViewHostExamples
 {
@@ -51,6 +51,30 @@ public static class RoutedViewHostExamples
         // True
         // Router
         // SetTitleOnNavigate
+    }
+
+    /// <summary>Navigating the router pushes each view model's page onto the host, starting from an empty host.</summary>
+    /// <returns>A task that completes once both navigations have run.</returns>
+    public static async Task NavigatingTheRouterPushesEachPage()
+    {
+        RecipeBookScreen screen = new();
+        AppLocator.CurrentMutable.RegisterConstant<IScreen>(screen);
+        AppLocator.CurrentMutable.Register<IViewFor<RecipeListViewModel>>(static () => new RecipeListPage());
+        AppLocator.CurrentMutable.Register<IViewFor<RecipeDetailViewModel>>(static () => new RecipeDetailPage());
+
+        RoutedViewHost host = new();
+
+        _ = await screen.Router.Navigate.Execute(new RecipeListViewModel(screen));
+        _ = await screen.Router.Navigate.Execute(new RecipeDetailViewModel(screen, RecipeBook.Recipes[0]));
+
+        foreach (Page page in host.Navigation.NavigationStack)
+        {
+            Console.WriteLine(page.GetType().Name);
+        }
+
+        // Output:
+        // RecipeListPage
+        // RecipeDetailPage
     }
 
     /// <summary>

@@ -125,9 +125,29 @@ public static class RoutingExamples
 
     /// <summary>
     /// Passing an <see cref="ISequencer"/> to the constructor controls which thread navigation results land on.
-    /// The default constructor uses the main-thread scheduler, which delivers on a background thread here, so every
-    /// other example awaits <c>Execute()</c>. <see cref="Sequencer.Immediate"/> delivers the result before
-    /// <c>Execute()</c> returns, which suits a console app or a test.
+    /// Awaiting <c>Execute()</c> returns the page on any sequencer, here a background one.
+    /// </summary>
+    /// <returns>A task that completes once both pages are open.</returns>
+    public static async Task AwaitNavigationOnABackgroundSequencer()
+    {
+        AppShell shell = new(new RoutingState(TaskPoolSequencer.Default));
+
+        IRoutableViewModel first = await shell.Router.Navigate.Execute(new TodoListPage(shell, []));
+        IRoutableViewModel second = await shell.Router.Navigate.Execute(new TodoListPage(shell, []));
+
+        Console.WriteLine(first.UrlPathSegment);
+        Console.WriteLine(second.UrlPathSegment);
+        Console.WriteLine(shell.Router.NavigationStack.Count);
+
+        // Output:
+        // todos
+        // todos
+        // 2
+    }
+
+    /// <summary>
+    /// <see cref="Sequencer.Immediate"/> delivers the result to a plain subscriber before <c>Execute()</c> returns,
+    /// so a console app or a test runs in a fixed order without awaiting.
     /// </summary>
     public static void DeliverNavigationImmediately()
     {

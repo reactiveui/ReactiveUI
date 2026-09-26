@@ -11,16 +11,28 @@ namespace ReactiveUI.Documentation.DefaultExceptionHandler;
 /// <summary>Shows what happens to a command error nobody watches, and how an app replaces the handler it reaches.</summary>
 public static class DefaultExceptionHandlerExamples
 {
-    /// <summary>A command error nobody subscribes to through <c>ThrownExceptions</c> reaches the installed handler.</summary>
-    /// <returns>A task that completes once the refused load has been reported.</returns>
-    public static async Task ReplaceTheDefaultExceptionHandler()
+    /// <summary>The app installs its handler once, on the builder it starts ReactiveUI with, before its single <c>BuildApp</c>.</summary>
+    public static void InstallTheHandlerAtStartup()
     {
-        List<string> failures = [];
-        IObserver<Exception> handler = Witness.Create<Exception>(error => failures.Add(error.Message));
-        _ = RxAppBuilder.CreateReactiveUIBuilder().WithExceptionHandler(handler).BuildApp();
+        IObserver<Exception> handler = Witness.Create<Exception>(static error => Console.WriteLine($"Unhandled: {error.Message}"));
+
+        // A console app has no UI thread, so main-thread work runs in place.
+        _ = RxAppBuilder.CreateReactiveUIBuilder()
+            .WithMainThreadScheduler(Sequencer.Immediate)
+            .WithExceptionHandler(handler)
+            .WithCoreServices()
+            .BuildApp();
 
         Console.WriteLine(ReferenceEquals(RxState.DefaultExceptionHandler, handler));
 
+        // Output:
+        // True
+    }
+
+    /// <summary>A command error nobody subscribes to through <c>ThrownExceptions</c> reaches the installed handler.</summary>
+    /// <returns>A task that completes once the refused load has been reported.</returns>
+    public static async Task ReportAnUnwatchedCommandError()
+    {
         BankAccountService server = new() { ServerIsDown = true };
         using ReactiveCommand<string, decimal> loadBalance = ReactiveCommand.CreateFromObservable<string, decimal>(server.LoadBalance);
 
@@ -28,16 +40,15 @@ public static class DefaultExceptionHandlerExamples
         {
             _ = await loadBalance.Execute("checking-01");
         }
-        catch (AccountServiceException)
+        catch (AccountServiceException error)
         {
-            // The caller sees the error too; nobody subscribed to loadBalance.ThrownExceptions, so it also reached the handler above.
+            // The caller sees the error too, because it awaited Execute.
+            Console.WriteLine($"Caller: {error.Message}");
         }
 
-        Console.WriteLine(failures[0]);
-
         // Output:
-        // True
-        // The bank server could not load account 'checking-01'.
+        // Unhandled: The bank server could not load account 'checking-01'.
+        // Caller: The bank server could not load account 'checking-01'.
     }
 
     /// <summary>Left unreplaced, the default handler breaks into the debugger (if attached) and throws this
