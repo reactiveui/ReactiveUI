@@ -13,7 +13,7 @@ using Splat;
 
 namespace ReactiveUI.Tests.Builder;
 
-/// <summary>Tests for the fluent converter/registration extension members on <see cref="BuilderMixins"/>.</summary>
+/// <summary>Tests for the converter and registration members of <see cref="IReactiveUIBuilder"/> and <see cref="BuilderMixins"/>.</summary>
 public class BuilderMixinsTests
 {
     /// <summary>The four <c>WithConverter</c> overloads and <c>WithConverters</c> each register on and return the same builder.</summary>
@@ -23,11 +23,11 @@ public class BuilderMixinsTests
     {
         var builder = RxAppBuilder.CreateReactiveUIBuilder();
 
-        var afterTyped = BuilderMixins.WithConverter(builder, new StubTypedConverter<string, int>());
-        var afterInterface = BuilderMixins.WithConverter(builder, (IBindingTypeConverter)new StubTypedConverter<string, int>());
-        var afterTypedFactory = BuilderMixins.WithConverter(builder, static () => new StubTypedConverter<string, int>());
-        var afterInterfaceFactory = BuilderMixins.WithConverter(builder, static () => (IBindingTypeConverter)new StubTypedConverter<string, int>());
-        var afterMany = BuilderMixins.WithConverters(builder, new StubTypedConverter<string, int>(), new StubTypedConverter<string, int>());
+        var afterTyped = builder.WithConverter(new StubTypedConverter<string, int>());
+        var afterInterface = builder.WithConverter((IBindingTypeConverter)new StubTypedConverter<string, int>());
+        var afterTypedFactory = builder.WithConverter(static () => new StubTypedConverter<string, int>());
+        var afterInterfaceFactory = builder.WithConverter(static () => (IBindingTypeConverter)new StubTypedConverter<string, int>());
+        var afterMany = builder.WithConverters(new StubTypedConverter<string, int>(), new StubTypedConverter<string, int>());
 
         using (Assert.Multiple())
         {
@@ -46,8 +46,8 @@ public class BuilderMixinsTests
     {
         var builder = RxAppBuilder.CreateReactiveUIBuilder();
 
-        var afterInstance = BuilderMixins.WithFallbackConverter(builder, new StubFallbackConverter());
-        var afterFactory = BuilderMixins.WithFallbackConverter(builder, static () => (IBindingFallbackConverter)new StubFallbackConverter());
+        var afterInstance = builder.WithFallbackConverter(new StubFallbackConverter());
+        var afterFactory = builder.WithFallbackConverter(static () => (IBindingFallbackConverter)new StubFallbackConverter());
 
         using (Assert.Multiple())
         {
@@ -63,8 +63,8 @@ public class BuilderMixinsTests
     {
         var builder = RxAppBuilder.CreateReactiveUIBuilder();
 
-        var afterInstance = BuilderMixins.WithSetMethodConverter(builder, new StubSetMethodConverter());
-        var afterFactory = BuilderMixins.WithSetMethodConverter(builder, static () => (ISetMethodBindingConverter)new StubSetMethodConverter());
+        var afterInstance = builder.WithSetMethodConverter(new StubSetMethodConverter());
+        var afterFactory = builder.WithSetMethodConverter(static () => (ISetMethodBindingConverter)new StubSetMethodConverter());
 
         using (Assert.Multiple())
         {
@@ -80,7 +80,7 @@ public class BuilderMixinsTests
     {
         var builder = RxAppBuilder.CreateReactiveUIBuilder();
 
-        var result = BuilderMixins.WithConvertersFrom(builder, new ModernDependencyResolver());
+        var result = builder.WithConvertersFrom(new ModernDependencyResolver());
 
         await Assert.That(result).IsSameReferenceAs(builder);
     }
@@ -92,8 +92,8 @@ public class BuilderMixinsTests
     {
         var builder = RxAppBuilder.CreateReactiveUIBuilder();
 
-        var afterBus = BuilderMixins.WithMessageBus(builder);
-        var afterViewModel = BuilderMixins.RegisterConstantViewModel<StubViewModel>(builder);
+        var afterBus = builder.WithMessageBus();
+        var afterViewModel = builder.RegisterConstantViewModel<StubViewModel>();
 
         using (Assert.Multiple())
         {
