@@ -195,6 +195,52 @@ public class ViewModelViewHostTest
         }
     }
 
+    /// <summary>When not in a unit test runner, setting <see cref="ViewModelViewHost.ViewContract"/> after construction re-resolves the view with that contract.</summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    [NotInParallel]
+    public async Task ViewContract_SetAfterConstruction_ReResolvesWithContract()
+    {
+        using (ForceNonUnitTestMode())
+        {
+            var locator = new ContractViewLocator();
+            var host = new ViewModelViewHost { ViewLocator = locator, ViewModel = new TestViewModel() };
+
+            await Assert.That(host.Content).IsSameReferenceAs(locator.DefaultView);
+
+            host.ViewContract = ContractViewLocator.WideContract;
+
+            using (Assert.Multiple())
+            {
+                await Assert.That(host.ViewContract).IsEqualTo(ContractViewLocator.WideContract);
+                await Assert.That(host.Content).IsSameReferenceAs(locator.WideView);
+            }
+        }
+    }
+
+    /// <summary>When not in a unit test runner, assigning a new <see cref="ViewModelViewHost.ViewContractObservable"/> switches to it and re-resolves on its contracts.</summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    [NotInParallel]
+    public async Task ViewContractObservable_SetAfterConstruction_FollowsNewObservable()
+    {
+        using (ForceNonUnitTestMode())
+        {
+            var locator = new ContractViewLocator();
+            var host = new ViewModelViewHost { ViewLocator = locator, ViewModel = new TestViewModel() };
+            var contracts = new Signal<string?>();
+
+            host.ViewContractObservable = contracts;
+            contracts.OnNext(ContractViewLocator.WideContract);
+
+            using (Assert.Multiple())
+            {
+                await Assert.That(host.ViewContract).IsEqualTo(ContractViewLocator.WideContract);
+                await Assert.That(host.Content).IsSameReferenceAs(locator.WideView);
+            }
+        }
+    }
+
     /// <summary>Resolving with a <see langword="null"/> <see cref="ViewModelViewHost.ViewLocator"/> falls back to the ambient <see cref="ViewLocator.GetCurrent"/>.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
@@ -304,6 +350,32 @@ public class ViewModelViewHostTest
         /// <inheritdoc/>
         [RequiresDynamicCode("Resolves a view from an object.")]
         public IViewFor? ResolveView(object? viewModel, string? contract) => _view;
+    }
+
+    /// <summary>View locator that resolves a separate view for the <see cref="WideContract"/> contract.</summary>
+    private sealed class ContractViewLocator : IViewLocator
+    {
+        /// <summary>The contract that resolves <see cref="WideView"/>.</summary>
+        public const string WideContract = "Wide";
+
+        /// <summary>Gets the view resolved for any contract other than <see cref="WideContract"/>.</summary>
+        public TestView DefaultView { get; } = new();
+
+        /// <summary>Gets the view resolved for <see cref="WideContract"/>.</summary>
+        public TestView WideView { get; } = new();
+
+        /// <inheritdoc/>
+        public IViewFor? ResolveView<TViewModel>(TViewModel viewModel, string? contract)
+            where TViewModel : class => Resolve(contract);
+
+        /// <inheritdoc/>
+        [RequiresDynamicCode("Resolves a view from an object.")]
+        public IViewFor? ResolveView(object? viewModel, string? contract) => Resolve(contract);
+
+        /// <summary>Picks the view for a contract.</summary>
+        /// <param name="contract">The contract to resolve.</param>
+        /// <returns>The view for the contract.</returns>
+        private TestView Resolve(string? contract) => contract == WideContract ? WideView : DefaultView;
     }
 
     /// <summary>Testable ViewModelViewHost that exposes the protected view model resolution.</summary>
