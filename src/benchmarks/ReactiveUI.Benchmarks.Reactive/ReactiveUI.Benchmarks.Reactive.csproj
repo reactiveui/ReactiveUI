@@ -24,7 +24,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="DynamicData" />
     <PackageReference Include="BenchmarkDotNet" />
   </ItemGroup>
 
@@ -39,6 +38,5 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\ReactiveUI.Reactive\ReactiveUI.Reactive.csproj" />
-    <ProjectReference Include="..\..\ReactiveUI.Routing.Reactive\ReactiveUI.Routing.Reactive.csproj" />
   </ItemGroup>
 </Project>

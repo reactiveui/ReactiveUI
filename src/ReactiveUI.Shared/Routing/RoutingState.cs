@@ -4,6 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
@@ -19,8 +20,12 @@ namespace ReactiveUI;
 /// <para>
 /// Use <see cref="RoutingState"/> from an <see cref="IScreen"/> implementation to coordinate navigation in
 /// multi-page applications. The stack works in a last-in-first-out fashion, enabling forward navigation via
-/// <see cref="Navigate"/> and back navigation via <see cref="NavigateBack"/>. Consumers can observe
-/// <see cref="CurrentViewModel"/> or <see cref="NavigationChanges"/> to drive view presentation.
+/// <see cref="Navigate"/> and back navigation via <see cref="NavigateBack"/>.
+/// </para>
+/// <para>
+/// Every navigation notification is a plain observable of values: <see cref="CurrentViewModel"/> reports the view
+/// model on top of the stack, <see cref="NavigationStackChanged"/> reports the whole stack after each change, and
+/// <see cref="CanNavigateBack"/> reports whether there is a view model to go back to.
 /// </para>
 /// </remarks>
 /// <example>
@@ -107,29 +112,92 @@ public class RoutingState : ReactiveObject
     [JsonIgnore]
     public ReactiveCommand<IRoutableViewModel, IRoutableViewModel> NavigateAndReset { get; protected set; }
 
-    /// <summary>Gets the observable that yields the currently active view model whenever the navigation stack changes.</summary>
+    /// <summary>
+    /// Gets an observable of the view model on top of the navigation stack. It emits the current view model when you
+    /// subscribe, then again after every change to the stack. It emits <see langword="null"/> while the stack is empty.
+    /// </summary>
+    /// <example>
+    /// <code language="csharp">
+    /// <![CDATA[
+    /// using var subscription = screen.Router.CurrentViewModel
+    ///     .Subscribe(viewModel => Console.WriteLine(viewModel?.UrlPathSegment ?? "(nothing)"));
+    /// ]]>
+    /// </code>
+    /// </example>
     [IgnoreDataMember]
     [JsonIgnore]
-    public IObservable<IRoutableViewModel> CurrentViewModel { get; protected set; }
+    public IObservable<IRoutableViewModel?> CurrentViewModel { get; protected set; }
 
     /// <summary>
-    /// Gets an observable that signals detailed change sets for the navigation stack, enabling reactive views to
-    /// animate push/pop operations.
+    /// Gets an observable of the navigation stack. After every change to <see cref="NavigationStack"/> it emits a
+    /// read-only snapshot of the whole stack, oldest view model first and the current view model last. It emits
+    /// nothing when you subscribe; read <see cref="NavigationStack"/> for the stack as it is now.
     /// </summary>
+    /// <remarks>
+    /// Each snapshot is a copy. Navigating again does not change a snapshot you already hold.
+    /// </remarks>
+    /// <example>
+    /// <code language="csharp">
+    /// <![CDATA[
+    /// using var subscription = screen.Router.NavigationStackChanged
+    ///     .Subscribe(stack => Console.WriteLine(string.Join(" > ", stack.Select(page => page.UrlPathSegment))));
+    /// ]]>
+    /// </code>
+    /// </example>
     [IgnoreDataMember]
     [JsonIgnore]
-    public IObservable<IReactiveChangeSet<IRoutableViewModel>> NavigationChanges { get; protected set; }
+    public IObservable<IReadOnlyList<IRoutableViewModel>> NavigationStackChanged { get; protected set; }
+
+    /// <summary>
+    /// Gets an observable that reports whether there is a view model to go back to, which is true while the stack
+    /// holds at least two view models. It emits the current answer when you subscribe, then again each time the
+    /// answer changes. <see cref="NavigateBack"/> uses it to decide when it can execute.
+    /// </summary>
+    /// <example>
+    /// <code language="csharp">
+    /// <![CDATA[
+    /// using var subscription = screen.Router.CanNavigateBack
+    ///     .Subscribe(canGoBack => backButton.IsEnabled = canGoBack);
+    /// ]]>
+    /// </code>
+    /// </example>
+    [IgnoreDataMember]
+    [JsonIgnore]
+    public IObservable<bool> CanNavigateBack { get; protected set; }
+
+    /// <summary>Copies a navigation stack into a snapshot that later navigation cannot change.</summary>
+    /// <param name="stack">The stack to copy.</param>
+    /// <returns>The snapshot, oldest view model first.</returns>
+    internal static IReadOnlyList<IRoutableViewModel> Snapshot(ObservableCollection<IRoutableViewModel> stack)
+    {
+        if (stack.Count == 0)
+        {
+            return [];
+        }
+
+        var snapshot = new IRoutableViewModel[stack.Count];
+        stack.CopyTo(snapshot, 0);
+        return snapshot;
+    }
+
+    /// <summary>Gets the view model on top of a stack.</summary>
+    /// <param name="stack">The stack to read.</param>
+    /// <returns>The last view model, or <see langword="null"/> when the stack is empty.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal static IRoutableViewModel? Top(IReadOnlyList<IRoutableViewModel> stack) =>
+        stack.Count > 0 ? stack[stack.Count - 1] : null;
 
     /// <summary>Sets up reactive commands and observables after deserialization.</summary>
     /// <param name="sc">The streaming context for deserialization.</param>
     [OnDeserialized]
     [RequiresUnreferencedCode("RoutingState uses ReactiveCommand which may require unreferenced code.")]
     [MemberNotNull(
-        nameof(NavigationChanges),
+        nameof(NavigationStackChanged),
+        nameof(CurrentViewModel),
+        nameof(CanNavigateBack),
         nameof(NavigateBack),
         nameof(Navigate),
-        nameof(NavigateAndReset),
-        nameof(CurrentViewModel))]
+        nameof(NavigateAndReset))]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #if NET6_0_OR_GREATER
     private void SetupRx(in StreamingContext sc) => SetupRx();
@@ -139,18 +207,20 @@ public class RoutingState : ReactiveObject
 
     /// <summary>Initializes reactive commands and observables for the navigation stack.</summary>
     [MemberNotNull(
-        nameof(NavigationChanges),
+        nameof(NavigationStackChanged),
+        nameof(CurrentViewModel),
+        nameof(CanNavigateBack),
         nameof(NavigateBack),
         nameof(Navigate),
-        nameof(NavigateAndReset),
-        nameof(CurrentViewModel))]
+        nameof(NavigateAndReset))]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void SetupRx()
     {
         var navigateScheduler = _scheduler;
-        NavigationChanges = NavigationStack.ToReactiveChangeSet();
+        NavigationStackChanged = new NavigationStackChangedObservable(this);
+        CurrentViewModel = new CurrentViewModelObservable(this);
+        CanNavigateBack = new CanNavigateBackObservable(this);
 
-        var countAsBehavior = new NavigationCountObservable(this);
         NavigateBack =
             ReactiveCommand.CreateFromObservable(
                 () =>
@@ -160,7 +230,7 @@ public class RoutingState : ReactiveObject
                         NavigationStack.Count > 0 ? NavigationStack[^1] : null!,
                         navigateScheduler);
                 },
-                new MapSignal<int, bool>(countAsBehavior, static x => x > 1));
+                CanNavigateBack);
 
         Navigate = ReactiveCommand.CreateFromObservable<IRoutableViewModel, IRoutableViewModel>(vm =>
         {
@@ -178,10 +248,6 @@ public class RoutingState : ReactiveObject
             NavigationStack.Clear();
             return Navigate.Execute(vm);
         });
-
-        CurrentViewModel = new MapSignal<IReactiveChangeSet<IRoutableViewModel>, IRoutableViewModel>(
-            NavigationChanges,
-            _ => NavigationStack.Count > 0 ? NavigationStack[NavigationStack.Count - 1] : null!);
     }
 
     /// <summary>Emits a single value delivered on a scheduler. Replaces <c>Observable.Return(value).ObserveOn(scheduler)</c>.</summary>
@@ -199,19 +265,127 @@ public class RoutingState : ReactiveObject
     }
 
     /// <summary>
-    /// Emits the navigation stack's current count on subscription and the new count after each navigation change.
-    /// Replaces the prior <c>Observable.Defer(...).Concat(...CountChanged()...)</c> behavior.
+    /// Emits a snapshot of the owner's navigation stack after each change to it. The stack is read when an observer
+    /// subscribes, so a stack assigned by deserialization is the one observed.
     /// </summary>
     /// <param name="owner">The owning routing state.</param>
-    private sealed class NavigationCountObservable(RoutingState owner) : IObservable<int>
+    private sealed class NavigationStackChangedObservable(RoutingState owner) : IObservable<IReadOnlyList<IRoutableViewModel>>
     {
         /// <inheritdoc/>
-        public IDisposable Subscribe(IObserver<int> observer)
+        public IDisposable Subscribe(IObserver<IReadOnlyList<IRoutableViewModel>> observer)
         {
             ArgumentExceptionHelper.ThrowIfNull(observer);
-            observer.OnNext(owner.NavigationStack.Count);
-            return owner.NavigationChanges.WhenCountChanged()
-                .Subscribe(new DelegateObserver<IReactiveChangeSet<IRoutableViewModel>>(_ => observer.OnNext(owner.NavigationStack.Count)));
+            return new Subscription(owner.NavigationStack, observer);
+        }
+
+        /// <summary>Hooks the stack's collection-changed event and detaches it on dispose.</summary>
+        private sealed class Subscription : IDisposable
+        {
+            /// <summary>The observed navigation stack.</summary>
+            private readonly ObservableCollection<IRoutableViewModel> _stack;
+
+            /// <summary>The observer receiving snapshots.</summary>
+            private readonly IObserver<IReadOnlyList<IRoutableViewModel>> _observer;
+
+            /// <summary>Initializes a new instance of the <see cref="Subscription"/> class and hooks the event.</summary>
+            /// <param name="stack">The navigation stack to observe.</param>
+            /// <param name="observer">The observer receiving snapshots.</param>
+            public Subscription(ObservableCollection<IRoutableViewModel> stack, IObserver<IReadOnlyList<IRoutableViewModel>> observer)
+            {
+                _stack = stack;
+                _observer = observer;
+                _stack.CollectionChanged += OnCollectionChanged;
+            }
+
+            /// <inheritdoc/>
+            public void Dispose() => _stack.CollectionChanged -= OnCollectionChanged;
+
+            /// <summary>Forwards a snapshot of the stack after it changes.</summary>
+            /// <param name="sender">The stack that changed.</param>
+            /// <param name="e">The collection-changed event arguments.</param>
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private void OnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e) =>
+                _observer.OnNext(Snapshot(_stack));
+        }
+    }
+
+    /// <summary>Emits the top of the owner's stack on subscribe, then the top of each <see cref="NavigationStackChanged"/> snapshot.</summary>
+    /// <param name="owner">The owning routing state.</param>
+    private sealed class CurrentViewModelObservable(RoutingState owner) : IObservable<IRoutableViewModel?>
+    {
+        /// <inheritdoc/>
+        public IDisposable Subscribe(IObserver<IRoutableViewModel?> observer)
+        {
+            ArgumentExceptionHelper.ThrowIfNull(observer);
+            observer.OnNext(Top(owner.NavigationStack));
+            return owner.NavigationStackChanged.Subscribe(new Sink(observer));
+        }
+
+        /// <summary>Maps each snapshot to the view model on top of it.</summary>
+        /// <param name="downstream">The observer receiving the current view model.</param>
+        private sealed class Sink(IObserver<IRoutableViewModel?> downstream) : IObserver<IReadOnlyList<IRoutableViewModel>>
+        {
+            /// <inheritdoc/>
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public void OnNext(IReadOnlyList<IRoutableViewModel> value) => downstream.OnNext(Top(value));
+
+            /// <inheritdoc/>
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public void OnError(Exception error) => downstream.OnError(error);
+
+            /// <inheritdoc/>
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public void OnCompleted() => downstream.OnCompleted();
+        }
+    }
+
+    /// <summary>
+    /// Emits whether the owner's stack holds at least two view models when an observer subscribes, then again each
+    /// time a snapshot from <see cref="NavigationStackChanged"/> changes the answer.
+    /// </summary>
+    /// <param name="owner">The owning routing state.</param>
+    private sealed class CanNavigateBackObservable(RoutingState owner) : IObservable<bool>
+    {
+        /// <summary>The fewest view models the stack must hold for there to be one to go back to.</summary>
+        private const int MinimumCountToGoBack = 2;
+
+        /// <inheritdoc/>
+        public IDisposable Subscribe(IObserver<bool> observer)
+        {
+            ArgumentExceptionHelper.ThrowIfNull(observer);
+            var canGoBack = owner.NavigationStack.Count >= MinimumCountToGoBack;
+            observer.OnNext(canGoBack);
+            return owner.NavigationStackChanged.Subscribe(new Sink(observer, canGoBack));
+        }
+
+        /// <summary>Forwards the answer only when it differs from the last one delivered.</summary>
+        /// <param name="downstream">The observer receiving the answer.</param>
+        /// <param name="last">The answer delivered on subscribe.</param>
+        private sealed class Sink(IObserver<bool> downstream, bool last) : IObserver<IReadOnlyList<IRoutableViewModel>>
+        {
+            /// <summary>The answer most recently delivered.</summary>
+            private bool _last = last;
+
+            /// <inheritdoc/>
+            public void OnNext(IReadOnlyList<IRoutableViewModel> value)
+            {
+                var canGoBack = value.Count >= MinimumCountToGoBack;
+                if (canGoBack == _last)
+                {
+                    return;
+                }
+
+                _last = canGoBack;
+                downstream.OnNext(canGoBack);
+            }
+
+            /// <inheritdoc/>
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public void OnError(Exception error) => downstream.OnError(error);
+
+            /// <inheritdoc/>
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public void OnCompleted() => downstream.OnCompleted();
         }
     }
 }

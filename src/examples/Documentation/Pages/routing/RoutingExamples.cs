@@ -43,6 +43,43 @@ public static class RoutingExamples
         // True
     }
 
+    /// <summary><c>CanNavigateBack</c> reports whether there is a page to go back to, and emits again only when the answer changes.</summary>
+    /// <returns>A task that completes when the second item is opened.</returns>
+    public static async Task WatchWhetherYouCanGoBack()
+    {
+        AppShell shell = new();
+        using var subscription = shell.Router.CanNavigateBack.Subscribe(Console.WriteLine);
+
+        var list = await OpenListAsync(shell);
+        _ = await list.Open.Execute(list.Items[0]);
+        _ = await shell.Router.NavigateBack.Execute();
+        _ = await list.Open.Execute(list.Items[1]);
+
+        // Output:
+        // False
+        // True
+        // False
+        // True
+    }
+
+    /// <summary><c>NavigationStackChanged</c> hands you the whole stack after every change, oldest page first.</summary>
+    /// <returns>A task that completes when the user is back on the list.</returns>
+    public static async Task WatchTheStack()
+    {
+        AppShell shell = new();
+        using var subscription = shell.Router.NavigationStackChanged
+            .Subscribe(static stack => Console.WriteLine(string.Join(" > ", stack.Select(static page => page.UrlPathSegment))));
+
+        var list = await OpenListAsync(shell);
+        _ = await list.Open.Execute(list.Items[0]);
+        _ = await shell.Router.NavigateBack.Execute();
+
+        // Output:
+        // todos
+        // todos > todos/1
+        // todos
+    }
+
     /// <summary>
     /// A routed host follows <c>CurrentViewModel</c> and asks the view locator for each page's view, which is what
     /// <c>RoutedViewHost</c> does on every platform. Before the first navigation there is no page, and the host shows its
@@ -54,7 +91,7 @@ public static class RoutingExamples
         AppShell shell = new();
         var locator = ViewLocator.GetCurrent();
         using var host = shell.Router.CurrentViewModel
-            .Select(page => locator.ResolveView<object>(page, null))
+            .Select(page => page is null ? null : locator.ResolveView<object>(page, null))
             .Subscribe(static view => Console.WriteLine(view?.GetType().Name ?? "(default content)"));
 
         var list = await OpenListAsync(shell);

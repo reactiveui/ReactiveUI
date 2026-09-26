@@ -344,6 +344,23 @@ public class RoutedViewHostTest
         await Assert.That(host.Navigation.NavigationStack.Count).IsEqualTo(initialCount);
     }
 
+    /// <summary>Clearing the router's stack resyncs the page stack, keeping the root page in place.</summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    [TestExecutor<MauiRoutedViewHostTestExecutor>]
+    public async Task RouterStackCleared_ResyncsAndKeepsRootPage()
+    {
+        var host = new TestableRoutedViewHost();
+        var root = CreateRoutableView();
+        await host.PushAsync(root);
+        host.Router.NavigationStack.Add(root.ViewModel!);
+
+        host.Router.NavigationStack.Clear();
+
+        await Assert.That(host.Navigation.NavigationStack).Count().IsEqualTo(1);
+        await Assert.That(host.Navigation.NavigationStack[0]).IsSameReferenceAs(root);
+    }
+
     /// <summary>Creates a routable view seeded with its own view model.</summary>
     /// <returns>A new <see cref="TestRoutableView"/> whose view model is set.</returns>
     private static TestRoutableView CreateRoutableView() =>

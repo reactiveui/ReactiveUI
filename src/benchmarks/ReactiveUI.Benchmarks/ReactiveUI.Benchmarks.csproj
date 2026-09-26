@@ -17,7 +17,6 @@
     <PackageDescription>Micro-benchmarks for ReactiveUI's reactive sinks, bindings, commands and change-set layers.</PackageDescription>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="DynamicData" />
     <PackageReference Include="BenchmarkDotNet" />
   </ItemGroup>
   <ItemGroup>
@@ -27,6 +26,5 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\ReactiveUI\ReactiveUI.csproj" />
-    <ProjectReference Include="..\..\ReactiveUI.Routing\ReactiveUI.Routing.csproj" />
   </ItemGroup>
 </Project>

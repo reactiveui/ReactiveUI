@@ -332,6 +332,119 @@ public class RoutableViewModelMixinsTests
         await Assert.That(completedExactlyOnce).IsEqualTo(ConcurrentSubscriptionCount);
     }
 
+    /// <summary>Subscribing while the watched view model is already on top reports the arrival straight away.</summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task WhenNavigatedToObservable_AlreadyOnTop_EmitsOnSubscribe()
+    {
+        var screen = new TestScreen();
+        var watched = new RoutableViewModel(screen);
+        _ = screen.Router.Navigate.Execute(watched).Subscribe();
+        var recorder = new FocusRecorder();
+
+        using var subscription = watched.WhenNavigatedToObservable().Subscribe(recorder);
+
+        await Assert.That(recorder.Emissions).IsEqualTo(1);
+    }
+
+    /// <summary>A change that leaves the stack the same size is not a focus change, so nothing is reported.</summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task WhenNavigatedToObservable_ReplaceKeepsCount_DoesNotEmit()
+    {
+        var screen = new TestScreen();
+        var watched = new RoutableViewModel(screen);
+        var other = new RoutableViewModel(screen);
+        _ = screen.Router.Navigate.Execute(other).Subscribe();
+        var recorder = new FocusRecorder();
+        using var subscription = watched.WhenNavigatedToObservable().Subscribe(recorder);
+
+        screen.Router.NavigationStack[0] = watched;
+
+        await Assert.That(recorder.Emissions).IsEqualTo(0);
+        await Assert.That(recorder.Completed).IsEqualTo(0);
+    }
+
+    /// <summary>The focus observables forward an error from the navigation-stack stream exactly once.</summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task FocusObservables_StackStreamFails_ForwardErrorOnce()
+    {
+        using var router = new ScriptedRoutingState();
+        var screen = new TestScreen(router);
+        var watched = new RoutableViewModel(screen);
+        var arrivals = new FocusRecorder();
+        var departures = new FocusRecorder();
+        using var arrivalSubscription = watched.WhenNavigatedToObservable().Subscribe(arrivals);
+        using var departureSubscription = watched.WhenNavigatingFromObservable().Subscribe(departures);
+
+        router.Changes.OnError(new InvalidOperationException("stack failed"));
+
+        await Assert.That(arrivals.Errors).IsEqualTo(1);
+        await Assert.That(departures.Errors).IsEqualTo(1);
+    }
+
+    /// <summary>The focus observables complete when the navigation-stack stream completes.</summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task FocusObservables_StackStreamCompletes_Complete()
+    {
+        using var router = new ScriptedRoutingState();
+        var screen = new TestScreen(router);
+        var watched = new RoutableViewModel(screen);
+        var arrivals = new FocusRecorder();
+        using var subscription = watched.WhenNavigatedToObservable().Subscribe(arrivals);
+
+        router.Changes.OnCompleted();
+
+        await Assert.That(arrivals.Completed).IsEqualTo(1);
+    }
+
+    /// <summary>Calling <c>WhenNavigatedTo</c> while the view model is already on top builds its scope straight away.</summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task WhenNavigatedTo_AlreadyOnTop_BuildsScopeImmediately()
+    {
+        var screen = new TestScreen();
+        var watched = new RoutableViewModel(screen);
+        _ = screen.Router.Navigate.Execute(watched).Subscribe();
+        var scopesBuilt = 0;
+
+        using var handle = watched.WhenNavigatedTo(() =>
+        {
+            scopesBuilt++;
+            return Scope.Empty;
+        });
+
+        await Assert.That(scopesBuilt).IsEqualTo(1);
+    }
+
+    /// <summary>
+    /// A stack change that keeps the size leaves the scope alone, and an error or completion of the stack stream
+    /// does not tear the scope down.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task WhenNavigatedTo_SameSizeChangeErrorAndCompletion_KeepScope()
+    {
+        using var failing = new ScriptedRoutingState();
+        using var completing = new ScriptedRoutingState();
+        var failingWatched = new RoutableViewModel(new TestScreen(failing));
+        var completingWatched = new RoutableViewModel(new TestScreen(completing));
+        var scopeDisposals = 0;
+
+        using var failingHandle = failingWatched.WhenNavigatedTo(() => new ActionDisposable(() => scopeDisposals++));
+        using var completingHandle = completingWatched.WhenNavigatedTo(() => new ActionDisposable(() => scopeDisposals++));
+
+        failing.Push(failingWatched);
+        completing.Push(completingWatched);
+        failing.Changes.OnNext([failingWatched]);
+        failing.Changes.OnError(new InvalidOperationException("stack failed"));
+        completing.Changes.OnCompleted();
+
+        await Assert.That(scopeDisposals).IsEqualTo(0);
+    }
+
     /// <summary>Counts the notifications a navigation-focus observable delivers.</summary>
     private sealed class FocusRecorder : IObserver<RxVoid>
     {
@@ -379,7 +492,7 @@ public class RoutableViewModelMixinsTests
     }
 
     /// <summary>
-    /// A router whose navigation-change stream is pushed by the test instead of being derived from the navigation
+    /// A router whose navigation-stack stream is pushed by the test instead of being derived from the navigation
     /// stack, so a handler can drive further navigation from inside a notification.
     /// </summary>
     /// <remarks>
@@ -391,36 +504,29 @@ public class RoutableViewModelMixinsTests
     {
         /// <summary>Initializes a new instance of the <see cref="ScriptedRoutingState"/> class.</summary>
         public ScriptedRoutingState()
-            : base(Sequencer.Immediate) => NavigationChanges = Changes;
+            : base(Sequencer.Immediate) => NavigationStackChanged = Changes;
 
-        /// <summary>Gets the change stream the test pushes navigation announcements into.</summary>
-        public Signal<IReactiveChangeSet<IRoutableViewModel>> Changes { get; } = new();
+        /// <summary>Gets the stack stream the test pushes navigation announcements into.</summary>
+        public Signal<IReadOnlyList<IRoutableViewModel>> Changes { get; } = new();
 
-        /// <summary>Pushes a view model onto the stack and announces the addition.</summary>
+        /// <summary>Pushes a view model onto the stack and announces the new stack.</summary>
         /// <param name="viewModel">The view model that became current.</param>
         public void Push(IRoutableViewModel viewModel)
         {
             NavigationStack.Add(viewModel);
-            Changes.OnNext(ChangeSet(ReactiveChangeReason.Add, viewModel));
+            Changes.OnNext([.. NavigationStack]);
         }
 
-        /// <summary>Removes a view model from the stack and announces the removal.</summary>
+        /// <summary>Removes a view model from the stack and announces the new stack.</summary>
         /// <param name="viewModel">The view model that left the stack.</param>
         public void Remove(IRoutableViewModel viewModel)
         {
             _ = NavigationStack.Remove(viewModel);
-            Changes.OnNext(ChangeSet(ReactiveChangeReason.Remove, viewModel));
+            Changes.OnNext([.. NavigationStack]);
         }
 
         /// <inheritdoc/>
         public void Dispose() => Changes.Dispose();
-
-        /// <summary>Builds a batch holding exactly one change.</summary>
-        /// <param name="reason">The reason for the change.</param>
-        /// <param name="viewModel">The view model the change carries.</param>
-        /// <returns>A batch holding exactly that one change.</returns>
-        private static ReactiveChangeSet<IRoutableViewModel> ChangeSet(ReactiveChangeReason reason, IRoutableViewModel viewModel) =>
-            new([new(reason, viewModel, null, -1, -1)]);
     }
 
     /// <summary>A routable view model used to populate the navigation stack.</summary>

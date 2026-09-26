@@ -12,6 +12,10 @@ await RoutingExamples.NavigateAndGoBack();
 
 await RoutingExamples.EnableTheBackButton();
 
+await RoutingExamples.WatchWhetherYouCanGoBack();
+
+await RoutingExamples.WatchTheStack();
+
 await RoutingExamples.ShowTheViewForTheCurrentPage();
 
 await RoutingExamples.ResetTheStack();
