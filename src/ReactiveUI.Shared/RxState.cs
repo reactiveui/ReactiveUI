@@ -4,6 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 
 #if REACTIVE_SHIM
 namespace ReactiveUI.Reactive;
@@ -16,40 +17,27 @@ namespace ReactiveUI;
 /// handling is required. Most application code does not need to interact with this class directly.</remarks>
 public static class RxState
 {
-    /// <summary>The configured exception handler, or null if not yet initialized.</summary>
+    /// <summary>The published exception handler, or null until one is published.</summary>
+    /// <remarks>
+    /// The field is its own initialization flag. A handler is published once with an atomic
+    /// compare-and-exchange, so a reader sees either null or a fully constructed handler, and the
+    /// first handler published wins.
+    /// </remarks>
     private static IObserver<Exception>? _defaultExceptionHandler;
-
-    /// <summary>Tracks whether the exception handler has been initialized; 0 = uninitialized, 1 = initialized.</summary>
-    private static int _exceptionHandlerInitialized;
 
     /// <summary>
     /// Gets the default exception handler for unhandled errors in ReactiveUI observables.
     /// Auto-initializes with debugger break + UnhandledErrorException if not configured via builder.
     /// </summary>
-    public static IObserver<Exception> DefaultExceptionHandler
-    {
-        get
-        {
-            if (Interlocked.CompareExchange(ref _exceptionHandlerInitialized, 0, 0) == 0)
-            {
-                InitializeDefaultExceptionHandler();
-            }
-
-            return _defaultExceptionHandler!;
-        }
-    }
+    public static IObserver<Exception> DefaultExceptionHandler =>
+        Volatile.Read(ref _defaultExceptionHandler) ?? InitializeDefaultExceptionHandler();
 
     /// <summary>Initializes the exception handler with a custom observer. Called by ReactiveUIBuilder.</summary>
     /// <param name="exceptionHandler">The custom exception handler to use.</param>
     internal static void InitializeExceptionHandler(IObserver<Exception> exceptionHandler)
     {
-        if (Interlocked.CompareExchange(ref _exceptionHandlerInitialized, 1, 0) != 0)
-        {
-            return;
-        }
-
         ArgumentExceptionHelper.ThrowIfNull(exceptionHandler);
-        _defaultExceptionHandler = exceptionHandler;
+        _ = Interlocked.CompareExchange(ref _defaultExceptionHandler, exceptionHandler, null);
     }
 
     /// <summary>Resets the exception handler state for testing purposes.</summary>
@@ -57,24 +45,17 @@ public static class RxState
     /// WARNING: This method should ONLY be used in unit tests to reset state between test runs.
     /// Never call this in production code as it can lead to inconsistent application state.
     /// </remarks>
-    internal static void ResetForTesting()
-    {
-        _ = Interlocked.Exchange(ref _exceptionHandlerInitialized, 0);
-        _defaultExceptionHandler = null;
-    }
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal static void ResetForTesting() => Volatile.Write(ref _defaultExceptionHandler, null);
 
     /// <summary>
-    /// Initializes the default exception handler if not already configured.
-    /// Creates an observer that breaks debugger and throws UnhandledErrorException.
+    /// Publishes the default exception handler if no handler has been published yet.
+    /// The default handler breaks into the debugger and throws UnhandledErrorException.
     /// </summary>
-    private static void InitializeDefaultExceptionHandler()
+    /// <returns>The published handler, which is another thread's handler when that thread published first.</returns>
+    private static IObserver<Exception> InitializeDefaultExceptionHandler()
     {
-        if (Interlocked.CompareExchange(ref _exceptionHandlerInitialized, 1, 0) != 0)
-        {
-            return;
-        }
-
-        _defaultExceptionHandler = new DelegateObserver<Exception>(static ex =>
+        var handler = new DelegateObserver<Exception>(static ex =>
         {
             if (Debugger.IsAttached)
             {
@@ -87,5 +68,7 @@ public static class RxState
                 + "ThrownExceptions property of the object in question to handle the erroneous case.",
                 capturedException));
         });
+
+        return Interlocked.CompareExchange(ref _defaultExceptionHandler, handler, null) ?? handler;
     }
 }
