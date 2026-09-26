@@ -24,6 +24,8 @@ public static class SmokeTest
         CourseListViewModel courseList = (CourseListViewModel)shell.Router.NavigationStack[0];
         Console.WriteLine($"Courses loaded: {courseList.Courses.Count}");
         Console.WriteLine($"Students listed: {courseList.Students.Count}");
+        Console.WriteLine($"RoutedViewHostUnsafe shows: {DescribeNotice(window.NoticeBoardHost.Content)}");
+        Console.WriteLine($"ViewModelViewHostUnsafe shows: {DescribeNotice(window.LatestNoticeHost.Content)}");
 
         Student student = courseList.Students[0];
         courseList.SelectedStudent = student;
@@ -48,6 +50,16 @@ public static class SmokeTest
 
         Environment.Exit(0);
     }
+
+    /// <summary>Names what a notice-board host shows: the notice view and its text, or the type of whatever else it holds.</summary>
+    /// <param name="content">The host's current content.</param>
+    /// <returns>A short description of the content.</returns>
+    private static string DescribeNotice(object? content) => content switch
+    {
+        OfficeNoticeView view => $"{nameof(OfficeNoticeView)} ({view.MessageText.Text})",
+        null => "(nothing)",
+        _ => content.GetType().Name,
+    };
 
     /// <summary>
     /// Waits for a command's result by pumping the dispatcher rather than blocking the thread. Commands deliver

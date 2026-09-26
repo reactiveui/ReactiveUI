@@ -6,6 +6,7 @@
 using System.Diagnostics;
 using System.Windows;
 using ReactiveUI.Builder;
+using Splat;
 
 namespace ReactiveUI.Documentation.PlatformWpf;
 
@@ -28,8 +29,14 @@ public partial class App : Application
         base.OnStartup(e);
 
         _ = RxAppBuilder.CreateReactiveUIBuilder().WithWpf().BuildApp();
+
+        // The school office's library registers its view with the service locator only, so the window's notice
+        // board shows it through the Unsafe twins.
+        AppLocator.CurrentMutable.Register<IViewFor<OfficeNoticeViewModel>>(static () => new OfficeNoticeView());
+
         WpfBuilderExtensionsExamples.ShowTheAppBuilderOverload();
         WpfBuilderExtensionsExamples.ShowTheIndividualExtensions();
+        WpfBuilderExtensionsExamples.AddTheUnsafeTemplateHook();
 
         AutoSuspendHelper autoSuspendHelper = new(this) { IdleTimeout = IdleTimeout };
         Console.WriteLine($"Auto-suspend idle timeout: {autoSuspendHelper.IdleTimeout}");

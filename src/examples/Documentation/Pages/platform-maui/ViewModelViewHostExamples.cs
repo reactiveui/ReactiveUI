@@ -51,11 +51,10 @@ public static class ViewModelViewHostExamples
         // DefaultContent
     }
 
-    /// <summary>Setting <c>ViewContract</c> resolves the view registered under that contract and shows it.</summary>
+    /// <summary>Setting <c>ViewContract</c> resolves the view marked with that contract and shows it.</summary>
     public static void ViewContractPicksTheViewForTheContract()
     {
         AppLocator.CurrentMutable.Register<IViewFor<RecipeListViewModel>>(static () => new RecipeListContentView());
-        AppLocator.CurrentMutable.Register<IViewFor<RecipeListViewModel>>(static () => new RecipeListWideContentView(), "Wide");
 
         ViewModelViewHost host = new() { ViewModel = new RecipeListViewModel(new RecipeBookScreen()) };
         Console.WriteLine(host.Content?.GetType().Name);
@@ -74,7 +73,6 @@ public static class ViewModelViewHostExamples
     public static void ViewContractObservableSwitchesTheView()
     {
         AppLocator.CurrentMutable.Register<IViewFor<RecipeListViewModel>>(static () => new RecipeListContentView());
-        AppLocator.CurrentMutable.Register<IViewFor<RecipeListViewModel>>(static () => new RecipeListWideContentView(), "Wide");
 
         using Signal<string?> layout = new();
         ViewModelViewHost host = new()

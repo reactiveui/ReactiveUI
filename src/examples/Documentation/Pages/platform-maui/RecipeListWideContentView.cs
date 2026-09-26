@@ -7,6 +7,10 @@ using ReactiveUI.Maui;
 
 namespace ReactiveUI.Documentation.PlatformMaui;
 
-/// <summary>The view <see cref="ViewModelViewHost"/> shows for <see cref="RecipeListViewModel"/> under the "Wide" contract, for a tablet in landscape.</summary>
+/// <summary>
+/// The view <see cref="ViewModelViewHost"/> shows for <see cref="RecipeListViewModel"/> under the "Wide" contract, for a
+/// tablet in landscape. <see cref="ViewContractAttribute"/> puts it in the generated view lookup under that contract.
+/// </summary>
+[ViewContract("Wide")]
 [System.Diagnostics.DebuggerDisplay("RecipeListWideContentView")]
 public sealed class RecipeListWideContentView : ReactiveContentView<RecipeListViewModel>;

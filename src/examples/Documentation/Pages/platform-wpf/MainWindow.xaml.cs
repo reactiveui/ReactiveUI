@@ -10,7 +10,8 @@ namespace ReactiveUI.Documentation.PlatformWpf;
 
 /// <summary>
 /// The app's only window. It hosts a <see cref="RoutedViewHost"/> that slides between the course list and a
-/// student's grade page as the router navigates.
+/// student's grade page as the router navigates, and a notice board that shows the school office's notices through
+/// <see cref="RoutedViewHostUnsafe"/> and <see cref="ViewModelViewHostUnsafe"/>.
 /// </summary>
 [DebuggerDisplay("MainWindow")]
 public partial class MainWindow : ReactiveWindow<AppShell>
@@ -38,6 +39,11 @@ public partial class MainWindow : ReactiveWindow<AppShell>
         Host.TransitionStarted += static (_, _) => Console.WriteLine("Transition started.");
         Host.TransitionCompleted += static (_, _) => Console.WriteLine("Transition completed.");
 
+        // OfficeNoticeView is registered only with the service locator, so the notice board uses the Unsafe twins.
+        NoticeBoard noticeBoard = new();
+        NoticeBoardHost.Router = noticeBoard.Router;
+        LatestNoticeHost.ViewModel = new OfficeNoticeViewModel(noticeBoard, "Reports are due on Friday.");
+
         // The "d(...)" style registers one disposable at a time, rather than collecting them into a
         // MultipleDisposable first; RoutedViewHost's own constructor uses the same style internally.
         _ = this.WhenActivated(d =>
@@ -45,6 +51,8 @@ public partial class MainWindow : ReactiveWindow<AppShell>
             Host.Router = ViewModel!.Router;
             Host.ViewLocator = ViewLocator.GetCurrent();
             d(ViewModel.Router.Navigate.Execute(new CourseListViewModel(ViewModel, courses))
+                .Subscribe());
+            d(noticeBoard.Router.Navigate.Execute(new OfficeNoticeViewModel(noticeBoard, "Parent evening is on Tuesday."))
                 .Subscribe());
             Console.WriteLine($"View contract: {Host.ViewContract ?? "(none)"}");
 

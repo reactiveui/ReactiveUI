@@ -52,6 +52,12 @@ ViewModelViewHostExamples.ViewLocatorOverridesTheDefaultLocator();
 
 ViewModelViewHostExamples.GenericHostTypesTheViewModelProperty();
 
+ServiceLocatorViewExamples.ViewModelViewHostUnsafeFindsTheView();
+
+await ServiceLocatorViewExamples.RoutedViewHostUnsafePushesThePage();
+
+ServiceLocatorViewExamples.MapFromServiceLocatorLetsTheDefaultHostFindTheView();
+
 AutoSuspendHelperExamples.LifecycleMethodsRelayToTheSuspensionHost();
 
 AutoSuspendHelperExamples.UntimelyDemiseIsAStaticSignal();

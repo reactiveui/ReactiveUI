@@ -9,9 +9,8 @@ using ReactiveUI.Maui;
 namespace ReactiveUI.Documentation.PlatformMaui;
 
 /// <summary>
-/// A <see cref="RoutedViewHost{TViewModel}"/> fixed to <see cref="RecipeDetailViewModel"/>. Resolving its page never
-/// uses reflection, unlike the non-generic <see cref="RoutedViewHost"/>, so it is safe to trim and to publish as
-/// NativeAOT.
+/// A <see cref="RoutedViewHost{TViewModel}"/> fixed to <see cref="RecipeDetailViewModel"/>. It resolves its page through
+/// that compile-time type, with no reflection, so it is safe to trim and to publish as NativeAOT.
 /// </summary>
 [System.Diagnostics.DebuggerDisplay("RecipeRoutedViewHostOfDetail")]
 public sealed class RecipeRoutedViewHostOfDetail : RoutedViewHost<RecipeDetailViewModel>

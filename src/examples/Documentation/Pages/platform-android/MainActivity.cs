@@ -63,6 +63,11 @@ public sealed class MainActivity : AndroidX.ReactiveAppCompatActivity<TimetableV
         badgeHost.SetLessonCount(ViewModel.Lessons.Count);
         BadgeContainer!.AddView(badgeHost.ToBadgeView());
 
+        // Auto-wireup fills PeekSubjectLabel by name, so this peek's constructor needs no FindViewById call.
+        FirstLessonPeekHost firstLessonPeek = new(this, PeeksRow!) { ViewModel = ViewModel.Lessons[0] };
+        PeeksRow!.AddView(firstLessonPeek.View);
+        TimetableLog.Info($"Auto-wired peek shows: {firstLessonPeek.PeekSubjectLabel?.Text}.");
+
         // The 3-arg constructor defaults attachToRoot to false, so this peek is added with an explicit AddView call.
         LessonPeekHost secondLessonPeek = new(this, PeeksRow!) { ViewModel = ViewModel.Lessons[1] };
         PeeksRow!.AddView(secondLessonPeek.View);

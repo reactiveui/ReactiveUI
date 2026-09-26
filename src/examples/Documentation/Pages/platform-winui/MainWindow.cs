@@ -12,8 +12,8 @@ namespace ReactiveUI.Documentation.PlatformWinui;
 /// The dashboard's window. It hosts both flavors of the two view hosts: <see cref="RoutedViewHost"/>/
 /// <see cref="ViewModelViewHost"/> for content whose type varies at run time, and the generic
 /// <see cref="RoutedViewHost{TViewModel}"/>/<see cref="ViewModelViewHost{TViewModel}"/> for a panel that always shows
-/// one known type. All four find views through the generated view lookup. The maintenance panel shows a view added
-/// with <c>Map</c>, which that lookup cannot find, so it uses the Unsafe twins.
+/// one known type. They find views through the generated view lookup and the view locator's <c>Map</c> entries. The
+/// radar panel shows a view registered only with the service locator, so it uses the Unsafe twins.
 /// </summary>
 [System.Diagnostics.DebuggerDisplay("Weather Station")]
 public sealed class MainWindow : Window
@@ -30,6 +30,9 @@ public sealed class MainWindow : Window
     /// <summary>A router dedicated to the maintenance panel.</summary>
     private readonly WeatherShell _maintenanceShell = new();
 
+    /// <summary>A router dedicated to the radar panel.</summary>
+    private readonly WeatherShell _radarShell = new();
+
     /// <summary>Hosts the alert panel through the generic host.</summary>
     private readonly RoutedViewHost<AlertViewModel> _alertHost = new();
 
@@ -40,10 +43,16 @@ public sealed class MainWindow : Window
     private readonly ViewModelViewHost<WeatherReading> _compactGlanceHost = new();
 
     /// <summary>Hosts the maintenance visit on top of <see cref="_maintenanceShell"/>'s stack.</summary>
-    private readonly RoutedViewHostUnsafe _maintenancePageHost = new();
+    private readonly RoutedViewHost _maintenancePageHost = new();
 
     /// <summary>Shows the next maintenance visit directly.</summary>
-    private readonly ViewModelViewHostUnsafe _nextVisitHost = new();
+    private readonly ViewModelViewHost _nextVisitHost = new();
+
+    /// <summary>Hosts the radar image on top of <see cref="_radarShell"/>'s stack.</summary>
+    private readonly RoutedViewHostUnsafe _radarPageHost = new();
+
+    /// <summary>Shows a second station's radar image directly.</summary>
+    private readonly ViewModelViewHostUnsafe _radarGlanceHost = new();
 
     /// <summary>Initializes a new instance of the <see cref="MainWindow"/> class.</summary>
     /// <param name="readings">The stations to show.</param>
@@ -73,6 +82,7 @@ public sealed class MainWindow : Window
         layout.Children.Add(_quickGlanceHost);
         layout.Children.Add(_compactGlanceHost);
         layout.Children.Add(CreateMaintenancePanel());
+        layout.Children.Add(CreateRadarPanel());
         Content = layout;
 
         StationListPageViewModel list = new(_shell, readings);
@@ -97,10 +107,13 @@ public sealed class MainWindow : Window
     /// <summary>Gets what the maintenance panel's view model host shows.</summary>
     public object? NextVisit => _nextVisitHost.Content;
 
-    /// <summary>
-    /// Builds the maintenance panel. <see cref="SensorMaintenanceView"/> is added to the view locator with <c>Map</c>,
-    /// which the generated view lookup does not read, so the panel uses the Unsafe twins of both hosts.
-    /// </summary>
+    /// <summary>Gets what the radar panel's routed host shows.</summary>
+    public object? RadarPage => _radarPageHost.Content;
+
+    /// <summary>Gets what the radar panel's view model host shows.</summary>
+    public object? RadarGlance => _radarGlanceHost.Content;
+
+    /// <summary>Builds the maintenance panel, whose view is added with <c>Map</c>, so the default hosts find it.</summary>
     /// <returns>The panel holding both hosts.</returns>
     private StackPanel CreateMaintenancePanel()
     {
@@ -115,6 +128,26 @@ public sealed class MainWindow : Window
         StackPanel panel = new StackPanel();
         panel.Children.Add(_maintenancePageHost);
         panel.Children.Add(_nextVisitHost);
+        return panel;
+    }
+
+    /// <summary>
+    /// Builds the radar panel. <see cref="RadarImageView"/> is registered only with the service locator, so the panel
+    /// uses the Unsafe twins, which also ask the service locator.
+    /// </summary>
+    /// <returns>The panel holding both hosts.</returns>
+    private StackPanel CreateRadarPanel()
+    {
+        _radarPageHost.Router = _radarShell.Router;
+        _radarPageHost.DefaultContent = new TextBlock { Text = "(no radar)" };
+        _ = _radarShell.Router.Navigate.Execute(new RadarImageViewModel(_radarShell, "Highlands")).Subscribe();
+
+        _radarGlanceHost.DefaultContent = new TextBlock { Text = "(no radar)" };
+        _radarGlanceHost.ViewModel = new RadarImageViewModel(_radarShell, "Riverside");
+
+        StackPanel panel = new StackPanel();
+        panel.Children.Add(_radarPageHost);
+        panel.Children.Add(_radarGlanceHost);
         return panel;
     }
 }

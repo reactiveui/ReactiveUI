@@ -9,7 +9,8 @@ namespace ReactiveUI.Documentation.PlatformWinui;
 
 /// <summary>
 /// Shows a <see cref="SensorMaintenanceViewModel"/>. It implements only the non-generic <see cref="IViewFor"/>, so the
-/// source generator writes no lookup entry for it. The app adds it to the view locator with <c>Map</c> instead.
+/// source generator writes no lookup entry for it. The app adds it to the view locator with <c>Map</c> instead, and the
+/// default hosts find it there.
 /// </summary>
 [System.Diagnostics.DebuggerDisplay("SensorMaintenanceView")]
 public sealed class SensorMaintenanceView : UserControl, IViewFor
