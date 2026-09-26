@@ -8,6 +8,7 @@ using UIKit;
 namespace ReactiveUI.Device.Tests;
 
 /// <summary>Tests <see cref="ViewModelViewHost"/> hosting resolved controllers in a real UIKit hierarchy.</summary>
+[NotInParallel(UIKitHarness.WindowKey)]
 public class ViewModelViewHostTests
 {
     /// <summary>Setting a view model resolves its view, hands it the view model and adopts it as a child controller.</summary>
@@ -32,8 +33,13 @@ public class ViewModelViewHostTests
         }
     }
 
-    /// <summary>Replacing the view model removes the old child controller and adopts the new one.</summary>
+    /// <summary>Replacing the view model removes and disposes the old child controller and adopts the new one.</summary>
     /// <returns>A task representing the test.</returns>
+    /// <remarks>
+    /// The host owns the controllers it resolves and disposes the one it replaces. A disposed controller no longer keeps
+    /// its native object alive, so the test checks the old controller only through managed state and the host's own
+    /// hierarchy, never by sending it a message.
+    /// </remarks>
     [Test]
     public async Task ReplacingViewModel_SwapsTheChildController()
     {
@@ -48,12 +54,18 @@ public class ViewModelViewHostTests
         {
             await MainThread.RunAsync(() => host.ViewModel = new TestViewModel("first"));
             await UIKitHarness.UntilAsync(() => created is [{ ParentViewController: not null }], "the first child");
+            var first = created[0];
+            var firstView = await MainThread.RunAsync(() => first.View!);
 
             await MainThread.RunAsync(() => host.ViewModel = new TestViewModel("second"));
             await UIKitHarness.UntilAsync(() => created is [_, { ParentViewController: not null }], "the second child");
+            var second = created[1];
 
-            await Assert.That(await MainThread.RunAsync(() => created[0].ParentViewController)).IsNull();
-            await Assert.That(await MainThread.RunAsync(() => host.ChildViewControllers.Length)).IsEqualTo(1);
+            await Assert.That(first.IsDisposed).IsTrue();
+            await Assert.That(second.IsDisposed).IsFalse();
+            await Assert.That(await MainThread.RunAsync(() => host.ChildViewControllers is [var only] && ReferenceEquals(only, second))).IsTrue();
+            await Assert.That(await MainThread.RunAsync(() => host.View!.Subviews.Any(v => ReferenceEquals(v, second.View)))).IsTrue();
+            await Assert.That(await MainThread.RunAsync(() => host.View!.Subviews.Any(v => ReferenceEquals(v, firstView)))).IsFalse();
         }
         finally
         {

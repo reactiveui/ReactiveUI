@@ -9,8 +9,15 @@ using UIKit;
 namespace ReactiveUI.Device.Tests;
 
 /// <summary>Hosts controllers in the app's real window and waits for UIKit state, reading it only on the main thread.</summary>
+/// <remarks>
+/// The app has one window, so a test that shows a controller owns it until the test ends. Mark every test class that
+/// shows controllers with <c>[NotInParallel(UIKitHarness.WindowKey)]</c>, so no other test replaces its root midway.
+/// </remarks>
 internal static class UIKitHarness
 {
+    /// <summary>The constraint key for tests that show controllers in the shared window.</summary>
+    internal const string WindowKey = "UIKitWindow";
+
     /// <summary>The interval between checks.</summary>
     private static readonly TimeSpan PollInterval = TimeSpan.FromMilliseconds(25);
 

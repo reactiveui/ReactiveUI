@@ -6,6 +6,7 @@
 namespace ReactiveUI.Device.Tests;
 
 /// <summary>Tests <see cref="ReactiveViewController{TViewModel}"/> activation as UIKit shows and hides it.</summary>
+[NotInParallel(UIKitHarness.WindowKey)]
 public class ReactiveViewControllerTests
 {
     /// <summary>A controller activates when it appears and deactivates when it disappears.</summary>

@@ -49,9 +49,6 @@
     <RuntimeIdentifier Condition="'$(RuntimeIdentifier)' == ''">iossimulator-x64</RuntimeIdentifier>
     <!-- The tests exercise ReactiveUI's reflection-based paths, so the app is never trimmed. -->
     <MtouchLink>None</MtouchLink>
-    <!-- Nothing is trimmed, so the trim analysis would only report the reflection paths the tests exist to cover.
-         The SDK's own MSTest runner turns it off for the same reason. -->
-    <EnableTrimAnalyzer>false</EnableTrimAnalyzer>
   </PropertyGroup>
 
   <ItemGroup>

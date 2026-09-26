@@ -6,6 +6,7 @@
 namespace ReactiveUI.Device.Tests;
 
 /// <summary>Tests <see cref="RoutedViewHost"/> mirroring a router's stack into a real navigation controller.</summary>
+[NotInParallel(UIKitHarness.WindowKey)]
 public class RoutedViewHostTests
 {
     /// <summary>The number of controllers after one push onto a one-controller stack.</summary>
