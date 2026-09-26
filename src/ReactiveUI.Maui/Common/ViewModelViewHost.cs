@@ -5,6 +5,7 @@
 
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using Microsoft.UI.Xaml;
 #if REACTIVE_SHIM
 using ReactiveUI.Reactive.Maui.Internal;
@@ -30,8 +31,13 @@ namespace ReactiveUI;
 /// the ViewModel property and display it. This control is very useful
 /// inside a DataTemplate to display the View associated with a ViewModel.
 /// </summary>
-[RequiresUnreferencedCode("This class uses reflection to determine view model types at runtime through ViewLocator, which may be incompatible with trimming.")]
-[RequiresDynamicCode("ViewLocator.ResolveView uses reflection which is incompatible with AOT compilation.")]
+/// <remarks>
+/// The host finds the view through the view lookup the source generator writes while the app builds, so it is safe
+/// to trim and to compile ahead of time. The lookup covers every view class that implements <see cref="IViewFor{T}"/>
+/// in a project the ReactiveUI.Binding source generator runs in. A view the generator cannot see, such as one only
+/// registered with the service locator, needs <see cref="ViewModelViewHostUnsafe"/>, which also asks the locator's
+/// explicit mappings and the service locator by the view model's run-time type.
+/// </remarks>
 [DebuggerDisplay("{ViewContractObservable}, {DefaultContent}")]
 public partial class ViewModelViewHost : TransitioningContentControl, IViewFor, IEnableLogger
 {
@@ -54,21 +60,34 @@ public partial class ViewModelViewHost : TransitioningContentControl, IViewFor, 
     /// <summary>The subscriptions created during construction, disposed together.</summary>
     private readonly MultipleDisposable _subscriptions = [];
 
+    /// <summary>Asks a view locator for the view of a view model under a contract.</summary>
+    private readonly Func<IViewLocator, object, string?, IViewFor?> _resolveView;
+
     /// <summary>The most recently observed view contract.</summary>
     private string? _viewContract;
 
     /// <summary>Initializes a new instance of the <see cref="ViewModelViewHost"/> class.</summary>
+    public ViewModelViewHost()
+        : this(ResolveGeneratedView)
+    {
+    }
+
+    /// <summary>Initializes a new instance of the <see cref="ViewModelViewHost"/> class with its view lookup.</summary>
+    /// <param name="resolveView">Asks a view locator for the view of a view model under a contract.</param>
     [SuppressMessage(
         "Design",
         "SST2403:'this' escapes before construction finishes",
         Justification = "The single-threaded UI control hands 'this' to MauiReactiveHelpers to observe its own dependency-property changes; it is never published to another thread.")]
-    public ViewModelViewHost() =>
+    private protected ViewModelViewHost(Func<IViewLocator, object, string?, IViewFor?> resolveView)
+    {
+        _resolveView = resolveView;
         MauiReactiveHelpers.InitializeViewModelViewHost(
             (this, this.Log(), observable => ViewContractObservable = observable),
             (nameof(ViewModel), ViewModelProperty, () => ViewModel),
             contract => _viewContract = contract,
             ResolveViewForViewModel,
             _subscriptions);
+    }
 
     /// <summary>Gets or sets the view contract observable.</summary>
     public IObservable<string?> ViewContractObservable
@@ -115,9 +134,6 @@ public partial class ViewModelViewHost : TransitioningContentControl, IViewFor, 
     /// <summary>Resolve view for view model with respect to contract.</summary>
     /// <param name="viewModel">ViewModel.</param>
     /// <param name="contract">Contract used by ViewLocator.</param>
-    [RequiresUnreferencedCode("This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
-    [RequiresDynamicCode("If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, "
-        + "or generic constraints), trimming can't validate that the requirements of those annotations are met.")]
     protected virtual void ResolveViewForViewModel(object? viewModel, string? contract)
     {
         if (viewModel is null)
@@ -127,17 +143,18 @@ public partial class ViewModelViewHost : TransitioningContentControl, IViewFor, 
         }
 
         var viewLocator = ViewLocator ?? GetCurrent();
-        var viewInstance = viewLocator.ResolveView(viewModel, contract);
+        var viewInstance = _resolveView(viewLocator, viewModel, contract);
         if (viewInstance is null && !ContractFallbackByPass)
         {
-            viewInstance = viewLocator.ResolveView(viewModel);
+            viewInstance = _resolveView(viewLocator, viewModel, null);
         }
 
         if (viewInstance is null)
         {
             Content = DefaultContent;
             this.Log().Warn(
-                $"The {nameof(ViewModelViewHost)} could not find a valid view for the view model of type {viewModel.GetType()} and value {viewModel}.");
+                $"The {GetType().Name} could not find a valid view for the view model of type {viewModel.GetType()} and value {viewModel}. "
+                + $"The generated view lookup finds views that implement IViewFor<T>; use {nameof(ViewModelViewHostUnsafe)} to also resolve a view registered only by run-time type.");
             return;
         }
 
@@ -145,4 +162,13 @@ public partial class ViewModelViewHost : TransitioningContentControl, IViewFor, 
 
         Content = viewInstance;
     }
+
+    /// <summary>Finds a view through the view lookup the source generator writes, which needs no reflection.</summary>
+    /// <param name="viewLocator">The view locator to ask.</param>
+    /// <param name="viewModel">The view model to find a view for.</param>
+    /// <param name="contract">The contract to resolve under, or <see langword="null"/> for the default view.</param>
+    /// <returns>The view, or <see langword="null"/> when the generated lookup has none.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static IViewFor? ResolveGeneratedView(IViewLocator viewLocator, object viewModel, string? contract) =>
+        viewLocator.ResolveView<object>(viewModel, contract);
 }

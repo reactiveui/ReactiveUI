@@ -6,6 +6,8 @@
 using System.Linq.Expressions;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Data;
+using ReactiveUI.Tests.WinUI.Mocks;
 using TUnit.Core.Executors;
 
 namespace ReactiveUI.Tests.WinUI;
@@ -20,6 +22,47 @@ namespace ReactiveUI.Tests.WinUI;
 [TestExecutor<WinUITestExecutor>]
 public class AutoDataTemplateBindingHookTests
 {
+    /// <summary>The key the default template's converter is stored under in the application's resources.</summary>
+    private static readonly string ConverterKey = $"{typeof(ViewModelViewHost).FullName}Converter";
+
+    /// <summary>
+    /// Verifies the default template's converter sits in the application's resources, turns a view model into its
+    /// host, and refuses to convert a host back, since the template binds one way only.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task DefaultItemTemplate_ConverterInTheApplicationResources_ConvertsOneWayOnly()
+    {
+        _ = AutoDataTemplateBindingHook.DefaultItemTemplate.Value;
+        var converter = Application.Current.Resources[ConverterKey] as IValueConverter;
+        var viewModel = new PlainTestViewModel();
+
+        var host = converter?.Convert(viewModel, typeof(object), null!, string.Empty) as ViewModelViewHost;
+
+        using (Assert.Multiple())
+        {
+            await Assert.That(converter).IsNotNull();
+            await Assert.That(host?.ViewModel).IsSameReferenceAs(viewModel);
+            await Assert.That(() => converter!.ConvertBack(host!, typeof(object), null!, string.Empty)).Throws<NotSupportedException>();
+        }
+    }
+
+    /// <summary>Verifies the hook puts the converter back when the application's resources no longer hold it.</summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task ExecuteHook_WhenTheApplicationLostTheConverter_RegistersItAgain()
+    {
+        _ = AutoDataTemplateBindingHook.DefaultItemTemplate.Value;
+        _ = Application.Current.Resources.Remove(ConverterKey);
+        var hook = new AutoDataTemplateBindingHook();
+        var itemsControl = new ListBox();
+        Expression<Func<ItemsControl, object?>> expression = static x => x.ItemsSource;
+
+        _ = hook.ExecuteHook(null, itemsControl, static () => [], () => ViewProperties(itemsControl, expression.Body), BindingDirection.OneWay);
+
+        await Assert.That(Application.Current.Resources.ContainsKey(ConverterKey)).IsTrue();
+    }
+
     /// <summary>Verifies a missing view-property accessor is rejected.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
@@ -149,17 +192,45 @@ public class AutoDataTemplateBindingHookTests
     }
 
     /// <summary>
-    /// Verifies the default template really produces a host that can display a view for the bound item, which is
-    /// the whole point of supplying it. Parsing the template resolves the hook's own namespace, so this fails if
-    /// the XAML ever names a namespace this assembly is not compiled into, or one WinUI's parser cannot read.
+    /// Verifies the default template really produces a host that displays the bound item, which is the whole point
+    /// of supplying it. The test application has no <c>IXamlMetadataProvider</c>, like an app with no .xaml files,
+    /// so this fails if the template ever names a ReactiveUI type the XAML parser would have to look up.
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public async Task DefaultItemTemplate_MaterializesAViewModelViewHost()
+    public async Task DefaultItemTemplate_HostsTheItemInAViewModelViewHost()
     {
-        var content = AutoDataTemplateBindingHook.DefaultItemTemplate.Value.LoadContent();
+        var viewModel = new PlainTestViewModel();
+        var content = (ContentControl)AutoDataTemplateBindingHook.DefaultItemTemplate.Value.LoadContent();
 
-        _ = await Assert.That(content).IsTypeOf<ViewModelViewHost>();
+        content.DataContext = viewModel;
+
+        var host = content.Content as ViewModelViewHost;
+        using (Assert.Multiple())
+        {
+            await Assert.That(host).IsTypeOf<ViewModelViewHost>();
+            await Assert.That(host!.ViewModel).IsSameReferenceAs(viewModel);
+            await Assert.That(host.IsTabStop).IsFalse();
+        }
+    }
+
+    /// <summary>Verifies the host the default template creates shows the view the generated view lookup finds for the item.</summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    [TestExecutor<WinUIViewRegistrationExecutor>]
+    public async Task DefaultItemTemplate_ShowsTheGeneratedViewForTheItem()
+    {
+        var viewModel = new PlainTestViewModel();
+        var content = (ContentControl)AutoDataTemplateBindingHook.DefaultItemTemplate.Value.LoadContent();
+
+        content.DataContext = viewModel;
+
+        var view = ((ViewModelViewHost)content.Content).Content as PlainTestView;
+        using (Assert.Multiple())
+        {
+            await Assert.That(view).IsNotNull();
+            await Assert.That(view!.ViewModel).IsSameReferenceAs(viewModel);
+        }
     }
 
     /// <summary>Builds the observed-change chain a property binding would hand the hook.</summary>
