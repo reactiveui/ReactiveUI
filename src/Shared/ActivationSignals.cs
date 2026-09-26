@@ -27,8 +27,21 @@ internal static class ActivationSignals
 {
     /// <summary>Notifies subscribers that the owning view has been activated or deactivated.</summary>
     /// <param name="signal">The activation or deactivation signal to raise.</param>
+    /// <remarks>
+    /// A platform can call a view back after the view has been disposed, for example from a deferred UIKit
+    /// appearance callback. The view's signals are disposed by then, so the call does nothing rather than throw
+    /// an <see cref="ObjectDisposedException"/> into native code.
+    /// </remarks>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static void Raise(Signal<RxVoid> signal) => signal.OnNext(RxVoid.Default);
+    internal static void Raise(Signal<RxVoid> signal)
+    {
+        if (signal.IsDisposed)
+        {
+            return;
+        }
+
+        signal.OnNext(RxVoid.Default);
+    }
 
     /// <summary>
     /// Tears down a view's activation signals from its <c>Dispose(bool)</c> override. They are managed state,
@@ -77,7 +90,9 @@ internal static class ActivationSignals
     /// <summary>
     /// Raises activation or deactivation on the main thread, backing <c>ICanForceManualActivation.Activate</c>.
     /// The caller is a platform view being activated from an arbitrary thread, so the notification is marshalled
-    /// through <see cref="RxSchedulers.MainThreadScheduler"/> rather than raised inline.
+    /// through <see cref="RxSchedulers.MainThreadScheduler"/> rather than raised inline. The view can be disposed
+    /// before the scheduled work runs, so the work goes through <see cref="Raise(Signal{RxVoid})"/> and does
+    /// nothing in that case.
     /// </summary>
     /// <param name="isActivating">Whether the view is being activated rather than deactivated.</param>
     /// <param name="activated">The activation signal.</param>
@@ -88,7 +103,7 @@ internal static class ActivationSignals
             isActivating ? activated : deactivated,
             static (_, signal) =>
             {
-                signal.OnNext(RxVoid.Default);
+                Raise(signal);
                 return EmptyDisposable.Instance;
             });
 }

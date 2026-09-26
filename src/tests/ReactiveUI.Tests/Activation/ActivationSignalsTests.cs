@@ -3,6 +3,9 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using ReactiveUI.Tests.Utilities.Schedulers;
+using TUnit.Core.Executors;
+
 namespace ReactiveUI.Tests.Activation;
 
 /// <summary>
@@ -26,6 +29,42 @@ public class ActivationSignalsTests
         ActivationSignals.Raise(signal);
 
         await Assert.That(raised).IsEqualTo(1);
+    }
+
+    /// <summary>Raising a disposed signal does nothing, so a late platform callback never throws.</summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task Raise_DisposedSignal_DoesNothing()
+    {
+        var signal = new Signal<RxVoid>();
+        signal.Dispose();
+
+        await Assert.That(() => ActivationSignals.Raise(signal)).ThrowsNothing();
+    }
+
+    /// <summary>A forced activation whose view is disposed before the scheduled work runs does nothing.</summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    [TestExecutor<WithVirtualTimeSchedulerExecutor>]
+    public async Task ScheduleActivation_SignalsDisposedBeforeTheWorkRuns_DoesNothing()
+    {
+        var scheduler = TestContext.Current.GetVirtualTimeScheduler();
+        var original = RxSchedulers.MainThreadScheduler;
+        try
+        {
+            RxSchedulers.MainThreadScheduler = scheduler;
+            var activated = new Signal<RxVoid>();
+            var deactivated = new Signal<RxVoid>();
+
+            ActivationSignals.ScheduleActivation(true, activated, deactivated);
+            ActivationSignals.DisposeWhen(true, activated, deactivated);
+
+            await Assert.That(scheduler.Start).ThrowsNothing();
+        }
+        finally
+        {
+            RxSchedulers.MainThreadScheduler = original;
+        }
     }
 
     /// <summary>A non-deterministic dispose leaves the signals usable, so finalization never closes them.</summary>

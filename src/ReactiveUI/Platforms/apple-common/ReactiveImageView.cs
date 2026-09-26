@@ -156,6 +156,12 @@ public class ReactiveImageView : NSImageView, IReactiveNotifyPropertyChanged<Rea
     public override void ViewWillMoveToSuperview(NSView? newSuperview)
 #endif
     {
+        // A platform callback that arrives after Dispose does nothing.
+        if (_activated.IsDisposed)
+        {
+            return;
+        }
+
 #if UIKIT
         base.WillMoveToSuperview(newsuper);
         var superview = newsuper;

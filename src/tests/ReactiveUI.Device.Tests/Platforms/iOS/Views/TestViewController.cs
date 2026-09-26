@@ -41,9 +41,17 @@ public sealed class TestViewController : ReactiveViewController<TestViewModel>
     /// <remarks>A disposed controller no longer keeps its native object alive, so a test must not send it messages.</remarks>
     public bool IsDisposed => Volatile.Read(ref _disposed);
 
+    /// <summary>Gets a value indicating whether the controller still had a parent controller when it was disposed.</summary>
+    public bool HadParentWhenDisposed { get; private set; }
+
     /// <inheritdoc/>
     protected override void Dispose(bool disposing)
     {
+        if (disposing && !IsDisposed)
+        {
+            HadParentWhenDisposed = ParentViewController is not null;
+        }
+
         Volatile.Write(ref _disposed, true);
         base.Dispose(disposing);
     }
