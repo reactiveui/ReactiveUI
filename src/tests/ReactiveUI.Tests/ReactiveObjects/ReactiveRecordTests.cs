@@ -286,6 +286,52 @@ public class ReactiveRecordTests
         await Assert.That(fixture.AreChangeNotificationsEnabled()).IsTrue();
     }
 
+    /// <summary>Test that ToString prints only the derived record's own members.</summary>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task ToStringShouldPrintOnlyDerivedMembers()
+    {
+        const int AgeValue = 25;
+        var fixture = new TestRecord { Name = "Test", Age = AgeValue };
+
+        await Assert.That(fixture.ToString()).IsEqualTo("TestRecord { Name = Test, Age = 25 }");
+    }
+
+    /// <summary>Test that records with equal members stay equal after their reactive state is used.</summary>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task RecordsWithEqualMembersShouldBeEqualAfterReactiveStateIsUsed()
+    {
+        const int AgeValue = 25;
+        var first = new TestRecord { Name = "Test", Age = AgeValue };
+        var second = new TestRecord { Name = "Test", Age = AgeValue };
+
+        _ = first.Changing;
+        _ = first.Changed;
+        _ = first.ThrownExceptions;
+        first.PropertyChanged += static (_, _) => { };
+        first.PropertyChanging += static (_, _) => { };
+
+        using (Assert.Multiple())
+        {
+            await Assert.That(first.Equals(second)).IsTrue();
+            await Assert.That(first == second).IsTrue();
+            await Assert.That(first.GetHashCode()).IsEqualTo(second.GetHashCode());
+        }
+    }
+
+    /// <summary>Test that records with different members are not equal.</summary>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task RecordsWithDifferentMembersShouldNotBeEqual()
+    {
+        const int AgeValue = 25;
+        var first = new TestRecord { Name = "Test", Age = AgeValue };
+        var second = new TestRecord { Name = "Other", Age = AgeValue };
+
+        await Assert.That(first.Equals(second)).IsFalse();
+    }
+
     /// <summary>Test that ThrownExceptions observable is initialized.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]

@@ -198,6 +198,9 @@ public class TransitioningContentControl : ContentControl
     /// <summary>A value indicating whether a transition is currently in progress.</summary>
     private bool _isTransitioning;
 
+    /// <summary>The storyboard clock whose Completed event last ended a transition.</summary>
+    private Clock? _completedClock;
+
     /// <summary>Initializes a new instance of the <see cref="TransitioningContentControl"/> class.</summary>
     /// <remarks>
     /// The control’s default style key is set to <see cref="TransitioningContentControl"/> so that it can locate its
@@ -662,6 +665,29 @@ public class TransitioningContentControl : ContentControl
         }
     }
 
+    /// <summary>Handles the completion of a transition and raises the TransitionCompleted event.</summary>
+    /// <param name="sender">The source of the event. This is typically the object that initiated the transition.</param>
+    /// <param name="e">An EventArgs object that contains the event data.</param>
+    /// <remarks>Internal so tests can drive completion without depending on WPF's animation clock ticking.</remarks>
+    internal void OnTransitionCompleted(object? sender, EventArgs e)
+    {
+        // Returning to Normal from inside this handler makes WPF raise Completed a second time for the same clock.
+        // Only the first one ends the transition.
+        if (sender is Clock clock)
+        {
+            if (ReferenceEquals(clock, _completedClock))
+            {
+                return;
+            }
+
+            _completedClock = clock;
+        }
+
+        AbortTransition();
+
+        TransitionCompleted?.Invoke(this, new());
+    }
+
     /// <summary>Called when the value of the <see cref="ContentControl.Content"/> property changes.</summary>
     /// <param name="oldContent">The previous content value.</param>
     /// <param name="newContent">The new content value.</param>
@@ -696,16 +722,6 @@ public class TransitioningContentControl : ContentControl
         // https://github.com/dotnet/wpf/issues/2397
         PreviousImageSite.Source = null;
         PreviousImageSite.UpdateLayout();
-    }
-
-    /// <summary>Handles the completion of a transition and raises the TransitionCompleted event.</summary>
-    /// <param name="sender">The source of the event. This is typically the object that initiated the transition.</param>
-    /// <param name="e">An EventArgs object that contains the event data.</param>
-    private void OnTransitionCompleted(object? sender, EventArgs e)
-    {
-        AbortTransition();
-
-        TransitionCompleted?.Invoke(this, new());
     }
 
     /// <summary>Raises the TransitionStarted event to signal that a transition has begun.</summary>

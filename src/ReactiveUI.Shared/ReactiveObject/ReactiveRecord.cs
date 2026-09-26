@@ -8,6 +8,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
+using System.Text;
 using System.Text.Json.Serialization;
 
 #if REACTIVE_SHIM
@@ -105,10 +106,27 @@ public abstract record ReactiveRecord : IReactiveNotifyPropertyChanged<IReactive
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool AreChangeNotificationsEnabled() => IReactiveObjectExtensions.AreChangeNotificationsEnabled(this);
 
+    /// <summary>
+    /// Compares only the record type. The notification state held by this base record is not data,
+    /// so a derived record's value equality covers its own members only.
+    /// </summary>
+    /// <param name="other">The record to compare with.</param>
+    /// <returns><see langword="true"/> if <paramref name="other"/> is the same record type; otherwise <see langword="false"/>.</returns>
+    public virtual bool Equals(ReactiveRecord? other) =>
+        ReferenceEquals(this, other) || (other is not null && EqualityContract == other.EqualityContract);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => EqualityContract.GetHashCode();
+
     /// <summary>Delays notifications until the return IDisposable is disposed.</summary>
     /// <returns>A disposable which when disposed will send delayed notifications.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public IDisposable DelayChangeNotifications() => IReactiveObjectExtensions.DelayChangeNotifications(this);
+
+    /// <summary>Prints no members, so a derived record's ToString shows only its own members.</summary>
+    /// <param name="builder">The builder the derived record writes its members to.</param>
+    /// <returns><see langword="false"/>, because this record prints no members.</returns>
+    protected virtual bool PrintMembers(StringBuilder builder) => false;
 
     /// <summary>Adds a property-changing event handler.</summary>
     /// <param name="handler">The handler to add.</param>
