@@ -38,6 +38,12 @@ namespace ReactiveUI;
 /// Provide a <see cref="DefaultContent"/> controller to display placeholder UI while no view model is available, or set
 /// <see cref="ViewContractObservable"/> to drive platform-specific view selection.
 /// </para>
+/// <para>
+/// The host finds the view through the view lookup the source generator writes while the app builds, so it is safe
+/// to trim and to compile ahead of time. The lookup covers every view class that implements <see cref="IViewFor{T}"/>
+/// in a project the ReactiveUI.Binding source generator runs in. A view the generator cannot see, such as one only
+/// registered with the service locator, needs <see cref="ViewModelViewHostUnsafe"/>.
+/// </para>
 /// </remarks>
 /// <example>
 /// <code language="csharp">
@@ -53,11 +59,6 @@ namespace ReactiveUI;
 /// ]]>
 /// </code>
 /// </example>
-[RequiresUnreferencedCode(
-    "This class uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
-[RequiresDynamicCode(
-    "If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, "
-    + "or generic constraints), trimming can't validate that the requirements of those annotations are met.")]
 [DebuggerDisplay("{ViewModel}, {DefaultContent}")]
 public class ViewModelViewHost : ReactiveViewController
 {
@@ -70,6 +71,9 @@ public class ViewModelViewHost : ReactiveViewController
     /// <summary>Holds the subscription to <see cref="ViewContractObservable"/> (the inner observable) and swaps it when the property changes.</summary>
     private readonly SwapDisposable _viewContractObservableSubscription;
 
+    /// <summary>Asks a view locator for the view of a view model under a contract.</summary>
+    private readonly Func<IViewLocator, object, string?, IViewFor?> _resolveView;
+
     /// <summary>Backing field for <see cref="ViewContract"/>. This is updated by observing <see cref="ViewContractObservable"/> and is raised as a property change for bindings.</summary>
     private string? _viewContract;
 
@@ -80,9 +84,17 @@ public class ViewModelViewHost : ReactiveViewController
     private object? _viewModel;
 
     /// <summary>Initializes a new instance of the <see cref="ViewModelViewHost"/> class.</summary>
-    [SuppressMessage("Correctness", "SST2403:Do not let 'this' escape from a constructor", Justification = "Wrappers read this host only after construction; the reference does not outlive it.")]
     public ViewModelViewHost()
+        : this(ResolveGeneratedView)
     {
+    }
+
+    /// <summary>Initializes a new instance of the <see cref="ViewModelViewHost"/> class with its view lookup.</summary>
+    /// <param name="resolveView">Asks a view locator for the view of a view model under a contract.</param>
+    [SuppressMessage("Correctness", "SST2403:Do not let 'this' escape from a constructor", Justification = "Wrappers read this host only after construction; the reference does not outlive it.")]
+    private protected ViewModelViewHost(Func<IViewLocator, object, string?, IViewFor?> resolveView)
+    {
+        _resolveView = resolveView;
         _currentView = new();
         _subscriptions = new();
         _viewContractObservableSubscription = new();
@@ -208,6 +220,15 @@ public class ViewModelViewHost : ReactiveViewController
 #endif
     }
 
+    /// <summary>Finds a view through the view lookup the source generator writes, which needs no reflection.</summary>
+    /// <param name="viewLocator">The view locator to ask.</param>
+    /// <param name="viewModel">The view model to find a view for.</param>
+    /// <param name="contract">The contract to resolve under, or <see langword="null"/> for the default view.</param>
+    /// <returns>The view, or <see langword="null"/> when the generated lookup has none.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static IViewFor? ResolveGeneratedView(IViewLocator viewLocator, object viewModel, string? contract) =>
+        viewLocator.ResolveView<object>(viewModel, contract);
+
     /// <summary>Removes <paramref name="child"/> from its parent controller and removes its view from the view hierarchy.</summary>
     /// <param name="child">The child controller to disown.</param>
     /// <exception cref="ArgumentException">Thrown when the child's view is <see langword="null"/>.</exception>
@@ -226,11 +247,6 @@ public class ViewModelViewHost : ReactiveViewController
     }
 
     /// <summary>Initializes reactive subscriptions that drive view resolution and controller swapping.</summary>
-    [RequiresUnreferencedCode(
-        "This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
-    [RequiresDynamicCode(
-        "If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, "
-        + "or generic constraints), trimming can't validate that the requirements of those annotations are met.")]
     private void Initialize()
     {
         var viewModelChanges = new PropertyObservable<object?>(this, static x => x._viewModel, nameof(ViewModel));
@@ -246,42 +262,52 @@ public class ViewModelViewHost : ReactiveViewController
 
         _subscriptions.Add(
             new ObserveOnObservableLocal<(object? ViewModel, string? Contract)>(viewChange, RxSchedulers.MainThreadScheduler)
-                .Subscribe(new DelegateObserver<(object? ViewModel, string? Contract)>(
-                    x =>
-                    {
-                        var view = (ViewLocator ?? GetCurrent()).ResolveView(x.ViewModel, x.Contract);
-
-                        if (view is null)
-                        {
-                            var message = $"Unable to resolve view for \"{x.ViewModel?.GetType()}\"";
-
-                            if (x.Contract is not null)
-                            {
-                                message += $" and contract \"{x.Contract.GetType()}\"";
-                            }
-
-                            message += ".";
-                            throw new InvalidOperationException(message);
-                        }
-
-                        if (view is not NSViewController viewController)
-                        {
-                            // view.GetType().FullName may be null when the runtime type name is unavailable; the message still identifies the expected type.
-                            throw new InvalidOperationException($"Resolved view type '{view.GetType().FullName}' is not a '{typeof(NSViewController).FullName}'.");
-                        }
-
-                        view.ViewModel = x.ViewModel;
-                        Adopt(this, viewController);
-
-                        _currentView.Disposable =
-                            new DisposableBag(
-                                viewController,
-                                new ActionDisposable(() => Disown(viewController)));
-                    })));
+                .Subscribe(new DelegateObserver<(object? ViewModel, string? Contract)>(ShowView)));
 
         _subscriptions.Add(
             new ObserveOnObservableLocal<NSViewController?>(defaultViewChange, RxSchedulers.MainThreadScheduler)
                 .Subscribe(new DelegateObserver<NSViewController?>(x => Adopt(this, x))));
+    }
+
+    /// <summary>Resolves the view for a view model and contract pair and hosts it as the child controller.</summary>
+    /// <param name="x">The view model and contract to resolve a view for.</param>
+    /// <exception cref="InvalidOperationException">Thrown when no view is found, or when the view is not a view controller.</exception>
+    private void ShowView((object? ViewModel, string? Contract) x)
+    {
+        // ViewModelContractObservable forwards only non-null view models.
+        if (x.ViewModel is not { } viewModel)
+        {
+            return;
+        }
+
+        var view = _resolveView(ViewLocator ?? GetCurrent(), viewModel, x.Contract);
+
+        if (view is null)
+        {
+            var message = $"Unable to resolve view for \"{viewModel.GetType()}\"";
+
+            if (x.Contract is not null)
+            {
+                message += $" and contract \"{x.Contract.GetType()}\"";
+            }
+
+            message += $". The generated view lookup finds views that implement IViewFor<T>; use {nameof(ViewModelViewHostUnsafe)} to also resolve a view registered only by run-time type.";
+            throw new InvalidOperationException(message);
+        }
+
+        if (view is not NSViewController viewController)
+        {
+            // view.GetType().FullName may be null when the runtime type name is unavailable; the message still identifies the expected type.
+            throw new InvalidOperationException($"Resolved view type '{view.GetType().FullName}' is not a '{typeof(NSViewController).FullName}'.");
+        }
+
+        view.ViewModel = viewModel;
+        Adopt(this, viewController);
+
+        _currentView.Disposable =
+            new DisposableBag(
+                viewController,
+                new ActionDisposable(() => Disown(viewController)));
     }
 
     /// <summary>Updates the <see cref="ViewContract"/> backing field and raises property changed notifications.</summary>
