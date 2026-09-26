@@ -94,6 +94,20 @@ public class ReactiveViewHostTests
         await Assert.That(host.HasLegacyPropertyMetadata).IsTrue();
     }
 
+    /// <summary>The Unsafe host's opt-out wire-up wires the controls and keeps the host's own view.</summary>
+    /// <returns>A task representing the test.</returns>
+    [Test]
+    public async Task UnsafeConstructor_ExplicitOptOut_KeepsTheHostView()
+    {
+        var host = await MainThread.RunAsync(static () =>
+            new UnsafeTestViewHost(ActivityLauncher.TargetContext, new FrameLayout(ActivityLauncher.TargetContext), ResolveStrategy.ExplicitOptOut));
+
+        await Assert.That(host.View).IsNotNull();
+        await Assert.That(host.View!.Id).IsEqualTo(Resource.Id.WireUpRoot);
+        await Assert.That(host.TitleText).IsNotNull();
+        await Assert.That(host.TitleText!.Id).IsEqualTo(Resource.Id.TitleText);
+    }
+
     /// <summary>The host's view finds the typed view host, as adapters do when they bind a row.</summary>
     /// <returns>A task representing the test.</returns>
     [Test]

@@ -112,6 +112,22 @@ public class ControlFetcherMixinsTests
         await Assert.That(layout.Ignored).IsNull();
     }
 
+    /// <summary>The opt-out strategy on a layout host wires every control property except the ignored one, and keeps the host's own view.</summary>
+    /// <returns>A task representing the test.</returns>
+    [Test]
+    public async Task LayoutViewHost_ExplicitOptOut_SkipsIgnoredPropertiesAndKeepsTheHostView()
+    {
+        var host = await MainThread.RunAsync(static () => CreateHost(ResolveStrategy.ExplicitOptOut));
+
+        await Assert.That(host.View).IsNotNull();
+        await Assert.That(host.View!.Id).IsEqualTo(Resource.Id.WireUpRoot);
+        await Assert.That(host.TitleText).IsNotNull();
+        await Assert.That(host.SaveButton).IsNotNull();
+        await Assert.That(host.Input).IsNotNull();
+        await Assert.That(host.Input!.Id).IsEqualTo(Resource.Id.renamed_input);
+        await Assert.That(host.Ignored).IsNull();
+    }
+
     /// <summary>The implicit strategy does not honour <see cref="IgnoreResourceAttribute"/>, so a control with no matching id fails the wire-up.</summary>
     /// <returns>A task representing the test.</returns>
     [Test]

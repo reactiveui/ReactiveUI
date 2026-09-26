@@ -105,6 +105,8 @@ public class LayoutViewHost : ILayoutViewHost, IEnableLogger
     }
 
     /// <inheritdoc />
+    /// <remarks>The host's own view, so auto-wireup never treats it as a control in the layout.</remarks>
+    [IgnoreResource]
     public View? View
     {
         get => _view;
