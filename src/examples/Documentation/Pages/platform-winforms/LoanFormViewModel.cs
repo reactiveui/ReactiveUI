@@ -19,16 +19,7 @@ public sealed class LoanFormViewModel : ReactiveObject, IRoutableViewModel, IDis
     {
         HostScreen = hostScreen;
         Book = book;
-
-        List<Button> buttons = [];
-        foreach (Member member in members)
-        {
-            Button button = new() { Text = member.Name, AutoSize = true, Tag = member };
-            button.Click += (_, _) => SelectedMember = member;
-            buttons.Add(button);
-        }
-
-        MemberButtons = buttons;
+        Members = members;
 
         IObservable<bool> canConfirm = this.WhenAnyValue(static x => x.SelectedMember).Select(static member => member is not null);
 
@@ -52,10 +43,10 @@ public sealed class LoanFormViewModel : ReactiveObject, IRoutableViewModel, IDis
     /// <summary>Gets the book being loaned.</summary>
     public Book Book { get; }
 
-    /// <summary>Gets a <see cref="Button"/> per member, bound into a <see cref="TableLayoutPanel"/>.</summary>
-    public IReadOnlyList<Button> MemberButtons { get; }
+    /// <summary>Gets the members who can borrow the book. The view shows a button per member.</summary>
+    public IReadOnlyList<Member> Members { get; }
 
-    /// <summary>Gets or sets the member the librarian picked by clicking one of the <see cref="MemberButtons"/>.</summary>
+    /// <summary>Gets or sets the member the librarian picked from <see cref="Members"/>.</summary>
     public Member? SelectedMember
     {
         get;
@@ -73,9 +64,5 @@ public sealed class LoanFormViewModel : ReactiveObject, IRoutableViewModel, IDis
     {
         ConfirmLoan.Dispose();
         Cancel.Dispose();
-        foreach (Button button in MemberButtons)
-        {
-            button.Dispose();
-        }
     }
 }

@@ -27,7 +27,9 @@ public sealed class LoanFormView : ReactiveUserControl<LoanFormViewModel>
         {
             BookLabel.Text = $"Loaning: {ViewModel!.Book.Title}";
 
-            _ = this.OneWayBind(ViewModel, static vm => vm.MemberButtons, static v => v.MembersTable.Controls)
+            _ = ViewModel!.WhenAnyValue(static vm => vm.Members)
+                .Select(CreateMemberButtons)
+                .BindTo(this, static v => v.MembersTable.Controls)
                 .DisposeWith(d);
 
             _ = this.OneWayBind(
@@ -73,5 +75,33 @@ public sealed class LoanFormView : ReactiveUserControl<LoanFormViewModel>
         }
 
         base.Dispose(disposing);
+    }
+
+    /// <summary>
+    /// Builds one <see cref="Button"/> per member. The buttons belong to this view: once they are in
+    /// <see cref="MembersTable"/>, disposing the view disposes them with the table. A click hands the member to the
+    /// view model, which holds data only.
+    /// </summary>
+    /// <param name="members">The members the view model exposes.</param>
+    /// <returns>A button per member.</returns>
+    private List<Button> CreateMemberButtons(IReadOnlyList<Member> members)
+    {
+        List<Button> buttons = [];
+        foreach (Member member in members)
+        {
+            Button button = new() { Text = member.Name, AutoSize = true, Tag = member };
+            button.Click += (_, _) =>
+            {
+                if (ViewModel is null)
+                {
+                    return;
+                }
+
+                ViewModel.SelectedMember = member;
+            };
+            buttons.Add(button);
+        }
+
+        return buttons;
     }
 }
