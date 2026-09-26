@@ -8,7 +8,7 @@
     <SplatVersion>21.0.0</SplatVersion>
     <PrimitivesVersion>8.2.0</PrimitivesVersion>
     <BindingVersion>7.10.1</BindingVersion>
-    <TUnitVersion>1.69.0</TUnitVersion>
+    <TUnitVersion>1.69.16</TUnitVersion>
     <!-- StyleSharp.Analyzers, PerformanceSharp.Analyzers and SecuritySharp.Analyzers ship from the
          same release pipeline and always share a version. -->
     <RoslynCommonAnalyzersVersion>5.1.2</RoslynCommonAnalyzersVersion>
