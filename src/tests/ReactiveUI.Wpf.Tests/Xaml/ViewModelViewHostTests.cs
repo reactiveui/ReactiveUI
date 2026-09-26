@@ -73,9 +73,9 @@ public class ViewModelViewHostTests
         private readonly AppBuilderTestHelper _helper = new();
 
         /// <inheritdoc/>
-        protected override void Initialize()
+        protected override void SetUp()
         {
-            base.Initialize();
+            base.SetUp();
 
             _helper.Initialize(static builder =>
             {
@@ -94,10 +94,10 @@ public class ViewModelViewHostTests
         }
 
         /// <inheritdoc/>
-        protected override void CleanUp()
+        protected override void TearDown()
         {
             _helper.CleanUp();
-            base.CleanUp();
+            base.TearDown();
         }
     }
 }

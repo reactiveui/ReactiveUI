@@ -19,9 +19,9 @@ public class WpfViewResolverTestExecutor : DispatcherThreadExecutor
     private readonly AppBuilderTestHelper _helper = new();
 
     /// <inheritdoc/>
-    protected override void Initialize()
+    protected override void SetUp()
     {
-        base.Initialize();
+        base.SetUp();
 
         _helper.Initialize(builder =>
         {
@@ -41,9 +41,9 @@ public class WpfViewResolverTestExecutor : DispatcherThreadExecutor
     }
 
     /// <inheritdoc/>
-    protected override void CleanUp()
+    protected override void TearDown()
     {
         _helper.CleanUp();
-        base.CleanUp();
+        base.TearDown();
     }
 }

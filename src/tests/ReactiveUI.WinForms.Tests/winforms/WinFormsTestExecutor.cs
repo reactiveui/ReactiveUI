@@ -10,7 +10,7 @@ namespace ReactiveUI.WinForms.Tests.Winforms;
 
 /// <summary>
 /// Test executor that provides WinForms test isolation with STA threading.
-/// Combines STAThreadExecutor with WinForms AppBuilder setup/teardown.
+/// Combines WinFormsThreadExecutor with WinForms AppBuilder setup/teardown.
 /// Can be applied at class or method level depending on whether the test creates its own AppBuilder.
 /// </summary>
 /// <remarks>
@@ -22,15 +22,15 @@ namespace ReactiveUI.WinForms.Tests.Winforms;
 /// concurrent modifications to shared state.
 /// </remarks>
 [SupportedOSPlatform("windows")]
-public class WinFormsTestExecutor : STAThreadExecutor
+public class WinFormsTestExecutor : WinFormsThreadExecutor
 {
     /// <summary>The helper that manages WinForms AppBuilder setup and teardown.</summary>
     private readonly AppBuilderTestHelper _helper = new();
 
     /// <inheritdoc/>
-    protected override void Initialize()
+    protected override void SetUp()
     {
-        base.Initialize();
+        base.SetUp();
 
         _helper.Initialize(static builder =>
         {
@@ -41,9 +41,9 @@ public class WinFormsTestExecutor : STAThreadExecutor
     }
 
     /// <inheritdoc/>
-    protected override void CleanUp()
+    protected override void TearDown()
     {
         _helper.CleanUp();
-        base.CleanUp();
+        base.TearDown();
     }
 }
