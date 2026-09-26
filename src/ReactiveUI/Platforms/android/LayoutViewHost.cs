@@ -8,11 +8,6 @@ using System.Runtime.CompilerServices;
 using Android.Content;
 using Android.Views;
 using Splat;
-#if REACTIVE_SHIM
-using static ReactiveUI.Reactive.ControlFetcherMixins;
-#else
-using static ReactiveUI.ControlFetcherMixins;
-#endif
 
 #if REACTIVE_SHIM
 namespace ReactiveUI.Reactive;
@@ -26,8 +21,8 @@ namespace ReactiveUI;
 /// optionally wires child controls to properties on the host.
 /// </para>
 /// <para>
-/// This type provides both AOT-safe construction paths and a legacy reflection-based
-/// auto-wireup path for compatibility.
+/// Every constructor is safe to trim and to compile ahead of time. Wire child controls in the <c>bind</c> callback,
+/// or derive from <see cref="LayoutViewHostUnsafe"/> to wire them by reflection.
 /// </para>
 /// </summary>
 [System.Diagnostics.DebuggerDisplay("{View}")]
@@ -107,51 +102,6 @@ public class LayoutViewHost : ILayoutViewHost, IEnableLogger
         }
 
         bind(this, View);
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="LayoutViewHost"/> class by inflating
-    /// a layout resource and optionally performing reflection-based auto-wireup.
-    /// </summary>
-    /// <param name="context">The Android context.</param>
-    /// <param name="layoutId">The layout resource identifier.</param>
-    /// <param name="parent">The parent view group.</param>
-    /// <param name="attachToRoot">Whether to attach the inflated view to the parent.</param>
-    /// <param name="performAutoWireup">
-    /// If <see langword="true"/>, performs automatic wiring using reflection.
-    /// </param>
-    /// <param name="resolveStrategy">
-    /// The member resolution strategy used during auto-wireup.
-    /// </param>
-    /// <remarks>
-    /// <para>
-    /// This constructor is not trimming- or AOT-safe when auto-wireup is enabled.
-    /// </para>
-    /// <para>
-    /// It exists for backward compatibility and should be avoided in new code.
-    /// </para>
-    /// </remarks>
-    [RequiresUnreferencedCode("Auto wire-up uses reflection and member discovery.")]
-    [RequiresDynamicCode("Auto wire-up relies on runtime type inspection.")]
-    protected LayoutViewHost(
-        Context context,
-        int layoutId,
-        ViewGroup parent,
-        bool attachToRoot,
-        bool performAutoWireup,
-        ResolveStrategy resolveStrategy)
-    {
-        ArgumentExceptionHelper.ThrowIfNull(context);
-        ArgumentExceptionHelper.ThrowIfNull(parent);
-
-        View = Inflate(context, layoutId, parent, attachToRoot);
-
-        if (!performAutoWireup)
-        {
-            return;
-        }
-
-        this.WireUpControls(resolveStrategy);
     }
 
     /// <inheritdoc />

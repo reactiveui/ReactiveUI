@@ -25,22 +25,9 @@ public class RoutedViewHost<
     RoutedViewHost
     where TViewModel : class, IRoutableViewModel
 {
-    /// <summary>Initializes a new instance of the <see cref="RoutedViewHost{TViewModel}"/> class.</summary>
-    [RequiresUnreferencedCode(
-        "This class uses reflection to determine view model types at runtime through ViewLocator, which may be incompatible with trimming.")]
-    [RequiresDynamicCode("ViewLocator.ResolveView uses reflection which is incompatible with AOT compilation.")]
-    public RoutedViewHost()
-    {
-    }
-
     /// <summary>Pages for view model.</summary>
     /// <param name="vm">The vm.</param>
     /// <returns>An observable of the page associated to a <see cref="IRoutableViewModel"/>.</returns>
-    [RequiresUnreferencedCode(
-        "This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
-    [RequiresDynamicCode(
-        "If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, or generic constraints), "
-        + "trimming can't validate that the requirements of those annotations are met.")]
     protected override IObservable<Page> PagesForViewModel(IRoutableViewModel? vm)
     {
         if (vm is null)
@@ -74,11 +61,6 @@ public class RoutedViewHost<
     /// <returns>A page associated to a <see cref="IRoutableViewModel"/>.</returns>
     /// <exception cref="ArgumentNullException"><paramref name="vm"/> is null.</exception>
     /// <exception cref="InvalidOperationException">No <c>IViewFor</c> is registered for <typeparamref name="TViewModel"/>.</exception>
-    [RequiresUnreferencedCode(
-        "This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
-    [RequiresDynamicCode(
-        "If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, or generic constraints), "
-        + "trimming can't validate that the requirements of those annotations are met.")]
     protected override Page PageForViewModel(IRoutableViewModel vm)
     {
         ArgumentNullException.ThrowIfNull(vm);

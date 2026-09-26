@@ -12,12 +12,12 @@ namespace ReactiveUI.Reactive;
 namespace ReactiveUI;
 #endif
 
-/// <summary>A <see cref="ViewModelViewHost"/> that also finds views known only by the view model's run-time type.</summary>
+/// <summary>A <see cref="ViewModelViewHost"/> that also finds views registered only with the service locator.</summary>
 /// <remarks>
 /// <para>
-/// <see cref="ViewModelViewHost"/> uses the view lookup the source generator writes. This twin asks the view locator
-/// with the view model as an <see cref="object"/>: the generated lookup first, then the locator's explicit mappings,
-/// then the service locator for <see cref="IViewFor{T}"/> closed over the view model's run-time type.
+/// <see cref="ViewModelViewHost"/> asks the view locator's generated view lookup and its <c>Map</c> registrations.
+/// This twin asks those first, then the service locator for <see cref="IViewFor{T}"/> closed over the view model's
+/// run-time type.
 /// </para>
 /// <para>
 /// Closing a generic type at run time needs code the compiler never generated, so this type is not safe to compile
@@ -30,7 +30,7 @@ public class ViewModelViewHostUnsafe : ViewModelViewHost
 {
     /// <summary>Initializes a new instance of the <see cref="ViewModelViewHostUnsafe"/> class.</summary>
     public ViewModelViewHostUnsafe()
-        : base(static (viewLocator, viewModel, contract) => viewLocator.ResolveView(viewModel, contract))
+        : base(static (viewLocator, viewModel, contract) => viewLocator.ResolveViewUnsafe(viewModel, contract))
     {
     }
 }

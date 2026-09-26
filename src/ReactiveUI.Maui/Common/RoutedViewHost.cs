@@ -30,10 +30,10 @@ namespace ReactiveUI;
 /// navigated to. Put this control as the only control in your Window.
 /// </summary>
 /// <remarks>
-/// The host finds each page's view through the view lookup the source generator writes while the app builds, so it
-/// is safe to trim and to compile ahead of time. The lookup covers every view class that implements
-/// <see cref="IViewFor{T}"/> in a project the ReactiveUI.Binding source generator runs in. A view the generator
-/// cannot see, such as one only registered with the service locator, needs <see cref="RoutedViewHostUnsafe"/>.
+/// The host asks the view locator for each page's view by the view model's run-time type, without building any type
+/// at run time, so it is safe to trim and to compile ahead of time. The default locator checks the view lookup the
+/// source generator writes, then the views the app added with <c>Map</c>. A view registered only with the service
+/// locator needs <see cref="RoutedViewHostUnsafe"/>.
 /// </remarks>
 [DebuggerDisplay("Router = {Router}")]
 public partial class RoutedViewHost : TransitioningContentControl, IActivatableView, IMauiRoutedViewHost
@@ -61,7 +61,7 @@ public partial class RoutedViewHost : TransitioningContentControl, IActivatableV
 
     /// <summary>Initializes a new instance of the <see cref="RoutedViewHost"/> class.</summary>
     public RoutedViewHost()
-        : this(ResolveGeneratedView)
+        : this(ResolveViewWithoutReflection)
     {
     }
 
@@ -121,14 +121,14 @@ public partial class RoutedViewHost : TransitioningContentControl, IActivatableV
     /// </value>
     public IViewLocator? ViewLocator { get; set; }
 
-    /// <summary>Finds a view through the view lookup the source generator writes, which needs no reflection.</summary>
+    /// <summary>Finds a view by the view model's run-time type without building any type at run time.</summary>
     /// <param name="viewLocator">The view locator to ask.</param>
     /// <param name="viewModel">The view model to find a view for.</param>
     /// <param name="contract">The contract to resolve under, or <see langword="null"/> for the default view.</param>
-    /// <returns>The view, or <see langword="null"/> when the generated lookup has none.</returns>
+    /// <returns>The view, or <see langword="null"/> when neither the generated lookup nor a <c>Map</c> registration has one.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static IViewFor? ResolveGeneratedView(IViewLocator viewLocator, object viewModel, string? contract) =>
-        viewLocator.ResolveView<object>(viewModel, contract);
+    private static IViewFor? ResolveViewWithoutReflection(IViewLocator viewLocator, object viewModel, string? contract) =>
+        viewLocator.ResolveView(viewModel, contract);
 
     /// <inheritdoc/>
     void IMauiRoutedViewHost.SetObservedViewContract(string? contract) => _viewContract = contract;
@@ -148,8 +148,8 @@ public partial class RoutedViewHost : TransitioningContentControl, IActivatableV
         object viewModel = route.ViewModel;
         var view = (_resolveView(viewLocator, viewModel, route.Contract) ?? _resolveView(viewLocator, viewModel, null))
             ?? throw new InvalidOperationException(
-                $"Couldn't find view for '{route.ViewModel}'. The generated view lookup finds views that implement IViewFor<T>; "
-                + $"use {nameof(RoutedViewHostUnsafe)} to also resolve a view registered only by run-time type.");
+                $"Couldn't find view for '{route.ViewModel}'. The view locator checked the generated view lookup and its Map registrations; "
+                + $"use {nameof(RoutedViewHostUnsafe)} to also resolve a view registered only with the service locator.");
         view.ViewModel = route.ViewModel;
         Content = view;
     }

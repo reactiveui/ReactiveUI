@@ -3,7 +3,9 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.ComponentModel;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using ReactiveUI.Primitives;
 using Splat;
 
@@ -41,6 +43,11 @@ namespace ReactiveUI;
 /// the View and wire up the ViewModel whenever a new ViewModel is
 /// navigated to. Put this control as the only control in your Window.
 /// </summary>
+/// <remarks>
+/// The host asks the view locator for each page's view by the view model's run-time type, without building any type
+/// at run time. The default locator checks the view lookup the source generator writes, then the views the app added
+/// with <c>Map</c>. A view registered only with the service locator needs <see cref="RoutedViewHostUnsafe"/>.
+/// </remarks>
 [DebuggerDisplay("{Router}, {DefaultContent}")]
 public
 #if HAS_UNO
@@ -64,12 +71,23 @@ public
             typeof(RoutedViewHost),
             new(Signal.Emit<string>(default!)));
 
+    /// <summary>Asks a view locator for the view of a view model under a contract.</summary>
+    private readonly Func<IViewLocator, object, string?, IViewFor?> _resolveView;
+
     /// <summary>Stores the most recently observed view contract.</summary>
     private string? _viewContract;
 
     /// <summary>Initializes a new instance of the <see cref="RoutedViewHost"/> class.</summary>
     public RoutedViewHost()
+        : this(ResolveViewWithoutReflection)
     {
+    }
+
+    /// <summary>Initializes a new instance of the <see cref="RoutedViewHost"/> class with its view lookup.</summary>
+    /// <param name="resolveView">Asks a view locator for the view of a view model under a contract.</param>
+    private protected RoutedViewHost(Func<IViewLocator, object, string?, IViewFor?> resolveView)
+    {
+        _resolveView = resolveView;
         HorizontalContentAlignment = HorizontalAlignment.Stretch;
         VerticalContentAlignment = VerticalAlignment.Stretch;
 
@@ -96,11 +114,18 @@ public
         // NB: The DistinctUntilChanged is useful because most views in
         // WinRT will end up getting here twice - once for configuring
         // the RoutedViewHost's ViewModel, and once on load via SizeChanged
-        _ = this.WhenActivated(d =>
-            d(viewModelAndContract.DistinctUntilChanged()
-                .Subscribe(new DelegateObserver<(IRoutableViewModel? ViewModel, string? Contract)>(
-                    ResolveViewForViewModel,
-                    RxState.DefaultExceptionHandler.OnNext))));
+        if (this.GetIsDesignMode())
+        {
+            return;
+        }
+
+        _ = ((IActivatableView)this).WhenActivated(
+            d =>
+                d(viewModelAndContract.DistinctUntilChanged()
+                    .Subscribe(new DelegateObserver<(IRoutableViewModel? ViewModel, string? Contract)>(
+                        ResolveViewForViewModel,
+                        RxState.DefaultExceptionHandler.OnNext))),
+            new ViewModelChangedSignal(this));
     }
 
     /// <summary>Gets or sets the <see cref="RoutingState"/> of the view model stack.</summary>
@@ -140,6 +165,15 @@ public
     /// </value>
     public IViewLocator? ViewLocator { get; set; }
 
+    /// <summary>Finds a view by the view model's run-time type without building any type at run time.</summary>
+    /// <param name="viewLocator">The view locator to ask.</param>
+    /// <param name="viewModel">The view model to find a view for.</param>
+    /// <param name="contract">The contract to resolve under, or <see langword="null"/> for the default view.</param>
+    /// <returns>The view, or <see langword="null"/> when neither the generated lookup nor a <c>Map</c> registration has one.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static IViewFor? ResolveViewWithoutReflection(IViewLocator viewLocator, object viewModel, string? contract) =>
+        viewLocator.ResolveView(viewModel, contract);
+
     /// <summary>Resolves and displays the view for the supplied view model and contract.</summary>
     /// <param name="x">The view model and contract to resolve a view for.</param>
     /// <exception cref="InvalidOperationException">No view is registered for the routed view model.</exception>
@@ -153,9 +187,52 @@ public
 
         var viewLocator = ViewLocator ?? GetCurrent();
         object viewModel = x.ViewModel;
-        var view = (viewLocator.ResolveView(viewModel, x.Contract) ?? viewLocator.ResolveView(viewModel))
-                   ?? throw new InvalidOperationException($"Couldn't find view for '{x.ViewModel}'.");
+        var view = (_resolveView(viewLocator, viewModel, x.Contract) ?? _resolveView(viewLocator, viewModel, null))
+                   ?? throw new InvalidOperationException(
+                       $"Couldn't find view for '{x.ViewModel}'. The view locator checked the generated view lookup and its Map registrations; "
+                       + $"use {nameof(RoutedViewHostUnsafe)} to also resolve a view registered only with the service locator.");
         view.ViewModel = x.ViewModel;
         Content = view;
+    }
+
+    /// <summary>
+    /// Emits the host's view model when a subclass makes the host an <see cref="IViewFor"/>: the current value on
+    /// subscription, then the new value each time the host raises <see cref="INotifyPropertyChanged.PropertyChanged"/>
+    /// for <see cref="IViewFor.ViewModel"/>. A host that is not an <see cref="IViewFor"/> has no view model, so the
+    /// signal emits nothing.
+    /// </summary>
+    /// <param name="host">The host whose view model is observed.</param>
+    private sealed class ViewModelChangedSignal(RoutedViewHost host) : IObservable<object?>
+    {
+        /// <inheritdoc/>
+        public IDisposable Subscribe(IObserver<object?> observer)
+        {
+            ArgumentExceptionHelper.ThrowIfNull(observer);
+
+            if (host is not IViewFor view)
+            {
+                return EmptyDisposable.Instance;
+            }
+
+            observer.OnNext(view.ViewModel);
+
+            if (host is not INotifyPropertyChanged notifier)
+            {
+                return EmptyDisposable.Instance;
+            }
+
+            PropertyChangedEventHandler handler = (_, e) =>
+            {
+                if (e.PropertyName != nameof(IViewFor.ViewModel))
+                {
+                    return;
+                }
+
+                observer.OnNext(view.ViewModel);
+            };
+
+            notifier.PropertyChanged += handler;
+            return new ActionDisposable(() => notifier.PropertyChanged -= handler);
+        }
     }
 }

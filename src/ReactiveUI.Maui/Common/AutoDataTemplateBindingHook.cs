@@ -28,14 +28,14 @@ namespace ReactiveUI;
 /// <para>
 /// The default template names framework types only. A value converter creates the <see cref="ViewModelViewHost"/>
 /// for each item in code, so the template needs no XAML type information for ReactiveUI types and works in an app
-/// with no .xaml files. The host uses the view lookup the source generator writes, so the template is safe to trim
-/// and to compile ahead of time.
+/// with no .xaml files. The host finds each view through the generated view lookup and the view locator's
+/// <c>Map</c> registrations, so the template is safe to trim and to compile ahead of time.
 /// </para>
 /// <para>
 /// A template loaded at run time resolves a static resource from the application's resources, so the converter is
 /// added to the current application's <see cref="Microsoft.UI.Xaml.Application.Resources"/> under a key that starts
-/// with the ReactiveUI namespace. For view models whose view the generated lookup cannot find, also register
-/// <see cref="AutoDataTemplateBindingHookUnsafe"/>.
+/// with the ReactiveUI namespace. For view models whose view is registered only with the service locator, also
+/// register <see cref="AutoDataTemplateBindingHookUnsafe"/>.
 /// </para>
 /// </remarks>
 #else

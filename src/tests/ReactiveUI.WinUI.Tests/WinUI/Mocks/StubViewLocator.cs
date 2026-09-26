@@ -27,18 +27,28 @@ public sealed class StubViewLocator : IViewLocator
     /// <summary>Gets the contracts this locator has been asked about, in order.</summary>
     public List<string?> RequestedContracts { get; } = [];
 
-    /// <summary>Gets the number of lookups made through the run-time-type overload.</summary>
+    /// <summary>Gets the number of lookups made through the ahead-of-time safe run-time-type overload.</summary>
     public int RuntimeTypeLookups { get; private set; }
+
+    /// <summary>Gets the number of lookups made through the reflective run-time-type overload.</summary>
+    public int UnsafeLookups { get; private set; }
 
     /// <inheritdoc/>
     public IViewFor? ResolveView<TViewModel>(TViewModel viewModel, string? contract)
         where TViewModel : class => Resolve(contract);
 
     /// <inheritdoc/>
-    [RequiresDynamicCode("Resolves a view from the view model's runtime type.")]
     public IViewFor? ResolveView(object? viewModel, string? contract)
     {
         RuntimeTypeLookups++;
+        return Resolve(contract);
+    }
+
+    /// <inheritdoc/>
+    [RequiresDynamicCode("Resolves a view from the view model's runtime type.")]
+    public IViewFor? ResolveViewUnsafe(object? viewModel, string? contract)
+    {
+        UnsafeLookups++;
         return Resolve(contract);
     }
 

@@ -20,9 +20,11 @@ namespace ReactiveUI.AndroidX;
 #endif
 /// <summary>A <see cref="RecyclerView.ViewHolder"/> implementation that binds to a reactive view model.</summary>
 /// <typeparam name="TViewModel">The type of the view model.</typeparam>
-[RequiresUnreferencedCode(
-    "Android property discovery uses reflection over generated resource types that may be trimmed.")]
-[RequiresDynamicCode("Android property discovery discovery uses reflection that may require dynamic code generation.")]
+/// <remarks>
+/// The trimmer keeps the public properties of every type derived from this one, so the
+/// <see cref="AllPublicProperties"/> lookup is safe to trim and to compile ahead of time.
+/// </remarks>
+[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)]
 [System.Diagnostics.DebuggerDisplay("{ViewModel}")]
 public class ReactiveRecyclerViewViewHolder<TViewModel> : RecyclerView.ViewHolder, ILayoutViewHost,
     IViewFor<TViewModel>, IReactiveNotifyPropertyChanged<ReactiveRecyclerViewViewHolder<TViewModel>>, IReactiveObject,

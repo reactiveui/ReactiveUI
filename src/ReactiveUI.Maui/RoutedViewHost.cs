@@ -19,6 +19,12 @@ namespace ReactiveUI.Maui;
 #endif
 
 /// <summary>This is a <see cref="NavigationPage"/> that serves as a router.</summary>
+/// <remarks>
+/// The host asks the view locator for each page by the view model's run-time type, without building any type at run
+/// time, so it is safe to trim and to compile ahead of time. The default locator checks the view lookup the source
+/// generator writes, then the views the app added with <c>Map</c>. A page registered only with the service locator
+/// needs <see cref="RoutedViewHostUnsafe"/>.
+/// </remarks>
 /// <seealso cref="NavigationPage" />
 /// <seealso cref="IActivatableView" />
 [DebuggerDisplay("{Router}, {SetTitleOnNavigate}")]
@@ -43,6 +49,9 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
     /// <summary>The subscriptions created by this host.</summary>
     private readonly MultipleDisposable _subscriptions = [];
 
+    /// <summary>Asks a view locator for the view of a view model under a contract.</summary>
+    private readonly Func<IViewLocator, object, string?, IViewFor?> _resolveView;
+
     /// <summary>The name of the last navigation action that occurred.</summary>
     private string? _action;
 
@@ -51,15 +60,22 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
 
     /// <summary>Initializes a new instance of the <see cref="RoutedViewHost"/> class.</summary>
     /// <exception cref="InvalidOperationException">You *must* register an IScreen class representing your App's main Screen.</exception>
-    [RequiresUnreferencedCode(
-        "This class uses reflection to determine view model types at runtime through ViewLocator, which may be incompatible with trimming.")]
-    [RequiresDynamicCode("ViewLocator.ResolveView uses reflection which is incompatible with AOT compilation.")]
+    public RoutedViewHost()
+        : this(ResolveViewWithoutReflection)
+    {
+    }
+
+    /// <summary>Initializes a new instance of the <see cref="RoutedViewHost"/> class with its view lookup.</summary>
+    /// <param name="resolveView">Asks a view locator for the view of a view model under a contract.</param>
+    /// <exception cref="InvalidOperationException">You *must* register an IScreen class representing your App's main Screen.</exception>
     [SuppressMessage(
         "Design",
         "SST2403:'this' escapes before construction finishes",
         Justification = "'this' is passed to the main-thread scheduler to marshal the initial navigation-stack sync onto the UI thread; the scheduled work runs after construction completes.")]
-    public RoutedViewHost()
+    private protected RoutedViewHost(Func<IViewLocator, object, string?, IViewFor?> resolveView)
     {
+        _resolveView = resolveView;
+
         // Resolve the Router before wiring the subscriptions: SubscribeToNavigationStackChanges subscribes to
         // Router.NavigationStackChanged, so Router must already be set or it would dereference null.
         var screen = AppLocator.Current.GetService<IScreen>()
@@ -101,11 +117,6 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
     /// <summary>Pages for view model.</summary>
     /// <param name="vm">The vm.</param>
     /// <returns>An observable of the page associated to a <see cref="IRoutableViewModel"/>.</returns>
-    [RequiresUnreferencedCode(
-        "This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
-    [RequiresDynamicCode(
-        "If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, or generic constraints), "
-        + "trimming can't validate that the requirements of those annotations are met.")]
     protected virtual IObservable<Page> PagesForViewModel(IRoutableViewModel? vm)
     {
         if (vm is null)
@@ -113,13 +124,10 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
             return Signal.None<Page>();
         }
 
-        var ret = ViewLocator.GetCurrent().ResolveView((object)vm);
+        var ret = _resolveView(ViewLocator.GetCurrent(), vm, null);
         if (ret is null)
         {
-            var msg =
-                $"Couldn't find a View for ViewModel. You probably need to register an IViewFor<{vm.GetType().Name}>";
-
-            return Signal.Fail<Page>(new InvalidOperationException(msg));
+            return Signal.Fail<Page>(new InvalidOperationException(NoViewMessage(vm)));
         }
 
         ret.ViewModel = vm;
@@ -138,24 +146,11 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
     /// <returns>An observable of the page associated to a <see cref="IRoutableViewModel"/>.</returns>
     /// <exception cref="ArgumentNullException"><paramref name="vm"/> is null.</exception>
     /// <exception cref="InvalidOperationException">No <c>IViewFor</c> is registered for the view model.</exception>
-    [RequiresUnreferencedCode(
-        "This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
-    [RequiresDynamicCode(
-        "If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, or generic constraints), "
-        + "trimming can't validate that the requirements of those annotations are met.")]
     protected virtual Page PageForViewModel(IRoutableViewModel vm)
     {
         ArgumentNullException.ThrowIfNull(vm);
 
-        var ret = ViewLocator.GetCurrent().ResolveView((object)vm);
-        if (ret is null)
-        {
-            var msg =
-                $"Couldn't find a View for ViewModel. You probably need to register an IViewFor<{vm.GetType().Name}>";
-
-            throw new InvalidOperationException(msg);
-        }
-
+        var ret = _resolveView(ViewLocator.GetCurrent(), vm, null) ?? throw new InvalidOperationException(NoViewMessage(vm));
         ret.ViewModel = vm;
 
         var pg = (Page)ret;
@@ -195,11 +190,6 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
 
     /// <summary>Syncs page's navigation stack with <see cref="Router"/> to affect <see cref="Router"/> manipulations like Add or Clear.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-    [RequiresUnreferencedCode(
-        "This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
-    [RequiresDynamicCode(
-        "If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, or generic constraints), "
-        + "trimming can't validate that the requirements of those annotations are met.")]
     protected async Task SyncNavigationStacksAsync()
     {
         if (Navigation.NavigationStack.Count == Router.NavigationStack.Count
@@ -237,13 +227,24 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
         }
     }
 
+    /// <summary>Finds a view by the view model's run-time type without building any type at run time.</summary>
+    /// <param name="viewLocator">The view locator to ask.</param>
+    /// <param name="viewModel">The view model to find a view for.</param>
+    /// <param name="contract">The contract to resolve under, or <see langword="null"/> for the default view.</param>
+    /// <returns>The view, or <see langword="null"/> when neither the generated lookup nor a <c>Map</c> registration has one.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static IViewFor? ResolveViewWithoutReflection(IViewLocator viewLocator, object viewModel, string? contract) =>
+        viewLocator.ResolveView(viewModel, contract);
+
+    /// <summary>Builds the message for a view model the view locator has no page for.</summary>
+    /// <param name="vm">The view model with no page.</param>
+    /// <returns>The message.</returns>
+    private static string NoViewMessage(IRoutableViewModel vm) =>
+        $"Couldn't find a View for ViewModel '{vm.GetType().Name}'. The view locator checked the generated view lookup and its Map registrations; "
+        + $"use {nameof(RoutedViewHostUnsafe)} to also resolve an IViewFor<{vm.GetType().Name}> registered only with the service locator.";
+
     /// <summary>Performs the one-time initial navigation-stack sync, logging any failure instead of faulting an unobserved task.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-    [RequiresUnreferencedCode(
-        "This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
-    [RequiresDynamicCode(
-        "If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, or generic constraints), "
-        + "trimming can't validate that the requirements of those annotations are met.")]
     private async Task PerformInitialNavigationSyncAsync()
     {
         try
@@ -257,11 +258,6 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
     }
 
     /// <summary>Subscribes to <see cref="RoutingState.NavigationStackChanged"/> and resyncs when the stack is cleared.</summary>
-    [RequiresUnreferencedCode(
-        "This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
-    [RequiresDynamicCode(
-        "If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, or generic constraints), "
-        + "trimming can't validate that the requirements of those annotations are met.")]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void SubscribeToNavigationStackChanges() =>
         Router.NavigationStackChanged
@@ -277,11 +273,6 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
             .DisposeWith(_subscriptions);
 
     /// <summary>Subscribes to <see cref="RoutingState.NavigateBack"/> requests and pops the page accordingly.</summary>
-    [RequiresUnreferencedCode(
-        "This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
-    [RequiresDynamicCode(
-        "If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, or generic constraints), "
-        + "trimming can't validate that the requirements of those annotations are met.")]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void SubscribeToNavigateBack() =>
         Router?
@@ -291,11 +282,6 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
 
     /// <summary>Pops the page for a back navigation request and resyncs the stacks.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-    [RequiresUnreferencedCode(
-        "This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
-    [RequiresDynamicCode(
-        "If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, or generic arguments), "
-        + "trimming can't validate that the requirements of those annotations are met.")]
     private async Task OnNavigateBackAsync()
     {
         try
@@ -314,11 +300,6 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
     }
 
     /// <summary>Subscribes to <see cref="RoutingState.Navigate"/> requests and pushes the resolved page.</summary>
-    [RequiresUnreferencedCode(
-        "This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
-    [RequiresDynamicCode(
-        "If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, or generic constraints), "
-        + "trimming can't validate that the requirements of those annotations are met.")]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void SubscribeToNavigate() =>
         Router?
@@ -330,11 +311,6 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
     /// Handles a navigate request: skips when the stacks already match and otherwise marshals the push onto the main
     /// thread. Replaces the <c>Where(...).ObserveOn(...).SelectMany(...).SelectMany(async ...)</c> pipeline.
     /// </summary>
-    [RequiresUnreferencedCode(
-        "This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
-    [RequiresDynamicCode(
-        "If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, or generic arguments), "
-        + "trimming can't validate that the requirements of those annotations are met.")]
     private void OnNavigateRequested()
     {
         if (!StacksAreDifferent())
@@ -352,11 +328,6 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
     /// <summary>Resolves the page for the current view model. PagesForViewModel emits a single page synchronously
     /// (or signals an error), so the subscription resolves it inline.</summary>
     /// <returns>The resolved page, or <see langword="null"/> if none could be resolved.</returns>
-    [RequiresUnreferencedCode(
-        "This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
-    [RequiresDynamicCode(
-        "If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, or generic arguments), "
-        + "trimming can't validate that the requirements of those annotations are met.")]
     private Page? ResolveCurrentPage()
     {
         Page? page = null;
@@ -371,11 +342,6 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
 
     /// <summary>Resolves the page for the current view model and pushes it, then resyncs the stacks.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-    [RequiresUnreferencedCode(
-        "This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
-    [RequiresDynamicCode(
-        "If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, or generic arguments), "
-        + "trimming can't validate that the requirements of those annotations are met.")]
     private async Task OnNavigateAsync()
     {
         var page = ResolveCurrentPage();

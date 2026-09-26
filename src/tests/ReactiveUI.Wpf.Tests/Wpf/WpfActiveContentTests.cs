@@ -79,14 +79,17 @@ public class WpfActiveContentTests
         }
     }
 
-    /// <summary>Verifies that ViewB is resolved when registered with the correct contract.</summary>
+    /// <summary>
+    /// Verifies that ViewB is resolved when registered with the service locator under the correct contract. Only the
+    /// Unsafe host asks the service locator.
+    /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     [TestExecutor<ViewBRegisteredExecutor>]
     public async Task ResolveViewBIfViewBIsRegistered()
     {
         var vm = new FakeViewWithContract.MyViewModel();
-        var host = new ViewModelViewHost { ViewModel = vm, ViewContract = FakeViewWithContract.ContractB };
+        var host = new ViewModelViewHostUnsafe { ViewModel = vm, ViewContract = FakeViewWithContract.ContractB };
 
         // Simulate activation by raising the Loaded event
         var loaded = new RoutedEventArgs { RoutedEvent = FrameworkElement.LoadedEvent };

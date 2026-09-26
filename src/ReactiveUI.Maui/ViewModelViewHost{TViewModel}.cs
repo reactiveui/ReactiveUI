@@ -30,11 +30,6 @@ namespace ReactiveUI.Maui;
 /// This is the AOT-compatible generic version of ViewModelViewHost. It uses compile-time type information
 /// to resolve views without reflection, making it safe for Native AOT and trimming scenarios.
 /// </remarks>
-[RequiresUnreferencedCode(
-    "This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
-[RequiresDynamicCode(
-    "If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, or generic "
-    + "constraints), trimming can't validate that the requirements of those annotations are met.")]
 [DebuggerDisplay("{ViewModel}")]
 public class ViewModelViewHost<
     [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes
@@ -69,11 +64,6 @@ TViewModel> : ViewModelViewHost, IViewFor<TViewModel>
     /// This code is exercised in integration tests and production runtime scenarios.
     /// </remarks>
     [ExcludeFromCodeCoverage]
-    [RequiresUnreferencedCode(
-        "This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
-    [RequiresDynamicCode(
-        "If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, or generic "
-        + "constraints), trimming can't validate that the requirements of those annotations are met.")]
     protected override void ResolveViewForViewModel(object? viewModel, string? contract)
     {
         if (viewModel is not null and not TViewModel)

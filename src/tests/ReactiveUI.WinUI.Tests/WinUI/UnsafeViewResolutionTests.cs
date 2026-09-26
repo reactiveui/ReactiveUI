@@ -13,17 +13,17 @@ using TUnit.Core.Executors;
 namespace ReactiveUI.Tests.WinUI;
 
 /// <summary>
-/// Tests the split between the default view hosts, which resolve through the generated view lookup, and their Unsafe
-/// twins, which also resolve by the view model's run-time type.
+/// Tests the split between the default view hosts, which ask the view locator's ahead-of-time safe lookup (the generated
+/// view lookup and the <c>Map</c> registrations), and their Unsafe twins, which also ask the service locator.
 /// </summary>
 [NotInParallel]
 [TestExecutor<WinUITestExecutor>]
 public class UnsafeViewResolutionTests
 {
-    /// <summary>Verifies the default host never asks the locator by run-time type.</summary>
+    /// <summary>Verifies the default host asks the locator's ahead-of-time safe lookup and never its reflective one.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public async Task ViewModelViewHost_ResolvesThroughTheGeneratedLookup()
+    public async Task ViewModelViewHost_ResolvesThroughTheSafeLookup()
     {
         var view = new PlainTestView();
         var locator = new StubViewLocator { ContractlessView = view };
@@ -33,14 +33,15 @@ public class UnsafeViewResolutionTests
         using (Assert.Multiple())
         {
             await Assert.That(host.Content).IsSameReferenceAs(view);
-            await Assert.That(locator.RuntimeTypeLookups).IsEqualTo(0);
+            await Assert.That(locator.RuntimeTypeLookups).IsGreaterThan(0);
+            await Assert.That(locator.UnsafeLookups).IsEqualTo(0);
         }
     }
 
-    /// <summary>Verifies the Unsafe host asks the locator by run-time type.</summary>
+    /// <summary>Verifies the Unsafe host asks the locator's reflective lookup and never its ahead-of-time safe one.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public async Task ViewModelViewHostUnsafe_ResolvesByRunTimeType()
+    public async Task ViewModelViewHostUnsafe_ResolvesThroughTheUnsafeLookup()
     {
         var view = new PlainTestView();
         var locator = new StubViewLocator { ContractlessView = view };
@@ -50,14 +51,15 @@ public class UnsafeViewResolutionTests
         using (Assert.Multiple())
         {
             await Assert.That(host.Content).IsSameReferenceAs(view);
-            await Assert.That(locator.RuntimeTypeLookups).IsGreaterThan(0);
+            await Assert.That(locator.UnsafeLookups).IsGreaterThan(0);
+            await Assert.That(locator.RuntimeTypeLookups).IsEqualTo(0);
         }
     }
 
-    /// <summary>Verifies the default routed host never asks the locator by run-time type.</summary>
+    /// <summary>Verifies the default routed host asks the locator's ahead-of-time safe lookup and never its reflective one.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public async Task RoutedViewHost_ResolvesThroughTheGeneratedLookup()
+    public async Task RoutedViewHost_ResolvesThroughTheSafeLookup()
     {
         var view = new RoutedTestView();
         var router = new RoutingState(Sequencer.Immediate);
@@ -69,14 +71,15 @@ public class UnsafeViewResolutionTests
         using (Assert.Multiple())
         {
             await Assert.That(host.Content).IsSameReferenceAs(view);
-            await Assert.That(locator.RuntimeTypeLookups).IsEqualTo(0);
+            await Assert.That(locator.RuntimeTypeLookups).IsGreaterThan(0);
+            await Assert.That(locator.UnsafeLookups).IsEqualTo(0);
         }
     }
 
-    /// <summary>Verifies the Unsafe routed host asks the locator by run-time type.</summary>
+    /// <summary>Verifies the Unsafe routed host asks the locator's reflective lookup and never its ahead-of-time safe one.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public async Task RoutedViewHostUnsafe_ResolvesByRunTimeType()
+    public async Task RoutedViewHostUnsafe_ResolvesThroughTheUnsafeLookup()
     {
         var view = new RoutedTestView();
         var router = new RoutingState(Sequencer.Immediate);
@@ -88,7 +91,108 @@ public class UnsafeViewResolutionTests
         using (Assert.Multiple())
         {
             await Assert.That(host.Content).IsSameReferenceAs(view);
-            await Assert.That(locator.RuntimeTypeLookups).IsGreaterThan(0);
+            await Assert.That(locator.UnsafeLookups).IsGreaterThan(0);
+            await Assert.That(locator.RuntimeTypeLookups).IsEqualTo(0);
+        }
+    }
+
+    /// <summary>Verifies the default host shows a view the app added to the view locator with <c>Map</c>.</summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task ViewModelViewHost_ShowsAMappedView()
+    {
+        var locator = new DefaultViewLocator();
+        locator.Map<MappedOnlyViewModel, MappedOnlyView>();
+        var viewModel = new MappedOnlyViewModel();
+
+        var host = new ViewModelViewHost { ViewLocator = locator, ViewModel = viewModel };
+
+        using (Assert.Multiple())
+        {
+            await Assert.That(host.Content).IsTypeOf<MappedOnlyView>();
+            await Assert.That(((MappedOnlyView)host.Content).ViewModel).IsSameReferenceAs(viewModel);
+        }
+    }
+
+    /// <summary>Verifies the default routed host shows a view the app added to the view locator with <c>Map</c>.</summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task RoutedViewHost_ShowsAMappedView()
+    {
+        var locator = new DefaultViewLocator();
+        locator.Map<MappedOnlyViewModel>(static () => new MappedOnlyView());
+        var router = new RoutingState(Sequencer.Immediate);
+        var host = new RoutedViewHost { ViewLocator = locator, Router = router };
+        var viewModel = new MappedOnlyViewModel();
+
+        using var navigation = router.Navigate.Execute(viewModel).Subscribe();
+
+        using (Assert.Multiple())
+        {
+            await Assert.That(host.Content).IsTypeOf<MappedOnlyView>();
+            await Assert.That(((MappedOnlyView)host.Content).ViewModel).IsSameReferenceAs(viewModel);
+        }
+    }
+
+    /// <summary>Verifies the default host does not find a view registered only with the service locator.</summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task ViewModelViewHost_ViewOnlyInTheServiceLocator_ShowsTheDefaultContent()
+    {
+        RegisterSplatOnlyView();
+        var defaultContent = new TextBlock();
+
+        var host = new ViewModelViewHost { DefaultContent = defaultContent, ViewLocator = new DefaultViewLocator(), ViewModel = new SplatOnlyViewModel() };
+
+        await Assert.That(host.Content).IsSameReferenceAs(defaultContent);
+    }
+
+    /// <summary>Verifies the Unsafe host finds a view registered only with the service locator.</summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task ViewModelViewHostUnsafe_ViewOnlyInTheServiceLocator_IsFound()
+    {
+        RegisterSplatOnlyView();
+        var viewModel = new SplatOnlyViewModel();
+
+        var host = new ViewModelViewHostUnsafe { ViewLocator = new DefaultViewLocator(), ViewModel = viewModel };
+
+        using (Assert.Multiple())
+        {
+            await Assert.That(host.Content).IsTypeOf<SplatOnlyView>();
+            await Assert.That(((SplatOnlyView)host.Content).ViewModel).IsSameReferenceAs(viewModel);
+        }
+    }
+
+    /// <summary>Verifies the default routed host does not find a view registered only with the service locator.</summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task RoutedViewHost_ViewOnlyInTheServiceLocator_Throws()
+    {
+        RegisterSplatOnlyView();
+        var router = new RoutingState(Sequencer.Immediate);
+        _ = new RoutedViewHost { ViewLocator = new DefaultViewLocator(), Router = router };
+
+        await Assert.That(() => router.Navigate.Execute(new SplatOnlyViewModel()).Subscribe())
+            .Throws<InvalidOperationException>();
+    }
+
+    /// <summary>Verifies the Unsafe routed host finds a view registered only with the service locator.</summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task RoutedViewHostUnsafe_ViewOnlyInTheServiceLocator_IsFound()
+    {
+        RegisterSplatOnlyView();
+        var router = new RoutingState(Sequencer.Immediate);
+        var host = new RoutedViewHostUnsafe { ViewLocator = new DefaultViewLocator(), Router = router };
+        var viewModel = new SplatOnlyViewModel();
+
+        using var navigation = router.Navigate.Execute(viewModel).Subscribe();
+
+        using (Assert.Multiple())
+        {
+            await Assert.That(host.Content).IsTypeOf<SplatOnlyView>();
+            await Assert.That(((SplatOnlyView)host.Content).ViewModel).IsSameReferenceAs(viewModel);
         }
     }
 
@@ -165,6 +269,10 @@ public class UnsafeViewResolutionTests
             await Assert.That(itemsControl.ItemTemplate).IsSameReferenceAs(AutoDataTemplateBindingHookUnsafe.DefaultItemTemplate.Value);
         }
     }
+
+    /// <summary>Registers <see cref="SplatOnlyView"/> for <see cref="SplatOnlyViewModel"/> with the service locator only.</summary>
+    private static void RegisterSplatOnlyView() =>
+        AppLocator.CurrentMutable.Register<IViewFor<SplatOnlyViewModel>>(static () => new SplatOnlyView());
 
     /// <summary>Builds the observed-change chain a property binding would hand a hook.</summary>
     /// <param name="sender">The bound target.</param>

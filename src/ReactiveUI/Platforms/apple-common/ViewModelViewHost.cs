@@ -39,10 +39,10 @@ namespace ReactiveUI;
 /// <see cref="ViewContractObservable"/> to drive platform-specific view selection.
 /// </para>
 /// <para>
-/// The host finds the view through the view lookup the source generator writes while the app builds, so it is safe
-/// to trim and to compile ahead of time. The lookup covers every view class that implements <see cref="IViewFor{T}"/>
-/// in a project the ReactiveUI.Binding source generator runs in. A view the generator cannot see, such as one only
-/// registered with the service locator, needs <see cref="ViewModelViewHostUnsafe"/>.
+/// The host asks the view locator for the view by the view model's run-time type, without building any type at run
+/// time, so it is safe to trim and to compile ahead of time. The default locator checks the view lookup the source
+/// generator writes, then the views the app added with <c>Map</c>. A view registered only with the service locator
+/// needs <see cref="ViewModelViewHostUnsafe"/>.
 /// </para>
 /// </remarks>
 /// <example>
@@ -85,7 +85,7 @@ public class ViewModelViewHost : ReactiveViewController
 
     /// <summary>Initializes a new instance of the <see cref="ViewModelViewHost"/> class.</summary>
     public ViewModelViewHost()
-        : this(ResolveGeneratedView)
+        : this(ResolveViewWithoutReflection)
     {
     }
 
@@ -220,14 +220,14 @@ public class ViewModelViewHost : ReactiveViewController
 #endif
     }
 
-    /// <summary>Finds a view through the view lookup the source generator writes, which needs no reflection.</summary>
+    /// <summary>Finds a view by the view model's run-time type without building any type at run time.</summary>
     /// <param name="viewLocator">The view locator to ask.</param>
     /// <param name="viewModel">The view model to find a view for.</param>
     /// <param name="contract">The contract to resolve under, or <see langword="null"/> for the default view.</param>
-    /// <returns>The view, or <see langword="null"/> when the generated lookup has none.</returns>
+    /// <returns>The view, or <see langword="null"/> when neither the generated lookup nor a <c>Map</c> registration has one.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static IViewFor? ResolveGeneratedView(IViewLocator viewLocator, object viewModel, string? contract) =>
-        viewLocator.ResolveView<object>(viewModel, contract);
+    private static IViewFor? ResolveViewWithoutReflection(IViewLocator viewLocator, object viewModel, string? contract) =>
+        viewLocator.ResolveView(viewModel, contract);
 
     /// <summary>Removes <paramref name="child"/> from its parent controller and removes its view from the view hierarchy.</summary>
     /// <param name="child">The child controller to disown.</param>
@@ -291,7 +291,8 @@ public class ViewModelViewHost : ReactiveViewController
                 message += $" and contract \"{x.Contract.GetType()}\"";
             }
 
-            message += $". The generated view lookup finds views that implement IViewFor<T>; use {nameof(ViewModelViewHostUnsafe)} to also resolve a view registered only by run-time type.";
+            message += ". The view locator checked the generated view lookup and its Map registrations; "
+                + $"use {nameof(ViewModelViewHostUnsafe)} to also resolve a view registered only with the service locator.";
             throw new InvalidOperationException(message);
         }
 

@@ -4,6 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 
 #if HAS_WINUI
 using Microsoft.UI.Xaml;
@@ -40,6 +41,12 @@ namespace ReactiveUI;
 /// the ViewModel property and display it. This control is very useful
 /// inside a DataTemplate to display the View associated with a ViewModel.
 /// </summary>
+/// <remarks>
+/// The host asks the view locator for the view by the view model's run-time type, without building any type at run
+/// time. The default locator checks the view lookup the source generator writes, then the views the app added with
+/// <c>Map</c>. A view registered only with the service locator needs <see cref="ViewModelViewHostUnsafe"/>, which also
+/// asks the service locator for <see cref="IViewFor{T}"/> closed over the view model's run-time type.
+/// </remarks>
 [DebuggerDisplay("{ViewContractObservable}, {DefaultContent}")]
 public
 #if HAS_UNO
@@ -67,12 +74,23 @@ public
     public static readonly DependencyProperty ContractFallbackByPassProperty =
         DependencyProperty.Register(nameof(ContractFallbackByPass), typeof(bool), typeof(ViewModelViewHost), new(false));
 
+    /// <summary>Asks a view locator for the view of a view model under a contract.</summary>
+    private readonly Func<IViewLocator, object, string?, IViewFor?> _resolveView;
+
     /// <summary>Stores the most recently observed view contract.</summary>
     private string? _viewContract;
 
     /// <summary>Initializes a new instance of the <see cref="ViewModelViewHost"/> class.</summary>
     public ViewModelViewHost()
+        : this(ResolveViewWithoutReflection)
     {
+    }
+
+    /// <summary>Initializes a new instance of the <see cref="ViewModelViewHost"/> class with its view lookup.</summary>
+    /// <param name="resolveView">Asks a view locator for the view of a view model under a contract.</param>
+    private protected ViewModelViewHost(Func<IViewLocator, object, string?, IViewFor?> resolveView)
+    {
+        _resolveView = resolveView;
         var platformGetter = ViewContractObservableHelpers.GetPlatformOrientation(this.Log());
         ViewContractObservable = ViewContractObservableHelpers.Create(
             platformGetter,
@@ -93,14 +111,21 @@ public
             viewModelChanged,
             static (contract, vm) => (ViewModel: vm, Contract: contract));
 
-        _ = this.WhenActivated(d =>
+        if (this.GetIsDesignMode())
         {
-            d(new ObserveOnObservable<string?>(contractChanged, RxSchedulers.MainThreadScheduler)
-                .Subscribe(new DelegateObserver<string?>(x => _viewContract = x ?? string.Empty)));
+            return;
+        }
 
-            d(viewModelAndContract.DistinctUntilChanged()
-                .Subscribe(new DelegateObserver<(object? ViewModel, string? Contract)>(x => ResolveViewForViewModel(x.ViewModel, x.Contract))));
-        });
+        _ = ((IActivatableView)this).WhenActivated(
+            d =>
+            {
+                d(new ObserveOnObservable<string?>(contractChanged, RxSchedulers.MainThreadScheduler)
+                    .Subscribe(new DelegateObserver<string?>(x => _viewContract = x ?? string.Empty)));
+
+                d(viewModelAndContract.DistinctUntilChanged()
+                    .Subscribe(new DelegateObserver<(object? ViewModel, string? Contract)>(x => ResolveViewForViewModel(x.ViewModel, x.Contract))));
+            },
+            viewModelChanged);
     }
 
     /// <summary>Gets or sets the view contract observable.</summary>
@@ -154,17 +179,19 @@ public
 
         var viewLocator = ViewLocator ?? GetCurrent();
 
-        var viewInstance = viewLocator.ResolveView(viewModel, contract);
+        var viewInstance = _resolveView(viewLocator, viewModel, contract);
         if (viewInstance is null && !ContractFallbackByPass)
         {
-            viewInstance = viewLocator.ResolveView(viewModel);
+            viewInstance = _resolveView(viewLocator, viewModel, null);
         }
 
         if (viewInstance is null)
         {
             Content = DefaultContent;
             this.Log().Warn(
-                $"The {nameof(ViewModelViewHost)} could not find a valid view for the view model of type {viewModel.GetType()} and value {viewModel}.");
+                $"The {GetType().Name} could not find a valid view for the view model of type {viewModel.GetType()} and value {viewModel}. "
+                + "The view locator checked the generated view lookup and its Map registrations; "
+                + $"use {nameof(ViewModelViewHostUnsafe)} to also resolve a view registered only with the service locator.");
             return;
         }
 
@@ -172,4 +199,13 @@ public
 
         Content = viewInstance;
     }
+
+    /// <summary>Finds a view by the view model's run-time type without building any type at run time.</summary>
+    /// <param name="viewLocator">The view locator to ask.</param>
+    /// <param name="viewModel">The view model to find a view for.</param>
+    /// <param name="contract">The contract to resolve under, or <see langword="null"/> for the default view.</param>
+    /// <returns>The view, or <see langword="null"/> when neither the generated lookup nor a <c>Map</c> registration has one.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static IViewFor? ResolveViewWithoutReflection(IViewLocator viewLocator, object viewModel, string? contract) =>
+        viewLocator.ResolveView(viewModel, contract);
 }

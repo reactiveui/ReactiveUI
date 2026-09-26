@@ -14,11 +14,11 @@ internal static class ViewResolutionMessages
 {
     /// <summary>The message for <c>ViewModelViewHostUnsafe</c>.</summary>
     internal const string UnsafeHost =
-        "ViewModelViewHostUnsafe resolves a view by closing IViewFor<> over the view model's run-time type. "
-        + "Use ViewModelViewHost, which uses the generated view lookup, to stay ahead-of-time safe.";
+        "ViewModelViewHostUnsafe asks the service locator for IViewFor<> closed over the view model's run-time type. "
+        + "Use ViewModelViewHost, which uses the generated view lookup and Map registrations, to stay ahead-of-time safe.";
 
-    /// <summary>The message for <c>RoutedViewHostUnsafe</c>.</summary>
+    /// <summary>The message for <c>RoutedViewHostUnsafe</c>, which ships on UIKit platforms only.</summary>
     internal const string UnsafeRoutedHost =
-        "RoutedViewHostUnsafe resolves a view by closing IViewFor<> over the view model's run-time type. "
-        + "Use RoutedViewHost, which uses the generated view lookup, to stay ahead-of-time safe.";
+        "RoutedViewHostUnsafe asks the service locator for IViewFor<> closed over the view model's run-time type. "
+        + "Use RoutedViewHost, which uses the generated view lookup and Map registrations, to stay ahead-of-time safe.";
 }

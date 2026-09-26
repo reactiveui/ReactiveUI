@@ -4,7 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using Microsoft.Maui.Controls;
 using ReactiveUI.Internal;
 using ReactiveUI.Primitives;
@@ -27,11 +27,13 @@ namespace ReactiveUI.Maui;
 /// to be displayed should be assigned to the <see cref="ViewModel"/> property. Optionally, the chosen view can be
 /// customized by specifying a contract via <see cref="ViewContractObservable"/> or <see cref="ViewContract"/>.
 /// </summary>
-[RequiresUnreferencedCode(
-    "This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
-[RequiresDynamicCode(
-    "If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, or generic "
-    + "constraints), trimming can't validate that the requirements of those annotations are met.")]
+/// <remarks>
+/// The host asks the view locator for the view by the view model's run-time type, without building any type at run
+/// time, so it is safe to trim and to compile ahead of time. The default locator checks the view lookup the source
+/// generator writes, then the views the app added with <c>Map</c>. A view registered only with the service locator
+/// needs <see cref="ViewModelViewHostUnsafe"/>, which also asks the service locator for <see cref="IViewFor{T}"/>
+/// closed over the view model's run-time type.
+/// </remarks>
 [DebuggerDisplay("{ViewModel}, {DefaultContent}")]
 public class ViewModelViewHost : ContentView, IViewFor
 {
@@ -63,6 +65,9 @@ public class ViewModelViewHost : ContentView, IViewFor
         typeof(ViewModelViewHost),
         false);
 
+    /// <summary>Asks a view locator for the view of a view model under a contract.</summary>
+    private readonly Func<IViewLocator, object, string?, IViewFor?> _resolveView;
+
     /// <summary>The subscription to the current <see cref="ViewContractObservable"/>, replaced when the property changes.</summary>
     private IDisposable? _viewContractSubscription;
 
@@ -71,7 +76,16 @@ public class ViewModelViewHost : ContentView, IViewFor
 
     /// <summary>Initializes a new instance of the <see cref="ViewModelViewHost"/> class.</summary>
     public ViewModelViewHost()
+        : this(ResolveViewWithoutReflection)
     {
+    }
+
+    /// <summary>Initializes a new instance of the <see cref="ViewModelViewHost"/> class with its view lookup.</summary>
+    /// <param name="resolveView">Asks a view locator for the view of a view model under a contract.</param>
+    private protected ViewModelViewHost(Func<IViewLocator, object, string?, IViewFor?> resolveView)
+    {
+        _resolveView = resolveView;
+
         // NB: InUnitTestRunner also returns true in Design Mode
         if (ModeDetector.InUnitTestRunner())
         {
@@ -131,11 +145,6 @@ public class ViewModelViewHost : ContentView, IViewFor
     /// <param name="viewModel">ViewModel.</param>
     /// <param name="contract">contract used by ViewLocator.</param>
     /// <exception cref="InvalidOperationException">No view is registered for <paramref name="viewModel"/>.</exception>
-    [RequiresUnreferencedCode(
-        "This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
-    [RequiresDynamicCode(
-        "If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, or generic "
-        + "constraints), trimming can't validate that the requirements of those annotations are met.")]
     protected virtual void ResolveViewForViewModel(object? viewModel, string? contract)
     {
         if (viewModel is null)
@@ -146,15 +155,17 @@ public class ViewModelViewHost : ContentView, IViewFor
 
         var viewLocator = ViewLocator ?? GetCurrent();
 
-        var viewInstance = viewLocator.ResolveView(viewModel, contract);
+        var viewInstance = _resolveView(viewLocator, viewModel, contract);
         if (viewInstance is null && !ContractFallbackByPass)
         {
-            viewInstance = viewLocator.ResolveView(viewModel);
+            viewInstance = _resolveView(viewLocator, viewModel, null);
         }
 
         if (viewInstance is null)
         {
-            throw new InvalidOperationException($"Couldn't find view for '{viewModel}'.");
+            throw new InvalidOperationException(
+                $"Couldn't find view for '{viewModel}'. The view locator checked the generated view lookup and its Map registrations; "
+                + $"use {nameof(ViewModelViewHostUnsafe)} to also resolve a view registered only with the service locator.");
         }
 
         if (viewInstance is not View castView)
@@ -167,6 +178,15 @@ public class ViewModelViewHost : ContentView, IViewFor
 
         Content = castView;
     }
+
+    /// <summary>Finds a view by the view model's run-time type without building any type at run time.</summary>
+    /// <param name="viewLocator">The view locator to ask.</param>
+    /// <param name="viewModel">The view model to find a view for.</param>
+    /// <param name="contract">The contract to resolve under, or <see langword="null"/> for the default view.</param>
+    /// <returns>The view, or <see langword="null"/> when neither the generated lookup nor a <c>Map</c> registration has one.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static IViewFor? ResolveViewWithoutReflection(IViewLocator viewLocator, object viewModel, string? contract) =>
+        viewLocator.ResolveView(viewModel, contract);
 
     /// <summary>Handles changes to the <see cref="ViewModel"/> property by re-resolving the view for the new value.</summary>
     /// <param name="bindable">The object whose property changed.</param>
