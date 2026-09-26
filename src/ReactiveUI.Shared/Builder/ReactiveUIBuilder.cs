@@ -331,15 +331,25 @@ public sealed partial class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, 
     /// <summary>Configures the ReactiveUI view locator.</summary>
     /// <param name="configure">The configuration action.</param>
     /// <returns>The builder instance for chaining.</returns>
+    /// <remarks>
+    /// At build time the action runs once on the registered <see cref="DefaultViewLocator"/>, so mappings added by
+    /// <c>RegisterViews</c> or <c>WithViewModule</c> are kept. When no <see cref="DefaultViewLocator"/> is registered,
+    /// a new one is configured and registered as the single <see cref="IViewLocator"/>.
+    /// </remarks>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public IReactiveUIBuilder ConfigureViewLocator(Action<DefaultViewLocator> configure) =>
         WithRegistrationOnBuild(resolver =>
-            resolver.Register<IViewLocator>(() =>
+        {
+            if (Current?.GetService<IViewLocator>() is DefaultViewLocator registered)
             {
-                DefaultViewLocator viewLocator = new();
-                configure(viewLocator);
-                return viewLocator;
-            }));
+                configure(registered);
+                return;
+            }
+
+            DefaultViewLocator viewLocator = new();
+            configure(viewLocator);
+            resolver.RegisterConstant<IViewLocator>(viewLocator);
+        });
 
     /// <summary>Configures the ReactiveUI suspension driver.</summary>
     /// <param name="configure">The configuration action.</param>
