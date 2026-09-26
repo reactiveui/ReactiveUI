@@ -298,6 +298,30 @@ public class RoutedViewHostTest
         await Assert.That(host.Navigation.NavigationStack).IsNotEmpty();
     }
 
+    /// <summary>Navigating while the page stack is shorter than the router stack pushes each page instead of throwing.</summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    [TestExecutor<MauiRoutedViewHostTestExecutor>]
+    public async Task Navigate_PageStackShorterThanRouterStack_PushesPages()
+    {
+        var host = new TestableRoutedViewHost();
+        var first = new TestRoutableViewModel();
+        var second = new TestRoutableViewModel();
+
+        // Each Navigate appends to the router stack before the host sees the request, so the page stack is one short.
+        _ = host.Router.Navigate.Execute(first).Subscribe(static _ => { });
+        _ = host.Router.Navigate.Execute(second).Subscribe(static _ => { });
+        await Task.Delay(SchedulerProcessingDelayMs);
+
+        var pages = host.Navigation.NavigationStack;
+        using (Assert.Multiple())
+        {
+            await Assert.That(pages.Count).IsEqualTo(host.Router.NavigationStack.Count);
+            await Assert.That(((TestRoutableView)pages[0]).ViewModel).IsSameReferenceAs(first);
+            await Assert.That(((TestRoutableView)pages[1]).ViewModel).IsSameReferenceAs(second);
+        }
+    }
+
     /// <summary>A navigate request whose stacks already reference-match short-circuits in <c>OnNavigateRequested</c>.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]

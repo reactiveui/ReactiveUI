@@ -472,6 +472,12 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
     /// <returns><see langword="true"/> if the stacks are different; otherwise, <see langword="false"/>.</returns>
     private bool StacksAreDifferent()
     {
+        // Stacks of different lengths differ; checking first also keeps the loop below inside the page stack.
+        if (Navigation.NavigationStack.Count != Router.NavigationStack.Count)
+        {
+            return true;
+        }
+
         for (var i = 0; i < Router.NavigationStack.Count; i++)
         {
             var vm = Router.NavigationStack[i];
