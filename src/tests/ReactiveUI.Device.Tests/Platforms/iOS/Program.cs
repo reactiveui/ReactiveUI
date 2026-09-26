@@ -3,14 +3,5 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using UIKit;
-
-namespace ReactiveUI.Device.Tests;
-
-/// <summary>The iOS entry point.</summary>
-internal static class Program
-{
-    /// <summary>Starts UIKit with <see cref="AppDelegate"/>.</summary>
-    /// <param name="args">The launch arguments.</param>
-    private static void Main(string[] args) => UIApplication.Main(args, null, typeof(AppDelegate));
-}
+// The iOS entry point: UIKit starts the app with its delegate, which runs the tests.
+UIKit.UIApplication.Main(args, null, typeof(ReactiveUI.Device.Tests.AppDelegate));

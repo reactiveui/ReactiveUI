@@ -11,13 +11,16 @@ public class RoutedViewHostTests
     /// <summary>The number of controllers after one push onto a one-controller stack.</summary>
     private const int StackAfterPush = 2;
 
+    /// <summary>The segment of the view model at the bottom of each stack.</summary>
+    private const string FirstSegment = "first";
+
     /// <summary>A router that already has a stack shows it, with the view model's segment as the title.</summary>
     /// <returns>A task representing the test.</returns>
     [Test]
     public async Task ExistingStack_IsPushedWhenTheHostActivates()
     {
         var screen = new TestScreen();
-        var first = new TestRoutableViewModel(screen, "first");
+        var first = new TestRoutableViewModel(screen, FirstSegment);
         screen.Router.NavigationStack.Add(first);
 
         var host = await CreateHostAsync(screen);
@@ -27,7 +30,7 @@ public class RoutedViewHostTests
 
             var top = await MainThread.RunAsync(() => (RoutableViewController)host.TopViewController!);
             await Assert.That(top.ViewModel).IsSameReferenceAs(first);
-            await UIKitHarness.UntilAsync(() => top.NavigationItem.Title == "first", "the title to follow the segment");
+            await UIKitHarness.UntilAsync(() => top.NavigationItem.Title == FirstSegment, "the title to follow the segment");
         }
         finally
         {
@@ -41,7 +44,7 @@ public class RoutedViewHostTests
     public async Task NavigateAndNavigateBack_PushAndPopControllers()
     {
         var screen = new TestScreen();
-        var first = new TestRoutableViewModel(screen, "first");
+        var first = new TestRoutableViewModel(screen, FirstSegment);
         var second = new TestRoutableViewModel(screen, "second");
         screen.Router.NavigationStack.Add(first);
 
@@ -70,7 +73,7 @@ public class RoutedViewHostTests
     public async Task PushingDirectly_SyncsTheRouterStack()
     {
         var screen = new TestScreen();
-        var first = new TestRoutableViewModel(screen, "first");
+        var first = new TestRoutableViewModel(screen, FirstSegment);
         var pushed = new TestRoutableViewModel(screen, "pushed");
         screen.Router.NavigationStack.Add(first);
 

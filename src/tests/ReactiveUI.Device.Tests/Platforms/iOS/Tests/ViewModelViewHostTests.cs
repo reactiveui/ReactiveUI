@@ -22,8 +22,8 @@ public class ViewModelViewHostTests
             var viewModel = new TestViewModel("hosted");
             await MainThread.RunAsync(() => host.ViewModel = viewModel);
 
-            await UIKitHarness.UntilAsync(() => child.ParentViewController == host, "the child to be adopted");
-            await Assert.That(await MainThread.RunAsync(() => child.View!.Superview == host.View)).IsTrue();
+            await UIKitHarness.UntilAsync(() => ReferenceEquals(child.ParentViewController, host), "the child to be adopted");
+            await Assert.That(await MainThread.RunAsync(() => ReferenceEquals(child.View!.Superview, host.View))).IsTrue();
             await Assert.That(child.ViewModel).IsSameReferenceAs(viewModel);
         }
         finally
@@ -72,7 +72,7 @@ public class ViewModelViewHostTests
             var placeholder = await MainThread.RunAsync(static () => new UIViewController());
             await MainThread.RunAsync(() => host.DefaultContent = placeholder);
 
-            await UIKitHarness.UntilAsync(() => placeholder.ParentViewController == host, "the default content");
+            await UIKitHarness.UntilAsync(() => ReferenceEquals(placeholder.ParentViewController, host), "the default content");
         }
         finally
         {
