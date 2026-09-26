@@ -19,9 +19,9 @@ public static class CancellationExamples
     {
         InMemoryGitHubApi api = new() { Latency = _slowNetwork };
         using RepositorySearchViewModel viewModel = new(api);
-        var stopped = viewModel.Search.IsExecuting.Where(static executing => !executing).Skip(1).FirstAsync().ToTask();
+        Task<bool> stopped = viewModel.Search.IsExecuting.Where(static executing => !executing).Skip(1).FirstAsync().ToTask();
 
-        var execution = viewModel.Search.Execute("platform").Subscribe(static _ => { }, static _ => { });
+        IDisposable execution = viewModel.Search.Execute("platform").Subscribe(static _ => { }, static _ => { });
         Console.WriteLine(viewModel.IsSearching);
 
         execution.Dispose();
@@ -41,13 +41,13 @@ public static class CancellationExamples
     public static async Task CancelFromAnotherCommand()
     {
         InMemoryGitHubApi api = new() { Latency = _slowNetwork };
-        using var cancel = ReactiveCommand.Create(static () => { });
-        using var search = ReactiveCommand.CreateFromObservable<string, IReadOnlyList<Repository>>(
+        using ReactiveCommand<RxVoid, RxVoid>? cancel = ReactiveCommand.Create(static () => { });
+        using ReactiveCommand<string, IReadOnlyList<Repository>> search = ReactiveCommand.CreateFromObservable<string, IReadOnlyList<Repository>>(
             query => Signal.FromAsync(cancellationToken => api.SearchRepositoriesAsync(query, cancellationToken)).TakeUntil(cancel));
-        using var canCancel = search.IsExecuting.Subscribe(static executing => Console.WriteLine($"Searching: {executing}"));
-        var stopped = search.IsExecuting.Where(static executing => !executing).Skip(1).FirstAsync().ToTask();
+        using IDisposable canCancel = search.IsExecuting.Subscribe(static executing => Console.WriteLine($"Searching: {executing}"));
+        Task<bool> stopped = search.IsExecuting.Where(static executing => !executing).Skip(1).FirstAsync().ToTask();
 
-        using var execution = search.Execute("platform").Subscribe(static _ => { });
+        using IDisposable execution = search.Execute("platform").Subscribe(static _ => { });
         _ = await cancel.Execute();
         _ = await stopped;
 

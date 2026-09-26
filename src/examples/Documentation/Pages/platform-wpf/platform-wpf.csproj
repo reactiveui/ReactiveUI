@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- ReactiveUI.Wpf is a Windows-only library. Directory.Build.props targets plain net10.0 and publishes as
+       NativeAOT, neither of which fits a WPF app, so both are overridden here. EnableWindowsTargeting lets this
+       project build on Linux; it only ever runs on Windows. -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0-windows10.0.19041.0</TargetFramework>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+    <UseWPF>true</UseWPF>
+    <PublishAot>false</PublishAot>
+    <IsAotCompatible>false</IsAotCompatible>
+    <EnableTrimAnalyzer>false</EnableTrimAnalyzer>
+    <EnableSingleFileAnalyzer>false</EnableSingleFileAnalyzer>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../../../../ReactiveUI.Wpf/ReactiveUI.Wpf.csproj" />
+  </ItemGroup>
+
+</Project>

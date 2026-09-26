@@ -1,0 +1,18 @@
+<reactiveui:ReactiveWindow
+    x:Class="ReactiveUI.Documentation.PlatformWpf.MainWindow"
+    x:TypeArguments="local:AppShell"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:reactiveui="http://reactiveui.net"
+    xmlns:local="clr-namespace:ReactiveUI.Documentation.PlatformWpf"
+    Title="Grade Book"
+    Width="640"
+    Height="360"
+    WindowStartupLocation="CenterScreen">
+
+    <DockPanel>
+        <Button x:Name="AboutButton" DockPanel.Dock="Top" Content="About" HorizontalAlignment="Right" Margin="8" />
+        <reactiveui:RoutedViewHost x:Name="Host" />
+    </DockPanel>
+
+</reactiveui:ReactiveWindow>

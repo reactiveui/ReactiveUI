@@ -36,7 +36,7 @@ public sealed class TodoListViewModel : ReactiveObject, IActivatableViewModel, I
         Load = ReactiveCommand.CreateFromTask(_store.QueryAsync);
         _subscriptions.Add(Load.Subscribe(rows => AllItems = rows));
 
-        var canAdd = this.WhenAnyValue(x => x.NewTitle).Select(static title => !string.IsNullOrWhiteSpace(title));
+        IObservable<bool> canAdd = this.WhenAnyValue(x => x.NewTitle).Select(static title => !string.IsNullOrWhiteSpace(title));
         Add = ReactiveCommand.CreateFromTask(cancellationToken => _store.AddAsync(NewTitle.Trim(), cancellationToken), canAdd);
         _subscriptions.Add(Add.Subscribe(added =>
         {

@@ -1,0 +1,7 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="../../../../ReactiveUI.Testing/ReactiveUI.Testing.csproj" />
+  </ItemGroup>
+
+</Project>

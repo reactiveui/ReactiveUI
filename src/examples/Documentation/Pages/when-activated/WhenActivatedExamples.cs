@@ -58,7 +58,7 @@ public static class WhenActivatedExamples
     /// <returns>A task that completes when the store has been changed behind the screen.</returns>
     public static async Task ReactivateToRefresh()
     {
-        var store = InMemoryTodoStore.CreateSeeded();
+        InMemoryTodoStore store = InMemoryTodoStore.CreateSeeded();
         using TodoListViewModel viewModel = new(store);
         using TodoListView view = new() { ViewModel = viewModel };
 

@@ -1,0 +1,72 @@
+<Window
+    x:Class="ReactiveUI.Documentation.PlatformBlendDrawing.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+    xmlns:blend="clr-namespace:ReactiveUI.Blend;assembly=ReactiveUI.Blend"
+    xmlns:local="clr-namespace:ReactiveUI.Documentation.PlatformBlendDrawing"
+    Title="Weather Station"
+    Width="360"
+    Height="220"
+    WindowStartupLocation="CenterScreen">
+
+    <StackPanel Margin="12">
+
+        <!-- FollowObservableStateBehavior drives this panel's VisualStateGroup from the view model's State stream. -->
+        <Border x:Name="StatusPanel" Padding="12" BorderThickness="1" BorderBrush="Gray">
+            <Border.Background>
+                <SolidColorBrush x:Name="StatusBrush" Color="LightGreen" />
+            </Border.Background>
+
+            <i:Interaction.Behaviors>
+                <blend:FollowObservableStateBehavior
+                    StateObservable="{Binding StateChanges}"
+                    TargetObject="{Binding ElementName=StatusPanel}" />
+            </i:Interaction.Behaviors>
+
+            <VisualStateManager.VisualStateGroups>
+                <VisualStateGroup x:Name="WeatherStates">
+                    <VisualState Name="Calm">
+                        <Storyboard>
+                            <ColorAnimation
+                                Storyboard.TargetName="StatusBrush"
+                                Storyboard.TargetProperty="Color"
+                                To="LightGreen"
+                                Duration="0" />
+                        </Storyboard>
+                    </VisualState>
+                    <VisualState Name="Windy">
+                        <Storyboard>
+                            <ColorAnimation
+                                Storyboard.TargetName="StatusBrush"
+                                Storyboard.TargetProperty="Color"
+                                To="Khaki"
+                                Duration="0" />
+                        </Storyboard>
+                    </VisualState>
+                    <VisualState Name="Stormy">
+                        <Storyboard>
+                            <ColorAnimation
+                                Storyboard.TargetName="StatusBrush"
+                                Storyboard.TargetProperty="Color"
+                                To="IndianRed"
+                                Duration="0" />
+                        </Storyboard>
+                    </VisualState>
+                </VisualStateGroup>
+            </VisualStateManager.VisualStateGroups>
+
+            <TextBlock Text="{Binding State}" FontWeight="Bold" HorizontalAlignment="Center" />
+        </Border>
+
+        <!-- ObservableTrigger fires ShowAlertAction each time RaiseAlert's output stream emits. -->
+        <TextBlock x:Name="AlertText" Margin="0,12,0,0" Text="(no alert)" />
+        <i:Interaction.Triggers>
+            <blend:ObservableTrigger Observable="{Binding RaiseAlert}">
+                <local:ShowAlertAction TargetText="{Binding ElementName=AlertText}" />
+            </blend:ObservableTrigger>
+        </i:Interaction.Triggers>
+
+    </StackPanel>
+
+</Window>

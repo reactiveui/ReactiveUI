@@ -19,3 +19,15 @@ await RoutingExamples.WatchTheStack();
 await RoutingExamples.ShowTheViewForTheCurrentPage();
 
 await RoutingExamples.ResetTheStack();
+
+RoutingExamples.DeliverNavigationImmediately();
+
+await RoutingExamples.WatchDetailedChangeSets();
+
+await RoutingExamples.FindAPageOfAGivenType();
+
+await RoutingExamples.ReadTheTopOfTheStack();
+
+await CookingTimerExamples.StartAndStopWorkOnAPage();
+
+await CookingTimerExamples.ObserveArrivalAndDeparture();

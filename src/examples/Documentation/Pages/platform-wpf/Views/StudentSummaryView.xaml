@@ -1,0 +1,14 @@
+<reactiveui:ReactiveUserControl
+    x:Class="ReactiveUI.Documentation.PlatformWpf.StudentSummaryView"
+    x:TypeArguments="local:StudentSummaryViewModel"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:reactiveui="http://reactiveui.net"
+    xmlns:local="clr-namespace:ReactiveUI.Documentation.PlatformWpf">
+
+    <StackPanel Margin="8">
+        <TextBlock x:Name="NameText" FontWeight="Bold" />
+        <TextBlock x:Name="GradeText" />
+    </StackPanel>
+
+</reactiveui:ReactiveUserControl>

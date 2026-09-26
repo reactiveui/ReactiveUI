@@ -1,0 +1,21 @@
+<reactiveui:ReactiveUserControl
+    x:Class="ReactiveUI.Documentation.PlatformWpf.CourseListView"
+    x:TypeArguments="local:CourseListViewModel"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:reactiveui="http://reactiveui.net"
+    xmlns:local="clr-namespace:ReactiveUI.Documentation.PlatformWpf">
+
+    <DockPanel Margin="16">
+        <TextBlock DockPanel.Dock="Top" Text="Students" FontSize="18" Margin="0,0,0,8" />
+
+        <StackPanel DockPanel.Dock="Right" Width="180" Margin="16,0,0,0">
+            <TextBlock Text="Selected student" FontWeight="Bold" Margin="0,0,0,8" />
+            <reactiveui:ViewModelViewHost x:Name="SummaryHost" />
+            <Button x:Name="OpenButton" Content="Open grade" Margin="0,16,0,0" />
+        </StackPanel>
+
+        <ListBox x:Name="StudentList" DisplayMemberPath="Name" />
+    </DockPanel>
+
+</reactiveui:ReactiveUserControl>

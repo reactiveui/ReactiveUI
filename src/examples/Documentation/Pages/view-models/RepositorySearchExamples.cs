@@ -16,7 +16,7 @@ public static class RepositorySearchExamples
     {
         InMemoryGitHubApi api = new();
         using RepositorySearchViewModel viewModel = new(api);
-        var answered = viewModel.Search.FirstAsync().ToTask();
+        Task<IReadOnlyList<Repository>> answered = viewModel.Search.FirstAsync().ToTask();
 
         viewModel.SearchText = "pl";
         Console.WriteLine(api.RequestCount);
@@ -25,7 +25,7 @@ public static class RepositorySearchExamples
         await answered;
 
         Console.WriteLine(api.RequestCount);
-        foreach (var repository in viewModel.Results)
+        foreach (Repository repository in viewModel.Results)
         {
             Console.WriteLine($"{repository.FullName} ({repository.Stars})");
         }

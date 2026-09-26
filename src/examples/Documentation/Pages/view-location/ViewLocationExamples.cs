@@ -19,7 +19,7 @@ public static class ViewLocationExamples
     {
         using TodoListViewModel viewModel = new(InMemoryTodoStore.CreateSeeded());
 
-        var view = ViewLocator.GetCurrent().ResolveView(viewModel);
+        IViewFor? view = ViewLocator.GetCurrent().ResolveView(viewModel);
 
         Console.WriteLine(view?.GetType().Name);
         Console.WriteLine(ReferenceEquals(view?.ViewModel, viewModel));
@@ -36,7 +36,7 @@ public static class ViewLocationExamples
     public static void PickAViewByContract()
     {
         using TodoListViewModel viewModel = new(InMemoryTodoStore.CreateSeeded());
-        var locator = ViewLocator.GetCurrent();
+        IViewLocator locator = ViewLocator.GetCurrent();
 
         Console.WriteLine(locator.ResolveView(viewModel, ViewContracts.Compact)?.GetType().Name);
         Console.WriteLine(locator.ResolveView(viewModel, ViewContracts.Print)?.GetType().Name ?? "(none)");
@@ -51,7 +51,7 @@ public static class ViewLocationExamples
     {
         using RepositorySearchViewModel viewModel = new(new InMemoryGitHubApi());
 
-        var view = ViewLocator.GetCurrent().ResolveView(viewModel);
+        IViewFor? view = ViewLocator.GetCurrent().ResolveView(viewModel);
 
         Console.WriteLine(view?.GetType().Name);
 

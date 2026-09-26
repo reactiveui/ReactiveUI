@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Referencing ReactiveUI.Routing pulls in DynamicData, and therefore System.Reactive. System.Reactive's own
+       Subscribe(Action<T>) then collides with ReactiveUI.Primitives' Subscribe(Action<T>), so the shared Common
+       apps (whose plain Subscribe calls would become ambiguous) are left out of this page; see NavigationChangeSetExamples
+       for how the ambiguity is avoided in this project's own code. -->
+  <PropertyGroup>
+    <UseDocumentationCommon>false</UseDocumentationCommon>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../../../../ReactiveUI.Routing/ReactiveUI.Routing.csproj" />
+  </ItemGroup>
+
+</Project>

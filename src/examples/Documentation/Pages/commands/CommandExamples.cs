@@ -19,7 +19,7 @@ public static class CommandExamples
     {
         using TodoListViewModel viewModel = new(InMemoryTodoStore.CreateSeeded());
         viewModel.FilterText = "bill";
-        using var clearFilter = ReactiveCommand.Create(() => viewModel.FilterText = string.Empty);
+        using ReactiveCommand<RxVoid, string>? clearFilter = ReactiveCommand.Create(() => viewModel.FilterText = string.Empty);
 
         _ = await clearFilter.Execute();
 
@@ -35,7 +35,7 @@ public static class CommandExamples
     {
         using TodoListViewModel viewModel = new(InMemoryTodoStore.CreateSeeded());
 
-        var rows = await viewModel.Load.Execute();
+        IReadOnlyList<TodoItem> rows = await viewModel.Load.Execute();
 
         Console.WriteLine(rows.Count);
         Console.WriteLine(viewModel.RemainingCount);
@@ -49,7 +49,7 @@ public static class CommandExamples
     public static void ControlExecutability()
     {
         using TodoListViewModel viewModel = new(InMemoryTodoStore.CreateSeeded());
-        using var subscription = viewModel.Add.CanExecute.Subscribe(Console.WriteLine);
+        using IDisposable subscription = viewModel.Add.CanExecute.Subscribe(Console.WriteLine);
 
         viewModel.NewTitle = ElectricianTitle;
         viewModel.NewTitle = "   ";
@@ -90,9 +90,9 @@ public static class CommandExamples
     public static async Task InvokeFromPipeline()
     {
         using TodoListViewModel viewModel = new(InMemoryTodoStore.CreateSeeded());
-        var loaded = viewModel.Load.FirstAsync().ToTask();
+        Task<IReadOnlyList<TodoItem>> loaded = viewModel.Load.FirstAsync().ToTask();
 
-        using var subscription = Signal.Emit(RxVoid.Default).InvokeCommand(viewModel.Load);
+        using IDisposable subscription = Signal.Emit(RxVoid.Default).InvokeCommand(viewModel.Load);
         _ = await loaded;
 
         Console.WriteLine(viewModel.Items.Count);
@@ -110,8 +110,8 @@ public static class CommandExamples
         _ = await workStore.AddAsync("Send the quarterly report", CancellationToken.None);
         using TodoListViewModel work = new(workStore);
 
-        using var refreshAll = ReactiveCommand.CreateCombined([home.Load, work.Load]);
-        var results = await refreshAll.Execute();
+        using CombinedReactiveCommand<RxVoid, IReadOnlyList<TodoItem>>? refreshAll = ReactiveCommand.CreateCombined([home.Load, work.Load]);
+        IList<IReadOnlyList<TodoItem>> results = await refreshAll.Execute();
 
         Console.WriteLine(results.Count);
         Console.WriteLine(home.Items.Count);

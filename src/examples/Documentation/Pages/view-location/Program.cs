@@ -16,3 +16,11 @@ ViewLocationExamples.PickAViewByContract();
 ViewLocationExamples.MapViewsInAModule();
 
 ViewLocationExamples.WrapTheViewLocator();
+
+SchoolTimetableExamples.MapDayAndWeekViewsAndResolveThemWithoutAnInstance();
+
+SchoolTimetableExamples.MapATeacherViewAtSignInAndUnmapAtSignOut();
+
+SchoolTimetableExamples.MapViewsWithABuilderIncludingFromTheServiceLocator();
+
+SchoolTimetableExamples.BuildAViewLocatorNotFoundException();

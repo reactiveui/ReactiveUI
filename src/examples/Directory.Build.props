@@ -10,4 +10,9 @@
 
   <!-- Inherit all repository-wide settings from the root src/Directory.Build.props. -->
   <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))" />
+
+  <PropertyGroup>
+    <IsPackable>false</IsPackable>
+    <LangVersion>14.0</LangVersion>
+  </PropertyGroup>
 </Project>

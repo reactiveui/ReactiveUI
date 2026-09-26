@@ -15,7 +15,7 @@ public static class RoutingExamples
     public static async Task NavigateAndGoBack()
     {
         AppShell shell = new();
-        var list = await OpenListAsync(shell);
+        TodoListPage list = await OpenListAsync(shell);
 
         _ = await list.Open.Execute(list.Items[0]);
         Console.WriteLine(Path(shell));
@@ -33,9 +33,9 @@ public static class RoutingExamples
     public static async Task EnableTheBackButton()
     {
         AppShell shell = new();
-        using var subscription = shell.Router.NavigateBack.CanExecute.Subscribe(Console.WriteLine);
+        using IDisposable subscription = shell.Router.NavigateBack.CanExecute.Subscribe(Console.WriteLine);
 
-        var list = await OpenListAsync(shell);
+        TodoListPage list = await OpenListAsync(shell);
         _ = await list.Open.Execute(list.Items[0]);
 
         // Output:
@@ -89,12 +89,12 @@ public static class RoutingExamples
     public static async Task ShowTheViewForTheCurrentPage()
     {
         AppShell shell = new();
-        var locator = ViewLocator.GetCurrent();
-        using var host = shell.Router.CurrentViewModel
+        IViewLocator locator = ViewLocator.GetCurrent();
+        using IDisposable host = shell.Router.CurrentViewModel
             .Select(page => page is null ? null : locator.ResolveView<object>(page, null))
             .Subscribe(static view => Console.WriteLine(view?.GetType().Name ?? "(default content)"));
 
-        var list = await OpenListAsync(shell);
+        TodoListPage list = await OpenListAsync(shell);
         _ = await list.Open.Execute(list.Items[0]);
         _ = await shell.Router.NavigateBack.Execute();
 
@@ -110,7 +110,7 @@ public static class RoutingExamples
     public static async Task ResetTheStack()
     {
         AppShell shell = new();
-        var list = await OpenListAsync(shell);
+        TodoListPage list = await OpenListAsync(shell);
         _ = await list.Open.Execute(list.Items[0]);
         _ = await list.Open.Execute(list.Items[1]);
         Console.WriteLine(Path(shell));
@@ -123,12 +123,92 @@ public static class RoutingExamples
         // todos
     }
 
+    /// <summary>
+    /// Passing an <see cref="ISequencer"/> to the constructor controls which thread navigation results land on.
+    /// The default constructor uses the main-thread scheduler, which delivers on a background thread here, so every
+    /// other example awaits <c>Execute()</c>. <see cref="Sequencer.Immediate"/> delivers the result before
+    /// <c>Execute()</c> returns, which suits a console app or a test.
+    /// </summary>
+    public static void DeliverNavigationImmediately()
+    {
+        AppShell shell = new(new RoutingState(Sequencer.Immediate));
+        TodoListPage list = new(shell, []);
+
+        IRoutableViewModel? result = null;
+        using IDisposable subscription = shell.Router.Navigate.Execute(list).Subscribe(page => result = page);
+
+        Console.WriteLine(result?.UrlPathSegment);
+
+        // Output:
+        // todos
+    }
+
+    /// <summary>
+    /// <c>NavigationChanges</c> reports each add and remove as it happens, rather than just the current page, so a
+    /// view can animate a page sliding in or out.
+    /// </summary>
+    /// <returns>A task that completes when the user is back on the list.</returns>
+    public static async Task WatchDetailedChangeSets()
+    {
+        AppShell shell = new();
+        using IDisposable subscription = shell.Router.NavigationChanges.Subscribe(static changeSet =>
+        {
+            foreach (ReactiveChange<IRoutableViewModel> change in changeSet)
+            {
+                Console.WriteLine($"{change.Reason}: {change.Current.UrlPathSegment}");
+            }
+        });
+
+        TodoListPage list = await OpenListAsync(shell);
+        _ = await list.Open.Execute(list.Items[0]);
+        _ = await shell.Router.NavigateBack.Execute();
+
+        // Output:
+        // Add: todos
+        // Add: todos/1
+        // Remove: todos/1
+    }
+
+    /// <summary>
+    /// <c>FindViewModelInStack&lt;T&gt;</c> searches from the top of the stack down for the first page of a given
+    /// type, which lets a deep page reach back to an ancestor without walking the stack itself.
+    /// </summary>
+    /// <returns>A task that completes once two detail pages sit above the list.</returns>
+    public static async Task FindAPageOfAGivenType()
+    {
+        AppShell shell = new();
+        TodoListPage list = await OpenListAsync(shell);
+        _ = await list.Open.Execute(list.Items[0]);
+        _ = await list.Open.Execute(list.Items[1]);
+
+        TodoListPage? found = shell.Router.FindViewModelInStack<TodoListPage>();
+        Console.WriteLine(found?.UrlPathSegment);
+
+        // Output:
+        // todos
+    }
+
+    /// <summary><c>GetCurrentViewModel</c> reads the page on top of the stack once, without subscribing to <c>CurrentViewModel</c>.</summary>
+    /// <returns>A task that completes once a detail page is on top.</returns>
+    public static async Task ReadTheTopOfTheStack()
+    {
+        AppShell shell = new();
+        TodoListPage list = await OpenListAsync(shell);
+        _ = await list.Open.Execute(list.Items[0]);
+
+        IRoutableViewModel? current = shell.Router.GetCurrentViewModel();
+        Console.WriteLine(current?.UrlPathSegment);
+
+        // Output:
+        // todos/1
+    }
+
     /// <summary>Loads the seeded to-do items and navigates to the list page.</summary>
     /// <param name="shell">The window to navigate in.</param>
     /// <returns>The list page.</returns>
     private static async Task<TodoListPage> OpenListAsync(AppShell shell)
     {
-        var items = await InMemoryTodoStore.CreateSeeded().QueryAsync(CancellationToken.None);
+        IReadOnlyList<TodoItem> items = await InMemoryTodoStore.CreateSeeded().QueryAsync(CancellationToken.None);
         TodoListPage list = new(shell, items);
         _ = await shell.Router.Navigate.Execute(list);
         return list;
