@@ -18,6 +18,184 @@ and improve the testability of your application.
 
 [🔨 Get Started](https://reactiveui.net/documentation/getting-started/) [🛍 Install Packages](https://reactiveui.net/documentation/getting-started/installation/) [🎞 Watch Videos](https://reactiveui.net/documentation/resources/videos) [🎓 View Samples](https://reactiveui.net/documentation/resources/samples/) [🎤 Discuss ReactiveUI](https://reactiveui.net/slack)
 
+## Your first view model
+
+A view shows data that changes, so it needs to know when a value changes. Written by hand, each property needs a
+field and a setter that raises a change notification. Each command needs a property that wraps a method. ReactiveUI
+writes that code for you while your project builds.
+
+A **source generator** is a compiler add-on that writes C# code during the build. The ReactiveUI packages bring two
+of them.
+[ReactiveUI.SourceGenerators](https://www.reactiveui.net/documentation/source-generators/) writes reactive properties
+and commands. [ReactiveUI.Binding](https://www.reactiveui.net/documentation/binding/) writes the code behind
+`WhenAnyValue`, `ToProperty` and the view bindings. You install neither yourself.
+
+**1. Install the ReactiveUI package for your UI framework.** A class library that holds only view models installs
+`ReactiveUI`.
+
+```bash
+dotnet add package ReactiveUI.WPF
+```
+
+**2. Declare the view model as a `partial` class and mark its members.**
+
+```csharp
+using ReactiveUI;
+using ReactiveUI.SourceGenerators;
+
+public partial class LoginViewModel : ReactiveObject
+{
+    private readonly IObservable<bool> _canLogIn;
+
+    public LoginViewModel()
+    {
+        _canLogIn = this.WhenAnyValue(
+            static x => x.UserName,
+            static x => x.Password,
+            static (userName, password) => userName.Length > 0 && password.Length > 0);
+
+        _isValidHelper = _canLogIn.ToProperty(this, static x => x.IsValid);
+    }
+
+    [Reactive]
+    public partial string UserName { get; set; } = string.Empty;
+
+    [Reactive]
+    public partial string Password { get; set; } = string.Empty;
+
+    [ObservableAsProperty]
+    public partial bool IsValid { get; }
+
+    [ReactiveCommand(CanExecute = nameof(_canLogIn))]
+    private async Task<bool> LogInAsync(CancellationToken cancellationToken)
+    {
+        await Task.Delay(TimeSpan.FromSeconds(1), cancellationToken);
+        return Password == "secret";
+    }
+}
+```
+
+`WhenAnyValue` returns a **stream**, an `IObservable<T>` that emits a new value each time either property changes.
+
+**3. Build.** The generators write the rest of the class:
+
+- The bodies of `UserName` and `Password`. Setting either one raises the change notification.
+- The body of `IsValid` and its `_isValidHelper` field. `ToProperty` keeps `IsValid` equal to the latest value of
+  `_canLogIn`.
+- A `LogInCommand` property. It holds a **command**, an `ICommand` that also reports each result as a stream. The
+  command runs `LogInAsync`, and it is enabled only while `_canLogIn` emits `true`. The generator drops the `Async`
+  suffix from the name.
+
+Next, bind the properties and the command to your view with `Bind` and `BindCommand`. The
+[ReactiveUI.Binding documentation](https://www.reactiveui.net/documentation/binding/) shows how. The
+[source generators documentation](https://www.reactiveui.net/documentation/source-generators/) lists every attribute
+and option.
+
+Partial properties with an initial value need C# 14, the default language version for .NET 10.
+
+## How the packages fit together
+
+ReactiveUI is a set of packages. You install the package for your UI framework, and it brings the rest.
+
+| Package | What it gives you |
+|---|---|
+| `ReactiveUI` | `ReactiveObject`, `ReactiveCommand`, activation, routing and schedulers, built on ReactiveUI.Primitives. It brings `ReactiveUI.Core` and `ReactiveUI.Binding`. |
+| `ReactiveUI.Reactive` | The same API built for System.Reactive. It brings `ReactiveUI.Core` and `ReactiveUI.Binding.Reactive`. |
+| `ReactiveUI.Core` | The parts both flavours share. It brings `ReactiveUI.SourceGenerators`. |
+| `ReactiveUI.Binding` | `WhenAnyValue`, `Bind`, `OneWayBind`, `BindCommand`, `ToProperty`, `[ObservableAsProperty]` and view location. |
+| `ReactiveUI.SourceGenerators` | `[Reactive]`, `[ReactiveCommand]`, `[ReactiveCollection]`, `[BindableDerivedList]` and `[IReactiveObject]`. |
+
+The [ReactiveUI documentation](https://www.reactiveui.net/documentation/reactiveui/) covers the core package, and the
+[installation guide](https://www.reactiveui.net/documentation/reactiveui/getting-started/installation/) shows which
+package to install for each platform.
+
+### Pick a flavour
+
+ReactiveUI comes in two flavours with the same API. They differ only in the reactive types that appear in that API.
+
+| You want | Install | Reactive types in the API |
+|---|---|---|
+| No System.Reactive dependency | `ReactiveUI`, `ReactiveUI.WPF`, `ReactiveUI.WinForms`, `ReactiveUI.WinUI`, `ReactiveUI.Maui`, `ReactiveUI.Blazor`, `ReactiveUI.AndroidX` | ReactiveUI.Primitives: `RxVoid`, `ISequencer`, `Signal<T>` |
+| To mix with code that uses System.Reactive | `ReactiveUI.Reactive`, `ReactiveUI.WPF.Reactive`, `ReactiveUI.WinForms.Reactive`, `ReactiveUI.WinUI.Reactive`, `ReactiveUI.Maui.Reactive`, `ReactiveUI.Blazor.Reactive`, `ReactiveUI.AndroidX.Reactive` | System.Reactive: `Unit`, `IScheduler`, `Subject<T>` |
+
+[ReactiveUI.Primitives](https://www.reactiveui.net/documentation/primitives/) is ReactiveUI's own library of streams,
+operators and schedulers. Both flavours run on it. The default flavour does not depend on System.Reactive, so your app
+ships fewer assemblies.
+
+The System.Reactive flavour puts its own types in the `ReactiveUI.Reactive` namespace. A file that uses
+`ReactiveObject` or `ReactiveCommand` from it adds `using ReactiveUI.Reactive;`.
+
+### Bindings come from ReactiveUI.Binding
+
+ReactiveUI runs `WhenAnyValue`, `Bind`, `OneWayBind`, `BindCommand`, `ToProperty` and view location on
+[ReactiveUI.Binding](https://www.reactiveui.net/documentation/binding/). Its source generator writes the code for each
+binding while your project builds. Nothing looks up a property by name at run time, so bindings are safe to trim and
+to publish with Native AOT.
+
+The ReactiveUI package imports the `ReactiveUI.Binding` namespace into your project, so binding calls need no `using`.
+Moving from an earlier version? The
+[migration guide](https://www.reactiveui.net/documentation/reactiveui/upgrading/reactiveui-binding-migration/) covers
+the calls that need an `Unsafe` twin and the behavior that changed.
+
+### Source generators come with ReactiveUI.Core
+
+`ReactiveUI.Core` references
+[ReactiveUI.SourceGenerators](https://www.reactiveui.net/documentation/source-generators/) and passes its generators
+on. Every project that installs a ReactiveUI package can use `[Reactive]`, `[ReactiveCommand]` and the other
+attributes. Add `using ReactiveUI.SourceGenerators;` to each file that uses them. The generators check which flavour
+your project references and write code for that flavour.
+
+- **Remove your own reference to ReactiveUI.SourceGenerators**, or set it to the version ReactiveUI brings or later.
+  An older version fails to restore with error NU1605.
+- **Use a partial property for any property you pass to `WhenAnyValue`.** `[Reactive]` also works on a field, but
+  ReactiveUI.Binding cannot see a property the generators write from a field. A `WhenAnyValue` call on that property
+  throws at run time.
+
+### Analyzers
+
+An **analyzer** checks your code as you type and reports problems as warnings or errors. ReactiveUI.Binding and
+ReactiveUI.SourceGenerators run their analyzers in your project. They report binding calls and attributes that the
+generators cannot handle.
+
+The analyzers inside ReactiveUI.Primitives stay out of your project. ReactiveUI references ReactiveUI.Primitives with
+`ExcludeAssets="analyzers"`. To use them, reference ReactiveUI.Primitives directly:
+
+```xml
+<PackageReference Include="ReactiveUI.Primitives" Version="x.y.z" />
+```
+
+### Routing
+
+Routing (`RoutingState` and `IScreen`) is part of the ReactiveUI package. The WPF, WinUI and MAUI packages add a
+`RoutedViewHost` control that shows the current view, and Windows Forms adds `RoutedControlHost`. `RoutingState` reports
+navigation as streams. `CurrentViewModel` emits the view model on top of the stack. `NavigationStackChanged` emits a
+read-only copy of the whole stack after each change. `CanNavigateBack` emits whether there is a view model to go back
+to. The [routing migration guide](https://www.reactiveui.net/documentation/reactiveui/upgrading/routing-migration/)
+covers moving from the `ReactiveUI.Routing` package.
+
+### Platform packages
+
+Install the package for your UI framework. Each one brings `ReactiveUI`. Each one except `ReactiveUI.Uno` has a
+`.Reactive` twin for the System.Reactive flavour.
+
+| Platform | Package | NuGet |
+|---|---|---|
+| Class libraries | [ReactiveUI][CoreDoc] | [![CoreBadge]][Core] |
+| WPF | [ReactiveUI.WPF][WpfDoc] | [![WpfBadge]][Wpf] |
+| WinUI | [ReactiveUI.WinUI][WinUiDoc] | [![WinUiBadge]][WinUi] |
+| MAUI | [ReactiveUI.Maui][MauiDoc] | [![MauiBadge]][Maui] |
+| Windows Forms | [ReactiveUI.WinForms][WinDoc] | [![WinBadge]][Win] |
+| Android (AndroidX) | [ReactiveUI.AndroidX][DroDoc] | [![DroXBadge]][DroX] |
+| Blazor | [ReactiveUI.Blazor][BlazDoc] | [![BlazBadge]][Blaz] |
+| Avalonia | [ReactiveUI.Avalonia][AvaDoc] | [![AvaBadge]][Ava] |
+| Uno Platform | [ReactiveUI.Uno][UnoDoc] | [![UnoBadge]][Uno] |
+| Unit tests | [ReactiveUI.Testing][TestDoc] | [![TestBadge]][Test] |
+
+`ReactiveUI.Avalonia` and `ReactiveUI.Uno` live in their own repositories.
+
+[ReactiveUI.Validation][ValDocs] adds validation rules for view models. It lives in its own repository.
+[![ValBadge]][ValCore]
+
 ## Documentation
 
 - [RxSchedulers](docs/RxSchedulers.md) - Using ReactiveUI schedulers without RequiresUnreferencedCode attributes
@@ -27,160 +205,49 @@ and improve the testability of your application.
 There has been an excellent [book](https://kent-boogaart.com/you-i-and-reactiveui/) written by our Alumni maintainer
 Kent Boogart.
 
-## NuGet Packages
-
-Install the following packages to start building your own ReactiveUI app. <b>Note:</b> some of the platform-specific
-packages are required. This means your app won't perform as expected until you install the packages properly. See
-the <a href="https://reactiveui.net/documentation/getting-started/installation/">Installation</a> docs page for more info.
-
-| Platform      | ReactiveUI Package                   | NuGet                        |
-|---------------|--------------------------------------|------------------------------|
-| .NET Standard | [ReactiveUI][CoreDoc]                | [![CoreBadge]][Core]         |
-| Any           | [ReactiveUI.SourceGenerators][SGDoc] | [![SGBadge]][SG]             |
-| Unit Testing  | [ReactiveUI.Testing][TestDoc]        | [![TestBadge]][Test]         |
-| WPF           | [ReactiveUI.WPF][WpfDoc]             | [![WpfBadge]][Wpf]           |
-| WinUI         | [ReactiveUI.WinUI][WinUiDoc]         | [![WinUiBadge]][WinUi]       |
-| MAUI          | [ReactiveUI.Maui][MauiDoc]           | [![MauiBadge]][Maui]         |
-| Windows Forms | [ReactiveUI.WinForms][WinDoc]        | [![WinBadge]][Win]           |
-| AndroidX      | [ReactiveUI.AndroidX][DroDoc]        | [![DroXBadge]][DroX]         |
-| Blazor        | [ReactiveUI.Blazor][BlazDoc]         | [![BlazBadge]][Blaz]         |
-| Platform Uno  | [ReactiveUI.Uno][UnoDoc]             | [![UnoBadge]][Uno]           |
-| Platform Uno  | [ReactiveUI.Uno.WinUI][UnoWinUiDoc]  | [![UnoWinUiBadge]][UnoWinUi] |
-| Avalonia      | [ReactiveUI.Avalonia][AvaDoc]        | [![AvaBadge]][Ava]           |
-| Any           | [ReactiveUI.Validation][ValDocs]     | [![ValBadge]][ValCore]       |
-| Any           | [ReactiveUI.Extensions][ExtDocs]     | [![ExtBadge]][Ext]           |
-
-## Choosing a distribution: ReactiveUI.Primitives or System.Reactive
-
-ReactiveUI ships in **two interchangeable distributions with an identical public API**, both built on the **same
-ReactiveUI.Primitives engine and the same high-performance custom schedulers/sinks**. The only difference is which
-reactive **interop types** appear in the public API — so you pick a distribution, you don't rewrite code:
-
-| You want… | Reference these packages | Public reactive types |
-|---|---|---|
-| The new, lighter default (no System.Reactive dependency) | `ReactiveUI`, `ReactiveUI.Wpf`, `ReactiveUI.WinForms`, `ReactiveUI.WinUI`, `ReactiveUI.Maui`, `ReactiveUI.Blazor`, `ReactiveUI.AndroidX`, … | ReactiveUI.Primitives — `RxVoid`, `ISequencer`, `Signal<T>` |
-| Drop-in interop with existing System.Reactive code | `ReactiveUI.Reactive`, `ReactiveUI.Wpf.Reactive`, `ReactiveUI.WinForms.Reactive`, `ReactiveUI.WinUI.Reactive`, `ReactiveUI.Maui.Reactive`, `ReactiveUI.Blazor.Reactive`, … | System.Reactive — `Unit`, `IScheduler` |
-
-The `.Reactive` family is **not "old ReactiveUI"** — it runs on the exact same Primitives engine and custom
-schedulers as the default and simply surfaces `System.Reactive.Unit`/`IScheduler` (and `Subject<T>`) so it composes
-with code that already uses System.Reactive.
-
-The **default** distribution drops the System.Reactive dependency for a smaller closure and a better trimming/AOT
-story, and is markedly faster on the hottest MVVM paths — in representative micro-benchmarks roughly **3–4× faster**
-on `WhenAnyValue`/`ToProperty` subscribe and emit, with **5–13× less allocation** (for example `WhenAnyValue` emit
-drops from ~6.8 MB to ~0.5 MB per run, and `ToProperty` construction from ~7.3 µs to ~1.0 µs). The fast schedulers
-now live in ReactiveUI.Primitives and back both distributions.
-
-If you take the default packages, note the public reactive types change: `IScheduler` → `ISequencer`,
-`System.Reactive.Unit` → `RxVoid`, and `Subject<T>`/`BehaviorSubject<T>` → `Signal<T>`/`BehaviorSignal<T>`. To upgrade
-with **zero source changes**, reference the matching `*.Reactive` packages instead — they keep `IScheduler`, `Unit`
-and `Subject<T>`.
-
-Routing (`RoutingState`, `IScreen`, `RoutedViewHost`) lives in the main package and has no DynamicData dependency.
-`RoutingState` reports navigation through plain observables of values: `CurrentViewModel` emits the view model on top of
-the stack, `NavigationStackChanged` emits a read-only snapshot of the whole stack after each change, and `CanNavigateBack`
-emits whether there is a view model to go back to. The `ReactiveUI.Routing` and `ReactiveUI.Routing.Reactive` packages
-are discontinued. If you used `NavigationChanges` or the DynamicData change-set helpers, subscribe to
-`NavigationStackChanged` instead.
-
-### Analyzers are opt-in
-
-The ReactiveUI packages reference `ReactiveUI.Primitives` with `ExcludeAssets="analyzers"`, so the analyzers that ship
-inside ReactiveUI.Primitives **do not flow to your project** and will not run against your code just because you
-installed ReactiveUI. We don't impose our analyzers on downstream consumers. If you want them, opt in explicitly by
-adding a direct reference to `ReactiveUI.Primitives` (without excluding the analyzer assets), e.g.:
-
-```xml
-<PackageReference Include="ReactiveUI.Primitives" Version="x.y.z" />
-```
-
 [Core]: https://www.nuget.org/packages/ReactiveUI/
-
 [CoreBadge]: https://img.shields.io/nuget/v/ReactiveUI.svg
-
-[CoreDoc]: https://reactiveui.net/documentation/getting-started/installation/
-
-[SG]: https://www.nuget.org/packages/ReactiveUI.SourceGenerators/
-
-[SGDoc]: https://reactiveui.net/documentation/handbook/view-models/boilerplate-code
-
-[SGBadge]: https://img.shields.io/nuget/v/ReactiveUI.SourceGenerators.svg
-
-[Test]: https://www.nuget.org/packages/ReactiveUI.Testing/
-
-[TestBadge]: https://img.shields.io/nuget/v/ReactiveUI.Testing.svg
-
-[TestDoc]: https://reactiveui.net/documentation/handbook/testing/
+[CoreDoc]: https://www.reactiveui.net/documentation/reactiveui/getting-started/installation/
 
 [Wpf]: https://www.nuget.org/packages/ReactiveUI.WPF/
-
 [WpfBadge]: https://img.shields.io/nuget/v/ReactiveUI.WPF.svg
-
-[WpfDoc]: https://reactiveui.net/documentation/getting-started/installation/windows-presentation-foundation
+[WpfDoc]: https://www.reactiveui.net/documentation/reactiveui/getting-started/installation/windows-presentation-foundation/
 
 [WinUi]: https://www.nuget.org/packages/ReactiveUI.WinUI/
-
 [WinUiBadge]: https://img.shields.io/nuget/v/ReactiveUI.WinUI.svg
-
-[WinUiDoc]: https://reactiveui.net/documentation/getting-started/installation/universal-windows-platform
+[WinUiDoc]: https://www.reactiveui.net/documentation/reactiveui/getting-started/installation/winui/
 
 [Maui]: https://www.nuget.org/packages/ReactiveUI.Maui/
-
 [MauiBadge]: https://img.shields.io/nuget/v/ReactiveUI.Maui.svg
-
-[MauiDoc]: https://blog.jetbrains.com/dotnet/2020/09/18/xamarin-maui-and-the-reactive-mvvm-between-them-webinar-recording/
+[MauiDoc]: https://www.reactiveui.net/documentation/reactiveui/getting-started/installation/maui/
 
 [Win]: https://www.nuget.org/packages/ReactiveUI.WinForms/
-
-[WinEvents]: https://www.nuget.org/packages/ReactiveUI.Events.WinForms/
-
 [WinBadge]: https://img.shields.io/nuget/v/ReactiveUI.WinForms.svg
-
-[WinDoc]: https://reactiveui.net/documentation/getting-started/installation/windows-forms
+[WinDoc]: https://www.reactiveui.net/documentation/reactiveui/getting-started/installation/windows-forms/
 
 [DroX]: https://www.nuget.org/packages/ReactiveUI.AndroidX/
-
 [DroXBadge]: https://img.shields.io/nuget/v/ReactiveUI.AndroidX.svg
-
-[DroDoc]: https://reactiveui.net/documentation/getting-started/installation/
-
-[Uno]: https://www.nuget.org/packages/ReactiveUI.Uno/
-
-[UnoBadge]: https://img.shields.io/nuget/v/ReactiveUI.Uno.svg
-
-[UnoDoc]: https://reactiveui.net/documentation/getting-started/installation/uno-platform
-
-[UnoWinUi]: https://www.nuget.org/packages/ReactiveUI.Uno.WinUI/
-
-[UnoWinUiBadge]: https://img.shields.io/nuget/v/ReactiveUI.Uno.WinUI.svg
-
-[UnoWinUiDoc]: https://reactiveui.net/documentation/getting-started/installation/uno-platform
+[DroDoc]: https://www.reactiveui.net/documentation/reactiveui/getting-started/installation/androidx/
 
 [Blaz]: https://www.nuget.org/packages/ReactiveUI.Blazor/
-
 [BlazBadge]: https://img.shields.io/nuget/v/ReactiveUI.Blazor.svg
-
-[BlazDoc]: https://reactiveui.net/documentation/getting-started/installation/blazor
+[BlazDoc]: https://www.reactiveui.net/documentation/reactiveui/getting-started/installation/blazor/
 
 [Ava]: https://www.nuget.org/packages/ReactiveUI.Avalonia/
-
 [AvaBadge]: https://img.shields.io/nuget/v/ReactiveUI.Avalonia.svg
+[AvaDoc]: https://www.reactiveui.net/documentation/reactiveui/getting-started/installation/avalonia/
 
-[AvaDoc]: https://reactiveui.net/documentation/getting-started/installation/avalonia
+[Uno]: https://www.nuget.org/packages/ReactiveUI.Uno/
+[UnoBadge]: https://img.shields.io/nuget/v/ReactiveUI.Uno.svg
+[UnoDoc]: https://github.com/reactiveui/ReactiveUI.Uno
 
-[EventsDocs]: https://reactiveui.net/documentation/handbook/events/
+[Test]: https://www.nuget.org/packages/ReactiveUI.Testing/
+[TestBadge]: https://img.shields.io/nuget/v/ReactiveUI.Testing.svg
+[TestDoc]: https://www.reactiveui.net/documentation/reactiveui/handbook/testing/
 
 [ValCore]: https://www.nuget.org/packages/ReactiveUI.Validation/
-
 [ValBadge]: https://img.shields.io/nuget/v/ReactiveUI.Validation.svg
-
-[ValDocs]: https://reactiveui.net/documentation/handbook/user-input-validation/
-
-[Ext]: https://www.nuget.org/packages/ReactiveUI.Extensions/
-
-[ExtBadge]: https://img.shields.io/nuget/v/ReactiveUI.Extensions.svg
-
-[ExtDocs]: https://reactiveui.net/
+[ValDocs]: https://www.reactiveui.net/documentation/validation/
 
 ## Sponsors
 
@@ -206,14 +273,6 @@ increases your income/productivity too. It makes development and applications fa
 bandwidth.
 
 [Become a sponsor](https://github.com/sponsors/reactivemarbles).
-
-## Migrating bindings to ReactiveUI.Binding
-
-ReactiveUI runs `WhenAnyValue`, `Bind`, `OneWayBind`, `BindCommand` and `ToProperty` on
-[ReactiveUI.Binding](https://github.com/reactiveui/ReactiveUI.Binding.SourceGenerators), which writes the code for
-each binding while your project builds. Most code keeps compiling unchanged. The
-[migration guide](https://reactiveui.net/documentation/upgrading/reactiveui-binding-migration) covers the calls that
-need an `Unsafe` twin, hand-written `IReactiveObject` types, and the behavior that changed.
 
 ## Migration from Xamarin and .NET 8 MAUI
 
@@ -302,20 +361,6 @@ See [Contribution Guidelines](https://www.reactiveui.net/contribute/) for furthe
         <p>United Kingdom</p>
       </td>
     </tr>
-    <tr>
-      <td align="center" valign="top" width="105">
-        <img width="100" height="100" src="https://github.com/rlittlesii.png?s=150">
-        <br>
-        <a href="https://github.com/rlittlesii">Rodney Littles II</a>
-        <p>Texas, USA</p>
-      </td>
-      <td align="center" valign="top" width="105">
-        <img width="100" height="100" src="https://github.com/cabauman.png?s=150">
-        <br>
-        <a href="https://github.com/cabauman">Colt Bauman</a>
-        <p>South Korea</p>
-      </td>
-    </tr>
   </tbody>
 </table>
 
@@ -371,6 +416,18 @@ The following have been core team members in the past.
         <br>
         <a href="https://github.com/worldbeater">Artyom Gorchakov</a>
         <p>Moscow, Russia</p>
+      </td>
+      <td align="center" valign="top" width="105">
+        <img width="100" height="100" src="https://github.com/rlittlesii.png?s=150">
+        <br>
+        <a href="https://github.com/rlittlesii">Rodney Littles II</a>
+        <p>Texas, USA</p>
+      </td>
+      <td align="center" valign="top" width="105">
+        <img width="100" height="100" src="https://github.com/cabauman.png?s=150">
+        <br>
+        <a href="https://github.com/cabauman">Colt Bauman</a>
+        <p>South Korea</p>
       </td>
      </tr>
   </tbody>

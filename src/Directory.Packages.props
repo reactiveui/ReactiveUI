@@ -68,6 +68,10 @@
     <PackageVersion Include="ReactiveUI.Binding.Maui.Reactive" Version="$(BindingVersion)"/>
   </ItemGroup>
 
+  <ItemGroup Label="ReactiveUI Source Generators">
+    <PackageVersion Include="ReactiveUI.SourceGenerators" Version="4.0.0"/>
+  </ItemGroup>
+
   <ItemGroup Label="Rx Ecosystem">
     <PackageVersion Include="Splat" Version="$(SplatVersion)"/>
     <PackageVersion Include="Splat.Autofac" Version="$(SplatVersion)"/>
