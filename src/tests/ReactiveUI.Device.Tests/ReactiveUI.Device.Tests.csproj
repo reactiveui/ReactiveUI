@@ -1,0 +1,90 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- A test app that runs ReactiveUI's platform code on a real Android emulator or iOS simulator.
+       It is not a host-runnable test project: the normal CI legs build it but never test it. Run it through
+       the device-tests workflow or the device-tests script; see README.md. -->
+  <PropertyGroup>
+    <TargetFrameworks>net11.0-android</TargetFrameworks>
+    <!-- The iOS workload exists only on Windows and macOS. Windows builds the managed part; only macOS can run it. -->
+    <TargetFrameworks Condition="$([MSBuild]::IsOsPlatform('Windows')) or $([MSBuild]::IsOsPlatform('OSX'))">$(TargetFrameworks);net11.0-ios</TargetFrameworks>
+    <OutputType>Exe</OutputType>
+    <IsTestProject>true</IsTestProject>
+    <IsPackable>false</IsPackable>
+    <RootNamespace>ReactiveUI.Device.Tests</RootNamespace>
+    <ApplicationId>net.reactiveui.devicetests</ApplicationId>
+    <ApplicationTitle>ReactiveUI Device Tests</ApplicationTitle>
+    <ApplicationVersion>1</ApplicationVersion>
+    <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
+
+    <!-- The app hosts Microsoft.Testing.Platform itself: an Android instrumentation or an iOS app delegate builds
+         the test application, so neither the MTP nor the VSTest entry point is generated. -->
+    <GenerateTestingPlatformEntryPoint>false</GenerateTestingPlatformEntryPoint>
+    <GenerateSelfRegisteredExtensions>false</GenerateSelfRegisteredExtensions>
+    <GenerateProgramFile>false</GenerateProgramFile>
+
+    <!-- The tests exercise ReactiveUI's reflection-based wire-up paths, so the app is never trimmed. -->
+    <PublishTrimmed>false</PublishTrimmed>
+    <TrimMode>partial</TrimMode>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
+    <SupportedOSPlatformVersion>35.0</SupportedOSPlatformVersion>
+    <AndroidManifest>Platforms\Android\AndroidManifest.xml</AndroidManifest>
+    <MonoAndroidResourcePrefix>Platforms\Android\Resources</MonoAndroidResourcePrefix>
+    <!-- ControlFetcherMixins resolves control ids through the resource designer assembly, which the repository
+         turns off for its libraries. The app ships layouts, so it needs the designer. -->
+    <AndroidGenerateResourceDesigner>true</AndroidGenerateResourceDesigner>
+    <!-- `dotnet test` launches the app through its instrumentation, not an activity. -->
+    <AndroidUseInstrumentation>true</AndroidUseInstrumentation>
+    <!-- Keep debug and release builds on one ABI set so a local x86_64 emulator and an arm64 host both work. -->
+    <RuntimeIdentifiers>android-x64;android-arm64</RuntimeIdentifiers>
+    <AndroidPackageFormat>apk</AndroidPackageFormat>
+    <!-- An untrimmed release build fails when the packager rewrites ReadyToRun images (XALNS7015), and a test app
+         gains nothing from precompiling. -->
+    <PublishReadyToRun>false</PublishReadyToRun>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">
+    <SupportedOSPlatformVersion>15.0</SupportedOSPlatformVersion>
+    <!-- Simulator only: the app is never signed or deployed to hardware. -->
+    <RuntimeIdentifier Condition="'$(RuntimeIdentifier)' == '' and $([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture) == 'Arm64'">iossimulator-arm64</RuntimeIdentifier>
+    <RuntimeIdentifier Condition="'$(RuntimeIdentifier)' == ''">iossimulator-x64</RuntimeIdentifier>
+    <!-- The interpreter runs the test platform, which does not AOT-compile cleanly. -->
+    <MtouchInterpreter>all</MtouchInterpreter>
+    <UseInterpreter>true</UseInterpreter>
+    <CodesignKey>-</CodesignKey>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- The device app runs the platform in-process, so VSTest has no role. The coverage collector (which TUnit also
+         pulls in) instruments a desktop process and ships a mixed-mode assembly the Android release packager rejects,
+         so none of its assets reach the app. -->
+    <PackageReference Remove="Microsoft.NET.Test.Sdk" />
+    <PackageReference Update="Microsoft.Testing.Extensions.CodeCoverage" ExcludeAssets="all" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\ReactiveUI\ReactiveUI.csproj" />
+  </ItemGroup>
+
+  <!-- Platform folders compile only for their own target framework. -->
+  <ItemGroup>
+    <Compile Remove="Platforms\**\*.cs" />
+    <None Include="Platforms\**\*.cs" />
+    <None Remove="Platforms\Android\Resources\**" />
+  </ItemGroup>
+
+  <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
+    <ProjectReference Include="..\..\ReactiveUI.AndroidX\ReactiveUI.AndroidX.csproj" />
+    <Compile Include="Platforms\Android\**\*.cs" />
+    <None Remove="Platforms\Android\**\*.cs" />
+    <!-- TUnit's implicit usings bring in TUnit.Core.Context, which every Android view constructor collides with. -->
+    <Using Include="Android.Content.Context" Alias="Context" />
+    <!-- Android.OS.Signal collides with the Primitives signal factory. -->
+    <Using Include="ReactiveUI.Primitives.Signals.Signal" Alias="Signal" />
+  </ItemGroup>
+
+  <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">
+    <Compile Include="Platforms\iOS\**\*.cs" />
+    <None Remove="Platforms\iOS\**\*.cs" />
+  </ItemGroup>
+</Project>

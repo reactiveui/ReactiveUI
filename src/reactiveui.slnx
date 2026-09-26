@@ -58,6 +58,7 @@
     <Folder Name="/Solution Items/Workflows/">
         <File Path="../.github/workflows/ci-build.yml" />
         <File Path="../.github/workflows/codeql.yml" />
+        <File Path="../.github/workflows/device-tests.yml" />
         <File Path="../.github/workflows/lock.yml" />
         <File Path="../.github/workflows/release.yml" />
         <File Path="../.github/workflows/sonarcloud.yml" />
@@ -68,6 +69,7 @@
         <Project Path="tests/ReactiveUI.Blazor.Tests.Reactive/ReactiveUI.Blazor.Tests.Reactive.csproj" />
         <Project Path="tests/ReactiveUI.Builder.Maui.Tests/ReactiveUI.Builder.Maui.Tests.csproj" />
         <Project Path="tests/ReactiveUI.Builder.Tests/ReactiveUI.Builder.Tests.csproj" />
+        <Project Path="tests/ReactiveUI.Device.Tests/ReactiveUI.Device.Tests.csproj" />
         <Project Path="tests/ReactiveUI.Maui.Tests/ReactiveUI.Maui.Tests.csproj" />
         <Project Path="tests/ReactiveUI.Splat.Tests/ReactiveUI.Splat.Tests.csproj" />
         <Project Path="tests/ReactiveUI.Test.Utilities/ReactiveUI.Test.Utilities.csproj" />

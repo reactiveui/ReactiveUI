@@ -1,0 +1,20 @@
+name: Device Tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  device-tests:
+    # TODO: switch to @main once reactiveui/actions-common adds workflow-common-device-tests.yml there.
+    uses: reactiveui/actions-common/.github/workflows/workflow-common-device-tests.yml@ci/device-tests
+    with:
+      projects: src/tests/ReactiveUI.Device.Tests/ReactiveUI.Device.Tests.csproj
+      configuration: Release
+      solutionFile: reactiveui.slnx

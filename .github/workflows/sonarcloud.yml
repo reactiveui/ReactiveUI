@@ -17,7 +17,10 @@ jobs:
             installWorkloads: true
             installWindowsAppRuntime: true
             # Test only the test projects: the solution also builds the documentation example apps, which are not tests.
-            testProjects: tests/**/*.csproj
+            # The device test app needs an emulator or simulator; device-tests.yml runs it.
+            testProjects: |
+                tests/**/*.csproj
+                !tests/ReactiveUI.Device.Tests/**
             sonarProjectKey: reactiveui_ReactiveUI
             sonarOrganization: reactiveui
             sonarExclusions: '**/tests/**,**/integrationtests/**,**/benchmarks/**,**/examples/**,**/TestResults/**'
