@@ -16,6 +16,8 @@ jobs:
             productNamespacePrefix: ReactiveUI
             installWorkloads: true
             installWindowsAppRuntime: true
+            # Test only the test projects: the solution also builds the documentation example apps, which are not tests.
+            testProjects: tests/**/*.csproj
             sonarProjectKey: reactiveui_ReactiveUI
             sonarOrganization: reactiveui
             sonarExclusions: '**/tests/**,**/integrationtests/**,**/benchmarks/**,**/examples/**,**/TestResults/**'
