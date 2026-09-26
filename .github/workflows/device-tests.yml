@@ -12,8 +12,7 @@ permissions:
 
 jobs:
   device-tests:
-    # TODO: switch to @main once reactiveui/actions-common adds workflow-common-device-tests.yml there.
-    uses: reactiveui/actions-common/.github/workflows/workflow-common-device-tests.yml@ci/device-tests
+    uses: reactiveui/actions-common/.github/workflows/workflow-common-device-tests.yml@main
     with:
       projects: src/tests/ReactiveUI.Device.Tests/ReactiveUI.Device.Tests.csproj
       configuration: Release
