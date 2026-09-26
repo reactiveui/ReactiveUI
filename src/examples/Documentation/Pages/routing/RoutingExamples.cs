@@ -48,9 +48,9 @@ public static class RoutingExamples
     public static async Task WatchWhetherYouCanGoBack()
     {
         AppShell shell = new();
-        using var subscription = shell.Router.CanNavigateBack.Subscribe(Console.WriteLine);
+        using IDisposable subscription = shell.Router.CanNavigateBack.Subscribe(Console.WriteLine);
 
-        var list = await OpenListAsync(shell);
+        TodoListPage list = await OpenListAsync(shell);
         _ = await list.Open.Execute(list.Items[0]);
         _ = await shell.Router.NavigateBack.Execute();
         _ = await list.Open.Execute(list.Items[1]);
@@ -67,10 +67,10 @@ public static class RoutingExamples
     public static async Task WatchTheStack()
     {
         AppShell shell = new();
-        using var subscription = shell.Router.NavigationStackChanged
+        using IDisposable subscription = shell.Router.NavigationStackChanged
             .Subscribe(static stack => Console.WriteLine(string.Join(" > ", stack.Select(static page => page.UrlPathSegment))));
 
-        var list = await OpenListAsync(shell);
+        TodoListPage list = await OpenListAsync(shell);
         _ = await list.Open.Execute(list.Items[0]);
         _ = await shell.Router.NavigateBack.Execute();
 
@@ -137,11 +137,13 @@ public static class RoutingExamples
 
         Console.WriteLine(first.UrlPathSegment);
         Console.WriteLine(second.UrlPathSegment);
+        Console.WriteLine(ReferenceEquals(first.HostScreen, shell));
         Console.WriteLine(shell.Router.NavigationStack.Count);
 
         // Output:
         // todos
         // todos
+        // True
         // 2
     }
 
@@ -164,18 +166,53 @@ public static class RoutingExamples
     }
 
     /// <summary>
-    /// <c>NavigationChanges</c> reports each add and remove as it happens, rather than just the current page, so a
-    /// view can animate a page sliding in or out.
+    /// Comparing the size of each <c>NavigationStackChanged</c> snapshot with the one before tells a push from a pop,
+    /// so a view can slide a page in or out.
     /// </summary>
-    /// <returns>A task that completes when the user is back on the list.</returns>
-    public static async Task WatchDetailedChangeSets()
+    /// <returns>A task that completes when the stack has been reset.</returns>
+    public static async Task TellAPushFromAPop()
     {
         AppShell shell = new();
-        using IDisposable subscription = shell.Router.NavigationChanges.Subscribe(static changeSet =>
+        int previousCount = shell.Router.NavigationStack.Count;
+        using IDisposable subscription = shell.Router.NavigationStackChanged.Subscribe(stack =>
+        {
+            string change = stack.Count switch
+            {
+                0 => "Cleared",
+                int count when count > previousCount => $"Slide in {stack[^1].UrlPathSegment}",
+                _ => $"Slide back to {stack[^1].UrlPathSegment}",
+            };
+
+            previousCount = stack.Count;
+            Console.WriteLine(change);
+        });
+
+        TodoListPage list = await OpenListAsync(shell);
+        _ = await list.Open.Execute(list.Items[0]);
+        _ = await shell.Router.NavigateBack.Execute();
+        _ = await shell.Router.NavigateAndReset.Execute(new TodoListPage(shell, list.Items));
+
+        // Output:
+        // Slide in todos
+        // Slide in todos/1
+        // Slide back to todos
+        // Cleared
+        // Slide in todos
+    }
+
+    /// <summary>
+    /// <c>NavigationStack</c> is an <see cref="System.Collections.ObjectModel.ObservableCollection{T}"/>, so
+    /// <c>ToReactiveChangeSet</c> reports each page added to or removed from it, with its position.
+    /// </summary>
+    /// <returns>A task that completes when the user is back on the list.</returns>
+    public static async Task WatchEachAddAndRemove()
+    {
+        AppShell shell = new();
+        using IDisposable subscription = shell.Router.NavigationStack.ToReactiveChangeSet().Subscribe(static changeSet =>
         {
             foreach (ReactiveChange<IRoutableViewModel> change in changeSet)
             {
-                Console.WriteLine($"{change.Reason}: {change.Current.UrlPathSegment}");
+                Console.WriteLine($"{change.Reason} at {change.CurrentIndex}: {change.Current.UrlPathSegment}");
             }
         });
 
@@ -184,9 +221,32 @@ public static class RoutingExamples
         _ = await shell.Router.NavigateBack.Execute();
 
         // Output:
-        // Add: todos
-        // Add: todos/1
-        // Remove: todos/1
+        // Add at 0: todos
+        // Add at 1: todos/1
+        // Remove at 1: todos/1
+    }
+
+    /// <summary>
+    /// <c>ActOnEveryObject</c> on <c>NavigationStack</c> calls one method for each page that enters the stack and another
+    /// for each page that leaves it. Disposing the subscription calls the leave method for every page still on the stack.
+    /// </summary>
+    /// <returns>A task that completes when the user is back on the list.</returns>
+    public static async Task TrackPagesEnteringAndLeavingTheStack()
+    {
+        AppShell shell = new();
+        using IDisposable subscription = shell.Router.NavigationStack.ActOnEveryObject(
+            static page => Console.WriteLine($"enter {page.UrlPathSegment}"),
+            static page => Console.WriteLine($"leave {page.UrlPathSegment}"));
+
+        TodoListPage list = await OpenListAsync(shell);
+        _ = await list.Open.Execute(list.Items[0]);
+        _ = await shell.Router.NavigateBack.Execute();
+
+        // Output:
+        // enter todos
+        // enter todos/1
+        // leave todos/1
+        // leave todos
     }
 
     /// <summary>

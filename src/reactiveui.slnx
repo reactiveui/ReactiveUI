@@ -30,7 +30,6 @@
         <Project Path="examples/Documentation/Pages/reflection/reflection.csproj" />
         <Project Path="examples/Documentation/Pages/registration/registration.csproj" />
         <Project Path="examples/Documentation/Pages/routing/routing.csproj" />
-        <Project Path="examples/Documentation/Pages/routing-dynamicdata/routing-dynamicdata.csproj" />
         <Project Path="examples/Documentation/Pages/rxappbuilder/rxappbuilder.csproj" />
         <Project Path="examples/Documentation/Pages/scheduling/scheduling.csproj" />
         <Project Path="examples/Documentation/Pages/testing/testing.csproj" />

@@ -41,9 +41,10 @@ public static class CollectionChangedExamples
         CollectionChanged second = new(inventory, sharedArgs);
         CollectionChanged third = new(inventory, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
 
+        Console.WriteLine(first == second);
         Console.WriteLine(first.Equals(second));
         Console.WriteLine(first.Equals((object)second));
-        Console.WriteLine(first.Equals(third));
+        Console.WriteLine(first != third);
         Console.WriteLine(first.GetHashCode() == second.GetHashCode());
         Console.WriteLine(first.Sender is ObservableCollection<Product>);
         Console.WriteLine(first.EventArgs.Action);
@@ -51,7 +52,8 @@ public static class CollectionChangedExamples
         // Output:
         // True
         // True
-        // False
+        // True
+        // True
         // True
         // True
         // Reset

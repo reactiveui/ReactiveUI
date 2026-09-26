@@ -76,6 +76,8 @@ await CommandTypeExamples.DeriveFromCommandBase();
 
 await CommandTypeExamples.DeriveCombinedCommand();
 
+await CombinedCommandMembersExamples.ReadCombinedCommandMembersDirectly();
+
 await CommandTypeExamples.ExposeCommandThroughInterface();
 
 await CommandTypeExamples.AcceptAnyCommand();

@@ -10,6 +10,12 @@ namespace ReactiveUI.Documentation.Reflection;
 /// <see cref="IViewFor{T}"/> for its view model. Passing no view to <c>WhenActivated</c> lets it discover
 /// <see cref="ViewModel"/> on itself through reflection.
 /// </summary>
+/// <remarks>
+/// <see cref="PreserveAttribute"/> tells a linker not to trim this type or its members: nothing in the code calls
+/// this class by name, so a trimmed build could otherwise remove it before <c>RegisterViewsForViewModels</c> gets
+/// the chance to find it by scanning the assembly.
+/// </remarks>
+[Preserve(AllMembers = true)]
 [System.Diagnostics.DebuggerDisplay("NowPlayingText = {NowPlayingText}")]
 public sealed class MusicPlayerScreen : ReactiveObject, IViewFor<MusicPlayerViewModel>, ICanActivate, IDisposable
 {

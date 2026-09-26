@@ -5,6 +5,8 @@
 
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Media;
 using ReactiveUI.Builder;
 using Splat;
 
@@ -43,6 +45,7 @@ public sealed class WeatherStationApp : Application
 
         ConfigureReactiveUI();
         WinUIStartupExamples.ShowTheIndividualExtensions();
+        WinUIStartupExamples.AddTheUnsafeTemplateHook();
 
         _mainWindow = new MainWindow(SeedReadings);
 
@@ -63,6 +66,7 @@ public sealed class WeatherStationApp : Application
             .RegisterView<StationListPageView, StationListPageViewModel>()
             .RegisterView<StationDetailPageView, StationDetailPageViewModel>()
             .RegisterView<AlertView, AlertViewModel>()
+            .ConfigureViewLocator(static locator => locator.Map<SensorMaintenanceViewModel, SensorMaintenanceView>())
             .BuildApp();
 
         // WeatherReading is a plain class, not an IReactiveObject, so RegisterView (which requires IReactiveObject)
@@ -95,12 +99,15 @@ public sealed class WeatherStationApp : Application
         if (stationListView is not null)
         {
             ActivationForViewFetcherExamples.DescribeActivation(stationListView);
-            Console.WriteLine($"AutoDataTemplateBindingHook assigned a template: {stationListView.ReadingsList.ItemTemplate is not null}");
+            Console.WriteLine($"First station row shows: {DescribeFirstRow(stationListView.ReadingsList)}");
         }
         else
         {
             Console.WriteLine("Station list view not resolved yet.");
         }
+
+        Console.WriteLine($"RoutedViewHostUnsafe shows: {DescribeHostContent(mainWindow.MaintenancePage)}");
+        Console.WriteLine($"ViewModelViewHostUnsafe shows: {DescribeHostContent(mainWindow.NextVisit)}");
 
         _ = mainWindow.StationList.OpenDetail.Execute(mainWindow.StationList.Readings[1]).Subscribe();
         Console.WriteLine($"Navigated to: {mainWindow.StationList.HostScreen.Router.NavigationStack[^1].UrlPathSegment}");
@@ -110,6 +117,36 @@ public sealed class WeatherStationApp : Application
 
         PumpThen(queue, 10, () => FinishSmokeTest(mainWindow));
     }
+
+    /// <summary>
+    /// Follows the first row of a list down the default item template: a <c>ContentControl</c> whose content is the
+    /// <see cref="ViewModelViewHost"/> the template created, which in turn shows the row's view.
+    /// </summary>
+    /// <param name="list">The list the default item template was assigned to.</param>
+    /// <returns>The row view's type name, or a note when the row has not been laid out.</returns>
+    private static string DescribeFirstRow(ItemsControl list)
+    {
+        DependencyObject? container = list.ContainerFromIndex(0);
+        if (container is null || VisualTreeHelper.GetChildrenCount(container) == 0)
+        {
+            return "(not laid out yet)";
+        }
+
+        return VisualTreeHelper.GetChild(container, 0) is ContentControl { Content: ViewModelViewHost host }
+            ? $"{host.GetType().Name} -> {host.Content?.GetType().Name ?? "(nothing)"}"
+            : "(no default template)";
+    }
+
+    /// <summary>Names what a host shows: its view and the view's text, or the type of its default content.</summary>
+    /// <param name="content">The host's current content.</param>
+    /// <returns>A short description of the content.</returns>
+    private static string DescribeHostContent(object? content) => content switch
+    {
+        SensorMaintenanceView view => $"{nameof(SensorMaintenanceView)} ({view.Summary})",
+        TextBlock placeholder => $"default content ({placeholder.Text})",
+        null => "(nothing)",
+        _ => content.GetType().Name,
+    };
 
     /// <summary>Closes the window and exits the process once every posted step has had its turn.</summary>
     /// <param name="mainWindow">The window to close.</param>

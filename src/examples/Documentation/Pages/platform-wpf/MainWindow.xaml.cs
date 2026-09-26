@@ -47,6 +47,9 @@ public partial class MainWindow : ReactiveWindow<AppShell>
             d(ViewModel.Router.Navigate.Execute(new CourseListViewModel(ViewModel, courses))
                 .Subscribe());
             Console.WriteLine($"View contract: {Host.ViewContract ?? "(none)"}");
+
+            // BindingRoot is the same view model as ViewModel, exposed under the name every ReactiveUI view uses.
+            Console.WriteLine($"BindingRoot's router has {BindingRoot?.Router.NavigationStack.Count} page(s) on screen.");
         });
     }
 

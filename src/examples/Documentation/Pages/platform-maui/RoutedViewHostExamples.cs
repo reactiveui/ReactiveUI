@@ -139,8 +139,18 @@ public static class RoutedViewHostExamples
 
         Console.WriteLine(host.ResolvePage(chicken).GetType().Name);
 
+        List<string> pageNames = [];
+        using IDisposable subscription = host.ResolvePages(chicken).Subscribe(page => pageNames.Add(page.GetType().Name));
+        Console.WriteLine(string.Join(",", pageNames));
+
+        List<string> emptyNames = [];
+        using IDisposable emptySubscription = host.ResolvePages(null).Subscribe(page => emptyNames.Add(page.GetType().Name));
+        Console.WriteLine(emptyNames.Count);
+
         // Output:
         // RecipeDetailPage
+        // RecipeDetailPage
+        // 0
     }
 
     /// <summary><c>InvalidateCurrentViewModel</c> reassigns the current page's view model from the router, when the two are the same type.</summary>

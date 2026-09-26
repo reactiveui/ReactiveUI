@@ -22,12 +22,14 @@ public static class TypedSuspensionExamples
         Signal<RxVoid> launching = new();
         Signal<RxVoid> resuming = new();
         Signal<RxVoid> unpausing = new();
+        Signal<RxVoid> continuing = new();
         Signal<IDisposable> shouldPersist = new();
         Signal<RxVoid> shouldInvalidate = new();
 
         host.IsLaunchingNew = launching;
         host.IsResuming = resuming;
         host.IsUnpausing = unpausing;
+        host.IsContinuing = continuing;
         host.ShouldPersistState = shouldPersist;
         host.ShouldInvalidateState = shouldInvalidate;
 
@@ -40,6 +42,7 @@ public static class TypedSuspensionExamples
         });
         using IDisposable resumeSubscription = host.IsResuming.Subscribe(static _ => Console.WriteLine("Resuming"));
         using IDisposable unpauseSubscription = host.IsUnpausing.Subscribe(static _ => Console.WriteLine("Unpausing"));
+        using IDisposable continueSubscription = host.IsContinuing.Subscribe(static _ => Console.WriteLine("Continuing"));
         using IDisposable persistSubscription = host.ShouldPersistState.Subscribe(token =>
         {
             Console.WriteLine($"Persisting level {host.AppStateValue!.Level}");
@@ -50,6 +53,7 @@ public static class TypedSuspensionExamples
         launching.OnNext(RxVoid.Default);
         resuming.OnNext(RxVoid.Default);
         unpausing.OnNext(RxVoid.Default);
+        continuing.OnNext(RxVoid.Default);
         shouldPersist.OnNext(new ActionDisposable(static () => Console.WriteLine("Persist token disposed")));
         shouldInvalidate.OnNext(RxVoid.Default);
 
@@ -59,6 +63,7 @@ public static class TypedSuspensionExamples
         // Launching new
         // Resuming
         // Unpausing
+        // Continuing
         // Persisting level 1
         // Persist token disposed
         // Invalidating

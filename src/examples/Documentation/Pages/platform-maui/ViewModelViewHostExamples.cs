@@ -155,8 +155,10 @@ public static class ViewModelViewHostExamples
         host.ViewModel = recipes;
 
         Console.WriteLine(host.ViewModel.Recipes.Count);
+        Console.WriteLine(ReferenceEquals(((IViewFor)host).ViewModel, recipes));
 
         // Output:
         // 3
+        // True
     }
 }

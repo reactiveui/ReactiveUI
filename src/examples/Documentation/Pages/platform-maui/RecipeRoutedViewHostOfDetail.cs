@@ -20,4 +20,9 @@ public sealed class RecipeRoutedViewHostOfDetail : RoutedViewHost<RecipeDetailVi
     /// <param name="viewModel">The view model to resolve a page for.</param>
     /// <returns>The resolved page.</returns>
     public Page ResolvePage(RecipeDetailViewModel viewModel) => PageForViewModel(viewModel);
+
+    /// <summary>Resolves the page for the detail view model as an observable, the same way the router's own navigation does.</summary>
+    /// <param name="viewModel">The view model to resolve a page for, or <see langword="null"/>.</param>
+    /// <returns>An observable of the resolved page.</returns>
+    public IObservable<Page> ResolvePages(RecipeDetailViewModel? viewModel) => PagesForViewModel(viewModel);
 }

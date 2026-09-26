@@ -72,23 +72,28 @@ public static class RegistrarExamples
 
     /// <summary>
     /// A contract picks out one of several registrations of the same service type. <c>Register</c>,
-    /// <c>RegisterConstant</c> and <c>RegisterLazySingleton</c> all take an optional contract for this.
+    /// <c>RegisterConstant</c> and <c>RegisterLazySingleton</c> all take an optional contract for this, whether
+    /// called through the concrete <see cref="DependencyResolverRegistrar"/> or through <see cref="IRegistrar"/>.
     /// </summary>
     public static void RegisterWithAContract()
     {
         using ModernDependencyResolver resolver = new();
         DependencyResolverRegistrar registrar = new(resolver);
-        registrar.Register<IPlaybackEngine>(static () => new PlaybackEngine(), "preview");
-        registrar.RegisterConstant<IPlatformOperations>(static () => new MobileOrientationOperations(), "mobile");
-        registrar.RegisterConstant<IPlatformOperations>(static () => new DesktopOrientationOperations(), "desktop");
+        ContractModule contractModule = new();
+        contractModule.Register(registrar);
+        registrar.RegisterLazySingleton<ISettingsStore>(static () => new SettingsStore(), "concrete");
 
         Console.WriteLine(resolver.GetService<IPlaybackEngine>("preview") is not null);
         Console.WriteLine(resolver.GetService<IPlatformOperations>("mobile")?.GetOrientation());
         Console.WriteLine(resolver.GetService<IPlatformOperations>("desktop") is DesktopOrientationOperations);
+        Console.WriteLine(resolver.GetService<ITrackLibrary>("shared")?.Titles.Count);
+        Console.WriteLine(resolver.GetService<ISettingsStore>("concrete")?.Volume);
 
         // Output:
         // True
         // Portrait
         // True
+        // 3
+        // 80
     }
 }

@@ -25,6 +25,8 @@ internal static class Program
         ActivationForViewFetcherExamples.ObserveActivation();
         ContentControlBindingHookExamples.AlwaysAllowsTheBindingToProceed();
         ViewModelControlHostExamples.SetTheDefaultForNewHosts();
+        ViewModelControlHostExamples.ResolveAndReadTheCurrentView();
+        ReactiveUserControlNonGenericExamples.SetTheViewModelThroughTheNonGenericBase();
 
         if (Array.IndexOf(args, "--smoke") >= 0)
         {

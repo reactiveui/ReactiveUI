@@ -40,7 +40,7 @@ public sealed class MainActivity : AndroidX.ReactiveAppCompatActivity<TimetableV
         SetContentView(Resource.Layout.activity_main);
 
         // Implicit strategy: every writable View-typed property (LessonsRecyclerView, BadgeContainer,
-        // DetailContainer) is wired to the like-named resource in activity_main.xml.
+        // DetailContainer, FeaturedLessonCard, PeeksRow) is wired to the like-named resource in activity_main.xml.
         this.WireUpControls();
 
         PropertyInfo[] wiredMembers = this.GetWireUpMembers(ControlFetcherMixins.ResolveStrategy.Implicit);

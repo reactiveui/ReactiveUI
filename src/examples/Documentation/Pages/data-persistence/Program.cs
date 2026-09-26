@@ -18,6 +18,8 @@ TypedSuspensionExamples.DriveTypedLifecycleManually();
 
 await TypedSuspensionExamples.SetupDefaultSuspendResumeOverloads();
 
+LegacySuspensionHostExamples.SetStateThroughTheUntypedInterface();
+
 await NoteExamples.SavesAfterAQuietPeriod();
 
 await NoteExamples.SavesOnManualSignal();

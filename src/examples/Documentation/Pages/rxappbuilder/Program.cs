@@ -29,3 +29,5 @@ ConverterExamples.ConfigureBindingConverters();
 ConverterExamples.ImportConvertersFromAnotherResolver();
 
 MessageBusExamples.ChooseHowTheAppGetsItsMessageBus();
+
+StartupExamples.ALaterBuildChangesNothing();

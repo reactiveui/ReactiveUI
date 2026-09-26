@@ -24,7 +24,11 @@ await RoutingExamples.AwaitNavigationOnABackgroundSequencer();
 
 RoutingExamples.DeliverNavigationImmediately();
 
-await RoutingExamples.WatchDetailedChangeSets();
+await RoutingExamples.TellAPushFromAPop();
+
+await RoutingExamples.WatchEachAddAndRemove();
+
+await RoutingExamples.TrackPagesEnteringAndLeavingTheStack();
 
 await RoutingExamples.FindAPageOfAGivenType();
 
@@ -33,3 +37,5 @@ await RoutingExamples.ReadTheTopOfTheStack();
 await CookingTimerExamples.StartAndStopWorkOnAPage();
 
 await CookingTimerExamples.ObserveArrivalAndDeparture();
+
+await CookingTimerExamples.ObserveAPageThatIsOnTheStackTwice();

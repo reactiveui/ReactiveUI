@@ -27,24 +27,21 @@ public sealed class LoggingCombinedCommand<TParam, TResult> : CombinedReactiveCo
         IObservable<bool>? canExecute,
         ISequencer? outputScheduler)
         : base(childCommands, canExecute, outputScheduler) =>
-        _loggingSubscription = IsExecuting.Where(static isExecuting => isExecuting)
-            .Subscribe(static _ => Console.WriteLine("Combined command running"));
+        _loggingSubscription = LogRuns();
 
     /// <summary>Initializes a new instance of the <see cref="LoggingCombinedCommand{TParam, TResult}"/> class with a can-execute observable and the default output sequencer.</summary>
     /// <param name="childCommands">The child commands the combined command runs.</param>
     /// <param name="canExecute">An observable governing whether the combined command can execute, in addition to its children.</param>
     public LoggingCombinedCommand(IEnumerable<ReactiveCommandBase<TParam, TResult>> childCommands, IObservable<bool>? canExecute)
-        : this(childCommands, canExecute, null)
-    {
-    }
+        : base(childCommands, canExecute) =>
+        _loggingSubscription = LogRuns();
 
     /// <summary>Initializes a new instance of the <see cref="LoggingCombinedCommand{TParam, TResult}"/> class with the default can-execute behavior and an output sequencer.</summary>
     /// <param name="childCommands">The child commands the combined command runs.</param>
     /// <param name="outputScheduler">The sequencer on which output is delivered.</param>
     public LoggingCombinedCommand(IEnumerable<ReactiveCommandBase<TParam, TResult>> childCommands, ISequencer? outputScheduler)
-        : this(childCommands, null, outputScheduler)
-    {
-    }
+        : base(childCommands, outputScheduler) =>
+        _loggingSubscription = LogRuns();
 
     /// <inheritdoc/>
     protected override void Dispose(bool disposing)
@@ -56,4 +53,10 @@ public sealed class LoggingCombinedCommand<TParam, TResult> : CombinedReactiveCo
 
         base.Dispose(disposing);
     }
+
+    /// <summary>Writes a line each time this command starts running.</summary>
+    /// <returns>The subscription driving the log line.</returns>
+    private IDisposable LogRuns() =>
+        IsExecuting.Where(static isExecuting => isExecuting)
+            .Subscribe(static _ => Console.WriteLine("Combined command running"));
 }

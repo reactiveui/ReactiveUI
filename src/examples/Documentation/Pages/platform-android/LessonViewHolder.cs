@@ -32,6 +32,8 @@ public sealed class LessonViewHolder : ReactiveRecyclerViewViewHolder<LessonView
 
         _subscriptions.Add(Selected.Subscribe(static position => TimetableLog.Info($"Lesson row {position} tapped.")));
         _subscriptions.Add(SelectedWithViewModel.Subscribe(static lesson => TimetableLog.Info($"Selected lesson: {lesson?.Subject}.")));
+        _subscriptions.Add(LongClicked.Subscribe(static position => TimetableLog.Info($"Lesson row {position} long-clicked.")));
+        _subscriptions.Add(LongClickedWithViewModel.Subscribe(static lesson => TimetableLog.Info($"Long-clicked lesson: {lesson?.Subject}.")));
         _subscriptions.Add(Activated.Subscribe(static _ => TimetableLog.Info("Lesson row attached to the window.")));
         _subscriptions.Add(Deactivated.Subscribe(static _ => TimetableLog.Info("Lesson row detached from the window.")));
     }

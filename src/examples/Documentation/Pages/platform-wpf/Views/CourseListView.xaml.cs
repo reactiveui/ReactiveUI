@@ -16,8 +16,16 @@ public partial class CourseListView : ReactiveUserControl<CourseListViewModel>
     {
         InitializeComponent();
 
+        // Unlike Host in MainWindow, SummaryHost shows nothing until a student is selected, so it needs its own
+        // placeholder content. It gets its own transition too, distinct from Host's, since a preview panel
+        // changing next to the list reads better as a small upward move than a full-width slide.
+        SummaryHost.DefaultContent = "Select a student to preview their grade.";
+        SummaryHost.Transition = TransitioningContentControl.TransitionType.Move;
+        SummaryHost.Direction = TransitioningContentControl.TransitionDirection.Up;
+
         _ = this.WhenActivated(d =>
         {
+            SummaryHost.ViewLocator = ViewLocator.GetCurrent();
             _ = this.OneWayBind(ViewModel, vm => vm.Students, v => v.StudentList.ItemsSource)
                 .DisposeWith(d);
             _ = this.Bind(ViewModel, vm => vm.SelectedStudent, v => v.StudentList.SelectedItem)

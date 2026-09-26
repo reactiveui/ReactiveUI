@@ -32,6 +32,12 @@ CourseResultExamples.CloneWithChanges();
 
 CourseResultExamples.CompareTwoResultsAsBaseRecords();
 
+RecordPlumbingExamples.SubscribeToClassicEventsOnAResult();
+
+RecordPlumbingExamples.ObserveThrownExceptionsOnAResult();
+
+RecordPlumbingExamples.CompareAsBaseRecordsAndHash();
+
 ManualReactiveObjectExamples.RaiseAndSuppressLikeAReactiveObject();
 
 BulkImportExamples.ImportRosterWithoutLiveNotifications();

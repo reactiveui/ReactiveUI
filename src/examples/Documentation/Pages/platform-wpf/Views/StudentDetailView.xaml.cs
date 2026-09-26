@@ -28,6 +28,10 @@ public partial class StudentDetailView : ReactiveUserControl<StudentDetailViewMo
                 .DisposeWith(d);
             _ = this.BindCommand(ViewModel, vm => vm.GoBack, v => v.BackButton)
                 .DisposeWith(d);
+
+            // BindingRoot is the same view model as ViewModel, exposed under the name every ReactiveUI view uses;
+            // see CourseInfoPage for the same property on a ReactivePage.
+            Console.WriteLine($"Editing {BindingRoot?.Student.Name}'s grade.");
         });
     }
 }

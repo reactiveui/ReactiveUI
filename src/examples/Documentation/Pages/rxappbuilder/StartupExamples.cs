@@ -5,6 +5,7 @@
 
 using ReactiveUI.Builder;
 using ReactiveUI.Primitives.Advanced;
+using Splat;
 
 namespace ReactiveUI.Documentation.Rxappbuilder;
 
@@ -108,20 +109,23 @@ public static class StartupExamples
         // True
     }
 
-    /// <summary>Resolves the suspension driver and the views and view models <see cref="BuildTheRecipeBookApp"/> registered.</summary>
-    /// <param name="builder">The app <see cref="BuildTheRecipeBookApp"/> built.</param>
-    public static void ResolveRecipeBookViewsAndViewModels(ReactiveUIBuilder builder)
+    /// <summary>
+    /// Resolves the suspension driver and the views and view models <see cref="BuildTheRecipeBookApp"/> registered,
+    /// through the <see cref="IReactiveUIInstance"/> a build hands back.
+    /// </summary>
+    /// <param name="app">The app <see cref="BuildTheRecipeBookApp"/> built.</param>
+    public static void ResolveRecipeBookViewsAndViewModels(IReactiveUIInstance app)
     {
-        _ = builder.WithInstance<ISuspensionDriver>(static driver => Console.WriteLine(driver?.GetType().Name));
-        _ = builder.WithInstance<IViewFor<RecipeBookViewModel>>(static view => Console.WriteLine(view?.GetType().Name));
-        _ = builder.WithInstance<IViewFor<ShoppingListViewModel>>(static view => Console.WriteLine(view?.GetType().Name));
-        _ = builder.WithInstance<IngredientListViewModel, AppSettingsViewModel, PantryViewModel>(
-            static (ingredients, settings, pantry) =>
+        _ = app.WithInstance<ISuspensionDriver>(static driver => Console.WriteLine(driver?.GetType().Name));
+        _ = app.WithInstance<IViewFor<RecipeBookViewModel>>(static view => Console.WriteLine(view?.GetType().Name));
+        _ = app.WithInstance<IViewFor<ShoppingListViewModel>>(static view => Console.WriteLine(view?.GetType().Name));
+        _ = app.WithInstance<IngredientListViewModel, AppSettingsViewModel>(
+            static (ingredients, settings) =>
             {
                 Console.WriteLine(ingredients?.Count);
                 Console.WriteLine(settings?.MetricUnits);
-                Console.WriteLine(pantry?.ItemsInStock);
             });
+        _ = app.WithInstance<PantryViewModel>(static pantry => Console.WriteLine(pantry?.ItemsInStock));
 
         // Output:
         // InMemorySuspensionDriver
@@ -145,13 +149,13 @@ public static class StartupExamples
         Console.WriteLine(locator?.ResolveView(new MealPlanViewModel(), null)?.GetType().Name);
         Console.WriteLine(locator?.ResolveView(new PantryViewModel(), null)?.GetType().Name);
 
-        _ = builder.WithInstance<IIngredientCatalog, ISpiceRack, IPantryClock>(
-            static (catalog, spices, clock) =>
+        _ = builder.WithInstance<IIngredientCatalog, ISpiceRack>(
+            static (catalog, spices) =>
             {
                 Console.WriteLine(catalog?.Ingredients.Count);
                 Console.WriteLine(spices?.Spices.Count);
-                Console.WriteLine(clock is not null);
             });
+        _ = builder.WithInstance<IPantryClock>(static clock => Console.WriteLine(clock is not null));
 
         // Output:
         // PrintableRecipeBookView
@@ -159,6 +163,35 @@ public static class StartupExamples
         // PantryView
         // 3
         // 2
+        // True
+    }
+
+    /// <summary>
+    /// A later <c>Build</c> in the same process still returns an app instance, but it skips the builder's modules and
+    /// deferred registrations and leaves the message bus the first build set.
+    /// </summary>
+    public static void ALaterBuildChangesNothing()
+    {
+        using ModernDependencyResolver resolver = new();
+        ReactiveUIBuilder lateBuilder = resolver.CreateReactiveUIBuilder();
+        MessageBus lateEvents = new();
+
+        IReactiveUIInstance lateApp = lateBuilder
+            .UsingSplatBuilder(static appBuilder => appBuilder.UsingModule(new SpiceRackModule()))
+            .WithRegistrationOnBuild(static mutable => mutable.RegisterConstant<IPantryClock>(new PantryClock()))
+            .WithMessageBus(lateEvents)
+            .Build();
+
+        Console.WriteLine(ReferenceEquals(MessageBus.Current, lateEvents));
+        _ = lateApp.WithInstance<ISpiceRack, IPantryClock>(static (spices, clock) =>
+        {
+            Console.WriteLine(spices is null);
+            Console.WriteLine(clock is null);
+        });
+
+        // Output:
+        // False
+        // True
         // True
     }
 }

@@ -19,9 +19,8 @@
     <ProjectReference Include="$(MSBuildThisFileDirectory)../../ReactiveUI/ReactiveUI.csproj" />
   </ItemGroup>
 
-  <!-- A page that references ReactiveUI.Routing also gets System.Reactive through DynamicData, which makes the shared
-       apps' Subscribe calls ambiguous. Such a page sets UseDocumentationCommon to false and brings its own types. -->
-  <ItemGroup Condition="'$(UseDocumentationCommon)' != 'false'">
+  <!-- Every page shares the small apps under Common. -->
+  <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Common/**/*.cs" Link="Common/%(RecursiveDir)%(Filename)%(Extension)" />
   </ItemGroup>
 

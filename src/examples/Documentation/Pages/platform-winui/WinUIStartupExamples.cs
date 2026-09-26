@@ -32,4 +32,26 @@ public static class WinUIStartupExamples
         Console.WriteLine($"WithWinUIConverters/WithWinUIScheduler/Registrations configured: {configured is not null}");
         Console.WriteLine($"WinUI main-thread scheduler: {WinUIMainThreadScheduler.GetType().Name}");
     }
+
+    /// <summary>
+    /// An app whose lists show views the generated view lookup cannot find registers
+    /// <see cref="AutoDataTemplateBindingHookUnsafe"/> next to the <see cref="AutoDataTemplateBindingHook"/> that
+    /// <c>WithWinUI</c> registers. It replaces the safe hook's default template, so the order does not matter.
+    /// </summary>
+    public static void AddTheUnsafeTemplateHook()
+    {
+        using ModernDependencyResolver resolver = new ModernDependencyResolver();
+        _ = resolver.CreateReactiveUIBuilder()
+            .WithWinUI()
+            .WithRegistration(static registrar => registrar.RegisterConstant<IPropertyBindingHook>(new AutoDataTemplateBindingHookUnsafe()));
+
+        foreach (IPropertyBindingHook hook in resolver.GetServices<IPropertyBindingHook>())
+        {
+            Console.WriteLine($"Binding hook: {hook.GetType().Name}");
+        }
+
+        // Output:
+        // Binding hook: AutoDataTemplateBindingHook
+        // Binding hook: AutoDataTemplateBindingHookUnsafe
+    }
 }

@@ -38,8 +38,11 @@ public static class IsolatedBuilderExamples
             static platform => platform.WithRegistration(static mutable => mutable.RegisterConstant("north", typeof(string), "compass")),
             static platform => platform.WithRegistration(static mutable => mutable.RegisterConstant("south", typeof(string), "compass")));
 
-        Console.WriteLine(resolver.GetService<IPantryClock>() is not null);
-        Console.WriteLine(resolver.GetService<ISuspensionDriver>()?.GetType().Name);
+        _ = customPlatform.WithInstance<IPantryClock, ISuspensionDriver>(static (clock, driver) =>
+        {
+            Console.WriteLine(clock is not null);
+            Console.WriteLine(driver?.GetType().Name);
+        });
         Console.WriteLine(ReferenceEquals(builder.MainThreadScheduler, Sequencer.Immediate));
         Console.WriteLine(resolver.GetServices<string>("compass").Count());
 

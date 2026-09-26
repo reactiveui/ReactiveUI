@@ -59,7 +59,10 @@ public static class SchedulerExtensionsExamples
         using GradeCalculatorViewModel viewModel = new StudentBuilder().WithName("Grace Hopper").Build();
         using IDisposable subscription = viewModel.RecordGrade.Subscribe(recorded.Add);
 
-        using IDisposable execution = Sequencer.CurrentThread.With(_ => viewModel.RecordGrade.Execute(97).Subscribe());
+        Sequencer.CurrentThread.With(_ =>
+        {
+            using IDisposable execution = viewModel.RecordGrade.Execute(97).Subscribe();
+        });
 
         Console.WriteLine(recorded.Count);
         Console.WriteLine(recorded[0].Grade);

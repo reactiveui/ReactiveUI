@@ -40,6 +40,9 @@ public sealed class LessonDetailFragment : AndroidX.ReactiveFragment<LessonViewM
             RoomLabel!.Text = lesson is null ? null : $"Room {lesson.Room}";
         });
 
+        _ = Activated.Subscribe(static _ => TimetableLog.Info("LessonDetailFragment activated."));
+        _ = Deactivated.Subscribe(static _ => TimetableLog.Info("LessonDetailFragment deactivated."));
+
         return view;
     }
 }

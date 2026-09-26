@@ -127,11 +127,15 @@ public static class ChangeSetExamples
         Console.WriteLine(first.Equals((object)second));
         Console.WriteLine(first.Equals(third));
         Console.WriteLine(first.GetHashCode() == second.GetHashCode());
+        Console.WriteLine(first == second);
+        Console.WriteLine(first != third);
 
         // Output:
         // True
         // True
         // False
+        // True
+        // True
         // True
     }
 

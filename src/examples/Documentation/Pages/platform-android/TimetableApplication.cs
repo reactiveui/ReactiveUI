@@ -43,10 +43,25 @@ public sealed class TimetableApplication : Application
             + $"{AndroidXReactiveUIBuilderExtensions.AndroidXMainThreadScheduler.GetType().Name}.");
 
         _autoSuspendHelper = new AutoSuspendHelper(this);
+        _ = AutoSuspendHelper.UntimelyDemise.Subscribe(static _ => TimetableLog.Info("AutoSuspendHelper reported an untimely demise."));
         RxSuspension.SuspensionHost.CreateNewAppState = static () => new TimetableAppState();
-        RxSuspension.SuspensionHost.SetupDefaultSuspendResume(new BundleSuspensionDriver());
+
+        BundleSuspensionDriver driver = new();
+        RxSuspension.SuspensionHost.SetupDefaultSuspendResume(driver);
 
         TimetableLog.Info("TimetableApplication started; AutoSuspendHelper and BundleSuspensionDriver are wired up.");
+        TimetableLog.Info($"AutoSuspendHelper's latest bundle is currently {(AutoSuspendHelper.LatestBundle is null ? "unset" : "set")}.");
+
+        // SaveState<T>(T, JsonTypeInfo<T>) and LoadState<T>(JsonTypeInfo<T>) are the trim- and AOT-safe overloads,
+        // through the source-generated TimetableAppStateJsonContext. The untyped LoadState()/SaveState<T>(T)
+        // overloads use reflection-based serialization instead, which this AOT page project cannot call.
+        _ = driver.SaveState(new TimetableAppState { LastViewedSubject = "Mathematics" }, TimetableAppStateJsonContext.Default.TimetableAppState)
+            .Subscribe(static _ => TimetableLog.Info("BundleSuspensionDriver saved the app state."));
+        _ = driver.LoadState(TimetableAppStateJsonContext.Default.TimetableAppState)
+            .Subscribe(
+                static state => TimetableLog.Info($"BundleSuspensionDriver loaded state for {state?.LastViewedSubject}."),
+                static error => TimetableLog.Info($"BundleSuspensionDriver had nothing to load yet: {error.Message}"));
+        _ = driver.InvalidateState().Subscribe(static _ => TimetableLog.Info("BundleSuspensionDriver invalidated the saved state."));
     }
 
     /// <inheritdoc/>

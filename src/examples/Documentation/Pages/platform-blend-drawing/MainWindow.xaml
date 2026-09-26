@@ -12,7 +12,9 @@
 
     <StackPanel Margin="12">
 
-        <!-- FollowObservableStateBehavior drives this panel's VisualStateGroup from the view model's State stream. -->
+        <!-- FollowObservableStateBehavior drives this panel's VisualStateGroup from the view model's State stream.
+             AutoResubscribeOnError re-subscribes to StateObservable if it ever fails, instead of leaving the
+             panel stuck on its last state. -->
         <Border x:Name="StatusPanel" Padding="12" BorderThickness="1" BorderBrush="Gray">
             <Border.Background>
                 <SolidColorBrush x:Name="StatusBrush" Color="LightGreen" />
@@ -21,7 +23,8 @@
             <i:Interaction.Behaviors>
                 <blend:FollowObservableStateBehavior
                     StateObservable="{Binding StateChanges}"
-                    TargetObject="{Binding ElementName=StatusPanel}" />
+                    TargetObject="{Binding ElementName=StatusPanel}"
+                    AutoResubscribeOnError="True" />
             </i:Interaction.Behaviors>
 
             <VisualStateManager.VisualStateGroups>
@@ -59,10 +62,11 @@
             <TextBlock Text="{Binding State}" FontWeight="Bold" HorizontalAlignment="Center" />
         </Border>
 
-        <!-- ObservableTrigger fires ShowAlertAction each time RaiseAlert's output stream emits. -->
+        <!-- ObservableTrigger fires ShowAlertAction each time RaiseAlert's output stream emits.
+             AutoResubscribeOnError keeps the trigger alive the same way, if the command's output stream fails. -->
         <TextBlock x:Name="AlertText" Margin="0,12,0,0" Text="(no alert)" />
         <i:Interaction.Triggers>
-            <blend:ObservableTrigger Observable="{Binding RaiseAlert}">
+            <blend:ObservableTrigger Observable="{Binding RaiseAlert}" AutoResubscribeOnError="True">
                 <local:ShowAlertAction TargetText="{Binding ElementName=AlertText}" />
             </blend:ObservableTrigger>
         </i:Interaction.Triggers>

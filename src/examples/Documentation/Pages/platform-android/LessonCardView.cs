@@ -28,7 +28,7 @@ public sealed class LessonCardView : LinearLayout
         Orientation = Orientation.Vertical;
         LayoutInflater.From(context)!.Inflate(Resource.Layout.lesson_card, this, true);
 
-        // Implicit strategy: SubjectLabel and RoomLabel are wired to the like-named ids merged into this view.
+        // Implicit strategy: CardSubjectLabel and CardRoomLabel are wired to the like-named ids merged into this view.
         this.WireUpControls();
     }
 

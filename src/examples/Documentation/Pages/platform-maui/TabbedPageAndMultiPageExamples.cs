@@ -26,5 +26,9 @@ public static class TabbedPageAndMultiPageExamples
 
         RecipeMultiPage multiPage = new() { BindingContext = recipes };
         Console.WriteLine(ReferenceEquals(multiPage.ViewModel, recipes));
+
+        // Output:
+        // True
+        // True
     }
 }

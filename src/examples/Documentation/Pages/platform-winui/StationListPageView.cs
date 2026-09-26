@@ -9,8 +9,8 @@ namespace ReactiveUI.Documentation.PlatformWinui;
 
 /// <summary>
 /// The view for <see cref="StationListPageViewModel"/>. The list has no <c>ItemTemplate</c>, so
-/// <see cref="AutoDataTemplateBindingHook"/> assigns one that hosts each <see cref="WeatherReading"/> through the
-/// view locator, which resolves <see cref="WeatherReadingRowView"/> for it.
+/// <see cref="AutoDataTemplateBindingHook"/> assigns one that hosts each <see cref="WeatherReading"/> in a
+/// <see cref="ViewModelViewHost"/>, which finds <see cref="WeatherReadingRowView"/> through the generated view lookup.
 /// </summary>
 [System.Diagnostics.DebuggerDisplay("StationListPageView")]
 public sealed class StationListPageView : ReactiveUserControl<StationListPageViewModel>
@@ -22,19 +22,12 @@ public sealed class StationListPageView : ReactiveUserControl<StationListPageVie
 
         this.WhenActivated(disposables =>
         {
-            try
-            {
-                // AutoDataTemplateBindingHook only fires the first time an ItemsControl with no ItemTemplate is
-                // bound; it needs the running app to resolve "using:ReactiveUI" through XamlReader, which requires
-                // an IXamlMetadataProvider this sample app does not register (see the platform-winui report).
-                IDisposable subscription = this.OneWayBind(ViewModel, viewModel => viewModel.Readings, view => view.ReadingsList.ItemsSource);
-                disposables(subscription);
-                Console.WriteLine($"AutoDataTemplateBindingHook resolved: {ReadingsList.ItemTemplate is not null}, items: {ReadingsList.Items.Count}");
-            }
-            catch (Exception ex) when (ex is not OutOfMemoryException)
-            {
-                Console.WriteLine($"AutoDataTemplateBindingHook could not resolve its default template: {ex} ");
-            }
+            // ReadingsList has no ItemTemplate, so AutoDataTemplateBindingHook gives it the default one as this binds.
+            IDisposable subscription = this.OneWayBind(ViewModel, viewModel => viewModel.Readings, view => view.ReadingsList.ItemsSource);
+            disposables(subscription);
+
+            bool usesDefaultTemplate = ReferenceEquals(ReadingsList.ItemTemplate, AutoDataTemplateBindingHook.DefaultItemTemplate.Value);
+            Console.WriteLine($"Default item template assigned: {usesDefaultTemplate}, items: {ReadingsList.Items.Count}");
         });
     }
 
