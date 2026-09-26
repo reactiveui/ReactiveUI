@@ -54,9 +54,8 @@ public class AndroidExtensionsTests
     [Test]
     public async Task ServiceBound_EmitsTheServiceBinder()
     {
-        // The connection disposes the context it binds through, so give it a wrapper rather than the app context.
-        var context = new ContextWrapper(ActivityLauncher.TargetContext);
-        var intent = new Intent(ActivityLauncher.TargetContext, typeof(EchoService));
+        var context = ActivityLauncher.TargetContext;
+        var intent = new Intent(context, typeof(EchoService));
 
         var bound = context.ServiceBound<EchoBinder>(intent, Bind.AutoCreate).FirstValueAsync(out var subscription);
         using (subscription)
@@ -68,14 +67,32 @@ public class AndroidExtensionsTests
         }
     }
 
+    /// <summary>Ending the subscription unbinds the service and leaves the caller's context usable.</summary>
+    /// <returns>A task representing the test.</returns>
+    [Test]
+    public async Task ServiceBound_AfterDispose_LeavesTheContextUsable()
+    {
+        var context = ActivityLauncher.TargetContext;
+        var intent = new Intent(context, typeof(EchoService));
+
+        var bound = context.ServiceBound<EchoBinder>(intent, Bind.AutoCreate).FirstValueAsync(out var subscription);
+        using (subscription)
+        {
+            _ = await bound.WithTimeout("the service connection");
+        }
+
+        await Assert.That(context.Handle).IsNotEqualTo(IntPtr.Zero);
+        await Assert.That(context.PackageName).IsEqualTo("net.reactiveui.devicetests");
+    }
+
     /// <summary>Binding an intent that matches no service fails the stream.</summary>
     /// <returns>A task representing the test.</returns>
     [Test]
     public async Task ServiceBound_WithNoMatchingService_Fails()
     {
-        var context = new ContextWrapper(ActivityLauncher.TargetContext);
+        var context = ActivityLauncher.TargetContext;
         var intent = new Intent("net.reactiveui.devicetests.NO_SUCH_SERVICE");
-        _ = intent.SetPackage(ActivityLauncher.TargetContext.PackageName);
+        _ = intent.SetPackage(context.PackageName);
 
         var bound = context.ServiceBound(intent, Bind.AutoCreate).FirstValueAsync(out var subscription);
         using (subscription)

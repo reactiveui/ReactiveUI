@@ -119,14 +119,11 @@ public static class ContextExtensions
 
     /// <summary>A private implementation of IServiceConnection and IDisposable.</summary>
     /// <typeparam name="TBinder">The type of binder delivered through this service connection.</typeparam>
-    /// <param name="context">The context held by the connection and used to unbind the service when disposed.</param>
+    /// <param name="context">The context used to unbind the service when disposed. The caller owns it, so the connection never disposes it.</param>
     /// <param name="observer">The observer that receives the service binder notifications.</param>
     private sealed class ServiceConnection<TBinder>(Context context, IObserver<TBinder?> observer) : Java.Lang.Object, IServiceConnection
         where TBinder : class, IBinder
     {
-        /// <summary>The Context used to bind and unbind the service.</summary>
-        private readonly Context _context = context;
-
         /// <summary>The stored observer that is notified as the service connects and disconnects.</summary>
         private readonly IObserver<TBinder?> _observer = observer;
 
@@ -147,8 +144,7 @@ public static class ContextExtensions
         {
             if (!_disposed && disposing)
             {
-                _context.UnbindService(this);
-                _context.Dispose();
+                context.UnbindService(this);
                 _disposed = true;
             }
 
