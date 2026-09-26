@@ -18,41 +18,43 @@ namespace ReactiveUI;
 /// access to lifecycle events. Most applications interact with the suspension host through higher-level APIs.</remarks>
 public static class RxSuspension
 {
-    /// <summary>The current suspension host instance.</summary>
-    private static ISuspensionHost? _suspensionHost;
+#if NET9_0_OR_GREATER
+    /// <summary>Serializes publishing the suspension host, so only one default host is ever created.</summary>
+    private static readonly Lock _gate = new();
+#else
+    /// <summary>Serializes publishing the suspension host, so only one default host is ever created.</summary>
+    private static readonly object _gate = new();
+#endif
 
-    /// <summary>Tracks whether the suspension host has been initialized; 0 means false, 1 means true.</summary>
-    private static int _suspensionHostInitialized;
+    /// <summary>The published suspension host, or null until one is published.</summary>
+    /// <remarks>
+    /// The field is its own initialization flag. A host is published once, under <see cref="_gate"/>, so a
+    /// reader sees either null or a fully constructed host, and the first host published wins.
+    /// </remarks>
+    private static ISuspensionHost? _suspensionHost;
 
     /// <summary>
     /// Gets the suspension host for application lifecycle management.
     /// Provides events for process lifetime events, especially on mobile devices.
     /// Auto-initializes with default SuspensionHost if not configured via builder.
     /// </summary>
-    public static ISuspensionHost SuspensionHost
-    {
-        get
-        {
-            if (Interlocked.CompareExchange(ref _suspensionHostInitialized, 0, 0) == 0)
-            {
-                InitializeDefaultSuspensionHost();
-            }
-
-            return _suspensionHost!;
-        }
-    }
+    public static ISuspensionHost SuspensionHost =>
+        Volatile.Read(ref _suspensionHost) ?? InitializeDefaultSuspensionHost();
 
     /// <summary>Initializes the suspension host with a custom instance. Called by ReactiveUIBuilder.</summary>
     /// <param name="suspensionHost">The custom suspension host to use.</param>
     /// <exception cref="ArgumentNullException"><paramref name="suspensionHost"/> is null.</exception>
     internal static void InitializeSuspensionHost(ISuspensionHost suspensionHost)
     {
-        if (Interlocked.CompareExchange(ref _suspensionHostInitialized, 1, 0) != 0)
-        {
-            return;
-        }
+        ArgumentExceptionHelper.ThrowIfNull(suspensionHost);
 
-        _suspensionHost = suspensionHost ?? throw new ArgumentNullException(nameof(suspensionHost));
+        lock (_gate)
+        {
+            if (_suspensionHost is null)
+            {
+                Volatile.Write(ref _suspensionHost, suspensionHost);
+            }
+        }
     }
 
     /// <summary>Resets the suspension host state for testing purposes.</summary>
@@ -62,18 +64,26 @@ public static class RxSuspension
     /// </remarks>
     internal static void ResetForTesting()
     {
-        _ = Interlocked.Exchange(ref _suspensionHostInitialized, 0);
-        _suspensionHost = null;
+        lock (_gate)
+        {
+            Volatile.Write(ref _suspensionHost, null);
+        }
     }
 
-    /// <summary>Initializes the default suspension host if not already configured. Creates a new SuspensionHost instance.</summary>
-    private static void InitializeDefaultSuspensionHost()
+    /// <summary>Publishes a new default suspension host if no host has been published yet.</summary>
+    /// <returns>The published host, which is another thread's host when that thread published first.</returns>
+    private static ISuspensionHost InitializeDefaultSuspensionHost()
     {
-        if (Interlocked.CompareExchange(ref _suspensionHostInitialized, 1, 0) != 0)
+        lock (_gate)
         {
-            return;
-        }
+            if (_suspensionHost is { } published)
+            {
+                return published;
+            }
 
-        _suspensionHost = new SuspensionHost();
+            var host = new SuspensionHost();
+            Volatile.Write(ref _suspensionHost, host);
+            return host;
+        }
     }
 }
