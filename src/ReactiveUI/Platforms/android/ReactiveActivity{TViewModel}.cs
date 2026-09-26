@@ -43,6 +43,6 @@ public class ReactiveActivity<TViewModel> : ReactiveActivity, IViewFor<TViewMode
     object? IViewFor.ViewModel
     {
         get => (object?)_viewModel;
-        set => _viewModel = (TViewModel?)value;
+        set => ViewModel = (TViewModel?)value;
     }
 }
