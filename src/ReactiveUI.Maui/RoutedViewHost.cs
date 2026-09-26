@@ -61,7 +61,7 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
     /// <summary>Initializes a new instance of the <see cref="RoutedViewHost"/> class.</summary>
     /// <exception cref="InvalidOperationException">You *must* register an IScreen class representing your App's main Screen.</exception>
     public RoutedViewHost()
-        : this(ResolveViewWithoutReflection)
+        : this(ViewHostResolution.ResolveViewWithoutReflection)
     {
     }
 
@@ -226,15 +226,6 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
             }
         }
     }
-
-    /// <summary>Finds a view by the view model's run-time type without building any type at run time.</summary>
-    /// <param name="viewLocator">The view locator to ask.</param>
-    /// <param name="viewModel">The view model to find a view for.</param>
-    /// <param name="contract">The contract to resolve under, or <see langword="null"/> for the default view.</param>
-    /// <returns>The view, or <see langword="null"/> when neither the generated lookup nor a <c>Map</c> registration has one.</returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static IViewFor? ResolveViewWithoutReflection(IViewLocator viewLocator, object viewModel, string? contract) =>
-        viewLocator.ResolveView(viewModel, contract);
 
     /// <summary>Builds the message for a view model the view locator has no page for.</summary>
     /// <param name="vm">The view model with no page.</param>

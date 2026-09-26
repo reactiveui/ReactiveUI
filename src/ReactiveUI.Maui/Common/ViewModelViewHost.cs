@@ -5,7 +5,6 @@
 
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.Runtime.CompilerServices;
 using Microsoft.UI.Xaml;
 #if REACTIVE_SHIM
 using ReactiveUI.Reactive.Maui.Internal;
@@ -13,12 +12,6 @@ using ReactiveUI.Reactive.Maui.Internal;
 using ReactiveUI.Maui.Internal;
 #endif
 using Splat;
-
-#if REACTIVE_SHIM
-using static ReactiveUI.Binding.Reactive.ViewLocator;
-#else
-using static ReactiveUI.Binding.ViewLocator;
-#endif
 
 #if REACTIVE_SHIM
 namespace ReactiveUI.Reactive;
@@ -68,7 +61,7 @@ public partial class ViewModelViewHost : TransitioningContentControl, IViewFor, 
 
     /// <summary>Initializes a new instance of the <see cref="ViewModelViewHost"/> class.</summary>
     public ViewModelViewHost()
-        : this(ResolveViewWithoutReflection)
+        : this(ViewHostResolution.ResolveViewWithoutReflection)
     {
     }
 
@@ -136,40 +129,13 @@ public partial class ViewModelViewHost : TransitioningContentControl, IViewFor, 
     /// <param name="contract">Contract used by ViewLocator.</param>
     protected virtual void ResolveViewForViewModel(object? viewModel, string? contract)
     {
-        if (viewModel is null)
+        var viewInstance = ViewHostResolution.ResolveAttachedView(_resolveView, ViewLocator, viewModel, contract, ContractFallbackByPass);
+        Content = viewInstance ?? DefaultContent;
+        if (viewInstance is not null || viewModel is null)
         {
-            Content = DefaultContent;
             return;
         }
 
-        var viewLocator = ViewLocator ?? GetCurrent();
-        var viewInstance = _resolveView(viewLocator, viewModel, contract);
-        if (viewInstance is null && !ContractFallbackByPass)
-        {
-            viewInstance = _resolveView(viewLocator, viewModel, null);
-        }
-
-        if (viewInstance is null)
-        {
-            Content = DefaultContent;
-            this.Log().Warn(
-                $"The {GetType().Name} could not find a valid view for the view model of type {viewModel.GetType()} and value {viewModel}. "
-                + "The view locator checked the generated view lookup and its Map registrations; "
-                + $"use {nameof(ViewModelViewHostUnsafe)} to also resolve a view registered only with the service locator.");
-            return;
-        }
-
-        viewInstance.ViewModel = viewModel;
-
-        Content = viewInstance;
+        this.Log().Warn(ViewHostResolution.NoViewFoundWarning(GetType().Name, viewModel, nameof(ViewModelViewHostUnsafe)));
     }
-
-    /// <summary>Finds a view by the view model's run-time type without building any type at run time.</summary>
-    /// <param name="viewLocator">The view locator to ask.</param>
-    /// <param name="viewModel">The view model to find a view for.</param>
-    /// <param name="contract">The contract to resolve under, or <see langword="null"/> for the default view.</param>
-    /// <returns>The view, or <see langword="null"/> when neither the generated lookup nor a <c>Map</c> registration has one.</returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static IViewFor? ResolveViewWithoutReflection(IViewLocator viewLocator, object viewModel, string? contract) =>
-        viewLocator.ResolveView(viewModel, contract);
 }

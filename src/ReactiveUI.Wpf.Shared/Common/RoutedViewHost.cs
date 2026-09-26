@@ -5,15 +5,8 @@
 
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Runtime.CompilerServices;
 using ReactiveUI.Primitives;
 using Splat;
-
-#if REACTIVE_SHIM
-using static ReactiveUI.Binding.Reactive.ViewLocator;
-#else
-using static ReactiveUI.Binding.ViewLocator;
-#endif
 
 #if HAS_WINUI
 using Microsoft.UI.Xaml;
@@ -79,7 +72,7 @@ public
 
     /// <summary>Initializes a new instance of the <see cref="RoutedViewHost"/> class.</summary>
     public RoutedViewHost()
-        : this(ResolveViewWithoutReflection)
+        : this(ViewHostResolution.ResolveViewWithoutReflection)
     {
     }
 
@@ -165,15 +158,6 @@ public
     /// </value>
     public IViewLocator? ViewLocator { get; set; }
 
-    /// <summary>Finds a view by the view model's run-time type without building any type at run time.</summary>
-    /// <param name="viewLocator">The view locator to ask.</param>
-    /// <param name="viewModel">The view model to find a view for.</param>
-    /// <param name="contract">The contract to resolve under, or <see langword="null"/> for the default view.</param>
-    /// <returns>The view, or <see langword="null"/> when neither the generated lookup nor a <c>Map</c> registration has one.</returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static IViewFor? ResolveViewWithoutReflection(IViewLocator viewLocator, object viewModel, string? contract) =>
-        viewLocator.ResolveView(viewModel, contract);
-
     /// <summary>Resolves and displays the view for the supplied view model and contract.</summary>
     /// <param name="x">The view model and contract to resolve a view for.</param>
     /// <exception cref="InvalidOperationException">No view is registered for the routed view model.</exception>
@@ -185,9 +169,7 @@ public
             return;
         }
 
-        var viewLocator = ViewLocator ?? GetCurrent();
-        object viewModel = x.ViewModel;
-        var view = (_resolveView(viewLocator, viewModel, x.Contract) ?? _resolveView(viewLocator, viewModel, null))
+        var view = ViewHostResolution.ResolveViewWithFallback(_resolveView, ViewLocator, x.ViewModel, x.Contract, contractFallbackByPass: false)
                    ?? throw new InvalidOperationException(
                        $"Couldn't find view for '{x.ViewModel}'. The view locator checked the generated view lookup and its Map registrations; "
                        + $"use {nameof(RoutedViewHostUnsafe)} to also resolve a view registered only with the service locator.");

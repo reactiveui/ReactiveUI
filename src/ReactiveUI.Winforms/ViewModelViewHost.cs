@@ -52,7 +52,7 @@ public partial class ViewModelControlHost : UserControl, IReactiveObject, IViewF
 
     /// <summary>Initializes a new instance of the <see cref="ViewModelControlHost"/> class.</summary>
     public ViewModelControlHost()
-        : this(ResolveViewWithoutReflection)
+        : this(ViewHostResolution.ResolveViewWithoutReflection)
     {
     }
 
@@ -180,15 +180,6 @@ public partial class ViewModelControlHost : UserControl, IReactiveObject, IViewF
 
         base.Dispose(disposing);
     }
-
-    /// <summary>Finds a view by the view model's run-time type without building any type at run time.</summary>
-    /// <param name="viewLocator">The view locator to ask.</param>
-    /// <param name="viewModel">The view model to find a view for.</param>
-    /// <param name="contract">The contract to resolve under, or <see langword="null"/> for the default view.</param>
-    /// <returns>The view, or <see langword="null"/> when neither the generated lookup nor a <c>Map</c> registration has one.</returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static IViewFor? ResolveViewWithoutReflection(IViewLocator viewLocator, object viewModel, string? contract) =>
-        viewLocator.ResolveView(viewModel, contract);
 
     /// <summary>Replaces the currently visible control with the supplied view, docked to fill the host.</summary>
     /// <param name="view">The control to display.</param>

@@ -35,6 +35,7 @@
     <Compile Include="..\ReactiveUI.Winforms\**\*.cs" Exclude="..\ReactiveUI.Winforms\obj\**\*.cs;..\ReactiveUI.Winforms\bin\**\*.cs" Link="ReactiveUI.Winforms\%(RecursiveDir)%(Filename)%(Extension)"/>
     <Compile Include="..\Shared\ArgumentValidation.cs" Link="Shared\ArgumentValidation.cs"/>
     <Compile Include="..\Shared\DelegateObserver.cs" Link="Shared\DelegateObserver.cs"/>
+    <Compile Include="..\Shared\ViewHostResolution.cs" Link="Shared\ViewHostResolution.cs"/>
     <Compile Include="..\Shared\Platform\FromEventObservable.cs" Link="Shared\Platform\FromEventObservable.cs"/>
     <Compile Include="..\Shared\Platform\CombineLatestSink.cs" Link="Shared\Platform\CombineLatestSink.cs"/>
   </ItemGroup>

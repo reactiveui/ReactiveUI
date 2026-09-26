@@ -4,17 +4,10 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Diagnostics;
-using System.Runtime.CompilerServices;
 using Microsoft.Maui.Controls;
 using ReactiveUI.Internal;
 using ReactiveUI.Primitives;
 using Splat;
-
-#if REACTIVE_SHIM
-using static ReactiveUI.Binding.Reactive.ViewLocator;
-#else
-using static ReactiveUI.Binding.ViewLocator;
-#endif
 
 #if REACTIVE_SHIM
 namespace ReactiveUI.Reactive.Maui;
@@ -76,7 +69,7 @@ public class ViewModelViewHost : ContentView, IViewFor
 
     /// <summary>Initializes a new instance of the <see cref="ViewModelViewHost"/> class.</summary>
     public ViewModelViewHost()
-        : this(ResolveViewWithoutReflection)
+        : this(ViewHostResolution.ResolveViewWithoutReflection)
     {
     }
 
@@ -153,20 +146,10 @@ public class ViewModelViewHost : ContentView, IViewFor
             return;
         }
 
-        var viewLocator = ViewLocator ?? GetCurrent();
-
-        var viewInstance = _resolveView(viewLocator, viewModel, contract);
-        if (viewInstance is null && !ContractFallbackByPass)
-        {
-            viewInstance = _resolveView(viewLocator, viewModel, null);
-        }
-
-        if (viewInstance is null)
-        {
-            throw new InvalidOperationException(
+        var viewInstance = ViewHostResolution.ResolveViewWithFallback(_resolveView, ViewLocator, viewModel, contract, ContractFallbackByPass)
+            ?? throw new InvalidOperationException(
                 $"Couldn't find view for '{viewModel}'. The view locator checked the generated view lookup and its Map registrations; "
                 + $"use {nameof(ViewModelViewHostUnsafe)} to also resolve a view registered only with the service locator.");
-        }
 
         if (viewInstance is not View castView)
         {
@@ -178,15 +161,6 @@ public class ViewModelViewHost : ContentView, IViewFor
 
         Content = castView;
     }
-
-    /// <summary>Finds a view by the view model's run-time type without building any type at run time.</summary>
-    /// <param name="viewLocator">The view locator to ask.</param>
-    /// <param name="viewModel">The view model to find a view for.</param>
-    /// <param name="contract">The contract to resolve under, or <see langword="null"/> for the default view.</param>
-    /// <returns>The view, or <see langword="null"/> when neither the generated lookup nor a <c>Map</c> registration has one.</returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static IViewFor? ResolveViewWithoutReflection(IViewLocator viewLocator, object viewModel, string? contract) =>
-        viewLocator.ResolveView(viewModel, contract);
 
     /// <summary>Handles changes to the <see cref="ViewModel"/> property by re-resolving the view for the new value.</summary>
     /// <param name="bindable">The object whose property changed.</param>
