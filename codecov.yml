@@ -1,4 +1,14 @@
 ### YamlMime:ManagedReference
+coverage:
+  status:
+    # Every line a change adds or modifies must be covered; the whole-project figure is reported but not gated.
+    patch:
+      default:
+        target: 100%
+    project:
+      default:
+        informational: true
+
 ignore:
   - src/tests
   - integrationtests
