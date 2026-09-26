@@ -201,8 +201,7 @@ namespace ReactiveUI.Reactive.AndroidX
     {
         protected ReactiveRecyclerViewAdapter(TCollection backingList) { }
     }
-    [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("Android property discovery discovery uses reflection that may require dynamic code generation.")]
-    [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Android property discovery uses reflection over generated resource types that may be trimmed.")]
+    [System.Diagnostics.CodeAnalysis.DynamicallyAccessedMembers(System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes.PublicProperties)]
     [System.Diagnostics.DebuggerDisplay("{ViewModel}")]
     public class ReactiveRecyclerViewViewHolder<TViewModel> : AndroidX.RecyclerView.Widget.RecyclerView.ViewHolder, ReactiveUI.Binding.Reactive.IViewFor<TViewModel>, ReactiveUI.IReactiveNotifyPropertyChanged<ReactiveUI.Reactive.AndroidX.ReactiveRecyclerViewViewHolder<TViewModel>>, ReactiveUI.IReactiveObject, ReactiveUI.Reactive.ICanActivate, ReactiveUI.Reactive.ILayoutViewHost where TViewModel : class, ReactiveUI.IReactiveObject
     {

@@ -232,38 +232,28 @@ namespace ReactiveUI.Reactive.Maui
     [System.Diagnostics.DebuggerDisplay("{Router}, {SetTitleOnNavigate}")]
     public class RoutedViewHost : Microsoft.Maui.Controls.NavigationPage, ReactiveUI.Binding.Reactive.IActivatableView, Splat.IEnableLogger
     {
-        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("ViewLocator.ResolveView uses reflection which is incompatible with AOT compilation.")]
-        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("This class uses reflection to determine view model types at runtime through ViewLocator, which may be incompatible with trimming.")]
         public RoutedViewHost() { }
         public static readonly Microsoft.Maui.Controls.BindableProperty RouterProperty;
         public static readonly Microsoft.Maui.Controls.BindableProperty SetTitleOnNavigateProperty;
         public ReactiveUI.Reactive.RoutingState Router { get; set; }
         public bool SetTitleOnNavigate { get; set; }
         protected void InvalidateCurrentViewModel() { }
-        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, or generic constraints), trimming can't validate that the requirements of those annotations are met.")]
-        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
         protected virtual Microsoft.Maui.Controls.Page PageForViewModel(ReactiveUI.Reactive.IRoutableViewModel vm) { }
-        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, or generic constraints), trimming can't validate that the requirements of those annotations are met.")]
-        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
         protected virtual System.IObservable<Microsoft.Maui.Controls.Page> PagesForViewModel(ReactiveUI.Reactive.IRoutableViewModel? vm) { }
-        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, or generic constraints), trimming can't validate that the requirements of those annotations are met.")]
-        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
         protected System.Threading.Tasks.Task SyncNavigationStacksAsync() { }
     }
     public class RoutedViewHost<TViewModel> : ReactiveUI.Reactive.Maui.RoutedViewHost where TViewModel : class, ReactiveUI.Reactive.IRoutableViewModel
     {
-        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("ViewLocator.ResolveView uses reflection which is incompatible with AOT compilation.")]
-        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("This class uses reflection to determine view model types at runtime through ViewLocator, which may be incompatible with trimming.")]
         public RoutedViewHost() { }
-        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, or generic constraints), trimming can't validate that the requirements of those annotations are met.")]
-        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
         protected override Microsoft.Maui.Controls.Page PageForViewModel(ReactiveUI.Reactive.IRoutableViewModel vm) { }
-        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, or generic constraints), trimming can't validate that the requirements of those annotations are met.")]
-        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
         protected override System.IObservable<Microsoft.Maui.Controls.Page> PagesForViewModel(ReactiveUI.Reactive.IRoutableViewModel? vm) { }
     }
-    [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, or generic constraints), trimming can't validate that the requirements of those annotations are met.")]
-    [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
+    [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("RoutedViewHostUnsafe asks the service locator for IViewFor<> closed over the view model's run-time type. Use RoutedViewHost, which uses the generated view lookup and Map registrations, to stay ahead-of-time safe.")]
+    [System.Diagnostics.DebuggerDisplay("{Router}, {SetTitleOnNavigate}")]
+    public class RoutedViewHostUnsafe : ReactiveUI.Reactive.Maui.RoutedViewHost
+    {
+        public RoutedViewHostUnsafe() { }
+    }
     [System.Diagnostics.DebuggerDisplay("{ViewModel}, {DefaultContent}")]
     public class ViewModelViewHost : Microsoft.Maui.Controls.ContentView, ReactiveUI.Binding.Reactive.IViewFor
     {
@@ -278,12 +268,8 @@ namespace ReactiveUI.Reactive.Maui
         public System.IObservable<string?> ViewContractObservable { get; set; }
         public ReactiveUI.Binding.Reactive.IViewLocator? ViewLocator { get; set; }
         public object? ViewModel { get; set; }
-        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, or generic constraints), trimming can't validate that the requirements of those annotations are met.")]
-        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
         protected virtual void ResolveViewForViewModel(object? viewModel, string? contract) { }
     }
-    [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, or generic constraints), trimming can't validate that the requirements of those annotations are met.")]
-    [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
     [System.Diagnostics.DebuggerDisplay("{ViewModel}")]
     public class ViewModelViewHost<TViewModel> : ReactiveUI.Reactive.Maui.ViewModelViewHost, ReactiveUI.Binding.Reactive.IViewFor<TViewModel> where TViewModel : class
     {
@@ -291,9 +277,13 @@ namespace ReactiveUI.Reactive.Maui
         object? ReactiveUI.Binding.Reactive.IViewFor.ViewModel { get; set; }
         public TViewModel? ViewModel { get; set; }
         [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, or generic constraints), trimming can't validate that the requirements of those annotations are met.")]
-        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
         protected override void ResolveViewForViewModel(object? viewModel, string? contract) { }
+    }
+    [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("ViewModelViewHostUnsafe asks the service locator for IViewFor<> closed over the view model's run-time type. Use ViewModelViewHost, which uses the generated view lookup and Map registrations, to stay ahead-of-time safe.")]
+    [System.Diagnostics.DebuggerDisplay("{ViewModel}, {DefaultContent}")]
+    public class ViewModelViewHostUnsafe : ReactiveUI.Reactive.Maui.ViewModelViewHost
+    {
+        public ViewModelViewHostUnsafe() { }
     }
     public sealed class VisibilityToBooleanTypeConverter : ReactiveUI.Binding.Reactive.BindingTypeConverter<Microsoft.Maui.Visibility, bool>
     {

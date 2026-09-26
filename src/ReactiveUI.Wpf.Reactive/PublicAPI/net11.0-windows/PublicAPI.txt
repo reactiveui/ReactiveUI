@@ -16,6 +16,14 @@ namespace ReactiveUI.Reactive
         public static System.Lazy<System.Windows.DataTemplate> DefaultItemTemplate { get; }
         public bool ExecuteHook(object? source, object target, System.Func<ReactiveUI.Binding.Reactive.IObservedChange<object, object>[]> getCurrentViewModelProperties, System.Func<ReactiveUI.Binding.Reactive.IObservedChange<object, object>[]> getCurrentViewProperties, ReactiveUI.Binding.Reactive.BindingDirection direction) { }
     }
+    [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("AutoDataTemplateBindingHookUnsafe hosts each item in a ViewModelViewHostUnsafe, which asks the service locator for IViewFor<> closed over the view model's run-time type. Use AutoDataTemplateBindingHook, which uses the generated view lookup and Map registrations, to stay ahead-of-time safe.")]
+    [System.Diagnostics.DebuggerDisplay("AutoDataTemplateBindingHookUnsafe")]
+    public class AutoDataTemplateBindingHookUnsafe : ReactiveUI.Binding.Reactive.IPropertyBindingHook
+    {
+        public AutoDataTemplateBindingHookUnsafe() { }
+        public static System.Lazy<System.Windows.DataTemplate> DefaultItemTemplate { get; }
+        public bool ExecuteHook(object? source, object target, System.Func<ReactiveUI.Binding.Reactive.IObservedChange<object, object>[]> getCurrentViewModelProperties, System.Func<ReactiveUI.Binding.Reactive.IObservedChange<object, object>[]> getCurrentViewProperties, ReactiveUI.Binding.Reactive.BindingDirection direction) { }
+    }
     [System.Diagnostics.DebuggerDisplay("{IdleTimeout}")]
     public class AutoSuspendHelper : Splat.IEnableLogger
     {
@@ -66,6 +74,12 @@ namespace ReactiveUI.Reactive
         public string? ViewContract { get; set; }
         public System.IObservable<string?> ViewContractObservable { get; set; }
         public ReactiveUI.Binding.Reactive.IViewLocator? ViewLocator { get; set; }
+    }
+    [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("RoutedViewHostUnsafe asks the service locator for IViewFor<> closed over the view model's run-time type. Use RoutedViewHost, which uses the generated view lookup and Map registrations, to stay ahead-of-time safe.")]
+    [System.Diagnostics.DebuggerDisplay("{Router}, {DefaultContent}")]
+    public class RoutedViewHostUnsafe : ReactiveUI.Reactive.RoutedViewHost
+    {
+        public RoutedViewHostUnsafe() { }
     }
     [System.Diagnostics.DebuggerDisplay("{Transition}, {Direction}")]
     [System.Windows.TemplatePart(Name="PART_Container", Type=typeof(System.Windows.FrameworkElement))]
@@ -123,6 +137,12 @@ namespace ReactiveUI.Reactive
         public ReactiveUI.Binding.Reactive.IViewLocator? ViewLocator { get; set; }
         public object? ViewModel { get; set; }
         protected virtual void ResolveViewForViewModel(object? viewModel, string? contract) { }
+    }
+    [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("ViewModelViewHostUnsafe asks the service locator for IViewFor<> closed over the view model's run-time type. Use ViewModelViewHost, which uses the generated view lookup and Map registrations, to stay ahead-of-time safe.")]
+    [System.Diagnostics.DebuggerDisplay("{ViewContractObservable}, {DefaultContent}")]
+    public class ViewModelViewHostUnsafe : ReactiveUI.Reactive.ViewModelViewHost
+    {
+        public ViewModelViewHostUnsafe() { }
     }
     public static class WpfViewForMixins
     {

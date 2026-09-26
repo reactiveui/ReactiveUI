@@ -89,6 +89,12 @@ namespace ReactiveUI.Reactive.Winforms
         [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
         void ReactiveUI.IReactiveObject.RaisePropertyChanging(System.ComponentModel.PropertyChangingEventArgs args) { }
     }
+    [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("RoutedControlHostUnsafe asks the service locator for IViewFor<> closed over the view model's run-time type. Use RoutedControlHost, which uses the generated view lookup and Map registrations, to stay ahead-of-time safe.")]
+    [System.Diagnostics.DebuggerDisplay("{DefaultContent}, {Router}")]
+    public class RoutedControlHostUnsafe : ReactiveUI.Reactive.Winforms.RoutedControlHost
+    {
+        public RoutedControlHostUnsafe() { }
+    }
     public class TableContentSetMethodBindingConverter : ReactiveUI.Binding.Reactive.ISetMethodBindingConverter
     {
         public TableContentSetMethodBindingConverter() { }
@@ -96,8 +102,6 @@ namespace ReactiveUI.Reactive.Winforms
         public object PerformSet(object? toTarget, object? newValue, object?[]? arguments) { }
     }
     [System.ComponentModel.DefaultProperty("ViewModel")]
-    [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("ViewLocator.ResolveView uses reflection which is incompatible with AOT compilation.")]
-    [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("This class uses reflection to determine view model types at runtime through ViewLocator, which may be incompatible with trimming.")]
     [System.Diagnostics.DebuggerDisplay("{CurrentView}, {DefaultContent}")]
     public class ViewModelControlHost : System.Windows.Forms.UserControl, ReactiveUI.Binding.Reactive.IViewFor, ReactiveUI.IReactiveObject
     {
@@ -136,5 +140,11 @@ namespace ReactiveUI.Reactive.Winforms
         void ReactiveUI.IReactiveObject.RaisePropertyChanged(System.ComponentModel.PropertyChangedEventArgs args) { }
         [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
         void ReactiveUI.IReactiveObject.RaisePropertyChanging(System.ComponentModel.PropertyChangingEventArgs args) { }
+    }
+    [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("ViewModelControlHostUnsafe asks the service locator for IViewFor<> closed over the view model's run-time type. Use ViewModelControlHost, which uses the generated view lookup and Map registrations, to stay ahead-of-time safe.")]
+    [System.Diagnostics.DebuggerDisplay("{CurrentView}, {DefaultContent}")]
+    public class ViewModelControlHostUnsafe : ReactiveUI.Reactive.Winforms.ViewModelControlHost
+    {
+        public ViewModelControlHostUnsafe() { }
     }
 }

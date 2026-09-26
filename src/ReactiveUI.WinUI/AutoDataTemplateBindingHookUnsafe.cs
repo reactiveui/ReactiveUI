@@ -17,9 +17,9 @@ namespace ReactiveUI;
 /// <remarks>
 /// <para>
 /// <see cref="AutoDataTemplateBindingHook"/> is registered by <c>WithWinUI</c> and hosts each item in a
-/// <see cref="ViewModelViewHost"/>, which uses the view lookup the source generator writes. Register this hook as well
-/// when a list shows view models whose view that lookup cannot find, such as a view only registered with the service
-/// locator. It replaces the default template <see cref="AutoDataTemplateBindingHook"/> assigned, and leaves every
+/// <see cref="ViewModelViewHost"/>, which asks the generated view lookup and the view locator's <c>Map</c>
+/// registrations. Register this hook as well when a list shows view models whose view is registered only with the
+/// service locator. It replaces the default template <see cref="AutoDataTemplateBindingHook"/> assigned, and leaves every
 /// template the app set itself alone.
 /// </para>
 /// <para>

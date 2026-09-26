@@ -4,18 +4,12 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.ComponentModel;
-using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
 using Android.Content;
 using Android.Views;
-#if REACTIVE_SHIM
-using static ReactiveUI.Reactive.ControlFetcherMixins;
-#else
-using static ReactiveUI.ControlFetcherMixins;
-#endif
 
 #if REACTIVE_SHIM
 namespace ReactiveUI.Reactive;
@@ -26,12 +20,9 @@ namespace ReactiveUI;
 /// <typeparam name="TViewModel">The view model type.</typeparam>
 /// <remarks>
 /// <para>
-/// Trimming/AOT: Prefer constructors that do not enable legacy auto-wireup. These paths avoid reflection and do not
-/// allocate property metadata.
-/// </para>
-/// <para>
-/// Compatibility: A legacy constructor is provided that enables reflection-based wiring and initializes
-/// <see cref="AllPublicProperties"/> for older infrastructure.
+/// Every constructor is safe to trim and to compile ahead of time. Wire child controls in the <c>bind</c> callback,
+/// or derive from <see cref="ReactiveViewHostUnsafe{TViewModel}"/> to wire them by reflection and fill
+/// <see cref="AllPublicProperties"/>.
 /// </para>
 /// </remarks>
 [System.Diagnostics.DebuggerDisplay("{ViewModel}")]
@@ -115,36 +106,6 @@ public class ReactiveViewHost<TViewModel> :
         SetupRxObjAot();
     }
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveViewHost{TViewModel}"/> class by inflating a layout resource
-    /// and optionally performing reflection-based auto-wireup.
-    /// </summary>
-    /// <param name="ctx">The Android context.</param>
-    /// <param name="layoutId">The layout resource identifier.</param>
-    /// <param name="parent">The parent view group.</param>
-    /// <param name="attachToRoot">Whether to attach the inflated view to the parent.</param>
-    /// <param name="performAutoWireup">
-    /// If <see langword="true"/>, performs automatic wiring using reflection.
-    /// </param>
-    /// <param name="resolveStrategy">
-    /// The member resolution strategy used during auto-wireup.
-    /// </param>
-    /// <remarks>
-    /// This constructor exists for backward compatibility and is not trimming/AOT safe when
-    /// <paramref name="performAutoWireup"/> is <see langword="true"/>.
-    /// </remarks>
-    [RequiresUnreferencedCode("Legacy auto-wireup uses reflection and member discovery.")]
-    [RequiresDynamicCode("Legacy auto-wireup relies on runtime type inspection.")]
-    protected ReactiveViewHost(
-        Context ctx,
-        int layoutId,
-        ViewGroup parent,
-        bool attachToRoot,
-        bool performAutoWireup,
-        ResolveStrategy resolveStrategy)
-        : base(ctx, layoutId, parent, attachToRoot, performAutoWireup, resolveStrategy) =>
-        SetupRxObjLegacyReflection();
-
     /// <inheritdoc/>
     public event PropertyChangedEventHandler? PropertyChanged
     {
@@ -203,7 +164,8 @@ public class ReactiveViewHost<TViewModel> :
     /// <summary>Gets or sets the lazily-computed set of public properties used by legacy reflection-based wiring.</summary>
     /// <remarks>
     /// This is used by legacy reflection-based wiring. It is not initialized by default in AOT-safe construction
-    /// paths to avoid reflection and allocations. If a derived type requires this, use the legacy constructor.
+    /// paths to avoid reflection and allocations. If a derived type requires this, derive from
+    /// <see cref="ReactiveViewHostUnsafe{TViewModel}"/>.
     /// </remarks>
     [IgnoreDataMember]
     [JsonIgnore]
@@ -241,13 +203,4 @@ public class ReactiveViewHost<TViewModel> :
     /// This method intentionally does not touch <see cref="AllPublicProperties"/> to avoid reflection and allocations.
     /// </remarks>
     private void SetupRxObjAot() => AllPublicProperties = null;
-
-    /// <summary>Initializes legacy reflection metadata used by older auto-wireup infrastructure.</summary>
-    /// <remarks>
-    /// This allocates reflection metadata and is not trimming/AOT safe.
-    /// </remarks>
-    [RequiresUnreferencedCode("This method uses reflection to enumerate public instance properties.")]
-    [RequiresDynamicCode("This method uses reflection to enumerate public instance properties.")]
-    private void SetupRxObjLegacyReflection() =>
-        AllPublicProperties = new(() => GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance));
 }

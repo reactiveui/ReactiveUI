@@ -17,4 +17,9 @@ public sealed class AlwaysWideViewLocator : IViewLocator
     /// <inheritdoc/>
     public IViewFor? ResolveView(object? viewModel, string? contract) =>
         viewModel is RecipeListViewModel ? new RecipeListWideContentView() : null;
+
+    /// <inheritdoc/>
+    [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("Matches IViewLocator.ResolveViewUnsafe; this locator itself builds no types at run time.")]
+    public IViewFor? ResolveViewUnsafe(object? viewModel, string? contract) =>
+        ResolveView(viewModel, contract);
 }

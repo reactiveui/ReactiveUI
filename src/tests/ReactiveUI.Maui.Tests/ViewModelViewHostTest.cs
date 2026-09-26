@@ -254,6 +254,79 @@ public class ViewModelViewHostTest
         await Assert.That(host.Content).IsAssignableTo<RegisteredView>();
     }
 
+    /// <summary>The default host finds a view the app added to the view locator with <c>Map</c>.</summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task ResolveViewForViewModel_MappedView_IsFound()
+    {
+        var locator = new DefaultViewLocator();
+        locator.Map<TestViewModel, TestView>();
+        var host = new TestableViewModelViewHost { ViewLocator = locator, ViewModel = new TestViewModel() };
+
+        host.SimulateViewModelChange();
+
+        await Assert.That(host.Content).IsTypeOf<TestView>();
+    }
+
+    /// <summary>The default host asks the locator's ahead-of-time safe lookup and never its reflective one.</summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task ResolveViewForViewModel_DefaultHost_NeverAsksTheUnsafeLookup()
+    {
+        var locator = new RecordingViewLocator(new TestView());
+        var host = new TestableViewModelViewHost { ViewLocator = locator, ViewModel = new TestViewModel() };
+
+        host.SimulateViewModelChange();
+
+        using (Assert.Multiple())
+        {
+            await Assert.That(locator.SafeLookups).IsGreaterThan(0);
+            await Assert.That(locator.UnsafeLookups).IsEqualTo(0);
+        }
+    }
+
+    /// <summary>The default host does not ask the service locator, so a view registered only there is not found.</summary>
+    [Test]
+    [TestExecutor<ServiceLocatorOnlyViewExecutor>]
+    public void ResolveViewForViewModel_ViewOnlyInTheServiceLocator_Throws()
+    {
+        var host = new TestableViewModelViewHost { ViewModel = new RegisteredViewModel() };
+
+        _ = Assert.Throws<InvalidOperationException>(host.SimulateViewModelChange);
+    }
+
+    /// <summary>The Unsafe host asks the locator's reflective lookup and never its ahead-of-time safe one.</summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task ResolveViewForViewModel_UnsafeHost_AsksTheUnsafeLookup()
+    {
+        var view = new TestView();
+        var locator = new RecordingViewLocator(view);
+        var host = new TestableViewModelViewHostUnsafe { ViewLocator = locator, ViewModel = new TestViewModel() };
+
+        host.SimulateViewModelChange();
+
+        using (Assert.Multiple())
+        {
+            await Assert.That(host.Content).IsSameReferenceAs(view);
+            await Assert.That(locator.UnsafeLookups).IsGreaterThan(0);
+            await Assert.That(locator.SafeLookups).IsEqualTo(0);
+        }
+    }
+
+    /// <summary>The Unsafe host finds a view registered only with the service locator.</summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    [TestExecutor<ServiceLocatorOnlyViewExecutor>]
+    public async Task ResolveViewForViewModel_UnsafeHostViewOnlyInTheServiceLocator_IsFound()
+    {
+        var host = new TestableViewModelViewHostUnsafe { ViewModel = new RegisteredViewModel() };
+
+        host.SimulateViewModelChange();
+
+        await Assert.That(host.Content).IsAssignableTo<RegisteredView>();
+    }
+
     /// <summary>Temporarily overrides the mode detector so the code believes it is not running in a unit test.</summary>
     /// <returns>A disposable that restores the previous mode detector when disposed.</returns>
     private static ActionDisposable ForceNonUnitTestMode()
@@ -265,6 +338,32 @@ public class ViewModelViewHostTest
     /// <summary>Test executor that sets up the MAUI environment and registers a view in <see cref="ViewLocator.GetCurrent"/> for the null-locator fallback test.</summary>
     [NotInParallel]
     public sealed class ViewModelViewHostViewLocatorExecutor : MauiTestExecutor
+    {
+        /// <summary>The helper that configures and tears down the ReactiveUI app builder.</summary>
+        private readonly AppBuilderTestHelper _helper = new();
+
+        /// <inheritdoc/>
+        protected override void Initialize()
+        {
+            base.Initialize();
+
+            _helper.Initialize(static builder => _ = builder
+                .WithMaui()
+                .ConfigureViewLocator(static locator => locator.Map<RegisteredViewModel, RegisteredView>())
+                .WithCoreServices());
+        }
+
+        /// <inheritdoc/>
+        protected override void CleanUp()
+        {
+            _helper.CleanUp();
+            base.CleanUp();
+        }
+    }
+
+    /// <summary>Test executor that sets up the MAUI environment and registers a view only with the service locator.</summary>
+    [NotInParallel]
+    public sealed class ServiceLocatorOnlyViewExecutor : MauiTestExecutor
     {
         /// <summary>The helper that configures and tears down the ReactiveUI app builder.</summary>
         private readonly AppBuilderTestHelper _helper = new();
@@ -348,8 +447,11 @@ public class ViewModelViewHostTest
             where TViewModel : class => _view;
 
         /// <inheritdoc/>
-        [RequiresDynamicCode("Resolves a view from an object.")]
         public IViewFor? ResolveView(object? viewModel, string? contract) => _view;
+
+        /// <inheritdoc/>
+        [RequiresDynamicCode("Resolves a view from an object.")]
+        public IViewFor? ResolveViewUnsafe(object? viewModel, string? contract) => ResolveView(viewModel, contract);
     }
 
     /// <summary>View locator that resolves a separate view for the <see cref="WideContract"/> contract.</summary>
@@ -369,8 +471,11 @@ public class ViewModelViewHostTest
             where TViewModel : class => Resolve(contract);
 
         /// <inheritdoc/>
-        [RequiresDynamicCode("Resolves a view from an object.")]
         public IViewFor? ResolveView(object? viewModel, string? contract) => Resolve(contract);
+
+        /// <inheritdoc/>
+        [RequiresDynamicCode("Resolves a view from an object.")]
+        public IViewFor? ResolveViewUnsafe(object? viewModel, string? contract) => ResolveView(viewModel, contract);
 
         /// <summary>Picks the view for a contract.</summary>
         /// <param name="contract">The contract to resolve.</param>
@@ -385,6 +490,44 @@ public class ViewModelViewHostTest
         public void SimulateViewModelChange() => ResolveViewForViewModel(ViewModel, ViewContract);
     }
 
+    /// <summary>Testable ViewModelViewHostUnsafe that exposes the protected view model resolution.</summary>
+    [RequiresDynamicCode("Resolves views through the service locator by the view model's runtime type.")]
+    private sealed class TestableViewModelViewHostUnsafe : ViewModelViewHostUnsafe
+    {
+        /// <summary>Simulates a view model change by resolving the view for the current view model.</summary>
+        public void SimulateViewModelChange() => ResolveViewForViewModel(ViewModel, ViewContract);
+    }
+
+    /// <summary>A view locator that returns one view and counts which of its lookups the host asked.</summary>
+    /// <param name="view">The view every lookup returns.</param>
+    private sealed class RecordingViewLocator(IViewFor view) : IViewLocator
+    {
+        /// <summary>Gets the number of ahead-of-time safe lookups by run-time type.</summary>
+        public int SafeLookups { get; private set; }
+
+        /// <summary>Gets the number of reflective lookups.</summary>
+        public int UnsafeLookups { get; private set; }
+
+        /// <inheritdoc/>
+        public IViewFor? ResolveView<TViewModel>(TViewModel viewModel, string? contract)
+            where TViewModel : class => view;
+
+        /// <inheritdoc/>
+        public IViewFor? ResolveView(object? viewModel, string? contract)
+        {
+            SafeLookups++;
+            return view;
+        }
+
+        /// <inheritdoc/>
+        [RequiresDynamicCode("Resolves a view from an object.")]
+        public IViewFor? ResolveViewUnsafe(object? viewModel, string? contract)
+        {
+            UnsafeLookups++;
+            return view;
+        }
+    }
+
     /// <summary>Test view locator for testing.</summary>
     private sealed class TestViewLocator : IViewLocator
     {
@@ -393,8 +536,11 @@ public class ViewModelViewHostTest
             where TViewModel : class => null;
 
         /// <inheritdoc/>
-        [RequiresDynamicCode("Resolves a view from an object.")]
         public IViewFor? ResolveView(object? viewModel, string? contract) => null;
+
+        /// <inheritdoc/>
+        [RequiresDynamicCode("Resolves a view from an object.")]
+        public IViewFor? ResolveViewUnsafe(object? viewModel, string? contract) => ResolveView(viewModel, contract);
     }
 
     /// <summary>A view that implements <see cref="IViewFor"/> but is not a MAUI <see cref="View"/>.</summary>
@@ -422,7 +568,10 @@ public class ViewModelViewHostTest
             where TViewModel : class => _view;
 
         /// <inheritdoc/>
-        [RequiresDynamicCode("Resolves a view from an object.")]
         public IViewFor? ResolveView(object? viewModel, string? contract) => _view;
+
+        /// <inheritdoc/>
+        [RequiresDynamicCode("Resolves a view from an object.")]
+        public IViewFor? ResolveViewUnsafe(object? viewModel, string? contract) => ResolveView(viewModel, contract);
     }
 }

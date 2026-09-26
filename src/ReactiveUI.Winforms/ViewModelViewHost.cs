@@ -23,18 +23,20 @@ namespace ReactiveUI.Winforms;
 
 /// <summary>A view model control host which will find and host the View for a ViewModel.</summary>
 /// <remarks>
-/// This class uses reflection to determine view model types at runtime through ViewLocator.
-/// For AOT-compatible scenarios, use ViewModelControlHost&lt;TViewModel&gt; instead.
+/// The host asks the view locator for the view by the view model's run-time type, without building any type at run
+/// time. The default locator checks the view lookup the source generator writes, then the views the app added with
+/// <c>Map</c>. A view registered only with the service locator needs <see cref="ViewModelControlHostUnsafe"/>, which
+/// also asks the service locator for <see cref="IViewFor{T}"/> closed over the view model's run-time type.
 /// </remarks>
 [DefaultProperty("ViewModel")]
-[RequiresUnreferencedCode(
-    "This class uses reflection to determine view model types at runtime through ViewLocator, which may be incompatible with trimming.")]
-[RequiresDynamicCode("ViewLocator.ResolveView uses reflection which is incompatible with AOT compilation.")]
 [DebuggerDisplay("{CurrentView}, {DefaultContent}")]
 public partial class ViewModelControlHost : UserControl, IReactiveObject, IViewFor
 {
     /// <summary>Holds the subscriptions created during setup so they can be disposed together.</summary>
     private readonly MultipleDisposable _disposables = [];
+
+    /// <summary>Asks a view locator for the view of a view model under a contract.</summary>
+    private readonly Func<IViewLocator, object, string?, IViewFor?> _resolveView;
 
     /// <summary>Backing field for the currently displayed content.</summary>
     private object? _content;
@@ -49,12 +51,20 @@ public partial class ViewModelControlHost : UserControl, IReactiveObject, IViewF
     private PropertyChangedEventHandler? _propertyChanged;
 
     /// <summary>Initializes a new instance of the <see cref="ViewModelControlHost"/> class.</summary>
+    public ViewModelControlHost()
+        : this(ViewHostResolution.ResolveViewWithoutReflection)
+    {
+    }
+
+    /// <summary>Initializes a new instance of the <see cref="ViewModelControlHost"/> class with its view lookup.</summary>
+    /// <param name="resolveView">Asks a view locator for the view of a view model under a contract.</param>
     [SuppressMessage(
         "Design",
         "SST2403:'this' escapes before construction finishes",
         Justification = "'this' is passed to BindingSink; the WinForms designer-mandated constructor wires this control's bindings; the single-threaded control is never published elsewhere.")]
-    public ViewModelControlHost()
+    private protected ViewModelControlHost(Func<IViewLocator, object, string?, IViewFor?> resolveView)
     {
+        _resolveView = resolveView;
         InitializeComponent();
         _cacheViews = DefaultCacheViewsEnabled;
         _disposables.Add(new BindingSink(this));
@@ -211,7 +221,7 @@ public partial class ViewModelControlHost : UserControl, IReactiveObject, IViewF
             return;
         }
 
-        var view = (ViewLocator ?? GetCurrent()).ResolveView(viewModel, contract);
+        var view = _resolveView(ViewLocator ?? GetCurrent(), viewModel, contract);
         if (view is null)
         {
             return;

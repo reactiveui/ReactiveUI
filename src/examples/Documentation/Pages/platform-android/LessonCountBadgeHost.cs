@@ -9,14 +9,14 @@ using Android.Views;
 
 namespace ReactiveUI.Documentation.PlatformAndroid;
 
-/// <summary>A small, non-reactive badge showing how many lessons are on the timetable. Plain
-/// <see cref="LayoutViewHost"/> is enough here: the badge has no view model, just a count to render once. Its
-/// label is wired by name through the legacy reflection-based constructor, rather than an explicit bind callback,
-/// to show that path too.</summary>
+/// <summary>A small, non-reactive badge showing how many lessons are on the timetable. A plain
+/// layout host is enough here: the badge has no view model, just a count to render once. Its label is wired by
+/// name through <see cref="LayoutViewHostUnsafe"/>'s reflection-based auto-wireup, rather than an explicit bind
+/// callback, to show that path too.</summary>
 [RequiresUnreferencedCode("Wires BadgeText by reflecting over this type's properties.")]
 [RequiresDynamicCode("Wires BadgeText by reflecting over this type's properties.")]
 [System.Diagnostics.DebuggerDisplay("{BadgeText}")]
-public sealed class LessonCountBadgeHost : LayoutViewHost
+public sealed class LessonCountBadgeHost : LayoutViewHostUnsafe
 {
     /// <summary>Initializes a new instance of the <see cref="LessonCountBadgeHost"/> class, inflating the badge
     /// layout and wiring <see cref="BadgeText"/> to the like-named resource by reflection.</summary>

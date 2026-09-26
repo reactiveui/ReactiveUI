@@ -20,7 +20,11 @@ public sealed class PlaceholderViewLocator(IViewLocator inner) : IViewLocator
         inner.ResolveView(viewModel, contract) ?? new PlaceholderView { ViewModel = viewModel };
 
     /// <inheritdoc/>
-    [RequiresDynamicCode("Resolves a view from the view model's runtime type.")]
     public IViewFor? ResolveView(object? viewModel, string? contract) =>
         inner.ResolveView(viewModel, contract) ?? new PlaceholderView { ViewModel = viewModel };
+
+    /// <inheritdoc/>
+    [RequiresDynamicCode("Asks the inner locator's reflective lookup, which closes IViewFor<> over the view model's runtime type.")]
+    public IViewFor? ResolveViewUnsafe(object? viewModel, string? contract) =>
+        inner.ResolveViewUnsafe(viewModel, contract) ?? new PlaceholderView { ViewModel = viewModel };
 }

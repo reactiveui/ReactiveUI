@@ -361,6 +361,45 @@ public class RoutedViewHostTest
         await Assert.That(host.Navigation.NavigationStack[0]).IsSameReferenceAs(root);
     }
 
+    /// <summary>The default host does not ask the service locator, so a page registered only there is not found.</summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    [TestExecutor<MauiRoutedViewHostServiceLocatorOnlyExecutor>]
+    public async Task PageForViewModel_PageOnlyInTheServiceLocator_Throws()
+    {
+        var host = new TestableRoutedViewHost();
+
+        await Assert.That(() => host.PublicPageForViewModel(new TestRoutableViewModel()))
+            .Throws<InvalidOperationException>();
+    }
+
+    /// <summary>The Unsafe host finds a page registered only with the service locator.</summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    [TestExecutor<MauiRoutedViewHostServiceLocatorOnlyExecutor>]
+    public async Task PageForViewModel_UnsafeHostPageOnlyInTheServiceLocator_IsFound()
+    {
+        var host = new TestableRoutedViewHostUnsafe();
+        var viewModel = new TestRoutableViewModel();
+
+        var page = host.PublicPageForViewModel(viewModel);
+
+        await Assert.That(((TestRoutableView)page).ViewModel).IsSameReferenceAs(viewModel);
+    }
+
+    /// <summary>The Unsafe host's page stream finds a page registered only with the service locator.</summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    [TestExecutor<MauiRoutedViewHostServiceLocatorOnlyExecutor>]
+    public async Task PagesForViewModel_UnsafeHostPageOnlyInTheServiceLocator_IsFound()
+    {
+        var host = new TestableRoutedViewHostUnsafe();
+
+        var pages = await host.PublicPagesForViewModel(new TestRoutableViewModel()).ToList();
+
+        await Assert.That(pages[0]).IsAssignableTo<TestRoutableView>();
+    }
+
     /// <summary>Creates a routable view seeded with its own view model.</summary>
     /// <returns>A new <see cref="TestRoutableView"/> whose view model is set.</returns>
     private static TestRoutableView CreateRoutableView() =>
@@ -390,9 +429,9 @@ public class RoutedViewHostTest
         }
     }
 
-    /// <summary>Test executor that sets up MAUI environment with view registration.</summary>
+    /// <summary>Test executor that sets up the MAUI environment with the view registered only with the service locator.</summary>
     [NotInParallel]
-    public sealed class MauiRoutedViewHostTestExecutor : MauiTestExecutor
+    public sealed class MauiRoutedViewHostServiceLocatorOnlyExecutor : MauiTestExecutor
     {
         /// <summary>The helper that configures and tears down the ReactiveUI app builder.</summary>
         private readonly AppBuilderTestHelper _helper = new();
@@ -409,6 +448,37 @@ public class RoutedViewHostTest
                     .RegisterView<TestRoutableView, TestRoutableViewModel>()
                     .WithCoreServices();
 
+                AppLocator.CurrentMutable.Register<IScreen>(static () => new TestScreen());
+            });
+        }
+
+        /// <inheritdoc/>
+        protected override void CleanUp()
+        {
+            _helper.CleanUp();
+            base.CleanUp();
+        }
+    }
+
+    /// <summary>Test executor that sets up MAUI environment with view registration.</summary>
+    [NotInParallel]
+    public sealed class MauiRoutedViewHostTestExecutor : MauiTestExecutor
+    {
+        /// <summary>The helper that configures and tears down the ReactiveUI app builder.</summary>
+        private readonly AppBuilderTestHelper _helper = new();
+
+        /// <inheritdoc/>
+        protected override void Initialize()
+        {
+            base.Initialize();
+
+            _helper.Initialize(static builder =>
+            {
+                _ = builder
+                    .WithMaui()
+                    .ConfigureViewLocator(static locator => locator.Map<TestRoutableViewModel, TestRoutableView>())
+                    .WithCoreServices();
+
                 // Register IScreen for constructor
                 AppLocator.CurrentMutable.Register<IScreen>(static () => new TestScreen());
             });
@@ -422,10 +492,24 @@ public class RoutedViewHostTest
         }
     }
 
+    /// <summary>Testable RoutedViewHostUnsafe that exposes the protected page resolution.</summary>
+    [RequiresDynamicCode("Resolves pages through the service locator by the view model's runtime type.")]
+    private sealed class TestableRoutedViewHostUnsafe : RoutedViewHostUnsafe
+    {
+        /// <summary>Exposes the protected PagesForViewModel method.</summary>
+        /// <param name="vm">The view model.</param>
+        /// <returns>An observable of pages.</returns>
+        public IObservable<Page> PublicPagesForViewModel(IRoutableViewModel? vm) =>
+            PagesForViewModel(vm);
+
+        /// <summary>Exposes the protected PageForViewModel method.</summary>
+        /// <param name="vm">The view model.</param>
+        /// <returns>The page for the view model.</returns>
+        public Page PublicPageForViewModel(IRoutableViewModel vm) =>
+            PageForViewModel(vm);
+    }
+
     /// <summary>Testable RoutedViewHost that exposes protected methods.</summary>
-    [RequiresUnreferencedCode(
-        "This class uses reflection to determine view model types at runtime through ViewLocator, which may be incompatible with trimming.")]
-    [RequiresDynamicCode("ViewLocator.ResolveView uses reflection which is incompatible with AOT compilation.")]
     private sealed class TestableRoutedViewHost : RoutedViewHost
     {
         /// <summary>Exposes the protected PagesForViewModel method.</summary>

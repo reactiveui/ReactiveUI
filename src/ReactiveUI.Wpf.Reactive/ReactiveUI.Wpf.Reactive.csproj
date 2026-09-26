@@ -59,6 +59,7 @@
   <ItemGroup>
     <Compile Include="..\Shared\ArgumentValidation.cs" Link="Shared\ArgumentValidation.cs"/>
     <Compile Include="..\Shared\DelegateObserver.cs" Link="Shared\DelegateObserver.cs"/>
+    <Compile Include="..\Shared\ViewHostResolution.cs" Link="Shared\ViewHostResolution.cs"/>
     <Compile Include="..\Shared\Platform\FromEventObservable.cs" Link="Shared\Platform\FromEventObservable.cs"/>
     <Compile Include="..\Shared\Platform\ObserveOnObservable.cs" Link="Shared\Platform\ObserveOnObservable.cs"/>
     <Compile Include="..\Shared\Platform\IdleTimeoutObservable.cs" Link="Shared\Platform\IdleTimeoutObservable.cs"/>

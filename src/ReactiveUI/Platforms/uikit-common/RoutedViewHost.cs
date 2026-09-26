@@ -4,7 +4,6 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using ReactiveUI.Internal;
 
@@ -39,6 +38,12 @@ namespace ReactiveUI;
 /// will pass the latest contract to <see cref="ViewLocator"/> so that platform-specific or modal presentations render
 /// the correct view controller.
 /// </para>
+/// <para>
+/// The host asks the view locator for each page's view by the view model's run-time type, without building any type
+/// at run time, so it is safe to trim and to compile ahead of time. The default locator checks the view lookup the
+/// source generator writes, then the views the app added with <c>Map</c>. A view registered only with the service
+/// locator needs <see cref="RoutedViewHostUnsafe"/>.
+/// </para>
 /// </remarks>
 /// <example>
 /// <code language="csharp">
@@ -54,15 +59,14 @@ namespace ReactiveUI;
 /// ]]>
 /// </code>
 /// </example>
-[RequiresUnreferencedCode("This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
-[RequiresDynamicCode(
-    "If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, "
-    + "or generic constraints), trimming can't validate that the requirements of those annotations are met.")]
 [DebuggerDisplay("{Router}, {ViewLocator}")]
 public class RoutedViewHost : ReactiveNavigationController
 {
     /// <summary>The disposable that tracks the current title-update subscription.</summary>
     private readonly SwapDisposable _titleUpdater;
+
+    /// <summary>Asks a view locator for the view of a view model under a contract.</summary>
+    private readonly Func<IViewLocator, object, string?, IViewFor?> _resolveView;
 
     /// <summary>The backing field for the <see cref="Router"/> property.</summary>
     private RoutingState? _router;
@@ -75,17 +79,27 @@ public class RoutedViewHost : ReactiveNavigationController
 
     /// <summary>Initializes a new instance of the <see cref="RoutedViewHost"/> class.</summary>
     public RoutedViewHost()
+        : this(ResolveViewWithoutReflection)
     {
+    }
+
+    /// <summary>Initializes a new instance of the <see cref="RoutedViewHost"/> class with its view lookup.</summary>
+    /// <param name="resolveView">Asks a view locator for the view of a view model under a contract.</param>
+    private protected RoutedViewHost(Func<IViewLocator, object, string?, IViewFor?> resolveView)
+    {
+        _resolveView = resolveView;
         ViewContractObservable = Signal.Emit<string?>(null);
         _titleUpdater = new();
 
-        _ = this.WhenActivated(d =>
-        {
-            d(SubscribeToInitialStack());
+        _ = this.WhenActivated(
+            d =>
+            {
+                d(SubscribeToInitialStack());
 
-            d(SubscribeToStackChanges());
-            d(SubscribeToNavigateBack());
-        });
+                d(SubscribeToStackChanges());
+                d(SubscribeToNavigateBack());
+            },
+            new ViewModelChangedSignal(this));
     }
 
     /// <summary>
@@ -166,6 +180,15 @@ public class RoutedViewHost : ReactiveNavigationController
             .SwitchSubscribe(
                 static vm => vm.WhenAnyValue(static x => x.UrlPathSegment),
                 title => viewController.NavigationItem.Title = title);
+
+    /// <summary>Finds a view by the view model's run-time type without building any type at run time.</summary>
+    /// <param name="viewLocator">The view locator to ask.</param>
+    /// <param name="viewModel">The view model to find a view for.</param>
+    /// <param name="contract">The contract to resolve under, or <see langword="null"/> for the default view.</param>
+    /// <returns>The view, or <see langword="null"/> when neither the generated lookup nor a <c>Map</c> registration has one.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static IViewFor? ResolveViewWithoutReflection(IViewLocator viewLocator, object viewModel, string? contract) =>
+        viewLocator.ResolveView(viewModel, contract);
 
     /// <summary>Subscribes to the initial router state and pushes any pre-existing view models onto the navigation stack.</summary>
     /// <returns>A disposable that represents the subscription.</returns>
@@ -279,12 +302,42 @@ public class RoutedViewHost : ReactiveNavigationController
             return null;
         }
 
-        var view = (ViewLocator ?? GetCurrent()).ResolveView((object)viewModel, contract)
-            ?? throw new InvalidOperationException($"Couldn't find a view for view model. You probably need to register an IViewFor<{viewModel.GetType().Name}>");
+        var view = _resolveView(ViewLocator ?? GetCurrent(), viewModel, contract)
+            ?? throw new InvalidOperationException(
+                $"Couldn't find a view for view model type {viewModel.GetType().Name}. The view locator checked the generated view lookup "
+                + $"and its Map registrations; use {nameof(RoutedViewHostUnsafe)} to also resolve a view registered only with the service locator.");
         view.ViewModel = viewModel;
 
         return view is not NSViewController viewController
             ? throw new InvalidOperationException($"View type {view.GetType().Name} for view model type {viewModel.GetType().Name} is not a UIViewController")
             : viewController;
+    }
+
+    /// <summary>
+    /// Emits the host's view model when a subclass makes the host an <see cref="IViewFor"/>: the current value on
+    /// subscription, then the new value on each <see cref="IViewFor.ViewModel"/> change. A host that is not an
+    /// <see cref="IViewFor"/> has no view model, so the signal emits nothing.
+    /// </summary>
+    /// <param name="host">The host whose view model is observed.</param>
+    private sealed class ViewModelChangedSignal(RoutedViewHost host) : IObservable<object?>
+    {
+        /// <inheritdoc/>
+        public IDisposable Subscribe(IObserver<object?> observer)
+        {
+            ArgumentExceptionHelper.ThrowIfNull(observer);
+
+            if (host is not IViewFor view)
+            {
+                return EmptyDisposable.Instance;
+            }
+
+            observer.OnNext(view.ViewModel);
+
+            return new KeepSignal<IReactivePropertyChangedEventArgs<ReactiveNavigationController>>(
+                    host.Changed,
+                    static e => e.PropertyName == nameof(IViewFor.ViewModel))
+                .Subscribe(new DelegateObserver<IReactivePropertyChangedEventArgs<ReactiveNavigationController>>(
+                    _ => observer.OnNext(view.ViewModel)));
+        }
     }
 }

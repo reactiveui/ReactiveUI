@@ -17,38 +17,15 @@ namespace ReactiveUI;
 /// that don't have DataTemplates, and assigns a default DataTemplate that
 /// loads the View associated with each ViewModel.
 /// </summary>
+/// <remarks>
+/// The default template hosts each item in a <see cref="ViewModelViewHost"/>, which finds the view through the
+/// generated view lookup and the view locator's <c>Map</c> registrations. For view models whose view is registered
+/// only with the service locator, also register <see cref="AutoDataTemplateBindingHookUnsafe"/>.
+/// </remarks>
 public class AutoDataTemplateBindingHook : IPropertyBindingHook
 {
     /// <summary>Gets the default item template.</summary>
-    public static Lazy<DataTemplate> DefaultItemTemplate { get; } = new(static () =>
-    {
-        // The clr-namespace in the inline XAML template must match the namespace
-        // this type is actually compiled into. Under REACTIVE_SHIM the shared
-        // source is recompiled into the ReactiveUI.Reactive namespace (see the
-        // conditional namespace above), so the XAML must reference that namespace
-        // too — otherwise XamlReader.Parse throws a XamlObjectReaderException
-        // because '{clr-namespace:ReactiveUI;assembly=ReactiveUI.Wpf.Reactive}'
-        // cannot resolve ViewModelViewHost. See issue #4398.
-#if REACTIVE_SHIM
-        const string XamlClrNamespace = "clr-namespace:ReactiveUI.Reactive";
-#else
-        const string XamlClrNamespace = "clr-namespace:ReactiveUI";
-#endif
-        const string TemplateHeader =
-            $"<DataTemplate xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation' xmlns:xaml='{XamlClrNamespace};assembly=__ASSEMBLYNAME__'>";
-        const string TemplateBody =
-            " <xaml:ViewModelViewHost ViewModel=\"{Binding Mode=OneWay}\" VerticalContentAlignment=\"Stretch\" HorizontalContentAlignment=\"Stretch\" IsTabStop=\"False\" /></DataTemplate>";
-        const string Template = TemplateHeader + TemplateBody;
-
-        var assemblyName = typeof(AutoDataTemplateBindingHook).Assembly.FullName;
-        assemblyName = assemblyName?.Substring(0, assemblyName.IndexOf(','));
-
-#if NET8_0_OR_GREATER
-        return (DataTemplate)XamlReader.Parse(Template.Replace("__ASSEMBLYNAME__", assemblyName ?? string.Empty, StringComparison.Ordinal));
-#else
-        return (DataTemplate)XamlReader.Parse(Template.Replace("__ASSEMBLYNAME__", assemblyName ?? string.Empty));
-#endif
-    });
+    public static Lazy<DataTemplate> DefaultItemTemplate { get; } = new(static () => CreateItemTemplate(nameof(ViewModelViewHost)));
 
     /// <inheritdoc/>
     public bool ExecuteHook(
@@ -65,5 +42,32 @@ public class AutoDataTemplateBindingHook : IPropertyBindingHook
 
         itemsControl.ItemTemplate = DefaultItemTemplate.Value;
         return true;
+    }
+
+    /// <summary>Builds an item template that hosts each item in the named host type from this assembly.</summary>
+    /// <param name="hostTypeName">The name of the host type, which lives in this type's namespace and assembly.</param>
+    /// <returns>The item template.</returns>
+    internal static DataTemplate CreateItemTemplate(string hostTypeName)
+    {
+        // The clr-namespace in the inline XAML template must match the namespace
+        // this type is actually compiled into. Under REACTIVE_SHIM the shared
+        // source is recompiled into the ReactiveUI.Reactive namespace (see the
+        // conditional namespace above), so the XAML must reference that namespace
+        // too — otherwise XamlReader.Parse throws a XamlObjectReaderException
+        // because '{clr-namespace:ReactiveUI;assembly=ReactiveUI.Wpf.Reactive}'
+        // cannot resolve ViewModelViewHost. See issue #4398.
+#if REACTIVE_SHIM
+        const string XamlClrNamespace = "clr-namespace:ReactiveUI.Reactive";
+#else
+        const string XamlClrNamespace = "clr-namespace:ReactiveUI";
+#endif
+        var assemblyName = typeof(AutoDataTemplateBindingHook).Assembly.FullName;
+        assemblyName = assemblyName?.Substring(0, assemblyName.IndexOf(','));
+
+        var template =
+            $"<DataTemplate xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation' xmlns:xaml='{XamlClrNamespace};assembly={assemblyName}'>"
+            + $" <xaml:{hostTypeName} ViewModel=\"{{Binding Mode=OneWay}}\" VerticalContentAlignment=\"Stretch\" HorizontalContentAlignment=\"Stretch\" IsTabStop=\"False\" /></DataTemplate>";
+
+        return (DataTemplate)XamlReader.Parse(template);
     }
 }

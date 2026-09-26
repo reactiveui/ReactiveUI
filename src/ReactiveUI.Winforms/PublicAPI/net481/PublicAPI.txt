@@ -89,6 +89,11 @@ namespace ReactiveUI.Winforms
         [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
         void ReactiveUI.IReactiveObject.RaisePropertyChanging(System.ComponentModel.PropertyChangingEventArgs args) { }
     }
+    [System.Diagnostics.DebuggerDisplay("{DefaultContent}, {Router}")]
+    public class RoutedControlHostUnsafe : ReactiveUI.Winforms.RoutedControlHost
+    {
+        public RoutedControlHostUnsafe() { }
+    }
     public class TableContentSetMethodBindingConverter : ReactiveUI.Binding.ISetMethodBindingConverter
     {
         public TableContentSetMethodBindingConverter() { }
@@ -134,5 +139,10 @@ namespace ReactiveUI.Winforms
         void ReactiveUI.IReactiveObject.RaisePropertyChanged(System.ComponentModel.PropertyChangedEventArgs args) { }
         [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
         void ReactiveUI.IReactiveObject.RaisePropertyChanging(System.ComponentModel.PropertyChangingEventArgs args) { }
+    }
+    [System.Diagnostics.DebuggerDisplay("{CurrentView}, {DefaultContent}")]
+    public class ViewModelControlHostUnsafe : ReactiveUI.Winforms.ViewModelControlHost
+    {
+        public ViewModelControlHostUnsafe() { }
     }
 }
