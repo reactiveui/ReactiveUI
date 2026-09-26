@@ -20,7 +20,7 @@ public static class PropertyExamples
     public static void RaiseOnlyWhenTheValueChanges()
     {
         using TodoListViewModel viewModel = new(InMemoryTodoStore.CreateSeeded());
-        var raised = 0;
+        int raised = 0;
         viewModel.PropertyChanged += (_, e) =>
         {
             if (e.PropertyName != nameof(TodoListViewModel.NewTitle))
@@ -46,7 +46,7 @@ public static class PropertyExamples
     {
         using TodoListViewModel viewModel = new(InMemoryTodoStore.CreateSeeded());
 
-        using var subscription = viewModel.WhenAnyValue(x => x.NewTitle)
+        using IDisposable subscription = viewModel.WhenAnyValue(x => x.NewTitle)
             .Subscribe(static title => Console.WriteLine($"[{title}]"));
 
         viewModel.NewTitle = GroceriesTitle;
@@ -66,7 +66,7 @@ public static class PropertyExamples
     {
         using TodoListViewModel viewModel = new(InMemoryTodoStore.CreateSeeded());
 
-        using var subscription = viewModel.WhenAnyValue(x => x.NewTitle)
+        using IDisposable subscription = viewModel.WhenAnyValue(x => x.NewTitle)
             .Skip(1)
             .Subscribe(Console.WriteLine);
 
@@ -81,7 +81,7 @@ public static class PropertyExamples
     {
         using TodoListViewModel viewModel = new(InMemoryTodoStore.CreateSeeded());
 
-        using var subscription = viewModel.WhenAnyValue(
+        using IDisposable subscription = viewModel.WhenAnyValue(
                 x => x.NewTitle,
                 x => x.FilterText,
                 static (title, filter) => title.Length > 0 && filter.Length > 0
@@ -107,7 +107,7 @@ public static class PropertyExamples
         TodoItem dentist = new() { Title = DentistTitle };
         SelectionHolder holder = new() { Selected = groceries };
 
-        using var subscription = holder.WhenAnyValue(x => x.Selected!.Title)
+        using IDisposable subscription = holder.WhenAnyValue(x => x.Selected!.Title)
             .Subscribe(Console.WriteLine);
 
         groceries.Title = "Buy groceries and milk";

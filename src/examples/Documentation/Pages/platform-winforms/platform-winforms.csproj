@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- This page is a real WinForms desktop app, not a console page: it overrides the two settings from
+       Documentation/Directory.Build.props that do not fit a WinForms app. -->
+  <PropertyGroup>
+    <TargetFramework>net10.0-windows10.0.19041.0</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+    <!-- WinForms controls are not AOT-compatible, so the shared PublishAot=true does not apply here. -->
+    <PublishAot>false</PublishAot>
+    <IsAotCompatible>false</IsAotCompatible>
+    <EnableTrimAnalyzer>false</EnableTrimAnalyzer>
+    <EnableSingleFileAnalyzer>false</EnableSingleFileAnalyzer>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="$(MSBuildThisFileDirectory)../../../../ReactiveUI.Winforms/ReactiveUI.Winforms.csproj" />
+  </ItemGroup>
+
+  <!-- This page is its own self-contained WinForms scenario (books, members, loans) and uses none of the shared
+       Common console stand-ins, whose own "TextBox"/"Button"/"Label" types would otherwise collide with the real
+       System.Windows.Forms controls this page needs. -->
+  <ItemGroup>
+    <Compile Remove="$(MSBuildThisFileDirectory)../../Common/**/*.cs" />
+  </ItemGroup>
+
+</Project>

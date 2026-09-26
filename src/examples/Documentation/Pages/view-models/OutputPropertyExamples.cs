@@ -35,7 +35,7 @@ public static class OutputPropertyExamples
     public static async Task CountWhatIsLeft()
     {
         using TodoListViewModel viewModel = new(InMemoryTodoStore.CreateSeeded());
-        using var subscription = viewModel.WhenAnyValue(x => x.RemainingCount)
+        using IDisposable subscription = viewModel.WhenAnyValue(x => x.RemainingCount)
             .Subscribe(static count => Console.WriteLine($"{count} left"));
 
         await viewModel.Load.Execute();
@@ -52,7 +52,7 @@ public static class OutputPropertyExamples
     public static async Task ReportCommandProgress()
     {
         using TodoListViewModel viewModel = new(InMemoryTodoStore.CreateSeeded());
-        using var subscription = viewModel.WhenAnyValue(x => x.IsLoading)
+        using IDisposable subscription = viewModel.WhenAnyValue(x => x.IsLoading)
             .Subscribe(static loading => Console.WriteLine(loading ? "Loading..." : "Idle"));
 
         _ = await viewModel.Load.Execute();

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+  <ReactiveUI.Documentation.PlatformAndroid.LessonCardView
+      android:id="@+id/featuredLessonCard"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:padding="8dp" />
+  <FrameLayout
+      android:id="@+id/badgeContainer"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:padding="8dp" />
+  <LinearLayout
+      android:id="@+id/peeksRow"
+      android:orientation="horizontal"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content" />
+  <androidx.recyclerview.widget.RecyclerView
+      android:id="@+id/lessonsRecyclerView"
+      android:layout_width="match_parent"
+      android:layout_height="0dp"
+      android:layout_weight="1" />
+  <FrameLayout
+      android:id="@+id/detailContainer"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content" />
+</LinearLayout>

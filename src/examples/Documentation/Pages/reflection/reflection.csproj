@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Every member this page demonstrates is [RequiresUnreferencedCode] or [RequiresDynamicCode]: it relies on
+       reflection over runtime types and cannot run trimmed or Native AOT. The other page projects publish as
+       NativeAOT (see Directory.Build.props) and would fail to build against these calls with IL2026/IL3050, so this
+       project opts out and runs on the JIT instead, the documented way to host reflection-based code. -->
+  <PropertyGroup>
+    <PublishAot>false</PublishAot>
+    <IsAotCompatible>false</IsAotCompatible>
+    <EnableTrimAnalyzer>false</EnableTrimAnalyzer>
+    <EnableAotAnalyzer>false</EnableAotAnalyzer>
+    <EnableSingleFileAnalyzer>false</EnableSingleFileAnalyzer>
+  </PropertyGroup>
+
+</Project>

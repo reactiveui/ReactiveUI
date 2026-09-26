@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Documentation/Directory.Build.props supplies OutputType, TargetFramework, IsPackable and the ReactiveUI
+       ProjectReference/props every page shares. This page also needs the MAUI workload and ReactiveUI.Maui,
+       and it does not publish as NativeAOT because the MAUI workload does not support it on this TFM. -->
+  <PropertyGroup>
+    <UseMaui>true</UseMaui>
+    <PublishAot>false</PublishAot>
+    <PackageDescription>Runnable examples for the $(MSBuildProjectName) page of the ReactiveUI handbook.</PackageDescription>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="$(MSBuildThisFileDirectory)../../../../ReactiveUI.Maui/ReactiveUI.Maui.csproj" />
+    <!-- MAUI's implicit usings bring in Microsoft.Maui.Controls, whose Label/Button collide with the console
+         stand-in controls under Common/Controls (and the Common apps that use them). This page uses real MAUI
+         controls instead, so it drops those shared files rather than editing Common. -->
+    <Compile Remove="$(MSBuildThisFileDirectory)../../Common/Controls/**/*.cs" />
+    <Compile Remove="$(MSBuildThisFileDirectory)../../Common/Todo/**/*.cs" />
+    <Compile Remove="$(MSBuildThisFileDirectory)../../Common/GitHub/**/*.cs" />
+  </ItemGroup>
+</Project>

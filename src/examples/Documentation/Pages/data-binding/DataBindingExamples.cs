@@ -19,7 +19,7 @@ public static class DataBindingExamples
         using TodoListViewModel viewModel = new(InMemoryTodoStore.CreateSeeded());
         using TodoListView view = new() { ViewModel = viewModel };
 
-        using var binding = view.Bind(viewModel, x => x.NewTitle, v => v.NewTitleBox.Text);
+        using IReactiveBinding<TodoListView, BindingChange> binding = view.Bind(viewModel, x => x.NewTitle, v => v.NewTitleBox.Text);
 
         view.NewTitleBox.Text = ElectricianTitle;
         Console.WriteLine(viewModel.NewTitle);
@@ -39,7 +39,7 @@ public static class DataBindingExamples
         using TodoListViewModel viewModel = new(InMemoryTodoStore.CreateSeeded());
         using TodoListView view = new() { ViewModel = viewModel };
 
-        using var binding = view.OneWayBind(viewModel, x => x.Items, v => v.ItemList.Items);
+        using IReactiveBinding<TodoListView, IReadOnlyList<TodoItem>> binding = view.OneWayBind(viewModel, x => x.Items, v => v.ItemList.Items);
 
         _ = await viewModel.Load.Execute();
         Console.WriteLine(view.ItemList.Items.Count);
@@ -59,7 +59,7 @@ public static class DataBindingExamples
         using TodoListViewModel viewModel = new(InMemoryTodoStore.CreateSeeded());
         using TodoListView view = new() { ViewModel = viewModel };
 
-        using var binding = view.OneWayBind(
+        using IReactiveBinding<TodoListView, string> binding = view.OneWayBind(
             viewModel,
             x => x.RemainingCount,
             v => v.RemainingLabel.Text,
@@ -83,7 +83,7 @@ public static class DataBindingExamples
         using TodoListViewModel viewModel = new(InMemoryTodoStore.CreateSeeded());
         using TodoListView view = new() { ViewModel = viewModel };
 
-        using var binding = viewModel.WhenAnyValue(x => x.ErrorMessage)
+        using IDisposable binding = viewModel.WhenAnyValue(x => x.ErrorMessage)
             .Select(static message => message.Length > 0)
             .BindTo(view, v => v.ErrorLabel.IsVisible);
         Console.WriteLine(view.ErrorLabel.IsVisible);

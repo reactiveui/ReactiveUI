@@ -13,4 +13,10 @@ internal static class ViewContracts
 
     /// <summary>A printable view, which the app does not have.</summary>
     public const string Print = "print";
+
+    /// <summary>The view of a whole week rather than a single day.</summary>
+    public const string Week = "week";
+
+    /// <summary>The staff-only view of a screen that also has a view for everyone else.</summary>
+    public const string Admin = "admin";
 }

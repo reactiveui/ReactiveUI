@@ -1,0 +1,11 @@
+<Project>
+  <!-- Chain to the repository-level Directory.Build.targets (this file shadows it for this page's project). -->
+  <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.targets', '$(MSBuildThisFileDirectory)../'))" />
+
+  <!-- Off-Windows, neutralize the WinUI MSIX PRI generation and the CsWinRT native projection tool: both are
+       native Windows binaries that cannot run under Wine/Linux. The managed assembly still compiles, which is
+       all a Linux CI/dev build needs; the app only ever runs on Windows. This reuses the exact fix already
+       proven for ReactiveUI.WinUI itself and its tests. -->
+  <Import Project="$(MSBuildThisFileDirectory)../../../../ReactiveUI.WinUI/build/SkipMakePriOnNonWindows.targets"
+          Condition="!$([MSBuild]::IsOsPlatform('Windows'))" />
+</Project>

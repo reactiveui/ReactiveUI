@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- ReactiveUI.Blend and ReactiveUI.Drawing are Windows-only libraries. Directory.Build.props targets plain
+       net10.0 and publishes as NativeAOT, neither of which fits a WPF app, so both are overridden here.
+       EnableWindowsTargeting (set repository-wide) lets this project build on Linux; it only ever runs on
+       Windows. -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0-windows10.0.19041.0</TargetFramework>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+    <UseWPF>true</UseWPF>
+    <PublishAot>false</PublishAot>
+    <IsAotCompatible>false</IsAotCompatible>
+    <EnableTrimAnalyzer>false</EnableTrimAnalyzer>
+    <EnableSingleFileAnalyzer>false</EnableSingleFileAnalyzer>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- ReactiveUI.Wpf gives the app a real dispatcher-backed main-thread scheduler (WithWpf), which
+         FollowObservableStateBehavior and ObservableTrigger need to deliver onto the UI thread. -->
+    <ProjectReference Include="../../../../ReactiveUI.Wpf/ReactiveUI.Wpf.csproj" />
+    <ProjectReference Include="../../../../ReactiveUI.Blend/ReactiveUI.Blend.csproj" />
+    <ProjectReference Include="../../../../ReactiveUI.Drawing/ReactiveUI.Drawing.csproj" />
+  </ItemGroup>
+
+</Project>

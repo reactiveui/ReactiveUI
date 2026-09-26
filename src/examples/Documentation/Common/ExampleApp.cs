@@ -23,7 +23,7 @@ public static class ExampleApp
     /// <param name="configure">Adds the example's own registrations, such as its views.</param>
     public static void Start(Action<IReactiveUIBuilder> configure)
     {
-        var builder = RxAppBuilder.CreateReactiveUIBuilder().WithMainThreadScheduler(Sequencer.Immediate);
+        IReactiveUIBuilder builder = RxAppBuilder.CreateReactiveUIBuilder().WithMainThreadScheduler(Sequencer.Immediate);
         _ = builder.WithCoreServices().BuildApp();
         configure(builder);
     }

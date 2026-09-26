@@ -19,9 +19,9 @@ public static class InteractionExamples
     {
         using TodoListViewModel viewModel = new(InMemoryTodoStore.CreateSeeded());
         _ = await viewModel.Load.Execute();
-        var answer = false;
+        bool answer = false;
 
-        using var handler = viewModel.ConfirmDelete.RegisterHandler(context =>
+        using IDisposable handler = viewModel.ConfirmDelete.RegisterHandler(context =>
         {
             Console.WriteLine($"Delete '{context.Input.Title}'?");
             context.SetOutput(answer);
@@ -51,12 +51,12 @@ public static class InteractionExamples
         using TodoListViewModel viewModel = new(InMemoryTodoStore.CreateSeeded());
         _ = await viewModel.Load.Execute();
 
-        using var appWide = viewModel.ConfirmDelete.RegisterHandler(static context =>
+        using IDisposable appWide = viewModel.ConfirmDelete.RegisterHandler(static context =>
         {
             Console.WriteLine("App-wide dialog");
             context.SetOutput(true);
         });
-        using var finishedItemsOnly = viewModel.ConfirmDelete.RegisterHandler(static context =>
+        using IDisposable finishedItemsOnly = viewModel.ConfirmDelete.RegisterHandler(static context =>
         {
             if (!context.Input.IsDone)
             {
@@ -67,7 +67,7 @@ public static class InteractionExamples
             context.SetOutput(true);
         });
 
-        var billPaid = viewModel.Items[1];
+        TodoItem billPaid = viewModel.Items[1];
         _ = await viewModel.Delete.Execute(billPaid);
         _ = await viewModel.Delete.Execute(viewModel.Items[0]);
 
@@ -110,7 +110,7 @@ public static class InteractionExamples
         _ = await viewModel.Load.Execute();
         using TodoListView view = new() { ViewModel = viewModel };
 
-        using var binding = view.BindInteraction(viewModel, x => x.ConfirmDelete, static context =>
+        using IDisposable binding = view.BindInteraction(viewModel, x => x.ConfirmDelete, static context =>
         {
             Console.WriteLine($"The view asks: delete '{context.Input.Title}'?");
             context.SetOutput(true);

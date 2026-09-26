@@ -18,13 +18,33 @@
         <Project Path="examples/ReactiveUI.Samples.Maui/ReactiveUI.Samples.Maui.csproj" />
     </Folder>
     <Folder Name="/Examples/Documentation/">
+        <Project Path="examples/Documentation/Pages/collections/collections.csproj" />
         <Project Path="examples/Documentation/Pages/commands/commands.csproj" />
         <Project Path="examples/Documentation/Pages/data-binding/data-binding.csproj" />
+        <Project Path="examples/Documentation/Pages/data-persistence/data-persistence.csproj" />
+        <Project Path="examples/Documentation/Pages/default-exception-handler/default-exception-handler.csproj" />
         <Project Path="examples/Documentation/Pages/interactions/interactions.csproj" />
+        <Project Path="examples/Documentation/Pages/message-bus/message-bus.csproj" />
+        <Project Path="examples/Documentation/Pages/reactive-object/reactive-object.csproj" />
+        <Project Path="examples/Documentation/Pages/reactive-property/reactive-property.csproj" />
+        <Project Path="examples/Documentation/Pages/reflection/reflection.csproj" />
+        <Project Path="examples/Documentation/Pages/registration/registration.csproj" />
         <Project Path="examples/Documentation/Pages/routing/routing.csproj" />
+        <Project Path="examples/Documentation/Pages/rxappbuilder/rxappbuilder.csproj" />
+        <Project Path="examples/Documentation/Pages/scheduling/scheduling.csproj" />
+        <Project Path="examples/Documentation/Pages/testing/testing.csproj" />
         <Project Path="examples/Documentation/Pages/view-location/view-location.csproj" />
         <Project Path="examples/Documentation/Pages/view-models/view-models.csproj" />
         <Project Path="examples/Documentation/Pages/when-activated/when-activated.csproj" />
+    </Folder>
+    <Folder Name="/Examples/Documentation/Platforms/">
+        <Project Path="examples/Documentation/Pages/platform-android/platform-android.csproj" />
+        <Project Path="examples/Documentation/Pages/platform-blazor/platform-blazor.csproj" />
+        <Project Path="examples/Documentation/Pages/platform-blend-drawing/platform-blend-drawing.csproj" />
+        <Project Path="examples/Documentation/Pages/platform-maui/platform-maui.csproj" />
+        <Project Path="examples/Documentation/Pages/platform-winforms/platform-winforms.csproj" />
+        <Project Path="examples/Documentation/Pages/platform-winui/platform-winui.csproj" />
+        <Project Path="examples/Documentation/Pages/platform-wpf/platform-wpf.csproj" />
     </Folder>
     <Folder Name="/Solution Items/">
         <File Path="../.editorconfig" />

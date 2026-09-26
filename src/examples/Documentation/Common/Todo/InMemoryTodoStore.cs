@@ -53,7 +53,7 @@ public sealed class InMemoryTodoStore : ITodoStore
     public async Task<TodoItem> CompleteAsync(int id, CancellationToken cancellationToken)
     {
         await Task.Delay(Latency, cancellationToken).ConfigureAwait(false);
-        var row = _rows.Find(row => row.Id == id) ?? throw new TodoStoreException($"Item {id} does not exist.");
+        TodoItem row = _rows.Find(row => row.Id == id) ?? throw new TodoStoreException($"Item {id} does not exist.");
         row.IsDone = true;
         return row.Clone();
     }

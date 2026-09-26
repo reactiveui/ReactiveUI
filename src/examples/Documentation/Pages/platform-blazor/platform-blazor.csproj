@@ -1,0 +1,5 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="../../../../ReactiveUI.Blazor/ReactiveUI.Blazor.csproj" />
+  </ItemGroup>
+</Project>

@@ -21,7 +21,7 @@ dotnet run --project src/examples/Documentation/Pages/commands
 | `when-activated` | `WhenActivated` in a view model and in a view, and reloading each time a screen is shown again. |
 | `interactions` | Asking the view a question with `Interaction`, handler order, unanswered questions, and `BindInteraction`. |
 | `view-location` | Finding a view by its view model, contracts, view modules, and wrapping the view locator. |
-| `routing` | Navigating, going back, resetting the stack, and finding the view for the current page. |
+| `routing` | Navigating, going back, resetting the stack, watching the stack, and finding the view for the current page. |
 
 ## Property observation and binding
 

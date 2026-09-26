@@ -9,6 +9,16 @@ namespace ReactiveUI.Documentation.Routing;
 [System.Diagnostics.DebuggerDisplay("Pages = {Router.NavigationStack.Count}")]
 public sealed class AppShell : ReactiveObject, IScreen
 {
+    /// <summary>Initializes a new instance of the <see cref="AppShell"/> class with the default router.</summary>
+    public AppShell()
+        : this(new RoutingState())
+    {
+    }
+
+    /// <summary>Initializes a new instance of the <see cref="AppShell"/> class with the given router.</summary>
+    /// <param name="router">The router to use, such as one built with a specific <see cref="ISequencer"/>.</param>
+    public AppShell(RoutingState router) => Router = router;
+
     /// <inheritdoc/>
-    public RoutingState Router { get; } = new();
+    public RoutingState Router { get; }
 }

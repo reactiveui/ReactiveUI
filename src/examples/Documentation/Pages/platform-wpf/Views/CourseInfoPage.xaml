@@ -1,0 +1,16 @@
+<reactiveui:ReactivePage
+    x:Class="ReactiveUI.Documentation.PlatformWpf.CourseInfoPage"
+    x:TypeArguments="local:CourseInfoPageViewModel"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:reactiveui="http://reactiveui.net"
+    xmlns:local="clr-namespace:ReactiveUI.Documentation.PlatformWpf"
+    Title="About the Grade Book">
+
+    <StackPanel Margin="24">
+        <TextBlock Text="Grade Book" FontSize="20" Margin="0,0,0,12" />
+        <TextBlock x:Name="CourseCountText" Margin="0,0,0,4" />
+        <TextBlock x:Name="StudentCountText" />
+    </StackPanel>
+
+</reactiveui:ReactivePage>

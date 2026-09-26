@@ -21,15 +21,15 @@ public static class BindCommandExamples
         _ = await viewModel.Load.Execute();
         using TodoListView view = new() { ViewModel = viewModel };
 
-        using var binding = view.BindCommand(viewModel, x => x.Add, v => v.AddButton);
+        using IDisposable binding = view.BindCommand(viewModel, x => x.Add, v => v.AddButton);
 
         view.AddButton.PerformClick();
         Console.WriteLine(viewModel.Items.Count);
 
         viewModel.NewTitle = "Book electrician";
-        var added = viewModel.Add.FirstAsync().ToTask();
+        Task<TodoItem> added = viewModel.Add.FirstAsync().ToTask();
         view.AddButton.PerformClick();
-        var item = await added;
+        TodoItem item = await added;
 
         Console.WriteLine(item.Title);
         Console.WriteLine(viewModel.Items.Count);
@@ -49,16 +49,16 @@ public static class BindCommandExamples
         using TodoListView view = new() { ViewModel = viewModel };
         view.ItemList.Items = viewModel.Items;
 
-        using var binding = view.BindCommand(
+        using IDisposable binding = view.BindCommand(
             viewModel,
             x => x.Complete,
             v => v.CompleteButton,
             view.WhenAnyValue(v => v.ItemList.SelectedItem).WhereNotNull());
 
         view.ItemList.SelectedItem = viewModel.Items[0];
-        var completed = viewModel.Complete.FirstAsync().ToTask();
+        Task<TodoItem> completed = viewModel.Complete.FirstAsync().ToTask();
         view.CompleteButton.PerformClick();
-        var item = await completed;
+        TodoItem item = await completed;
 
         Console.WriteLine($"{item.Title}: {item.IsDone}");
         Console.WriteLine(viewModel.RemainingCount);

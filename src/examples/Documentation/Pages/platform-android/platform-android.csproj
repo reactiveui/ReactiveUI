@@ -1,0 +1,46 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Android is a real device target, not a console: it replaces most of what Documentation/Directory.Build.props
+       assumes about a page project (single TFM net10.0, OutputType Exe with a Program.cs Main, NativeAOT publish). -->
+  <PropertyGroup>
+    <TargetFramework>net10.0-android36.0</TargetFramework>
+    <SupportedOSPlatformVersion>35</SupportedOSPlatformVersion>
+    <OutputType>Exe</OutputType>
+    <ApplicationId>net.reactiveui.documentation.platformandroid</ApplicationId>
+    <ApplicationVersion>1</ApplicationVersion>
+    <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
+    <!-- .NET Android publishes with Mono AOT, not NativeAOT; the shared props enable NativeAOT for every other
+         page, which does not apply here. -->
+    <PublishAot>false</PublishAot>
+    <!-- The repository's root Directory.Build.props turns this off for every android-targeted project because the
+         library leaves ship no resources of their own. This example ships real layouts, so it needs the generated
+         Resource designer back to reference Resource.Layout.* and Resource.Id.* at compile time. -->
+    <AndroidGenerateResourceDesigner>true</AndroidGenerateResourceDesigner>
+    <AndroidUseAapt2>true</AndroidUseAapt2>
+    <!-- This page deliberately covers the classic reflection-based WireUpControls path alongside the AOT-safe one,
+         so (unlike the NativeAOT-published console pages) it is not trim- or AOT-compatible. Building for "Run"
+         otherwise enables the trim/AOT analyzers and turns every RequiresUnreferencedCode/RequiresDynamicCode call
+         into a build error under this repository's TreatWarningsAsErrors. -->
+    <PublishTrimmed>false</PublishTrimmed>
+    <AndroidLinkMode>None</AndroidLinkMode>
+    <RunAOTCompilation>false</RunAOTCompilation>
+    <EnableTrimAnalyzer>false</EnableTrimAnalyzer>
+    <EnableAotAnalyzer>false</EnableAotAnalyzer>
+    <EnableSingleFileAnalyzer>false</EnableSingleFileAnalyzer>
+    <!-- Marshal-method codegen (the default in Release) fails to register overrides such as
+         TimetableApplication.OnCreate once trimming is off; fall back to classic JNI registration. -->
+    <AndroidEnableMarshalMethods>false</AndroidEnableMarshalMethods>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="$(MSBuildThisFileDirectory)../../../../ReactiveUI.AndroidX/ReactiveUI.AndroidX.csproj" />
+  </ItemGroup>
+
+  <!-- The shared Common apps (Todo, GitHub) declare their own console-only "Button", "TextBox" etc. stand-ins,
+       which collide with the real Android.Widget types this page needs (e.g. Android.Widget.Button). This page's
+       scenario is self-contained and does not use Common, so its files are excluded here rather than edited. -->
+  <ItemGroup>
+    <Compile Remove="$(MSBuildThisFileDirectory)../../Common/**/*.cs" />
+  </ItemGroup>
+
+</Project>
