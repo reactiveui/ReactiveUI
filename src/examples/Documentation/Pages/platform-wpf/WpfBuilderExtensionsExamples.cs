@@ -45,4 +45,26 @@ public static class WpfBuilderExtensionsExamples
         Console.WriteLine($"WithWpfConverters/WithWpfScheduler configured: {configured is not null}");
         Console.WriteLine($"WPF main-thread scheduler: {WpfMainThreadScheduler.GetType().Name}");
     }
+
+    /// <summary>
+    /// An app whose lists show views registered only with the service locator registers
+    /// <see cref="AutoDataTemplateBindingHookUnsafe"/> next to the <see cref="AutoDataTemplateBindingHook"/> that
+    /// <c>WithWpf</c> registers. It replaces the safe hook's default template, so the order does not matter.
+    /// </summary>
+    public static void AddTheUnsafeTemplateHook()
+    {
+        using ModernDependencyResolver resolver = new();
+        _ = resolver.CreateReactiveUIBuilder()
+            .WithWpf()
+            .WithRegistration(static registrar => registrar.RegisterConstant<IPropertyBindingHook>(new AutoDataTemplateBindingHookUnsafe()));
+
+        foreach (IPropertyBindingHook hook in resolver.GetServices<IPropertyBindingHook>())
+        {
+            Console.WriteLine($"Binding hook: {hook.GetType().Name}");
+        }
+
+        // Output:
+        // Binding hook: AutoDataTemplateBindingHook
+        // Binding hook: AutoDataTemplateBindingHookUnsafe
+    }
 }

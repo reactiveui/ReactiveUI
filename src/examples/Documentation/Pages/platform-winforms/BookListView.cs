@@ -8,7 +8,7 @@ using ReactiveUI.Winforms;
 
 namespace ReactiveUI.Documentation.PlatformWinforms;
 
-/// <summary>The catalog page: a list box of books, a card per book, and a button that starts a loan.</summary>
+/// <summary>The catalog page: a list box of books, a label per book card, and a button that starts a loan.</summary>
 [DebuggerDisplay("BookListView")]
 public sealed class BookListView : ReactiveUserControl<BookListViewModel>
 {
@@ -40,7 +40,9 @@ public sealed class BookListView : ReactiveUserControl<BookListViewModel>
             BooksListBox.Items.Clear();
             BooksListBox.Items.AddRange(ViewModel!.Books.Cast<object>().ToArray());
 
-            _ = this.OneWayBind(ViewModel, static vm => vm.BookCards, static v => v.BooksPanel.Controls)
+            _ = ViewModel!.WhenAnyValue(static vm => vm.BookCards)
+                .Select(CreateCardLabels)
+                .BindTo(this, static v => v.BooksPanel.Controls)
                 .DisposeWith(d);
 
             _ = this.BindCommand(ViewModel, static vm => vm.LoanSelectedBook, static v => v.LoanButton)
@@ -68,5 +70,22 @@ public sealed class BookListView : ReactiveUserControl<BookListViewModel>
         }
 
         base.Dispose(disposing);
+    }
+
+    /// <summary>
+    /// Builds one read-only <see cref="Label"/> per card. The labels belong to this view: once they are in
+    /// <see cref="BooksPanel"/>, disposing the view disposes them with the panel.
+    /// </summary>
+    /// <param name="cards">The card text the view model exposes.</param>
+    /// <returns>A label per card.</returns>
+    private static List<Label> CreateCardLabels(IReadOnlyList<string> cards)
+    {
+        List<Label> labels = [];
+        foreach (string card in cards)
+        {
+            labels.Add(new Label { Text = card, AutoSize = true });
+        }
+
+        return labels;
     }
 }

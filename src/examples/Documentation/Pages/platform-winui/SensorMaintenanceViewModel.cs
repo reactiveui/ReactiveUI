@@ -7,7 +7,7 @@ namespace ReactiveUI.Documentation.PlatformWinui;
 
 /// <summary>
 /// A maintenance visit booked for one station's sensors. Its view, <see cref="SensorMaintenanceView"/>, is added to
-/// the view locator with <c>Map</c>, so only the Unsafe hosts can show it.
+/// the view locator with <c>Map</c>, and the default hosts find it there.
 /// </summary>
 [System.Diagnostics.DebuggerDisplay("{StationName}: {Task}")]
 public sealed class SensorMaintenanceViewModel : ReactiveObject, IRoutableViewModel

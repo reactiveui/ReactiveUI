@@ -26,6 +26,9 @@ internal static class Program
         ContentControlBindingHookExamples.AlwaysAllowsTheBindingToProceed();
         ViewModelControlHostExamples.SetTheDefaultForNewHosts();
         ViewModelControlHostExamples.ResolveAndReadTheCurrentView();
+        ServiceLocatorViewExamples.ViewModelControlHostUnsafeFindsTheView();
+        ServiceLocatorViewExamples.RoutedControlHostUnsafeFindsTheView();
+        ServiceLocatorViewExamples.MapFromServiceLocatorLetsTheDefaultHostFindTheView();
         ReactiveUserControlNonGenericExamples.SetTheViewModelThroughTheNonGenericBase();
 
         if (Array.IndexOf(args, "--smoke") >= 0)

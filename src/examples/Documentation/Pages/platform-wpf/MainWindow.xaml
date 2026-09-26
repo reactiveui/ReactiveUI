@@ -12,6 +12,10 @@
 
     <DockPanel>
         <Button x:Name="AboutButton" DockPanel.Dock="Top" Content="About" HorizontalAlignment="Right" Margin="8" />
+        <StackPanel DockPanel.Dock="Bottom" Margin="8">
+            <reactiveui:RoutedViewHostUnsafe x:Name="NoticeBoardHost" />
+            <reactiveui:ViewModelViewHostUnsafe x:Name="LatestNoticeHost" />
+        </StackPanel>
         <reactiveui:RoutedViewHost x:Name="Host" />
     </DockPanel>
 

@@ -46,6 +46,7 @@ public sealed class WeatherStationApp : Application
         ConfigureReactiveUI();
         WinUIStartupExamples.ShowTheIndividualExtensions();
         WinUIStartupExamples.AddTheUnsafeTemplateHook();
+        WinUIStartupExamples.MapAViewFromTheServiceLocator();
 
         _mainWindow = new MainWindow(SeedReadings);
 
@@ -72,6 +73,10 @@ public sealed class WeatherStationApp : Application
         // WeatherReading is a plain class, not an IReactiveObject, so RegisterView (which requires IReactiveObject)
         // cannot register it; it is registered with Splat directly instead.
         Locator.CurrentMutable.Register(static () => new WeatherReadingRowView(), typeof(IViewFor<WeatherReading>));
+
+        // The radar vendor's library registers its view with the service locator only, so the default hosts cannot
+        // find it; the radar panel uses the Unsafe twins.
+        AppLocator.CurrentMutable.Register<IViewFor<RadarImageViewModel>>(static () => new RadarImageView());
     }
 
     /// <summary>Drives the dashboard the way a user would, prints what happened, then closes the window and exits.</summary>
@@ -106,8 +111,10 @@ public sealed class WeatherStationApp : Application
             Console.WriteLine("Station list view not resolved yet.");
         }
 
-        Console.WriteLine($"RoutedViewHostUnsafe shows: {DescribeHostContent(mainWindow.MaintenancePage)}");
-        Console.WriteLine($"ViewModelViewHostUnsafe shows: {DescribeHostContent(mainWindow.NextVisit)}");
+        Console.WriteLine($"RoutedViewHost shows: {DescribeHostContent(mainWindow.MaintenancePage)}");
+        Console.WriteLine($"ViewModelViewHost shows: {DescribeHostContent(mainWindow.NextVisit)}");
+        Console.WriteLine($"RoutedViewHostUnsafe shows: {DescribeHostContent(mainWindow.RadarPage)}");
+        Console.WriteLine($"ViewModelViewHostUnsafe shows: {DescribeHostContent(mainWindow.RadarGlance)}");
 
         _ = mainWindow.StationList.OpenDetail.Execute(mainWindow.StationList.Readings[1]).Subscribe();
         Console.WriteLine($"Navigated to: {mainWindow.StationList.HostScreen.Router.NavigationStack[^1].UrlPathSegment}");
@@ -143,6 +150,7 @@ public sealed class WeatherStationApp : Application
     private static string DescribeHostContent(object? content) => content switch
     {
         SensorMaintenanceView view => $"{nameof(SensorMaintenanceView)} ({view.Summary})",
+        RadarImageView view => $"{nameof(RadarImageView)} ({view.Summary})",
         TextBlock placeholder => $"default content ({placeholder.Text})",
         null => "(nothing)",
         _ => content.GetType().Name,

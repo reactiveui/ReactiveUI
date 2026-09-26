@@ -7,7 +7,7 @@ using System.Diagnostics;
 
 namespace ReactiveUI.Documentation.PlatformWinforms;
 
-/// <summary>The catalog page: a list of books, plus a read-only card per book for the panel.</summary>
+/// <summary>The catalog page: a list of books, plus the text of a read-only card per book.</summary>
 [DebuggerDisplay("BookListViewModel Books = {Books.Count}")]
 public sealed class BookListViewModel : ReactiveObject, IRoutableViewModel, IDisposable
 {
@@ -24,11 +24,11 @@ public sealed class BookListViewModel : ReactiveObject, IRoutableViewModel, IDis
         Books = books;
         _members = members;
 
-        List<Label> cards = [];
+        List<string> cards = [];
         foreach (Book book in books)
         {
             string status = book.IsOnLoan ? " (on loan)" : string.Empty;
-            cards.Add(new Label { Text = $"{book.Title} — {book.Author}{status}", AutoSize = true });
+            cards.Add($"{book.Title} — {book.Author}{status}");
         }
 
         BookCards = cards;
@@ -51,8 +51,8 @@ public sealed class BookListViewModel : ReactiveObject, IRoutableViewModel, IDis
     /// <summary>Gets the library's catalog.</summary>
     public IReadOnlyList<Book> Books { get; }
 
-    /// <summary>Gets a read-only <see cref="Label"/> per book, bound into a <see cref="Panel"/>.</summary>
-    public IReadOnlyList<Label> BookCards { get; }
+    /// <summary>Gets the text of a read-only card per book. The view turns each one into a label it owns.</summary>
+    public IReadOnlyList<string> BookCards { get; }
 
     /// <summary>Gets or sets the book the member picked from the list.</summary>
     public Book? SelectedBook
@@ -65,12 +65,5 @@ public sealed class BookListViewModel : ReactiveObject, IRoutableViewModel, IDis
     public ReactiveCommand<RxVoid, IRoutableViewModel> LoanSelectedBook { get; }
 
     /// <inheritdoc/>
-    public void Dispose()
-    {
-        LoanSelectedBook.Dispose();
-        foreach (Label card in BookCards)
-        {
-            card.Dispose();
-        }
-    }
+    public void Dispose() => LoanSelectedBook.Dispose();
 }
