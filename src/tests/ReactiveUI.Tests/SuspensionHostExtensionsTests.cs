@@ -63,10 +63,10 @@ public class SuspensionHostExtensionsTests
         await Assert.That(wasCalled).IsTrue();
     }
 
-    /// <summary>Verifies that EnsureLoadAppState with null driver after initially having one logs error and AppState remains null.</summary>
+    /// <summary>Verifies that EnsureLoadAppState still loads through the setup driver after the locator loses its drivers.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
-    public async Task EnsureLoadAppState_DriverBecomesNull_LogsErrorAndAppStateRemainsNull()
+    public async Task EnsureLoadAppState_LocatorDriversRemovedAfterSetup_LoadsThroughSetupDriver()
     {
         using var host = new SuspensionHost
         {
@@ -82,19 +82,14 @@ public class SuspensionHostExtensionsTests
         // Set up with a driver
         using var disposable = host.SetupDefaultSuspendResume(driver);
 
-        // Clear both the static driver AND service locator to force the null branch in EnsureLoadAppState
         var previousDrivers = Splat.Locator.Current.GetServices<ISuspensionDriver>().ToList();
         Splat.Locator.CurrentMutable.UnregisterAll<ISuspensionDriver>();
         try
         {
-            SuspensionHostExtensions.SuspensionDriver = null;
-
-            // Now call GetAppState which should trigger EnsureLoadAppState
-            // It should hit the null driver branch and log error, leaving AppState null
             var state = host.GetAppState<DummyAppState>();
 
-            // State should be null since driver became null and couldn't load
-            await Assert.That(state).IsNull();
+            await Assert.That(state).IsSameReferenceAs(driver.StateToLoad);
+            await Assert.That(driver.LoadStateCallCount).IsEqualTo(1);
         }
         finally
         {
@@ -432,6 +427,49 @@ public class SuspensionHostExtensionsTests
         using var disposable = host.SetupDefaultSuspendResume(driver);
 
         await Assert.That(disposable).IsNotNull();
+    }
+
+    /// <summary>Verifies that two hosts set up with different drivers each load and save through their own driver.</summary>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task SetupDefaultSuspendResume_TwoHostsWithDifferentDrivers_EachHostUsesItsOwnDriver()
+    {
+        var firstPersist = new Signal<IDisposable>();
+        using var firstHost = new SuspensionHost
+        {
+            IsLaunchingNew = Signal.Silent<RxVoid>(),
+            IsResuming = Signal.Silent<RxVoid>(),
+            ShouldInvalidateState = Signal.Silent<RxVoid>(),
+            ShouldPersistState = firstPersist.ObserveOn(Sequencer.Immediate),
+        };
+        var secondPersist = new Signal<IDisposable>();
+        using var secondHost = new SuspensionHost
+        {
+            IsLaunchingNew = Signal.Silent<RxVoid>(),
+            IsResuming = Signal.Silent<RxVoid>(),
+            ShouldInvalidateState = Signal.Silent<RxVoid>(),
+            ShouldPersistState = secondPersist.ObserveOn(Sequencer.Immediate),
+        };
+
+        var firstDriver = new TestSuspensionDriver { StateToLoad = new DummyAppState() };
+        var secondDriver = new TestSuspensionDriver { StateToLoad = new DummyAppState() };
+
+        using var firstSetup = firstHost.SetupDefaultSuspendResume(firstDriver);
+        using var secondSetup = secondHost.SetupDefaultSuspendResume(secondDriver);
+
+        var firstState = firstHost.GetAppState<DummyAppState>();
+        var secondState = secondHost.GetAppState<DummyAppState>();
+        firstPersist.OnNext(Scope.Empty);
+        secondPersist.OnNext(Scope.Empty);
+
+        await Assert.That(firstState).IsSameReferenceAs(firstDriver.StateToLoad);
+        await Assert.That(secondState).IsSameReferenceAs(secondDriver.StateToLoad);
+        await Assert.That(firstDriver.LoadStateCallCount).IsEqualTo(1);
+        await Assert.That(secondDriver.LoadStateCallCount).IsEqualTo(1);
+        await Assert.That(firstDriver.SaveStateCallCount).IsEqualTo(1);
+        await Assert.That(secondDriver.SaveStateCallCount).IsEqualTo(1);
+        await Assert.That(firstDriver.LastSavedState).IsSameReferenceAs(firstDriver.StateToLoad);
+        await Assert.That(secondDriver.LastSavedState).IsSameReferenceAs(secondDriver.StateToLoad);
     }
 
     /// <summary>A dummy application state used for testing.</summary>

@@ -5,60 +5,11 @@
 
 using ReactiveUI.Tests.Utilities.AppBuilder;
 
-#if REACTIVE_SHIM
-using ISuspensionDriverContract = ReactiveUI.Reactive.ISuspensionDriver;
-#else
-using ISuspensionDriverContract = ReactiveUI.ISuspensionDriver;
-#endif
-
 namespace ReactiveUI.Tests.Utilities.SuspensionHost;
 
-/// <summary>
-/// Test executor that manages SuspensionHostExtensions static state for test isolation.
-/// Saves and restores static fields before and after each test to prevent state leakage.
-/// </summary>
+/// <summary>Test executor for SuspensionHostExtensions tests.</summary>
 /// <remarks>
-/// This executor manages:
-/// - SuspensionHostExtensions.EnsureLoadAppStateFunc
-/// - SuspensionHostExtensions.SuspensionDriver
-/// Tests using this executor should be marked with [NotInParallel] due to static state modifications.
+/// SuspensionHostExtensions keeps its suspend/resume state per host, so each test isolates itself by creating its own
+/// host. This executor only adds the AppBuilder isolation that the tests need for the service locator and logging.
 /// </remarks>
-public class SuspensionHostTestExecutor : AppBuilderTestExecutor
-{
-    /// <summary>The load-app-state func captured before the test, restored during cleanup.</summary>
-    private Func<IObservable<RxVoid>>? _previousEnsureLoadAppStateFunc;
-
-    /// <summary>The suspension driver captured before the test, restored during cleanup.</summary>
-    private ISuspensionDriverContract? _previousSuspensionDriver;
-
-    /// <inheritdoc/>
-    public override async ValueTask ExecuteTest(TestContext context, Func<ValueTask> action)
-    {
-        ArgumentNullException.ThrowIfNull(action);
-
-        SaveStaticState();
-
-        try
-        {
-            await base.ExecuteTest(context, action);
-        }
-        finally
-        {
-            RestoreStaticState();
-        }
-    }
-
-    /// <summary>Saves the current static state from SuspensionHostExtensions.</summary>
-    protected virtual void SaveStaticState()
-    {
-        _previousEnsureLoadAppStateFunc = SuspensionHostExtensions.EnsureLoadAppStateFunc;
-        _previousSuspensionDriver = SuspensionHostExtensions.SuspensionDriver;
-    }
-
-    /// <summary>Restores the previously saved static state to SuspensionHostExtensions.</summary>
-    protected virtual void RestoreStaticState()
-    {
-        SuspensionHostExtensions.EnsureLoadAppStateFunc = _previousEnsureLoadAppStateFunc;
-        SuspensionHostExtensions.SuspensionDriver = _previousSuspensionDriver;
-    }
-}
+public class SuspensionHostTestExecutor : AppBuilderTestExecutor;

@@ -28,25 +28,11 @@ public static class SuspensionHostExtensions
     /// surface it without CA1859 demanding the concrete singleton type leak into their signatures.</summary>
     private static readonly IObservable<RxVoid> _completed = ImmutableReturnRxVoidSignal.Instance;
 
-    /// <summary>Func used to load app state exactly once. Backing field for testing purposes.</summary>
-    private static Func<IObservable<RxVoid>>? _ensureLoadAppStateFunc;
-
-    /// <summary>Suspension driver reference field. Backing field for testing purposes.</summary>
-    private static ISuspensionDriver? _suspensionDriver;
-
-    /// <summary>Gets or sets the ensure load app state function. Internal for testing purposes only.</summary>
-    internal static Func<IObservable<RxVoid>>? EnsureLoadAppStateFunc
-    {
-        get => Volatile.Read(ref _ensureLoadAppStateFunc);
-        set => Volatile.Write(ref _ensureLoadAppStateFunc, value);
-    }
-
-    /// <summary>Gets or sets the suspension driver. Internal for testing purposes only.</summary>
-    internal static ISuspensionDriver? SuspensionDriver
-    {
-        get => _suspensionDriver;
-        set => _suspensionDriver = value;
-    }
+    /// <summary>
+    /// The pending one-time app-state load of each host, keyed by host so that every host loads through the driver it
+    /// was set up with. The table holds its keys weakly, so it does not keep a host alive.
+    /// </summary>
+    private static readonly ConditionalWeakTable<ISuspensionHost, PendingLoad> _pendingLoads = new();
 
     /// <summary>Provides app-state access and suspend/resume setup extension members for <see cref="ISuspensionHost"/>.</summary>
     /// <param name="item">The suspension host.</param>
@@ -73,7 +59,7 @@ public static class SuspensionHostExtensions
         {
             ArgumentExceptionHelper.ThrowIfNull(item);
 
-            Interlocked.Exchange(ref _ensureLoadAppStateFunc, null)?.Invoke();
+            RunPendingLoad(item);
 
             return (T)item.AppState!;
         }
@@ -148,18 +134,18 @@ public static class SuspensionHostExtensions
         {
             ArgumentExceptionHelper.ThrowIfNull(item);
 
-            MultipleDisposable ret = [];
-            _suspensionDriver ??= driver ?? AppLocator.Current.GetService<ISuspensionDriver>();
+            var resolvedDriver = driver ?? AppLocator.Current.GetService<ISuspensionDriver>();
 
-            if (_suspensionDriver is null)
+            if (resolvedDriver is null)
             {
                 item.Log().Error("Could not find a valid driver and therefore cannot setup Suspend/Resume.");
                 return EmptyDisposable.Instance;
             }
 
-            _ensureLoadAppStateFunc = () => EnsureLoadAppState(item, _suspensionDriver);
+            var pendingLoad = _pendingLoads.GetValue(item, static _ => new PendingLoad());
+            pendingLoad.Arm(() => EnsureLoadAppState(item, resolvedDriver));
 
-            var resolvedDriver = _suspensionDriver!;
+            MultipleDisposable ret = [];
             ret.Add(item.ShouldInvalidateState.Subscribe(new DriverOperationObserver<RxVoid>(
                 item,
                 _ => resolvedDriver.InvalidateState(),
@@ -173,15 +159,15 @@ public static class SuspensionHostExtensions
                 {
                     // Materialize app state (one-time load) before saving, so a shutdown that races ahead of
                     // the resume/launch load still persists real state rather than null (see #4353).
-                    RunPendingLoad();
+                    pendingLoad.Run();
                     return resolvedDriver.SaveState(item.AppState!);
                 },
                 static token => token.Dispose(),
                 "Persisted application state",
                 "Tried to persist app state")));
 
-            ret.Add(item.IsResuming.Subscribe(new DelegateObserver<RxVoid>(static _ => RunPendingLoad())));
-            ret.Add(item.IsLaunchingNew.Subscribe(new DelegateObserver<RxVoid>(static _ => RunPendingLoad())));
+            ret.Add(item.IsResuming.Subscribe(new DelegateObserver<RxVoid>(_ => pendingLoad.Run())));
+            ret.Add(item.IsLaunchingNew.Subscribe(new DelegateObserver<RxVoid>(_ => pendingLoad.Run())));
 
             return ret;
         }
@@ -203,7 +189,7 @@ public static class SuspensionHostExtensions
         {
             ArgumentExceptionHelper.ThrowIfNull(item);
 
-            Interlocked.Exchange(ref _ensureLoadAppStateFunc, null)?.Invoke();
+            RunPendingLoad(item);
 
             return item.AppStateValue!;
         }
@@ -243,18 +229,18 @@ public static class SuspensionHostExtensions
             ArgumentExceptionHelper.ThrowIfNull(item);
             ArgumentExceptionHelper.ThrowIfNull(typeInfo);
 
-            MultipleDisposable ret = [];
-            _suspensionDriver ??= driver ?? AppLocator.Current.GetService<ISuspensionDriver>();
+            var resolvedDriver = driver ?? AppLocator.Current.GetService<ISuspensionDriver>();
 
-            if (_suspensionDriver is null)
+            if (resolvedDriver is null)
             {
                 item.Log().Error("Could not find a valid driver and therefore cannot setup Suspend/Resume.");
                 return EmptyDisposable.Instance;
             }
 
-            _ensureLoadAppStateFunc = () => EnsureLoadAppState(item, _suspensionDriver, typeInfo);
+            var pendingLoad = _pendingLoads.GetValue(item, static _ => new PendingLoad());
+            pendingLoad.Arm(() => EnsureLoadAppState(item, resolvedDriver, typeInfo));
 
-            var resolvedDriver = _suspensionDriver!;
+            MultipleDisposable ret = [];
             ret.Add(item.ShouldInvalidateState.Subscribe(new DriverOperationObserver<RxVoid>(
                 item,
                 _ => resolvedDriver.InvalidateState(),
@@ -268,15 +254,15 @@ public static class SuspensionHostExtensions
                 {
                     // Materialize app state (one-time load) before saving, so a shutdown that races ahead of
                     // the resume/launch load still persists real state rather than null (see #4353).
-                    RunPendingLoad();
+                    pendingLoad.Run();
                     return resolvedDriver.SaveState(item.AppStateValue!, typeInfo);
                 },
                 static token => token.Dispose(),
                 "Persisted application state",
                 "Tried to persist app state")));
 
-            ret.Add(item.IsResuming.Subscribe(new DelegateObserver<RxVoid>(static _ => RunPendingLoad())));
-            ret.Add(item.IsLaunchingNew.Subscribe(new DelegateObserver<RxVoid>(static _ => RunPendingLoad())));
+            ret.Add(item.IsResuming.Subscribe(new DelegateObserver<RxVoid>(_ => pendingLoad.Run())));
+            ret.Add(item.IsLaunchingNew.Subscribe(new DelegateObserver<RxVoid>(_ => pendingLoad.Run())));
 
             return ret;
         }
@@ -292,25 +278,17 @@ public static class SuspensionHostExtensions
     [RequiresDynamicCode(
         "This overload may invoke ISuspensionDriver.LoadState(), which is commonly reflection-based. "
         + "Prefer EnsureLoadAppState<TAppState>(ISuspensionHost<TAppState>, ISuspensionDriver?, JsonTypeInfo<TAppState>) for trimming/AOT scenarios.")]
-    private static IObservable<RxVoid> EnsureLoadAppState(ISuspensionHost item, ISuspensionDriver? driver = null)
+    private static IObservable<RxVoid> EnsureLoadAppState(ISuspensionHost item, ISuspensionDriver driver)
     {
         if (item.AppState is not null)
         {
             return _completed;
         }
 
-        _suspensionDriver ??= driver ?? AppLocator.Current.GetService<ISuspensionDriver>();
-
-        if (_suspensionDriver is null)
-        {
-            item.Log().Error("Could not find a valid driver and therefore cannot load app state.");
-            return _completed;
-        }
-
         try
         {
             // Fall back to a freshly created state when the driver yields no persisted state (see #4349).
-            item.AppState = WaitForResult(_suspensionDriver.LoadState()) ?? item.CreateNewAppState?.Invoke();
+            item.AppState = WaitForResult(driver.LoadState()) ?? item.CreateNewAppState?.Invoke();
         }
         catch (Exception ex)
         {
@@ -329,7 +307,7 @@ public static class SuspensionHostExtensions
     /// <returns>A completed observable.</returns>
     private static IObservable<RxVoid> EnsureLoadAppState<TAppState>(
         ISuspensionHost<TAppState> item,
-        ISuspensionDriver? driver,
+        ISuspensionDriver driver,
         JsonTypeInfo<TAppState> typeInfo)
         where TAppState : class
     {
@@ -338,18 +316,10 @@ public static class SuspensionHostExtensions
             return _completed;
         }
 
-        _suspensionDriver ??= driver ?? AppLocator.Current.GetService<ISuspensionDriver>();
-
-        if (_suspensionDriver is null)
-        {
-            item.Log().Error("Could not find a valid driver and therefore cannot load app state.");
-            return _completed;
-        }
-
         try
         {
             // Fall back to a freshly created state when the driver yields no persisted state (see #4349).
-            item.AppStateValue = WaitForResult(_suspensionDriver.LoadState(typeInfo)) ?? item.CreateNewAppStateTyped?.Invoke();
+            item.AppStateValue = WaitForResult(driver.LoadState(typeInfo)) ?? item.CreateNewAppStateTyped?.Invoke();
         }
         catch (Exception ex)
         {
@@ -360,9 +330,17 @@ public static class SuspensionHostExtensions
         return _completed;
     }
 
-    /// <summary>Runs the pending one-time app-state load exactly once, if one is registered.</summary>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static void RunPendingLoad() => Interlocked.Exchange(ref _ensureLoadAppStateFunc, null)?.Invoke();
+    /// <summary>Runs the host's pending one-time app-state load exactly once, if one is registered.</summary>
+    /// <param name="item">The suspension host.</param>
+    private static void RunPendingLoad(ISuspensionHost item)
+    {
+        if (!_pendingLoads.TryGetValue(item, out var pendingLoad))
+        {
+            return;
+        }
+
+        pendingLoad.Run();
+    }
 
     /// <summary>Subscribes to a single-value observable and blocks until it terminates, returning its last value.</summary>
     /// <typeparam name="T">The value type.</typeparam>
@@ -550,6 +528,22 @@ public static class SuspensionHostExtensions
                 onFinally(arg);
             }
         }
+    }
+
+    /// <summary>Holds one host's pending one-time app-state load, bound to the driver that host was set up with.</summary>
+    private sealed class PendingLoad
+    {
+        /// <summary>The load to run, or <see langword="null"/> once it has run or before any setup.</summary>
+        private Func<IObservable<RxVoid>>? _load;
+
+        /// <summary>Registers the load to run, replacing any load that has not run yet.</summary>
+        /// <param name="load">The load to run.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Arm(Func<IObservable<RxVoid>> load) => Volatile.Write(ref _load, load);
+
+        /// <summary>Runs the registered load exactly once; later calls do nothing until the next <see cref="Arm"/>.</summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Run() => Interlocked.Exchange(ref _load, null)?.Invoke();
     }
 
     /// <summary>Captures the last value (or terminal error) of a blocking subscription and signals on termination.</summary>
