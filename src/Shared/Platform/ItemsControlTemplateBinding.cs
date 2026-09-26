@@ -5,6 +5,7 @@
 
 // WPF and WinUI each have their own ItemsControl with the same members; the alias lets the one
 // implementation below compile against whichever of the two the consuming assembly targets.
+using System.Runtime.CompilerServices;
 #if WINUI_TARGET
 using ItemsControl = Microsoft.UI.Xaml.Controls.ItemsControl;
 #else
@@ -37,7 +38,22 @@ internal static class ItemsControlTemplateBinding
     /// The items control to template, or <see langword="null"/> when the binding targets something else, the
     /// control already has an item template or template selector, or it renders items by display member path.
     /// </returns>
-    internal static ItemsControl? FindDefaultTemplateTarget(Func<IObservedChange<object, object>[]> getCurrentViewProperties)
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal static ItemsControl? FindDefaultTemplateTarget(Func<IObservedChange<object, object>[]> getCurrentViewProperties) =>
+        FindDefaultTemplateTarget(getCurrentViewProperties, null);
+
+    /// <summary>
+    /// Returns the items control this binding writes its <c>ItemsSource</c> to, when that control renders its
+    /// items through a template it has not been given, or through <paramref name="replaceableTemplate"/>.
+    /// </summary>
+    /// <param name="getCurrentViewProperties">Supplies the view-side properties of the binding being set up.</param>
+    /// <param name="replaceableTemplate">A default template another hook assigned, which may be replaced; or <see langword="null"/>.</param>
+    /// <returns>
+    /// The items control to template, or <see langword="null"/> when the binding targets something else, the
+    /// control has an item template other than <paramref name="replaceableTemplate"/> or a template selector, or it
+    /// renders items by display member path.
+    /// </returns>
+    internal static ItemsControl? FindDefaultTemplateTarget(Func<IObservedChange<object, object>[]> getCurrentViewProperties, object? replaceableTemplate)
     {
         ArgumentExceptionHelper.ThrowIfNull(getCurrentViewProperties);
 
@@ -50,7 +66,7 @@ internal static class ItemsControlTemplateBinding
         }
 
         var wantsDefaultTemplate = string.IsNullOrEmpty(itemsControl.DisplayMemberPath)
-            && itemsControl.ItemTemplate is null
+            && (itemsControl.ItemTemplate is null || (replaceableTemplate is not null && ReferenceEquals(itemsControl.ItemTemplate, replaceableTemplate)))
             && itemsControl.ItemTemplateSelector is null
             && lastViewProperty.GetPropertyName() == ItemsSourcePropertyName;
 

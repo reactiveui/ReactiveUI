@@ -8,6 +8,14 @@ namespace ReactiveUI.Reactive
         public static System.Lazy<Microsoft.UI.Xaml.DataTemplate> DefaultItemTemplate { get; }
         public bool ExecuteHook(object? source, object target, System.Func<ReactiveUI.Binding.Reactive.IObservedChange<object, object>[]> getCurrentViewModelProperties, System.Func<ReactiveUI.Binding.Reactive.IObservedChange<object, object>[]> getCurrentViewProperties, ReactiveUI.Binding.Reactive.BindingDirection direction) { }
     }
+    [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("AutoDataTemplateBindingHookUnsafe hosts each item in a ViewModelViewHostUnsafe, which closes IViewFor<> over the view model's run-time type. Use AutoDataTemplateBindingHook, which uses the generated view lookup, to stay ahead-of-time safe.")]
+    [System.Diagnostics.DebuggerDisplay("AutoDataTemplateBindingHookUnsafe")]
+    public class AutoDataTemplateBindingHookUnsafe : ReactiveUI.Binding.Reactive.IPropertyBindingHook
+    {
+        public AutoDataTemplateBindingHookUnsafe() { }
+        public static System.Lazy<Microsoft.UI.Xaml.DataTemplate> DefaultItemTemplate { get; }
+        public bool ExecuteHook(object? source, object target, System.Func<ReactiveUI.Binding.Reactive.IObservedChange<object, object>[]> getCurrentViewModelProperties, System.Func<ReactiveUI.Binding.Reactive.IObservedChange<object, object>[]> getCurrentViewProperties, ReactiveUI.Binding.Reactive.BindingDirection direction) { }
+    }
     [System.Flags]
     public enum BooleanToVisibilityHint
     {
@@ -49,8 +57,6 @@ namespace ReactiveUI.Reactive
         object? ReactiveUI.Binding.Reactive.IViewFor.ViewModel { get; set; }
         public TViewModel? ViewModel { get; set; }
     }
-    [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("ViewLocator.ResolveView uses reflection which is incompatible with AOT compilation.")]
-    [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("This class uses reflection to determine view model types at runtime through ViewLocator, which may be incompatible with trimming.")]
     [System.Diagnostics.DebuggerDisplay("Router = {Router}")]
     [WinRT.WinRTExposedType(typeof(ReactiveUI.Reactive.RoutedViewHostWinRTTypeDetails))]
     [WinRT.WinRTRuntimeClassName("Microsoft.UI.Xaml.IUIElementOverrides")]
@@ -83,6 +89,14 @@ namespace ReactiveUI.Reactive
         public ReactiveUI.Binding.Reactive.IViewLocator? ViewLocator { get; set; }
         void ReactiveUI.Reactive.Maui.Internal.IMauiRoutedViewHost.SetObservedViewContract(string? contract) { }
     }
+    [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("RoutedViewHostUnsafe resolves a view by closing IViewFor<> over the view model's run-time type. Use RoutedViewHost, which uses the generated view lookup, to stay ahead-of-time safe.")]
+    [System.Diagnostics.DebuggerDisplay("Router = {Router}")]
+    [WinRT.WinRTExposedType(typeof(ReactiveUI.Reactive.RoutedViewHostUnsafeWinRTTypeDetails))]
+    [WinRT.WinRTRuntimeClassName("Microsoft.UI.Xaml.IUIElementOverrides")]
+    public class RoutedViewHostUnsafe : ReactiveUI.Reactive.RoutedViewHost
+    {
+        public RoutedViewHostUnsafe() { }
+    }
     [System.Diagnostics.DebuggerDisplay("TransitioningContentControl")]
     [WinRT.WinRTExposedType(typeof(ReactiveUI.Reactive.TransitioningContentControlWinRTTypeDetails))]
     [WinRT.WinRTRuntimeClassName("Microsoft.UI.Xaml.IUIElementOverrides")]
@@ -90,8 +104,6 @@ namespace ReactiveUI.Reactive
     {
         public TransitioningContentControl() { }
     }
-    [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("ViewLocator.ResolveView uses reflection which is incompatible with AOT compilation.")]
-    [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("This class uses reflection to determine view model types at runtime through ViewLocator, which may be incompatible with trimming.")]
     [System.Diagnostics.DebuggerDisplay("{ViewContractObservable}, {DefaultContent}")]
     [WinRT.WinRTExposedType(typeof(ReactiveUI.Reactive.ViewModelViewHostWinRTTypeDetails))]
     [WinRT.WinRTRuntimeClassName("Microsoft.UI.Xaml.IUIElementOverrides")]
@@ -108,8 +120,6 @@ namespace ReactiveUI.Reactive
         public System.IObservable<string?> ViewContractObservable { get; set; }
         public ReactiveUI.Binding.Reactive.IViewLocator? ViewLocator { get; set; }
         public object? ViewModel { get; set; }
-        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, or generic constraints), trimming can't validate that the requirements of those annotations are met.")]
-        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
         protected virtual void ResolveViewForViewModel(object? viewModel, string? contract) { }
     }
     [System.Diagnostics.DebuggerDisplay("{DefaultContent}, {ViewModel}")]
@@ -130,6 +140,14 @@ namespace ReactiveUI.Reactive
         public ReactiveUI.Binding.Reactive.IViewLocator? ViewLocator { get; set; }
         public TViewModel? ViewModel { get; set; }
         protected virtual void ResolveViewForViewModel(TViewModel? viewModel, string? contract) { }
+    }
+    [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("ViewModelViewHostUnsafe resolves a view by closing IViewFor<> over the view model's run-time type. Use ViewModelViewHost, which uses the generated view lookup, to stay ahead-of-time safe.")]
+    [System.Diagnostics.DebuggerDisplay("{ViewContractObservable}, {DefaultContent}")]
+    [WinRT.WinRTExposedType(typeof(ReactiveUI.Reactive.ViewModelViewHostUnsafeWinRTTypeDetails))]
+    [WinRT.WinRTRuntimeClassName("Microsoft.UI.Xaml.IUIElementOverrides")]
+    public class ViewModelViewHostUnsafe : ReactiveUI.Reactive.ViewModelViewHost
+    {
+        public ViewModelViewHostUnsafe() { }
     }
     public sealed class VisibilityToBooleanTypeConverter : ReactiveUI.Binding.Reactive.BindingTypeConverter<Microsoft.UI.Xaml.Visibility, bool>
     {
