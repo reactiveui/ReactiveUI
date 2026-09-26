@@ -33,6 +33,6 @@ public class ReactiveFragmentActivity<TViewModel> : ReactiveFragmentActivity, IV
     object? IViewFor.ViewModel
     {
         get => _viewModel;
-        set => _viewModel = (TViewModel?)value;
+        set => ViewModel = (TViewModel?)value;
     }
 }

@@ -45,6 +45,6 @@ public class ReactiveFragment<TViewModel> : ReactiveFragment, IViewFor<TViewMode
     object? IViewFor.ViewModel
     {
         get => (object?)_viewModel;
-        set => _viewModel = (TViewModel?)value!;
+        set => ViewModel = (TViewModel?)value;
     }
 }

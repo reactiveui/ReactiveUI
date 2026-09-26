@@ -47,6 +47,6 @@ public abstract class ReactivePreferenceFragment<TViewModel> : ReactivePreferenc
     object? IViewFor.ViewModel
     {
         get => _viewModel;
-        set => _viewModel = (TViewModel?)value;
+        set => ViewModel = (TViewModel?)value;
     }
 }

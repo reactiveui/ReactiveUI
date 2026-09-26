@@ -36,6 +36,6 @@ public class ReactiveDialogFragment<TViewModel> : ReactiveDialogFragment, IViewF
     object? IViewFor.ViewModel
     {
         get => _viewModel;
-        set => _viewModel = (TViewModel?)value;
+        set => ViewModel = (TViewModel?)value;
     }
 }
