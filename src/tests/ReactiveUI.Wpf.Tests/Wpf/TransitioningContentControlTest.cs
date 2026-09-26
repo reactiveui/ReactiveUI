@@ -72,6 +72,18 @@ public class TransitioningContentControlTest
     /// <summary>The delay, in milliseconds, between dispatcher pump iterations.</summary>
     private const int PumpDelayMs = 10;
 
+    /// <summary>The duration, in milliseconds, of the transition driven through the visual state manager.</summary>
+    private const int TransitionDurationMs = 50;
+
+    /// <summary>How long, in milliseconds, to keep pumping after a transition completes to catch a repeated event.</summary>
+    private const int SettleTimeMs = 300;
+
+    /// <summary>The label recorded when <c>TransitionStarted</c> fires.</summary>
+    private const string StartedEvent = "started";
+
+    /// <summary>The label recorded when <c>TransitionCompleted</c> fires.</summary>
+    private const string CompletedEvent = "completed";
+
     /// <summary>Tests that Transition property can be set and retrieved.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
@@ -992,6 +1004,74 @@ public class TransitioningContentControlTest
         }
 
         await Assert.That(completed).IsTrue();
+    }
+
+    /// <summary>
+    /// A content change that runs a real visual-state transition raises <c>TransitionStarted</c> once and
+    /// <c>TransitionCompleted</c> once. WPF raises the storyboard's <c>Completed</c> event a second time for the same
+    /// clock when the handler moves the control back to the <c>Normal</c> state, and that repeat must not surface as a
+    /// second <c>TransitionCompleted</c>.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task OnContentChanged_RealTransition_RaisesTransitionCompletedOnce()
+    {
+        var control = CreateRealizedControl();
+        control.Transition = TransitioningContentControl.TransitionType.Fade;
+        control.Duration = TimeSpan.FromMilliseconds(TransitionDurationMs);
+        ReplaceFadeStateWithTargetedStoryboard(control);
+
+        List<string> events = [];
+        control.TransitionStarted += (_, _) => events.Add(StartedEvent);
+        control.TransitionCompleted += (_, _) => events.Add(CompletedEvent);
+
+        control.Content = new TextBlock { Text = NewContentText };
+
+        // Pump until the transition completes, then keep pumping so a repeated Completed has time to arrive.
+        var started = System.Diagnostics.Stopwatch.GetTimestamp();
+        while (!events.Contains(CompletedEvent) && System.Diagnostics.Stopwatch.GetElapsedTime(started) < TimeSpan.FromSeconds(StoryboardTimeoutSeconds))
+        {
+            Tests.Xaml.Utilities.DispatcherUtilities.DoEvents();
+            await Task.Delay(PumpDelayMs);
+        }
+
+        var settled = System.Diagnostics.Stopwatch.GetTimestamp();
+        while (System.Diagnostics.Stopwatch.GetElapsedTime(settled) < TimeSpan.FromMilliseconds(SettleTimeMs))
+        {
+            Tests.Xaml.Utilities.DispatcherUtilities.DoEvents();
+            await Task.Delay(PumpDelayMs);
+        }
+
+        await Assert.That(events).IsEquivalentTo([StartedEvent, CompletedEvent]);
+    }
+
+    /// <summary>
+    /// Replaces the synthetic <c>Transition_Fade</c> state of a realized control with one whose animations target the
+    /// control itself, so <c>VisualStateManager.GoToState</c> can run the storyboard to completion.
+    /// </summary>
+    /// <param name="control">The realized control under test.</param>
+    private static void ReplaceFadeStateWithTargetedStoryboard(TransitioningContentControl control)
+    {
+        // The Fade defaults read Children[0] and Children[1], so the storyboard carries two animations.
+        var storyboard = new Storyboard();
+        storyboard.Children.Add(CreateOpacityAnimation(control));
+        storyboard.Children.Add(CreateOpacityAnimation(control));
+
+        var states = control.PresentationStateGroup!.States;
+        var fadeState = states.OfType<VisualState>().First(static s => s.Name == TransitionFadeName);
+        states.Remove(fadeState);
+        _ = states.Add(new VisualState { Name = TransitionFadeName, Storyboard = storyboard });
+    }
+
+    /// <summary>Creates a short opacity animation that targets the supplied control.</summary>
+    /// <param name="control">The control to animate.</param>
+    /// <returns>The animation.</returns>
+    private static DoubleAnimation CreateOpacityAnimation(TransitioningContentControl control)
+    {
+        var animation = new DoubleAnimation(0.0, 1.0, new Duration(TimeSpan.FromMilliseconds(TransitionDurationMs)));
+        Storyboard.SetTarget(animation, control);
+        Storyboard.SetTargetProperty(animation, new(UIElement.OpacityProperty));
+        return animation;
     }
 
     /// <summary>
