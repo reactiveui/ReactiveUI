@@ -170,18 +170,19 @@ internal static class MauiReactiveHelpers
     /// <typeparam name="TViewModel">The hosted view-model type.</typeparam>
     /// <param name="host">The host, logger, and view-contract setter.</param>
     /// <param name="viewModel">The view-model property metadata and accessor.</param>
+    /// <param name="viewContractObservable">The view-contract observable property metadata and accessor.</param>
     /// <param name="setViewContract">Stores the latest view contract.</param>
     /// <param name="resolveView">Resolves a view model and contract.</param>
     /// <param name="subscriptions">Collects the host subscriptions.</param>
     internal static void InitializeViewModelViewHost<TViewModel>(
         (FrameworkElement Source, IFullLogger Logger, Action<IObservable<string?>> SetViewContractObservable) host,
         (string Name, DependencyProperty Property, Func<TViewModel?> GetValue) viewModel,
+        (string Name, DependencyProperty Property, Func<IObservable<string?>> GetValue) viewContractObservable,
         Action<string?> setViewContract,
         Action<TViewModel?, string?> resolveView,
         MultipleDisposable subscriptions)
     {
-        var viewContractObservable = CreateViewContractObservable(host.Source, host.Logger);
-        host.SetViewContractObservable(viewContractObservable);
+        host.SetViewContractObservable(CreateViewContractObservable(host.Source, host.Logger));
         SubscribeViewModelViewHost(host.Source, viewModel, viewContractObservable, setViewContract, resolveView, subscriptions);
     }
 
@@ -214,7 +215,7 @@ internal static class MauiReactiveHelpers
             null);
         var viewContract = new StartWithObservable<string?>(
             viewContractObservableChanged
-                .SelectMany(static observable => observable ?? Signal.Emit<string?>(null))
+                .SwitchMap(static observable => observable ?? Signal.Emit<string?>(null))
                 .Do(setViewContract),
             getViewContract());
 
@@ -231,14 +232,18 @@ internal static class MauiReactiveHelpers
     /// <typeparam name="TViewModel">The hosted view-model type.</typeparam>
     /// <param name="source">The host dependency object.</param>
     /// <param name="viewModel">The view-model property metadata and accessor.</param>
-    /// <param name="viewContractObservable">The view-contract observable.</param>
+    /// <param name="viewContractObservable">The view-contract observable property metadata and accessor.</param>
     /// <param name="setViewContract">Stores the latest view contract.</param>
     /// <param name="resolveView">Resolves a view model and contract.</param>
     /// <param name="subscriptions">Collects the host subscriptions.</param>
+    /// <remarks>
+    /// The host follows whichever contract stream its view-contract observable property holds, so a contract set
+    /// after construction (including through <c>ViewContract</c>) resolves the view again.
+    /// </remarks>
     internal static void SubscribeViewModelViewHost<TViewModel>(
         DependencyObject source,
         (string Name, DependencyProperty Property, Func<TViewModel?> GetValue) viewModel,
-        IObservable<string?> viewContractObservable,
+        (string Name, DependencyProperty Property, Func<IObservable<string?>> GetValue) viewContractObservable,
         Action<string?> setViewContract,
         Action<TViewModel?, string?> resolveView,
         MultipleDisposable subscriptions)
@@ -248,11 +253,17 @@ internal static class MauiReactiveHelpers
             viewModel.Name,
             viewModel.Property,
             viewModel.GetValue);
-        var viewModelAndContract = viewContractObservable
+        var viewContract = CreatePropertyValueObservable(
+                source,
+                viewContractObservable.Name,
+                viewContractObservable.Property,
+                viewContractObservable.GetValue)
+            .SwitchMap(static observable => observable ?? Signal.Emit<string?>(null));
+        var viewModelAndContract = viewContract
             .Do(setViewContract)
             .CombineLatest(viewModelChanged, static (contract, viewModel) => (viewModel, contract));
 
-        _ = new ObserveOnObservable<string?>(viewContractObservable, RxSchedulers.MainThreadScheduler)
+        _ = new ObserveOnObservable<string?>(viewContract, RxSchedulers.MainThreadScheduler)
             .Subscribe(new DelegateObserver<string?>(contract => setViewContract(contract ?? string.Empty)))
             .DisposeWith(subscriptions);
         _ = viewModelAndContract
