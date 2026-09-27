@@ -26,20 +26,16 @@ public partial class LoginPage : ReactiveContentPage<LoginViewModel>
 
         _ = this.WhenActivated(d =>
         {
-            // Username, Password, LoginButton and CancelButton are fields the MAUI XAML compiler
-            // writes into this partial class from LoginPage.xaml, not members ReactiveUI.SourceGenerators
-            // adds, so ReactiveUI.Binding has no generated binding for them. The Unsafe calls are the
-            // documented fallback (RXUIBIND021) for a destination member another source generator owns.
-            _ = this.BindUnsafe(ViewModel, static vm => vm.UserName, static v => v.Username.Text)
+            _ = this.Bind(ViewModel, static vm => vm.UserName, static v => v.Username.Text)
                 .DisposeWith(d);
 
-            _ = this.BindUnsafe(ViewModel, static vm => vm.Password, static v => v.Password.Text)
+            _ = this.Bind(ViewModel, static vm => vm.Password, static v => v.Password.Text)
                 .DisposeWith(d);
 
-            _ = this.BindCommandUnsafe(ViewModel, static vm => vm.Login, static v => v.LoginButton, toEvent: null)
+            _ = this.BindCommand(ViewModel, static vm => vm.Login, static v => v.LoginButton)
                 .DisposeWith(d);
 
-            _ = this.BindCommandUnsafe(ViewModel, static vm => vm.Cancel, static v => v.CancelButton, toEvent: null)
+            _ = this.BindCommand(ViewModel, static vm => vm.Cancel, static v => v.CancelButton)
                 .DisposeWith(d);
 
             _ = ViewModel.Login

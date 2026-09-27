@@ -197,11 +197,28 @@ public class ActivationForViewFetcher : IActivationForViewFetcher
             () => view.IsHitTestVisible);
 
         // Replaces Merge(...).Select(b => b ? hitTest.SkipWhile(!x) : false).Switch().DistinctUntilChanged().
-        return new MapSignal<bool, IObservable<bool>>(
-                Signal.Blend(viewLoaded, viewUnloaded),
-                b => b ? isHitTestVisible.SkipWhile(static x => !x) : Signal.Emit<bool>(false))
-            .Switch()
+        return SwitchLatest(
+                new MapSignal<bool, IObservable<bool>>(
+                    Signal.Blend(viewLoaded, viewUnloaded),
+                    b => b ? isHitTestVisible.SkipWhile(static x => !x) : Signal.Emit<bool>(false)))
             .DistinctUntilChanged();
     }
+
+    // ObservedProperty.Switch and the Primitives Switch operator both apply to IObservable<IObservable<T>>,
+    // so calling .Switch() as an extension is ambiguous (CS0121) once ReactiveUI.Binding is in scope.
+    // Qualifying the call explicitly picks ObservedProperty's overload and resolves the ambiguity.
+#if REACTIVE_SHIM
+    /// <summary>Switches to the latest inner signal, disambiguating <c>Switch</c> between ObservedProperty and the Primitives operator.</summary>
+    /// <param name="source">The signal of signals to flatten.</param>
+    /// <returns>A signal of the latest inner signal's values.</returns>
+    private static IObservable<bool> SwitchLatest(IObservable<IObservable<bool>> source) =>
+        ReactiveUI.Binding.Reactive.ObservedProperty.Switch(source);
+#else
+    /// <summary>Switches to the latest inner signal, disambiguating <c>Switch</c> between ObservedProperty and the Primitives operator.</summary>
+    /// <param name="source">The signal of signals to flatten.</param>
+    /// <returns>A signal of the latest inner signal's values.</returns>
+    private static IObservable<bool> SwitchLatest(IObservable<IObservable<bool>> source) =>
+        ReactiveUI.Binding.ObservedProperty.Switch(source);
+#endif
 #endif
 }
