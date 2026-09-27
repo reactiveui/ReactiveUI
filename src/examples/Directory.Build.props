@@ -6,6 +6,12 @@
          the root defaults the value and derives $(EnablePublicApiBaseline) and the analyzer
          reference from it, so setting it afterwards leaves tracking half on. -->
     <TrackPublicApi>false</TrackPublicApi>
+
+    <!-- Examples are never published as packages, so they need no SourceLink. It also reports spurious warnings
+         when an example builds from a copy of the repository that has no .git folder. Set before the import, which
+         skips the SourceLink package when this is false. -->
+    <EnableSourceLink>false</EnableSourceLink>
+    <EnableSourceControlManagerQueries>false</EnableSourceControlManagerQueries>
   </PropertyGroup>
 
   <!-- Inherit all repository-wide settings from the root src/Directory.Build.props. -->
@@ -14,5 +20,7 @@
   <PropertyGroup>
     <IsPackable>false</IsPackable>
     <LangVersion>14.0</LangVersion>
+    <PublishRepositoryUrl>false</PublishRepositoryUrl>
+    <EmbedUntrackedSources>false</EmbedUntrackedSources>
   </PropertyGroup>
 </Project>
