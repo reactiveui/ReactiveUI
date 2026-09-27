@@ -159,4 +159,34 @@ public static class ViewModelViewHostExamples
         // 3
         // True
     }
+
+    /// <summary>Overriding <c>ResolveViewForViewModel</c> lets a host observe each resolution before the base class runs it.</summary>
+    public static void OverridingResolveViewForViewModelObservesEachResolution()
+    {
+        AppLocator.CurrentMutable.Register<IViewFor<RecipeListViewModel>>(static () => new RecipeListContentView());
+
+        LoggingViewModelViewHost host = new();
+        host.ViewModel = new RecipeListViewModel(new RecipeBookScreen());
+        host.ViewModel = null;
+
+        Console.WriteLine(string.Join(", ", host.ResolvedViewModelTypes));
+
+        // Output:
+        // RecipeListViewModel
+    }
+
+    /// <summary><see cref="ViewModelViewHost{TViewModel}"/> overrides the same method, so a generic host can observe resolutions too.</summary>
+    public static void GenericHostOverridesResolveViewForViewModelToo()
+    {
+        AppLocator.CurrentMutable.Register<IViewFor<RecipeListViewModel>>(static () => new RecipeListContentView());
+
+        LoggingRecipeViewHost host = new();
+        host.ViewModel = new RecipeListViewModel(new RecipeBookScreen());
+        host.ViewModel = new RecipeListViewModel(new RecipeBookScreen());
+
+        Console.WriteLine(host.ResolutionCount);
+
+        // Output:
+        // 2
+    }
 }

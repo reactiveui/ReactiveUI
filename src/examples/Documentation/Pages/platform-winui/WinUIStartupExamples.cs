@@ -31,6 +31,10 @@ public static class WinUIStartupExamples
 
         Console.WriteLine($"WithWinUIConverters/WithWinUIScheduler/Registrations configured: {configured is not null}");
         Console.WriteLine($"WinUI main-thread scheduler: {WinUIMainThreadScheduler.GetType().Name}");
+
+        // Output:
+        // WithWinUIConverters/WithWinUIScheduler/Registrations configured: True
+        // WinUI main-thread scheduler: DispatcherQueueSequencer
     }
 
     /// <summary>

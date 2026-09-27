@@ -36,6 +36,24 @@ public sealed class LessonViewHolder : ReactiveRecyclerViewViewHolder<LessonView
         _subscriptions.Add(LongClickedWithViewModel.Subscribe(static lesson => TimetableLog.Info($"Long-clicked lesson: {lesson?.Subject}.")));
         _subscriptions.Add(Activated.Subscribe(static _ => TimetableLog.Info("Lesson row attached to the window.")));
         _subscriptions.Add(Deactivated.Subscribe(static _ => TimetableLog.Info("Lesson row detached from the window.")));
+
+        // The IReactiveObject surface every reactive Android base class carries: Changed and Changing report every
+        // property this holder itself raises a notification for (here, ViewModel, whenever RecyclerView recycles
+        // this row onto a new item), and ThrownExceptions reports anything an OnNext handler on those streams throws.
+        _subscriptions.Add(Changed.Subscribe(static change => TimetableLog.Info($"Lesson row property changed: {change.PropertyName}.")));
+        _subscriptions.Add(Changing.Subscribe(static change => TimetableLog.Info($"Lesson row property changing: {change.PropertyName}.")));
+        _subscriptions.Add(ThrownExceptions.Subscribe(static error => TimetableLog.Info($"Lesson row reported an exception: {error.Message}.")));
+
+        // SuppressChangeNotifications pauses Changed/Changing for its duration - useful when several properties
+        // are about to be filled in at once and only the final state matters. AreChangeNotificationsEnabled()
+        // reports whether a suppression is currently active.
+        using (SuppressChangeNotifications())
+        {
+            TimetableLog.Info($"Change notifications enabled while suppressed: {AreChangeNotificationsEnabled()}.");
+        }
+
+        TimetableLog.Info($"Change notifications enabled once the suppression ends: {AreChangeNotificationsEnabled()}.");
+        TimetableLog.Info($"Lesson row view: {View.GetType().Name}.");
     }
 
     /// <summary>Gets or sets the label showing the lesson's subject.</summary>

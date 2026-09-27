@@ -102,7 +102,10 @@ public sealed class WeekdayPagerActivity : AndroidX.ReactiveFragmentActivity<Wee
     {
         _ = weekday;
         WeekdayViewHost host = new(this, parent);
-        View view = host.ToView()!;
+
+        // LayoutViewHost's implicit operator to View, used here instead of the ToView() alternate.
+        View? convertedView = host;
+        View view = convertedView ?? throw new InvalidOperationException("WeekdayViewHost converted to a null View.");
 
         WeekdayViewHost? typedHost = view.GetViewHost<WeekdayViewHost>();
         ILayoutViewHost? untypedHost = view.GetViewHost();

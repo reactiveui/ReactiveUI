@@ -92,6 +92,19 @@ public sealed class AbsenceActivity : ReactiveActivity<AbsenceViewModel>
 
         await Task.Delay(TimeSpan.FromMilliseconds(100));
 
+        // This activity's own ActivityResult and StartActivityForResultAsync overloads, on the plain
+        // ReactiveActivity base rather than the AndroidX one MainActivity uses.
+        _ = ActivityResult.Subscribe(static result =>
+            TimetableLog.Info($"AbsenceActivity's own ActivityResult observed request {result.RequestCode}: {result.ResultCode}."));
+
+        Intent notePromptIntent = new(this, typeof(AbsenceNotePromptActivity));
+        notePromptIntent.PutExtra(SubjectExtra, ViewModel!.Subject);
+        (Android.App.Result ResultCode, Intent? Intent) notePromptByIntent = await StartActivityForResultAsync(notePromptIntent, 400);
+        TimetableLog.Info($"Note prompt (by intent) finished with {notePromptByIntent.ResultCode}.");
+
+        (Android.App.Result ResultCode, Intent? Intent) notePromptByType = await StartActivityForResultAsync(typeof(AbsenceNotePromptActivity), 401);
+        TimetableLog.Info($"Note prompt (by type) finished with {notePromptByType.ResultCode}.");
+
         Intent resultIntent = new();
         resultIntent.PutExtra(SubjectExtra, ViewModel!.Subject);
         SetResult(Android.App.Result.Ok, resultIntent);
