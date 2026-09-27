@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Collections.ObjectModel;
 using UIKit;
 
 namespace ReactiveUI.Documentation.PlatformApple;
@@ -16,9 +17,9 @@ internal static class LibraryComposition
     {
         Member ada = new("M-1", "Ada");
         Member grace = new("M-2", "Grace");
-        List<Member> members = [ada, grace];
+        ObservableCollection<Member> members = [ada, grace];
 
-        List<Book> books =
+        ObservableCollection<Book> books =
         [
             new("Pride and Prejudice", "Jane Austen"),
             new("The Hobbit", "J. R. R. Tolkien"),

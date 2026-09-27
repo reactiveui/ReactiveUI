@@ -40,7 +40,13 @@ public sealed class LibraryTabBarController : ReactiveTabBarController<LibrarySh
             TabBarItem = new UITabBarItem("Covers", null, 2),
         };
 
-        ViewControllers = [catalogHost, membersNav, coverPager];
+        BookShelfViewController shelf = new()
+        {
+            ViewModel = catalog,
+            TabBarItem = new UITabBarItem("Shelf", null, 3),
+        };
+
+        ViewControllers = [catalogHost, membersNav, coverPager, shelf];
 
         _ = this.WhenActivated(d =>
         {

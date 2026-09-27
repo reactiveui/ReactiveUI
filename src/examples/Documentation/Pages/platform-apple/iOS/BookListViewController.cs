@@ -18,6 +18,9 @@ public sealed class BookListViewController : ReactiveViewController<BookCatalogV
     /// <summary>Gets the button that opens the loan page for the selected book. Internal for the binding source generator.</summary>
     internal UIButton LoanButton { get; } = UIButton.FromType(UIButtonType.System);
 
+    /// <summary>Gets the plain table listing books currently on loan, hosted below the button.</summary>
+    internal LoanBoardView LoanBoard { get; } = new(CGRect.Empty);
+
     /// <inheritdoc/>
     public override void ViewDidLoad()
     {
@@ -26,8 +29,10 @@ public sealed class BookListViewController : ReactiveViewController<BookCatalogV
         Title = "Catalog";
         View!.BackgroundColor = UIColor.SystemBackground;
         LoanButton.SetTitle("Loan selected book", UIControlState.Normal);
+        LoanBoard.ViewModel = ViewModel;
+        LoanBoard.HeightAnchor.ConstraintEqualTo(140).Active = true;
 
-        UIStackView layout = new([_rows, LoanButton])
+        UIStackView layout = new([_rows, LoanButton, LoanBoard])
         {
             Axis = UILayoutConstraintAxis.Vertical,
             Spacing = 16,
@@ -63,6 +68,7 @@ public sealed class BookListViewController : ReactiveViewController<BookCatalogV
         {
             _rows.Dispose();
             LoanButton.Dispose();
+            LoanBoard.Dispose();
         }
 
         base.Dispose(disposing);

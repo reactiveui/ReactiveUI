@@ -3,6 +3,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Collections.ObjectModel;
+
 namespace ReactiveUI.Documentation.PlatformApple;
 
 /// <summary>The catalog page: every book the library owns, plus the members who can borrow one.</summary>
@@ -19,7 +21,7 @@ public sealed class BookCatalogViewModel : ReactiveObject, IRoutableViewModel, I
     public BookCatalogViewModel(IScreen hostScreen, IReadOnlyList<Book> books, IReadOnlyList<Member> members)
     {
         HostScreen = hostScreen;
-        Books = books;
+        Books = books as ObservableCollection<Book> ?? new ObservableCollection<Book>(books);
         _members = members;
 
         IObservable<bool> canLoan = this.WhenAnyValue(
@@ -37,8 +39,10 @@ public sealed class BookCatalogViewModel : ReactiveObject, IRoutableViewModel, I
     /// <inheritdoc/>
     public IScreen HostScreen { get; }
 
-    /// <summary>Gets the library's catalog.</summary>
-    public IReadOnlyList<Book> Books { get; }
+    /// <summary>Gets the library's catalog. A reactive table or collection source binds to this directly: because it
+    /// implements <see cref="System.Collections.Specialized.INotifyCollectionChanged"/>, the source refreshes the
+    /// view whenever a book is added or removed.</summary>
+    public ObservableCollection<Book> Books { get; }
 
     /// <summary>Gets or sets the book the member picked from the catalog.</summary>
     public Book? SelectedBook

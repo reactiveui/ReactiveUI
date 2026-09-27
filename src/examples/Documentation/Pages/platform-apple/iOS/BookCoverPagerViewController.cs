@@ -40,7 +40,7 @@ public sealed class BookCoverPagerViewController : ReactivePageViewController<Bo
     public new UIViewController GetPreviousViewController(UIPageViewController pageViewController, UIViewController referenceViewController)
     {
         Book current = ((BookDetailViewController)referenceViewController).ViewModel!;
-        int index = IndexOf(ViewModel!.Books, current) - 1;
+        int index = ViewModel!.Books.IndexOf(current) - 1;
         return index >= 0 ? CreatePage(ViewModel.Books[index]) : null!;
     }
 
@@ -48,7 +48,7 @@ public sealed class BookCoverPagerViewController : ReactivePageViewController<Bo
     public new UIViewController GetNextViewController(UIPageViewController pageViewController, UIViewController referenceViewController)
     {
         Book current = ((BookDetailViewController)referenceViewController).ViewModel!;
-        int index = IndexOf(ViewModel!.Books, current) + 1;
+        int index = ViewModel!.Books.IndexOf(current) + 1;
         return index < ViewModel.Books.Count ? CreatePage(ViewModel.Books[index]) : null!;
     }
 
@@ -56,21 +56,4 @@ public sealed class BookCoverPagerViewController : ReactivePageViewController<Bo
     /// <param name="book">The book the page shows.</param>
     /// <returns>The page.</returns>
     private static BookDetailViewController CreatePage(Book book) => new() { ViewModel = book };
-
-    /// <summary>Finds a book's position in the catalog by reference, since <see cref="IReadOnlyList{T}"/> has no <c>IndexOf</c>.</summary>
-    /// <param name="books">The catalog to search.</param>
-    /// <param name="book">The book to find.</param>
-    /// <returns>The book's index, or -1 when it is not in <paramref name="books"/>.</returns>
-    private static int IndexOf(IReadOnlyList<Book> books, Book book)
-    {
-        for (int i = 0; i < books.Count; i++)
-        {
-            if (ReferenceEquals(books[i], book))
-            {
-                return i;
-            }
-        }
-
-        return -1;
-    }
 }
