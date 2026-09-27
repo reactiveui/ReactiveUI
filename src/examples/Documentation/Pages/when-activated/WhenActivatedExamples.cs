@@ -54,6 +54,23 @@ public static class WhenActivatedExamples
         // Book electrician
     }
 
+    /// <summary>
+    /// A navigation host holds each screen through <see cref="IActivatableViewModel"/>, so it does not need to know the
+    /// concrete view model type of whichever screen is on top; it reads <see cref="IActivatableViewModel.Activator"/>
+    /// through the interface to activate it.
+    /// </summary>
+    public static void ActivateAScreenThroughTheInterface()
+    {
+        using TodoListViewModel viewModel = new(InMemoryTodoStore.CreateSeeded());
+        List<IActivatableViewModel> screenStack = [viewModel];
+
+        using IDisposable activation = screenStack[0].Activator.Activate();
+        Console.WriteLine(viewModel.Items.Count);
+
+        // Output:
+        // 4
+    }
+
     /// <summary>Each time the screen is shown again, its view model is activated again and reloads what changed while it was away.</summary>
     /// <returns>A task that completes when the store has been changed behind the screen.</returns>
     public static async Task ReactivateToRefresh()

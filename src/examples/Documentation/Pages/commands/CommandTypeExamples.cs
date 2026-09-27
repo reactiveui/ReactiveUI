@@ -126,6 +126,48 @@ public static class CommandTypeExamples
     }
 
     /// <summary>
+    /// A witness that implements <see cref="IObserver{T}"/> directly, such as <see cref="BookReceiptPrinter"/>, can
+    /// subscribe to a command's results the same way any other observer does.
+    /// </summary>
+    /// <returns>A task that completes once both books have been borrowed.</returns>
+    public static async Task SubscribeAWitnessToACommandsResults()
+    {
+        LibraryDesk desk = new();
+        BookReceiptPrinter witness = new();
+
+        using ReactiveCommand<int, Book> borrow = ReactiveCommand.Create<int, Book>(desk.Borrow);
+        using IDisposable subscription = borrow.Subscribe(witness);
+
+        _ = await borrow.Execute(1);
+        _ = await borrow.Execute(4);
+
+        // Output:
+        // Printed a receipt for Clean Code
+        // Printed a receipt for Refactoring
+    }
+
+    /// <summary>
+    /// Subscribing a witness through <see cref="ReactiveCommandBase{TParam, TResult}"/> works whether the command was
+    /// built with a factory or, like <see cref="DeskAnnouncementCommand"/>, by hand; a display board only needs to
+    /// know a command produces <c>string</c> results, not which subclass built it.
+    /// </summary>
+    /// <returns>A task that completes once the announcement has posted to the board.</returns>
+    public static async Task SubscribeAWitnessThroughTheBaseType()
+    {
+        LibraryDesk desk = new();
+        DeskAnnouncementBoard board = new();
+        using DeskAnnouncementCommand closingSoon = new(desk, static () => "The desk closes in ten minutes.");
+
+        ReactiveCommandBase<RxVoid, string> command = closingSoon;
+        using IDisposable subscription = command.Subscribe(board);
+
+        _ = await command.Execute();
+
+        // Output:
+        // Board: The desk closes in ten minutes.
+    }
+
+    /// <summary>
     /// Write your own command type from <c>CombinedReactiveCommand&lt;TParam, TResult&gt;</c>'s three constructors
     /// when every combined command of a kind needs the same behaviour on each run;
     /// <see cref="LoggingCombinedCommand{TParam, TResult}"/> writes a line each time it runs, which
