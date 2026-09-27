@@ -3,11 +3,14 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using ReactiveUI;
 using ReactiveUI.Builder;
 using ReactiveUI.Documentation;
 using ReactiveUI.Documentation.ViewLocation;
 
-ExampleApp.Start(static builder => _ = builder.WithViewModule<GitHubViewModule>());
+ExampleApp.Start(static builder => builder
+    .WithViewModule<GitHubViewModule>()
+    .WithRegistration(static resolver => resolver.RegisterConstant<IActivationForViewFetcher>(new VendorDialogActivationFetcher())));
 
 ViewLocationExamples.FindTheViewForAViewModel();
 
@@ -24,3 +27,7 @@ SchoolTimetableExamples.MapATeacherViewAtSignInAndUnmapAtSignOut();
 SchoolTimetableExamples.MapViewsWithABuilderIncludingFromTheServiceLocator();
 
 SchoolTimetableExamples.BuildAViewLocatorNotFoundException();
+
+ExtendingIViewForExamples.ConfirmABookReturnThroughAVendorDialog();
+
+ExtendingIViewForExamples.LocateTheVendorDialogLikeAnyOtherView();

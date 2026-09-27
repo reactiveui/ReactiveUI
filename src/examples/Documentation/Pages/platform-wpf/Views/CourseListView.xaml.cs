@@ -23,6 +23,14 @@ public partial class CourseListView : ReactiveUserControl<CourseListViewModel>
         SummaryHost.Transition = TransitioningContentControl.TransitionType.Move;
         SummaryHost.Direction = TransitioningContentControl.TransitionDirection.Up;
 
+        // ContractFallbackByPass stops the host from falling back to an uncontracted view when a contracted one
+        // is missing; here it's harmless, since the summary panel only ever asks for the default contract.
+        SummaryHost.ContractFallbackByPass = true;
+        Console.WriteLine($"Contract fallback bypass (via field): {(bool)SummaryHost.GetValue(ViewModelViewHost.ContractFallbackByPassProperty)}");
+
+        SummaryHost.ViewContractObservable = Signal.Emit<string?>(null);
+        Console.WriteLine($"Summary host contract observable set: {SummaryHost.GetValue(ViewModelViewHost.ViewContractObservableProperty) is not null}");
+
         _ = this.WhenActivated(d =>
         {
             SummaryHost.ViewLocator = ViewLocator.GetCurrent();

@@ -47,6 +47,12 @@ public sealed class WeatherStationApp : Application
         WinUIStartupExamples.ShowTheIndividualExtensions();
         WinUIStartupExamples.AddTheUnsafeTemplateHook();
         WinUIStartupExamples.MapAViewFromTheServiceLocator();
+        VisibilityConverterExamples.UseHiddenHasNoEffectOnWinUI();
+        VisibilityConverterExamples.GetAffinityForObjectsReportsTheBuiltInScore();
+        ViewContractExamples.ViewModelViewHostViewContractSetAfterConstructionChoosesTheContractView();
+        ViewContractExamples.GenericViewModelViewHostViewContractSetAfterConstructionChoosesTheContractView();
+        ViewContractExamples.RoutedViewHostViewContractSelectsTheContractView();
+        ViewContractExamples.GenericRoutedViewHostViewContractSelectsTheContractView();
 
         _mainWindow = new MainWindow(SeedReadings);
 

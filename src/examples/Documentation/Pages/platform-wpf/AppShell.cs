@@ -11,4 +11,7 @@ public sealed class AppShell : ReactiveObject, IScreen
 {
     /// <inheritdoc/>
     public RoutingState Router { get; } = new();
+
+    /// <summary>Gets how long the window's page-name banner takes to fade between pages.</summary>
+    public TimeSpan PageBannerDuration => TimeSpan.FromMilliseconds(200);
 }

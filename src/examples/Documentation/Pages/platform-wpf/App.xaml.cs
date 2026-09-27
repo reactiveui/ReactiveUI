@@ -37,6 +37,7 @@ public partial class App : Application
         WpfBuilderExtensionsExamples.ShowTheAppBuilderOverload();
         WpfBuilderExtensionsExamples.ShowTheIndividualExtensions();
         WpfBuilderExtensionsExamples.AddTheUnsafeTemplateHook();
+        WpfBuilderExtensionsExamples.ShowTheDefaultItemTemplate();
 
         AutoSuspendHelper autoSuspendHelper = new(this) { IdleTimeout = IdleTimeout };
         Console.WriteLine($"Auto-suspend idle timeout: {autoSuspendHelper.IdleTimeout}");

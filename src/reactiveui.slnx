@@ -39,6 +39,7 @@
     </Folder>
     <Folder Name="/Examples/Documentation/Platforms/">
         <Project Path="examples/Documentation/Pages/platform-android/platform-android.csproj" />
+        <Project Path="examples/Documentation/Pages/platform-apple/platform-apple.csproj" />
         <Project Path="examples/Documentation/Pages/platform-blazor/platform-blazor.csproj" />
         <Project Path="examples/Documentation/Pages/platform-blend-drawing/platform-blend-drawing.csproj" />
         <Project Path="examples/Documentation/Pages/platform-maui/platform-maui.csproj" />

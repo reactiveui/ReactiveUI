@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Windows;
 using ReactiveUI.Builder;
 using Splat;
 using Splat.Builder;
@@ -28,6 +29,9 @@ public static class WpfBuilderExtensionsExamples
         ReactiveUIBuilder builder = new(resolver, resolver);
         IReactiveUIBuilder configured = ((IAppBuilder)builder).WithWpf();
         Console.WriteLine($"IAppBuilder.WithWpf() configured: {configured is not null}");
+
+        // Output:
+        // IAppBuilder.WithWpf() configured: True
     }
 
     /// <summary>
@@ -44,6 +48,10 @@ public static class WpfBuilderExtensionsExamples
 
         Console.WriteLine($"WithWpfConverters/WithWpfScheduler configured: {configured is not null}");
         Console.WriteLine($"WPF main-thread scheduler: {WpfMainThreadScheduler.GetType().Name}");
+
+        // Output:
+        // WithWpfConverters/WithWpfScheduler configured: True
+        // WPF main-thread scheduler: DispatcherSequencer
     }
 
     /// <summary>
@@ -66,5 +74,25 @@ public static class WpfBuilderExtensionsExamples
         // Output:
         // Binding hook: AutoDataTemplateBindingHook
         // Binding hook: AutoDataTemplateBindingHookUnsafe
+    }
+
+    /// <summary>
+    /// <see cref="AutoDataTemplateBindingHook.DefaultItemTemplate"/> is the template <c>WithWpf</c>'s hook assigns to
+    /// an <c>ItemsControl</c> with no template of its own; an app can inspect or reuse it directly.
+    /// <see cref="AutoDataTemplateBindingHookUnsafe.DefaultItemTemplate"/> is the same idea for the Unsafe twin.
+    /// </summary>
+    public static void ShowTheDefaultItemTemplate()
+    {
+        DataTemplate template = AutoDataTemplateBindingHook.DefaultItemTemplate.Value;
+        DependencyObject root = template.LoadContent();
+        Console.WriteLine($"Default item template hosts each item in a: {root.GetType().Name}");
+
+        DataTemplate unsafeTemplate = AutoDataTemplateBindingHookUnsafe.DefaultItemTemplate.Value;
+        DependencyObject unsafeRoot = unsafeTemplate.LoadContent();
+        Console.WriteLine($"Unsafe default item template hosts each item in a: {unsafeRoot.GetType().Name}");
+
+        // Output:
+        // Default item template hosts each item in a: ViewModelViewHost
+        // Unsafe default item template hosts each item in a: ViewModelViewHostUnsafe
     }
 }

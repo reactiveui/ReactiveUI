@@ -55,4 +55,18 @@ public static class VisibilityConverterExamples
         // False
         // False
     }
+
+    /// <summary><c>GetAffinityForObjects</c> reports how well each converter matches a binding; ReactiveUI's binding resolution calls it to pick a converter.</summary>
+    public static void GetAffinityForObjectsReportsTheBuiltInScore()
+    {
+        BooleanToVisibilityTypeConverter toVisibility = new();
+        VisibilityToBooleanTypeConverter toBoolean = new();
+
+        Console.WriteLine(toVisibility.GetAffinityForObjects());
+        Console.WriteLine(toBoolean.GetAffinityForObjects());
+
+        // Output:
+        // 2
+        // 2
+    }
 }

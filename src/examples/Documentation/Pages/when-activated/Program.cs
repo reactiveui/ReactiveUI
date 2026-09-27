@@ -14,6 +14,8 @@ WhenActivatedExamples.ActivateAViewModel();
 
 WhenActivatedExamples.ActivateAView();
 
+WhenActivatedExamples.ActivateAScreenThroughTheInterface();
+
 await WhenActivatedExamples.ReactivateToRefresh();
 
 ScoreBoardActivationExamples.UpdateTheTitleWithAFunctionBlock();

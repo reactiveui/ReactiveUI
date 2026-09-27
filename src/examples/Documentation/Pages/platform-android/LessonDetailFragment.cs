@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Reflection;
 using Android.Views;
 
 namespace ReactiveUI.Documentation.PlatformAndroid;
@@ -29,6 +30,13 @@ public sealed class LessonDetailFragment : AndroidX.ReactiveFragment<LessonViewM
         // ExplicitOptIn: only properties carrying [WireUpResource] are wired, ignoring any other View-typed
         // property this fragment might gain later.
         AndroidX.ControlFetcherMixins.WireUpControls(this, view, ControlFetcherMixins.ResolveStrategy.ExplicitOptIn);
+
+        // The name SubjectLabel was wired under: WireUpResourceAttribute.ResourceNameOverride, read directly
+        // rather than through GetResourceName().
+        WireUpResourceAttribute? subjectAttribute = typeof(LessonDetailFragment)
+            .GetProperty(nameof(SubjectLabel))!
+            .GetCustomAttribute<WireUpResourceAttribute>();
+        TimetableLog.Info($"SubjectLabel's resource name override: {subjectAttribute?.ResourceNameOverride}.");
 
         // A control the fragment fetches directly, rather than wiring to a property.
         View? icon = view.GetControl(GetType().Assembly, "detailIcon");

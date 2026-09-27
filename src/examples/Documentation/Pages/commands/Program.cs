@@ -74,6 +74,10 @@ await CommandTypeExamples.ObserveThrownExceptions();
 
 await CommandTypeExamples.DeriveFromCommandBase();
 
+await CommandTypeExamples.SubscribeAWitnessToACommandsResults();
+
+await CommandTypeExamples.SubscribeAWitnessThroughTheBaseType();
+
 await CommandTypeExamples.DeriveCombinedCommand();
 
 await CombinedCommandMembersExamples.ReadCombinedCommandMembersDirectly();

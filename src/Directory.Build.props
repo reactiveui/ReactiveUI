@@ -206,7 +206,7 @@
     <PackageReference Include="PublicApiSharp.Analyzers" PrivateAssets="all" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(IsTestProject)' != 'true'">
+  <ItemGroup Condition="'$(IsTestProject)' != 'true' and '$(EnableSourceLink)' != 'false'">
     <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="All"/>
   </ItemGroup>
   <PropertyGroup>

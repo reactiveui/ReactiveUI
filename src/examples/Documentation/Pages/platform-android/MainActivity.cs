@@ -5,6 +5,7 @@
 
 using System.Reflection;
 using Android.Content;
+using Android.Hardware.Usb;
 using AndroidX.RecyclerView.Widget;
 
 namespace ReactiveUI.Documentation.PlatformAndroid;
@@ -50,7 +51,18 @@ public sealed class MainActivity : AndroidX.ReactiveAppCompatActivity<TimetableV
             TimetableLog.Info($"  {member.Name} -> resource '{member.GetResourceName()}'.");
         }
 
-        ViewModel = new TimetableViewModel();
+        // The IReactiveObject surface every reactive Android base class carries: Changed and Changing report every
+        // property change this activity itself raises (here, ViewModel), and ThrownExceptions reports anything an
+        // OnNext handler on those streams throws. SuppressChangeNotifications pauses Changed/Changing for its
+        // duration - useful while several properties are about to be filled in at once.
+        _subscriptions.Add(Changed.Subscribe(static change => TimetableLog.Info($"MainActivity property changed: {change.PropertyName}.")));
+        _subscriptions.Add(Changing.Subscribe(static change => TimetableLog.Info($"MainActivity property changing: {change.PropertyName}.")));
+        _subscriptions.Add(ThrownExceptions.Subscribe(static error => TimetableLog.Info($"MainActivity reported an exception: {error.Message}.")));
+
+        using (SuppressChangeNotifications())
+        {
+            ViewModel = new TimetableViewModel();
+        }
 
         // GetOrientation() returns the display's current rotation by name, such as "Rotation0" for the natural orientation.
         PlatformOperations platformOperations = new();
@@ -76,7 +88,11 @@ public sealed class MainActivity : AndroidX.ReactiveAppCompatActivity<TimetableV
         _ = new LessonPeekHost(this, PeeksRow!, attachToRoot: true) { ViewModel = ViewModel.Lessons[2] };
 
         LessonsRecyclerView!.SetLayoutManager(new LinearLayoutManager(this));
-        LessonsRecyclerView!.SetAdapter(new LessonsRecyclerAdapter(ViewModel.Lessons));
+        LessonsRecyclerAdapter lessonsAdapter = new(ViewModel.Lessons);
+        LessonsRecyclerView!.SetAdapter(lessonsAdapter);
+        TimetableLog.Info($"Lessons adapter reports {lessonsAdapter.ItemCount} items.");
+
+        RequestAttendanceScannerPermission();
 
         _subscriptions.Add(Activated.Subscribe(static _ => TimetableLog.Info("MainActivity activated.")));
         _subscriptions.Add(Deactivated.Subscribe(static _ => TimetableLog.Info("MainActivity deactivated.")));
@@ -95,6 +111,28 @@ public sealed class MainActivity : AndroidX.ReactiveAppCompatActivity<TimetableV
         }
 
         base.Dispose(disposing);
+    }
+
+    /// <summary>Some timetable devices use a USB barcode scanner to check students in as they arrive. If one is
+    /// already plugged in, asks the system for permission to talk to it.</summary>
+    private void RequestAttendanceScannerPermission()
+    {
+        if (GetSystemService(UsbService) is not UsbManager usbManager)
+        {
+            return;
+        }
+
+        foreach (UsbDevice device in usbManager.DeviceList?.Values ?? [])
+        {
+            _subscriptions.Add(usbManager.PermissionRequested(this, device)
+                .Subscribe(granted => TimetableLog.Info($"USB device {device.DeviceName} permission granted: {granted}.")));
+        }
+
+        foreach (UsbAccessory accessory in usbManager.GetAccessoryList() ?? [])
+        {
+            _subscriptions.Add(usbManager.PermissionRequested(this, accessory)
+                .Subscribe(granted => TimetableLog.Info($"USB accessory {accessory.Model} permission granted: {granted}.")));
+        }
     }
 
     /// <summary>Drives the whole demo end to end: pick a lesson, report an absence, show its detail, confirm the
@@ -138,6 +176,12 @@ public sealed class MainActivity : AndroidX.ReactiveAppCompatActivity<TimetableV
             .Replace(DetailContainer!.Id, settingsFragment)!
             .CommitNowAllowingStateLoss();
         TimetableLog.Info("Showing notification settings.");
+
+        LessonNotesFragment notesFragment = new() { ViewModel = firstLesson };
+        SupportFragmentManager!.BeginTransaction()!
+            .Replace(DetailContainer!.Id, notesFragment)!
+            .CommitNowAllowingStateLoss();
+        TimetableLog.Info($"Showing notes for {firstLesson.Subject}.");
 
         TimetableLog.Info("=== Scenario complete ===");
     }
