@@ -15,73 +15,70 @@ namespace ReactiveUI.Documentation.PlatformWinui;
 public static class ViewContractExamples
 {
     /// <summary>
-    /// <c>ResolveViewForViewModel</c> runs once for the empty host and again for each <c>ViewModel</c> change;
-    /// <see cref="AnalyticsViewModelViewHost"/> overrides it to record what it resolved. <c>ViewContract</c>
-    /// republishes as <c>ViewContractObservable</c>, the same stream <c>ViewContractObservableProperty</c> holds.
+    /// Setting <c>ViewContract</c> after the host already has a <c>ViewModel</c> resolves the view registered under
+    /// that contract, the same way it does at construction. The contract then stays in force for the next
+    /// <c>ViewModel</c> change. <see cref="AnalyticsViewModelViewHost"/> overrides <c>ResolveViewForViewModel</c> to
+    /// record what it resolved each time.
     /// </summary>
-    public static void ViewModelViewHostResolvesEachViewModelChangeAndRepublishesItsContract()
+    public static void ViewModelViewHostViewContractSetAfterConstructionChoosesTheContractView()
     {
         DefaultViewLocator locator = new();
         locator.Map<WeatherReading, WeatherReadingRowView>();
+        locator.Map<WeatherReading, WeatherReadingCompactRowView>("Compact");
 
         AnalyticsViewModelViewHost host = new() { ViewLocator = locator };
         WeatherReading riverside = new("Riverside", 18.5, isStormy: false);
-        WeatherReading highlands = new("Highlands", 9.0, isStormy: true);
 
         host.ViewModel = riverside;
+        Console.WriteLine(host.Content?.GetType().Name);
+
+        host.ViewContract = "Compact";
+        Console.WriteLine(host.Content?.GetType().Name);
+
+        WeatherReading highlands = new("Highlands", 9.0, isStormy: true);
         host.ViewModel = highlands;
+        Console.WriteLine(host.Content?.GetType().Name);
+        Console.WriteLine(host.ViewContract);
 
         Console.WriteLine(string.Join(", ", host.ResolvedViews));
 
-        host.ViewContract = "Wide";
-        Console.WriteLine(host.ViewContract);
-
-        string? published = null;
-        using IDisposable subscription = host.ViewContractObservable.Subscribe(contract => published = contract);
-        Console.WriteLine(published);
-
-        bool sameObservable = ReferenceEquals(host.ViewContractObservable, host.GetValue(ViewModelViewHost.ViewContractObservableProperty));
-        Console.WriteLine(sameObservable);
-
         // Output:
-        // (nothing), WeatherReadingRowView, WeatherReadingRowView
-        // Wide
-        // Wide
-        // True
+        // WeatherReadingRowView
+        // WeatherReadingCompactRowView
+        // WeatherReadingCompactRowView
+        // Compact
+        // (nothing), WeatherReadingRowView, WeatherReadingCompactRowView, WeatherReadingCompactRowView
     }
 
-    /// <summary><see cref="ViewModelViewHost{TViewModel}"/> adds the same three contract members, typed to one view model.</summary>
-    public static void GenericViewModelViewHostResolvesEachViewModelChangeAndRepublishesItsContract()
+    /// <summary><see cref="ViewModelViewHost{TViewModel}"/> follows a contract set after construction the same way the non-generic host does.</summary>
+    public static void GenericViewModelViewHostViewContractSetAfterConstructionChoosesTheContractView()
     {
         DefaultViewLocator locator = new();
         locator.Map<WeatherReading, WeatherReadingRowView>();
+        locator.Map<WeatherReading, WeatherReadingCompactRowView>("Compact");
 
         AnalyticsViewModelViewHost<WeatherReading> host = new() { ViewLocator = locator };
         WeatherReading harbor = new("Harbor", 21.0, isStormy: false);
-        WeatherReading highlands = new("Highlands", 9.0, isStormy: true);
 
         host.ViewModel = harbor;
+        Console.WriteLine(host.Content?.GetType().Name);
+
+        host.ViewContract = "Compact";
+        Console.WriteLine(host.Content?.GetType().Name);
+
+        WeatherReading highlands = new("Highlands", 9.0, isStormy: true);
         host.ViewModel = highlands;
+        Console.WriteLine(host.Content?.GetType().Name);
+        Console.WriteLine(host.ViewContract);
 
         Console.WriteLine(string.Join(", ", host.ResolvedViews));
 
-        host.ViewContract = "Wide";
-        Console.WriteLine(host.ViewContract);
-
-        string? published = null;
-        using IDisposable subscription = host.ViewContractObservable.Subscribe(contract => published = contract);
-        Console.WriteLine(published);
-
-        bool sameObservable = ReferenceEquals(
-            host.ViewContractObservable,
-            host.GetValue(ViewModelViewHost<WeatherReading>.ViewContractObservableProperty));
-        Console.WriteLine(sameObservable);
-
         // Output:
-        // (nothing), WeatherReadingRowView, WeatherReadingRowView
-        // Wide
-        // Wide
-        // True
+        // WeatherReadingRowView
+        // WeatherReadingCompactRowView
+        // WeatherReadingCompactRowView
+        // Compact
+        // (nothing), WeatherReadingRowView, WeatherReadingCompactRowView, WeatherReadingCompactRowView
     }
 
     /// <summary>Setting <c>ViewContract</c> before the router navigates picks the view mapped to that contract.</summary>

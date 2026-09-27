@@ -49,8 +49,8 @@ public sealed class WeatherStationApp : Application
         WinUIStartupExamples.MapAViewFromTheServiceLocator();
         VisibilityConverterExamples.UseHiddenHasNoEffectOnWinUI();
         VisibilityConverterExamples.GetAffinityForObjectsReportsTheBuiltInScore();
-        ViewContractExamples.ViewModelViewHostResolvesEachViewModelChangeAndRepublishesItsContract();
-        ViewContractExamples.GenericViewModelViewHostResolvesEachViewModelChangeAndRepublishesItsContract();
+        ViewContractExamples.ViewModelViewHostViewContractSetAfterConstructionChoosesTheContractView();
+        ViewContractExamples.GenericViewModelViewHostViewContractSetAfterConstructionChoosesTheContractView();
         ViewContractExamples.RoutedViewHostViewContractSelectsTheContractView();
         ViewContractExamples.GenericRoutedViewHostViewContractSelectsTheContractView();
 

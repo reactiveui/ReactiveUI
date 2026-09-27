@@ -8,9 +8,13 @@ using CoreGraphics;
 
 namespace ReactiveUI.Documentation.PlatformApple;
 
-/// <summary>The app's single window, hosting the library split view.</summary>
+/// <summary>
+/// The app's single window, hosting the library split view. It derives from
+/// <see cref="ReactiveWindowController{TViewModel}"/>, the <see cref="IViewFor{T}"/> form of the non-generic
+/// <see cref="ReactiveWindowController"/>, so it has a <c>ViewModel</c> and can use <c>WhenActivated</c>.
+/// </summary>
 [System.Diagnostics.DebuggerDisplay("MainWindowController")]
-public sealed class MainWindowController : ReactiveWindowController
+public sealed class MainWindowController : ReactiveWindowController<LibraryShellViewModel>
 {
     /// <summary>Initializes a new instance of the <see cref="MainWindowController"/> class with the library's sample data.</summary>
     public MainWindowController()
@@ -35,13 +39,13 @@ public sealed class MainWindowController : ReactiveWindowController
 
         LibraryShellViewModel shell = new();
         BookCatalogViewModel catalog = new(shell, books, members);
+        ViewModel = shell;
 
         Window!.ContentViewController = new LibrarySplitViewController(shell, catalog);
 
-        // ReactiveWindowController does not implement IActivatableView, unlike the view and controller types, so
-        // it subscribes to Activated/Deactivated directly rather than through WhenActivated.
-        _ = Activated.Subscribe(static _ => Console.WriteLine("MainWindowController activated."));
-        _ = Deactivated.Subscribe(static _ => Console.WriteLine("MainWindowController deactivated."));
+        // ViewModel is set above, so the binding below has a shell to read Title from the moment activation runs.
+        _ = this.WhenActivated(d =>
+            d(this.OneWayBind(ViewModel, static vm => vm.Title, static v => v.Window!.Title)));
     }
 
     /// <summary>Creates the window this controller manages. AppKit needs the window before <see cref="WindowDidLoad"/> runs.</summary>
