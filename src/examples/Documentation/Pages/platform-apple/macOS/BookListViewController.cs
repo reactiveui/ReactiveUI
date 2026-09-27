@@ -49,9 +49,7 @@ public sealed class BookListViewController : ReactiveViewController<BookCatalogV
                 _rows.AddArrangedSubview(rowLayout);
             }
 
-            // BindCommand (the generated overload) mis-emits its NSButton dispatch on macOS today; BindCommandUnsafe
-            // uses the reflection-based path instead. See the report to the ReactiveUI.Binding.SourceGenerators team.
-            d(this.BindCommandUnsafe(ViewModel, static vm => vm.OpenLoan, static v => v.LoanButton, toEvent: null));
+            d(this.BindCommand(ViewModel, static vm => vm.OpenLoan, static v => v.LoanButton));
         });
     }
 
