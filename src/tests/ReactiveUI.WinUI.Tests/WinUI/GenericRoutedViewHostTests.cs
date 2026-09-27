@@ -129,6 +129,28 @@ public class GenericRoutedViewHostTests
         await Assert.That(host.Content).IsSameReferenceAs(contractView);
     }
 
+    /// <summary>Verifies a replaced contract stream no longer changes the contract the host resolves with.</summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task ViewContract_SetOverAnEarlierStream_IgnoresTheEarlierStream()
+    {
+        using var earlierContracts = new Signal<string?>();
+        var contractView = new ContractRoutedTestView();
+        var router = new RoutingState(Sequencer.Immediate);
+        var locator = new StubViewLocator { ContractlessView = new RoutedTestView(), Contract = WideContract, ContractView = contractView };
+        var host = new RoutedViewHost<RoutedTestViewModel> { ViewLocator = locator, Router = router, ViewContractObservable = earlierContracts };
+        host.ViewContract = WideContract;
+
+        using var navigation = router.Navigate.Execute(new RoutedTestViewModel()).Subscribe();
+        earlierContracts.OnNext("narrow");
+
+        using (Assert.Multiple())
+        {
+            await Assert.That(host.Content).IsSameReferenceAs(contractView);
+            await Assert.That(host.ViewContract).IsEqualTo(WideContract);
+        }
+    }
+
     /// <summary>Verifies the host falls back to the contract-free view when the contract resolves nothing.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]

@@ -98,6 +98,46 @@ public class GenericViewModelViewHostTests
         }
     }
 
+    /// <summary>Verifies a contract set after the view model resolves the view registered under that contract.</summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task ViewContract_SetAfterTheViewModel_ResolvesTheContractView()
+    {
+        const string contract = "wide";
+        var contractView = new ContractPlainTestView();
+        var locator = new StubViewLocator { ContractlessView = new PlainTestView(), Contract = contract, ContractView = contractView };
+        var host = new ViewModelViewHost<PlainTestViewModel> { ViewLocator = locator, ViewModel = new() };
+
+        host.ViewContract = contract;
+
+        using (Assert.Multiple())
+        {
+            await Assert.That(host.Content).IsSameReferenceAs(contractView);
+            await Assert.That(locator.RequestedContracts).Contains(contract);
+        }
+    }
+
+    /// <summary>Verifies the host keeps using the contract when the view model changes afterwards.</summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task ViewModel_ChangedAfterTheContract_KeepsUsingTheContract()
+    {
+        const string contract = "wide";
+        var contractView = new ContractPlainTestView();
+        var viewModel = new PlainTestViewModel();
+        var locator = new StubViewLocator { ContractlessView = new PlainTestView(), Contract = contract, ContractView = contractView };
+        var host = new ViewModelViewHost<PlainTestViewModel> { ViewLocator = locator, ViewContract = contract };
+
+        host.ViewModel = viewModel;
+
+        using (Assert.Multiple())
+        {
+            await Assert.That(host.Content).IsSameReferenceAs(contractView);
+            await Assert.That(contractView.ViewModel).IsSameReferenceAs(viewModel);
+            await Assert.That(host.ViewContract).IsEqualTo(contract);
+        }
+    }
+
     /// <summary>Verifies the contract fallback flag round-trips through the CLR accessor.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
