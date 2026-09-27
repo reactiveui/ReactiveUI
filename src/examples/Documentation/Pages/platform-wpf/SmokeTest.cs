@@ -17,7 +17,12 @@ public static class SmokeTest
     public static void Run()
     {
         MainWindow window = new();
+
+        // Wait, as a person watching the screen would, until the first page has finished sliding in.
+        DispatcherFrame firstPageShown = new();
+        window.Host.TransitionCompleted += (_, _) => firstPageShown.Continue = false;
         window.Show();
+        Dispatcher.PushFrame(firstPageShown);
         PumpDispatcher();
 
         AppShell shell = window.ViewModel!;
@@ -26,6 +31,10 @@ public static class SmokeTest
         Console.WriteLine($"Students listed: {courseList.Students.Count}");
         Console.WriteLine($"RoutedViewHostUnsafe shows: {DescribeNotice(window.NoticeBoardHost.Content)}");
         Console.WriteLine($"ViewModelViewHostUnsafe shows: {DescribeNotice(window.LatestNoticeHost.Content)}");
+        Console.WriteLine($"Page name banner: {window.PageNameBanner.Content}");
+        Console.WriteLine($"Notice status: {window.NoticeStatusText.Text}");
+        Console.WriteLine($"Command status: {window.CommandStatusText.Text}");
+        Console.WriteLine($"Page summary: {window.PageSummaryText.Text}");
 
         Student student = courseList.Students[0];
         courseList.SelectedStudent = student;

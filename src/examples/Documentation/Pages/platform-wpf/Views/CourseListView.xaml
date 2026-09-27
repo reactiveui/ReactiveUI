@@ -11,7 +11,7 @@
 
         <StackPanel DockPanel.Dock="Right" Width="180" Margin="16,0,0,0">
             <TextBlock Text="Selected student" FontWeight="Bold" Margin="0,0,0,8" />
-            <reactiveui:ViewModelViewHost x:Name="SummaryHost" />
+            <local:LoggingViewModelViewHost x:Name="SummaryHost" />
             <Button x:Name="OpenButton" Content="Open grade" Margin="0,16,0,0" />
         </StackPanel>
 

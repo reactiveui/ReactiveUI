@@ -52,7 +52,14 @@ public static class SmokeTest
     private static void ShowSchedulerOverrideForTesting()
     {
         Border probeElement = new();
+        Border targetElement = new();
         FollowObservableStateBehavior stateBehavior = new() { SchedulerOverride = Sequencer.Immediate };
+
+        // A test that builds the behavior in code, rather than XAML, sets TargetObject through its dependency
+        // property field with SetValue; the window's XAML sets the same property with a binding instead.
+        stateBehavior.SetValue(FollowObservableStateBehavior.TargetObjectProperty, targetElement);
+        Console.WriteLine($"TargetObject via SetValue: {stateBehavior.GetValue(FollowObservableStateBehavior.TargetObjectProperty) == targetElement}");
+
         stateBehavior.Attach(probeElement);
         stateBehavior.StateObservable = Signal.Emit("Stormy");
         Console.WriteLine("FollowObservableStateBehavior.SchedulerOverride delivered without a dispatcher pump.");
