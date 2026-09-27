@@ -215,7 +215,7 @@ internal static class MauiReactiveHelpers
             null);
         var viewContract = new StartWithObservable<string?>(
             viewContractObservableChanged
-                .SelectMany(static observable => observable ?? Signal.Emit<string?>(null))
+                .SwitchMap(static observable => observable ?? Signal.Emit<string?>(null))
                 .Do(setViewContract),
             getViewContract());
 
