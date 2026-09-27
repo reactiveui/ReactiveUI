@@ -68,6 +68,7 @@ public partial class ViewModelViewHost<
         MauiReactiveHelpers.InitializeViewModelViewHost(
             (this, this.Log(), observable => ViewContractObservable = observable),
             (nameof(ViewModel), ViewModelProperty, () => ViewModel),
+            (nameof(ViewContractObservable), ViewContractObservableProperty, () => ViewContractObservable),
             contract => _viewContract = contract,
             ResolveViewForViewModel,
             _subscriptions);
