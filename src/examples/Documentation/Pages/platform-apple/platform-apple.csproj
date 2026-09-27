@@ -1,0 +1,61 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Apple targets are real device apps, not consoles: they replace most of what Documentation/Directory.Build.props
+       assumes about a page project (single TFM net10.0, a console Main, NativeAOT publish). The iOS and macOS
+       workloads exist only on Windows and macOS, so a Linux build compiles a placeholder instead. -->
+  <PropertyGroup Condition="$([MSBuild]::IsOsPlatform('Windows')) or $([MSBuild]::IsOsPlatform('OSX'))">
+    <TargetFrameworks>net10.0-ios;net10.0-macos</TargetFrameworks>
+    <TargetFramework></TargetFramework>
+    <ApplicationId>net.reactiveui.documentation.platformapple</ApplicationId>
+    <ApplicationTitle>ReactiveUI Apple Examples</ApplicationTitle>
+    <ApplicationVersion>1</ApplicationVersion>
+    <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
+    <!-- Apple apps publish with the platform's own AOT, not NativeAOT. -->
+    <PublishAot>false</PublishAot>
+    <!-- This page deliberately covers the reflection-based WhenActivated(Action<Action<IDisposable>>) overload,
+         RoutedViewHostUnsafe/ViewModelViewHostUnsafe, and AppSupportJsonSuspensionDriver's untyped LoadState()/
+         SaveState<T>(T) overloads, all of which carry RequiresUnreferencedCode/RequiresDynamicCode. Building for
+         "Run" otherwise enables the trim/AOT analyzers and turns every one of those calls into a build error under
+         this repository's TreatWarningsAsErrors, exactly as on the Android page. -->
+    <PublishTrimmed>false</PublishTrimmed>
+    <EnableTrimAnalyzer>false</EnableTrimAnalyzer>
+    <EnableAotAnalyzer>false</EnableAotAnalyzer>
+    <EnableSingleFileAnalyzer>false</EnableSingleFileAnalyzer>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">
+    <SupportedOSPlatformVersion>15.0</SupportedOSPlatformVersion>
+    <!-- Simulator only: the example is never signed or deployed to hardware. -->
+    <RuntimeIdentifier Condition="'$(RuntimeIdentifier)' == '' and $([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture) == 'Arm64'">iossimulator-arm64</RuntimeIdentifier>
+    <RuntimeIdentifier Condition="'$(RuntimeIdentifier)' == ''">iossimulator-x64</RuntimeIdentifier>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'macos'">
+    <SupportedOSPlatformVersion>12.0</SupportedOSPlatformVersion>
+  </PropertyGroup>
+
+  <!-- The shared Common console apps are not part of this page. -->
+  <ItemGroup>
+    <Compile Remove="$(MSBuildThisFileDirectory)../../Common/**/*.cs" />
+  </ItemGroup>
+
+  <!-- On Linux only the placeholder compiles. -->
+  <ItemGroup Condition="!($([MSBuild]::IsOsPlatform('Windows')) or $([MSBuild]::IsOsPlatform('OSX')))">
+    <Compile Remove="**/*.cs" />
+    <Compile Include="LinuxPlaceholder/Program.cs" />
+  </ItemGroup>
+
+  <ItemGroup Condition="$([MSBuild]::IsOsPlatform('Windows')) or $([MSBuild]::IsOsPlatform('OSX'))">
+    <Compile Remove="LinuxPlaceholder/**" />
+  </ItemGroup>
+
+  <!-- UIKit-only examples: macOS uses AppKit, which has no table or collection sources. -->
+  <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'macos'">
+    <Compile Remove="iOS/**" />
+  </ItemGroup>
+
+  <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">
+    <Compile Remove="macOS/**" />
+  </ItemGroup>
+
+</Project>
