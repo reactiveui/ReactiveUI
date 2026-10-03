@@ -7,8 +7,8 @@
   <PropertyGroup Label="Shared Version Variables">
     <SplatVersion>21.0.0</SplatVersion>
     <PrimitivesVersion>8.4.0</PrimitivesVersion>
-    <BindingVersion>8.8.0</BindingVersion>
-    <TUnitVersion>1.69.16</TUnitVersion>
+    <BindingVersion>9.0.0</BindingVersion>
+    <TUnitVersion>1.72.16</TUnitVersion>
     <!-- StyleSharp.Analyzers, PerformanceSharp.Analyzers and SecuritySharp.Analyzers ship from the
          same release pipeline and always share a version. -->
     <RoslynCommonAnalyzersVersion>5.1.2</RoslynCommonAnalyzersVersion>
@@ -102,7 +102,7 @@
     <PackageVersion Include="PerformanceSharp.Analyzers" Version="$(RoslynCommonAnalyzersVersion)"/>
     <PackageVersion Include="SecuritySharp.Analyzers" Version="$(RoslynCommonAnalyzersVersion)"/>
     <PackageVersion Include="Roslynator.Analyzers" Version="5.0.0"/>
-    <PackageVersion Include="SonarAnalyzer.CSharp" Version="10.34.0.3385"/>
+    <PackageVersion Include="SonarAnalyzer.CSharp" Version="10.35.0.4138"/>
     <PackageVersion Include="Microsoft.CodeAnalysis.Analyzers" Version="5.9.0"/>
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="5.9.0"/>
     <PackageVersion Include="PublicApiSharp.Analyzers" Version="2.1.0"/>
