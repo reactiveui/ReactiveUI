@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Components" VersionOverride="10.0.11"/>
+    <PackageReference Include="Microsoft.AspNetCore.Components" VersionOverride="10.0.12"/>
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly"/>
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" PrivateAssets="all"/>
   </ItemGroup>

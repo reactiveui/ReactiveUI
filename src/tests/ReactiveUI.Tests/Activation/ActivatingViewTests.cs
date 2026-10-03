@@ -4,8 +4,10 @@
 // See the LICENSE file in the project root for full license information.
 
 #if REACTIVE_SHIM
+using ReactiveUI.Binding.Reactive.Fallback;
 using ReactiveUI.Reactive.Builder;
 #else
+using ReactiveUI.Binding.Fallback;
 using ReactiveUI.Builder;
 #endif
 using Splat;
@@ -244,6 +246,37 @@ public class ActivatingViewTests
             {
                 await Assert.That(vm.IsActiveCount).IsEqualTo(0);
                 await Assert.That(newVm.IsActiveCount).IsEqualTo(1);
+            }
+        }
+    }
+
+    /// <summary>Verifies the view model still activates when no registered plugin can watch the view's ViewModel property.</summary>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task ViewModelActivatesWhenNoPluginCanWatchViewModel()
+    {
+        var locator = new ModernDependencyResolver();
+        locator.Register<IActivationForViewFetcher>(static () => new ActivatingViewFetcher());
+
+        using (locator.WithResolver())
+        {
+            ViewForMixins.ResetActivationFetcherCacheForTesting();
+            ObservationAffinityChecker.Refresh();
+            try
+            {
+                var vm = new ActivatingViewModel();
+                var fixture = new ActivatingView { ViewModel = vm };
+
+                fixture.Loaded.OnNext(RxVoid.Default);
+                await Assert.That(vm.IsActiveCount).IsEqualTo(1);
+
+                fixture.Unloaded.OnNext(RxVoid.Default);
+                await Assert.That(vm.IsActiveCount).IsEqualTo(0);
+            }
+            finally
+            {
+                ViewForMixins.ResetActivationFetcherCacheForTesting();
+                ObservationAffinityChecker.Refresh();
             }
         }
     }

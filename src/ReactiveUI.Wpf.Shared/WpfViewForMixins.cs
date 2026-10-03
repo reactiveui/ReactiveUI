@@ -4,7 +4,6 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.ComponentModel;
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Windows;
 
@@ -35,7 +34,6 @@ public static class WpfViewForMixins
         /// <returns>An <see cref="IDisposable"/> that deactivates the view when disposed.</returns>
         /// <remarks>Use this no-op overload purely to trigger <see cref="IActivatableViewModel"/> activation when the
         /// view itself has no resources to manage — it avoids the empty <c>WhenActivated(_ =&gt; { })</c> boilerplate.</remarks>
-        [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
         public IDisposable WhenActivated() =>
             item.GetIsDesignMode()
                 ? EmptyDisposable.Instance
@@ -44,7 +42,6 @@ public static class WpfViewForMixins
         /// <summary>Activates the specified WPF view and registers a block of disposables to be disposed when the view is deactivated.</summary>
         /// <param name="block">A function that returns disposables to be disposed when the view is deactivated.</param>
         /// <returns>An <see cref="IDisposable"/> that deactivates the view and disposes the registered disposables when disposed.</returns>
-        [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
         public IDisposable WhenActivated(Func<IEnumerable<IDisposable>> block)
         {
             ArgumentExceptionHelper.ThrowIfNull(item);
@@ -57,7 +54,6 @@ public static class WpfViewForMixins
         /// <param name="block">A function that returns disposables to be disposed when the view is deactivated.</param>
         /// <param name="view">An optional view instance to use for view model activation.</param>
         /// <returns>An <see cref="IDisposable"/> that deactivates the view and disposes the registered disposables when disposed.</returns>
-        [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
         public IDisposable WhenActivated(Func<IEnumerable<IDisposable>> block, IViewFor? view)
         {
             ArgumentExceptionHelper.ThrowIfNull(item);
@@ -69,7 +65,6 @@ public static class WpfViewForMixins
         /// <summary>Registers a block of code to be executed when the specified WPF view is activated.</summary>
         /// <param name="block">An action that receives a callback for registering disposables.</param>
         /// <returns>An <see cref="IDisposable"/> that unregisters the activation logic.</returns>
-        [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
         public IDisposable WhenActivated(Action<Action<IDisposable>> block)
         {
             ArgumentExceptionHelper.ThrowIfNull(item);
@@ -82,7 +77,6 @@ public static class WpfViewForMixins
         /// <param name="block">An action that receives a callback for registering disposables.</param>
         /// <param name="view">The view instance to use for view model activation.</param>
         /// <returns>An <see cref="IDisposable"/> that unregisters the activation logic.</returns>
-        [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
         public IDisposable WhenActivated(Action<Action<IDisposable>> block, IViewFor view)
         {
             ArgumentExceptionHelper.ThrowIfNull(item);
@@ -94,7 +88,6 @@ public static class WpfViewForMixins
         /// <summary>Activates the specified WPF view and manages the provided disposables for the duration of the activation lifecycle.</summary>
         /// <param name="block">An action that receives a composite disposable for activation-related resources.</param>
         /// <returns>An <see cref="IDisposable"/> that unregisters the activation logic.</returns>
-        [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IDisposable WhenActivated(Action<ActivationDisposables> block) => item.WhenActivated(block, null);
 
@@ -102,7 +95,6 @@ public static class WpfViewForMixins
         /// <param name="block">An action that receives a composite disposable for activation-related resources.</param>
         /// <param name="view">An optional view instance to use for view model activation.</param>
         /// <returns>An <see cref="IDisposable"/> that unregisters the activation logic.</returns>
-        [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
         public IDisposable WhenActivated(Action<ActivationDisposables> block, IViewFor? view)
         {
             ArgumentExceptionHelper.ThrowIfNull(item);
