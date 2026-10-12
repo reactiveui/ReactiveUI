@@ -1,7 +1,6 @@
 <Project>
-  <!-- The WPF binding types, such as BooleanToVisibilityTypeConverter and BooleanToVisibilityHints, come from
-       ReactiveUI.Binding.Wpf, so their namespace is imported for every consumer. -->
-  <ItemGroup>
+  <!-- Import the WPF binding types' namespace when the consumer enables implicit usings. -->
+  <ItemGroup Condition="'$(ImplicitUsings)' == 'true' Or '$(ImplicitUsings)' == 'enable'">
     <Using Include="ReactiveUI.Binding.Wpf" />
   </ItemGroup>
 </Project>
