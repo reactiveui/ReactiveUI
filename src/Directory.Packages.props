@@ -158,8 +158,8 @@
   </ItemGroup>
 
   <ItemGroup Label="Platform - Android (Fragment / Collection / SavedState / Preference)">
-    <PackageVersion Include="Xamarin.AndroidX.Fragment" Version="1.9.0"/>
-    <PackageVersion Include="Xamarin.AndroidX.Fragment.Ktx" Version="1.9.0"/>
+    <PackageVersion Include="Xamarin.AndroidX.Fragment" Version="1.9.1"/>
+    <PackageVersion Include="Xamarin.AndroidX.Fragment.Ktx" Version="1.9.1"/>
     <PackageVersion Include="Xamarin.AndroidX.Collection.Jvm" Version="1.6.0.1"/>
     <PackageVersion Include="Xamarin.AndroidX.Collection.Ktx" Version="1.6.0.1"/>
     <PackageVersion Include="Xamarin.AndroidX.SavedState" Version="1.5.0.1"/>
