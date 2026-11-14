@@ -11,15 +11,12 @@ permissions:
   contents: read
   actions: write
 
-env:
-  productNamespacePrefix: "ReactiveUI"
-
 jobs:
   build:
     uses: reactiveui/actions-common/.github/workflows/workflow-common-setup-and-build.yml@main
     with:
       configuration: Release
-      productNamespacePrefix: "ReactiveUI"
+      productNamespacePrefix: ReactiveUI
       installWorkloads: true
       installWindowsAppRuntime: true
       # Test only the test projects: the solution also builds the documentation example apps, which are not tests.
