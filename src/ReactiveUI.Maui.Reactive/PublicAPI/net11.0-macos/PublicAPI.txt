@@ -5,7 +5,7 @@
 [assembly: Microsoft.Maui.Controls.XmlnsDefinition("http://schemas.microsoft.com/dotnet/maui/global", "Microsoft.Maui.Graphics", AssemblyName="Microsoft.Maui.Graphics")]
 [assembly: Microsoft.Maui.Controls.XmlnsDefinition("http://schemas.microsoft.com/dotnet/maui/global", "http://schemas.microsoft.com/dotnet/2021/maui")]
 [assembly: Microsoft.Maui.Controls.XmlnsPrefix("http://schemas.microsoft.com/dotnet/maui/global", "global")]
-[assembly: System.Runtime.Versioning.SupportedOSPlatform("macOS26.5")]
+[assembly: System.Runtime.Versioning.SupportedOSPlatform("macOS27.2")]
 namespace ReactiveUI.Reactive
 {
     [System.Flags]

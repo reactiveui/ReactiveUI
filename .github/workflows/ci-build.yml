@@ -18,6 +18,9 @@ jobs:
       configuration: Release
       productNamespacePrefix: ReactiveUI
       installWorkloads: true
+      # The .NET 11 device app builds on its matching Xcode image in device-tests.yml.
+      macosSolutionFile: reactiveui-macos.slnf
+      macosXcodeVersion: '26.0.1'
       installWindowsAppRuntime: true
       # Test only the test projects: the solution also builds the documentation example apps, which are not tests.
       # The device test app needs an emulator or simulator; device-tests.yml runs it.

@@ -17,3 +17,5 @@ jobs:
       projects: src/tests/ReactiveUI.Device.Tests/ReactiveUI.Device.Tests.csproj
       configuration: Release
       solutionFile: reactiveui.slnx
+      iosRunner: xcode-27
+      iosXcodeVersion: '27.2'
