@@ -157,7 +157,7 @@ projects relax the allocation rules (see *Tests & benchmarks*).
 - **`System.Threading.Lock` (net9+) is the default monitor primitive**
   for new code that needs a private gate around shared mutable state:
   `private readonly Lock _gate = new();` and `lock (_gate)`. On
-  `net8.0` / `net462` / `net472` / `net481` fall back to
+  `net47` / `net472` / `net481` fall back to
   `private readonly object _gate = new();`; hide the multi-TFM split
   behind a helper where call-site readability matters.
 - **No locks on arbitrary objects** (`this`, `typeof(X)`, public

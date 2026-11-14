@@ -65,7 +65,7 @@ jobs:
             #    and the appear/disappear handling all live in src/Shared/ActivationSignals.cs. What is left is
             #    the interface surface itself, which C# cannot share: no common base is possible, the raise
             #    methods invoke each type's own field-like event so no static helper can reach them, and default
-            #    interface members are unavailable because these assemblies still target net462/net472/net481.
+            #    interface members are unavailable because these assemblies still target net47/net472/net481.
             #    Removing it would need a source generator; suppressing CPD keeps the metric honest meanwhile,
             #    and every other rule still runs on these files.
             sonarCpdExclusions: '**/tests/**,**/integrationtests/**,**/benchmarks/**,**/examples/**,**/*.Arity?.cs,**/*.Arity??.cs,**/*.Arity?.Dynamic.cs,**/*.Arity??.Dynamic.cs,**/BuilderMixins.Instance.cs,**/ReactiveUIBuilder.Build.cs,**/ReactiveUI.AndroidX/Reactive*.cs,**/Platforms/android/Reactive*.cs,**/Platforms/apple-common/Reactive*.cs,**/Platforms/uikit-common/Reactive*.cs,**/Platforms/mac/Reactive*.cs'
