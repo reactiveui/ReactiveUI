@@ -8,37 +8,42 @@
     <SplatVersion>21.0.0</SplatVersion>
     <PrimitivesVersion>9.0.0</PrimitivesVersion>
     <BindingVersion>9.1.0</BindingVersion>
-    <TUnitVersion>1.72.16</TUnitVersion>
+    <TUnitVersion>1.84.0</TUnitVersion>
     <!-- StyleSharp.Analyzers, PerformanceSharp.Analyzers and SecuritySharp.Analyzers ship from the
          same release pipeline and always share a version. -->
-    <RoslynCommonAnalyzersVersion>5.1.2</RoslynCommonAnalyzersVersion>
+    <RoslynCommonAnalyzersVersion>5.2.0</RoslynCommonAnalyzersVersion>
     <XamarinAndroidXLifecycleLiveDataVersion>2.11.0.1</XamarinAndroidXLifecycleLiveDataVersion>
   </PropertyGroup>
 
   <PropertyGroup Label="Framework-Aligned Versions">
-    <MauiVersion Condition="$(TargetFramework.StartsWith('net10'))">10.0.110</MauiVersion>
-    <MauiVersion Condition="$(TargetFramework.StartsWith('net11'))">11.0.0-rc.1.26451.6</MauiVersion>
-
-    <AspNetVersion Condition="$(TargetFramework.StartsWith('netstandard'))">3.1.32</AspNetVersion>
-    <AspNetVersion Condition="$(TargetFramework.StartsWith('net8'))">8.0.31</AspNetVersion>
-    <AspNetVersion Condition="$(TargetFramework.StartsWith('net9'))">9.0.20</AspNetVersion>
-    <AspNetVersion Condition="$(TargetFramework.StartsWith('net10'))">10.0.12</AspNetVersion>
-    <AspNetVersion Condition="$(TargetFramework.StartsWith('net11'))">11.0.0-rc.1.26425.128</AspNetVersion>
-
-    <SystemTextJsonVersion>10.0.12</SystemTextJsonVersion>
-    <SystemTextJsonVersion Condition="$(TargetFramework.StartsWith('net11'))">11.0.0-rc.1.26425.128</SystemTextJsonVersion>
-
-    <!-- Microsoft.Extensions.* and the runtime data packages track the framework: stable 10.0.x for
-         net8/9/10, the net11 preview on net11 so the net11 ReactiveUI.Primitives assemblies resolve. -->
-    <MicrosoftExtensionsVersion>10.0.12</MicrosoftExtensionsVersion>
-    <MicrosoftExtensionsVersion Condition="$(TargetFramework.StartsWith('net11'))">11.0.0-rc.1.26425.128</MicrosoftExtensionsVersion>
-
-    <XamlBehaviorsWpfVersion Condition="$(TargetFramework.StartsWith('net4'))">1.1.161</XamlBehaviorsWpfVersion>
-    <XamlBehaviorsWpfVersion Condition="$(TargetFramework.StartsWith('net8'))">1.1.161</XamlBehaviorsWpfVersion>
-    <XamlBehaviorsWpfVersion Condition="$(TargetFramework.StartsWith('net9'))">1.1.161</XamlBehaviorsWpfVersion>
-    <XamlBehaviorsWpfVersion Condition="$(TargetFramework.StartsWith('net10'))">1.1.161</XamlBehaviorsWpfVersion>
-    <XamlBehaviorsWpfVersion Condition="$(TargetFramework.StartsWith('net11'))">1.1.161</XamlBehaviorsWpfVersion>
+    <XamlBehaviorsWpfVersion>1.1.161</XamlBehaviorsWpfVersion>
   </PropertyGroup>
+
+  <Choose>
+    <When Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net11.0'))">
+      <PropertyGroup Label="Framework-Aligned Versions">
+        <MauiVersion>11.0.10</MauiVersion>
+        <AspNetVersion>11.0.0</AspNetVersion>
+        <SystemTextJsonVersion>11.0.0</SystemTextJsonVersion>
+        <MicrosoftExtensionsVersion>11.0.0</MicrosoftExtensionsVersion>
+      </PropertyGroup>
+    </When>
+    <When Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net10.0'))">
+      <PropertyGroup Label="Framework-Aligned Versions">
+        <MauiVersion>10.0.130</MauiVersion>
+        <AspNetVersion>10.0.15</AspNetVersion>
+        <SystemTextJsonVersion>10.0.15</SystemTextJsonVersion>
+        <MicrosoftExtensionsVersion>10.0.15</MicrosoftExtensionsVersion>
+      </PropertyGroup>
+    </When>
+    <Otherwise>
+      <PropertyGroup Label="Framework-Aligned Versions">
+        <AspNetVersion Condition="$(TargetFramework.StartsWith('netstandard'))">3.1.32</AspNetVersion>
+        <SystemTextJsonVersion>10.0.15</SystemTextJsonVersion>
+        <MicrosoftExtensionsVersion>10.0.15</MicrosoftExtensionsVersion>
+      </PropertyGroup>
+    </Otherwise>
+  </Choose>
 
   <ItemGroup Label="ReactiveUI Primitives">
     <PackageVersion Include="ReactiveUI.Primitives" Version="$(PrimitivesVersion)"/>
@@ -89,9 +94,9 @@
   <ItemGroup Label="Testing">
     <PackageVersion Include="TUnit" Version="$(TUnitVersion)"/>
     <PackageVersion Include="TUnit.Core" Version="$(TUnitVersion)"/>
-    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.10.1"/>
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.12.0"/>
     <PackageVersion Include="Microsoft.Testing.Extensions.CodeCoverage" Version="18.12.0"/>
-    <PackageVersion Include="Microsoft.Testing.Platform.MSBuild" Version="2.4.1"/>
+    <PackageVersion Include="Microsoft.Testing.Platform.MSBuild" Version="2.5.3"/>
     <PackageVersion Include="Microsoft.Reactive.Testing" Version="7.0.0"/>
     <PackageVersion Include="System.Reactive" Version="7.0.0"/>
     <PackageVersion Include="Mocks.Maui" Version="1.2.5"/>
@@ -102,42 +107,42 @@
     <PackageVersion Include="PerformanceSharp.Analyzers" Version="$(RoslynCommonAnalyzersVersion)"/>
     <PackageVersion Include="SecuritySharp.Analyzers" Version="$(RoslynCommonAnalyzersVersion)"/>
     <PackageVersion Include="Roslynator.Analyzers" Version="5.0.1"/>
-    <PackageVersion Include="SonarAnalyzer.CSharp" Version="10.35.0.4138"/>
-    <PackageVersion Include="Microsoft.CodeAnalysis.Analyzers" Version="5.9.0"/>
-    <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="5.9.0"/>
-    <PackageVersion Include="PublicApiSharp.Analyzers" Version="2.1.0"/>
+    <PackageVersion Include="SonarAnalyzer.CSharp" Version="10.36.0.15337"/>
+    <PackageVersion Include="Microsoft.CodeAnalysis.Analyzers" Version="5.12.0"/>
+    <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="5.12.0"/>
+    <PackageVersion Include="PublicApiSharp.Analyzers" Version="2.2.0"/>
   </ItemGroup>
 
   <ItemGroup Label="Build / SourceLink / Versioning">
-    <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="10.0.403"/>
+    <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="11.0.100"/>
     <PackageVersion Include="MinVer" Version="8.0.0"/>
   </ItemGroup>
 
   <ItemGroup Label="Microsoft Extensions / Runtime / Data">
-    <PackageVersion Include="Microsoft.Bcl.TimeProvider" Version="10.0.12"/>
+    <PackageVersion Include="Microsoft.Bcl.TimeProvider" Version="10.0.15"/>
     <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="$(MicrosoftExtensionsVersion)"/>
     <PackageVersion Include="Microsoft.Extensions.DependencyModel" Version="$(MicrosoftExtensionsVersion)"/>
     <PackageVersion Include="System.Collections.Immutable" Version="$(MicrosoftExtensionsVersion)"/>
     <PackageVersion Include="System.Text.Json" Version="$(SystemTextJsonVersion)"/>
-    <PackageVersion Include="Microsoft.Data.Sqlite.Core" Version="10.0.12"/>
+    <PackageVersion Include="Microsoft.Data.Sqlite.Core" Version="10.0.15"/>
     <PackageVersion Include="SQLitePCLRaw.bundle_green" Version="2.1.11"/>
   </ItemGroup>
 
   <ItemGroup Label="Platform - Windows / WinUI / WPF">
-    <PackageVersion Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.28000.2705"/>
+    <PackageVersion Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.28000.2957"/>
     <PackageVersion Include="Microsoft.Windows.CsWinRT" Version="2.3.1"/>
     <PackageVersion Include="Microsoft.Xaml.Behaviors.Wpf" Version="$(XamlBehaviorsWpfVersion)"/>
   </ItemGroup>
 
   <ItemGroup Label="Platform - MAUI">
     <PackageVersion Include="Microsoft.Maui.Controls" Version="$(MauiVersion)"/>
-    <PackageVersion Include="Microsoft.Maui.Controls.Compatibility" Version="$(MauiVersion)" Condition="$(TargetFramework.StartsWith('net10'))"/>
+    <PackageVersion Include="Microsoft.Maui.Controls.Compatibility" Version="$(MauiVersion)" Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net10.0')) AND !$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net11.0'))"/>
   </ItemGroup>
 
   <ItemGroup Label="Platform - Blazor / ASP.NET">
     <PackageVersion Include="Microsoft.AspNetCore.Components" Version="$(AspNetVersion)"/>
-    <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.12"/>
-    <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="10.0.12"/>
+    <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.15"/>
+    <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="10.0.15"/>
   </ItemGroup>
 
   <ItemGroup Label="Legacy Compat Shims">
@@ -158,8 +163,8 @@
   </ItemGroup>
 
   <ItemGroup Label="Platform - Android (Fragment / Collection / SavedState / Preference)">
-    <PackageVersion Include="Xamarin.AndroidX.Fragment" Version="1.9.0"/>
-    <PackageVersion Include="Xamarin.AndroidX.Fragment.Ktx" Version="1.9.0"/>
+    <PackageVersion Include="Xamarin.AndroidX.Fragment" Version="1.9.1"/>
+    <PackageVersion Include="Xamarin.AndroidX.Fragment.Ktx" Version="1.9.1"/>
     <PackageVersion Include="Xamarin.AndroidX.Collection.Jvm" Version="1.6.0.1"/>
     <PackageVersion Include="Xamarin.AndroidX.Collection.Ktx" Version="1.6.0.1"/>
     <PackageVersion Include="Xamarin.AndroidX.SavedState" Version="1.5.0.1"/>
@@ -168,14 +173,14 @@
   </ItemGroup>
 
   <ItemGroup Label="Platform - WinUI (non-MAUI only)" Condition="'$(UseMaui)' != 'true'">
-    <PackageVersion Include="Microsoft.WindowsAppSDK" Version="2.5.1"/>
+    <PackageVersion Include="Microsoft.WindowsAppSDK" Version="2.6.5"/>
   </ItemGroup>
 
   <ItemGroup Label="Polyfills - net4 (System.ValueTuple)" Condition="$(TargetFramework.StartsWith('net4'))">
     <PackageVersion Include="System.ValueTuple" Version="4.6.2"/>
   </ItemGroup>
 
-  <ItemGroup Label="Polyfills - ComponentModel.Annotations" Condition="$(TargetFramework.StartsWith('net4')) or '$(TargetFramework)' == 'net9.0' or '$(TargetFramework)' == 'net8.0' or $(TargetFramework.EndsWith('-windows10.0.17763.0')) or $(TargetFramework.EndsWith('-windows10.0.19041.0'))">
+  <ItemGroup Label="Polyfills - ComponentModel.Annotations" Condition="$(TargetFramework.StartsWith('net4')) or $(TargetFramework.EndsWith('-windows10.0.17763.0')) or $(TargetFramework.EndsWith('-windows10.0.19041.0'))">
     <PackageVersion Include="System.ComponentModel.Annotations" Version="5.0.0"/>
   </ItemGroup>
 

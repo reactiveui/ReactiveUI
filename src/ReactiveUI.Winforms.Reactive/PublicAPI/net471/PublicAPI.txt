@@ -1,0 +1,147 @@
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.WinForms.Tests.Reactive")]
+namespace ReactiveUI.Reactive.Builder
+{
+    public static class WinFormsReactiveUIBuilderExtensions
+    {
+        public static System.Reactive.Concurrency.IScheduler WinFormsMainThreadScheduler { get; }
+        extension(ReactiveUI.Reactive.Builder.IReactiveUIBuilder builder)
+        {
+            public ReactiveUI.Reactive.Builder.IReactiveUIBuilder WithWinForms() { }
+            public ReactiveUI.Reactive.Builder.IReactiveUIBuilder WithWinFormsScheduler() { }
+        }
+    }
+}
+namespace ReactiveUI.Reactive.Winforms
+{
+    [System.Diagnostics.DebuggerDisplay("ActivationForViewFetcher")]
+    public class ActivationForViewFetcher : ReactiveUI.Reactive.IActivationForViewFetcher, Splat.IEnableLogger
+    {
+        public ActivationForViewFetcher() { }
+        public System.IObservable<bool> GetActivationForView(ReactiveUI.Binding.Reactive.IActivatableView view) { }
+        public int GetAffinityForView(System.Type view) { }
+    }
+    public class ContentControlBindingHook : ReactiveUI.Binding.Reactive.IPropertyBindingHook
+    {
+        public ContentControlBindingHook() { }
+        public bool ExecuteHook(object? source, object target, System.Func<ReactiveUI.Binding.Reactive.IObservedChange<object, object>[]> getCurrentViewModelProperties, System.Func<ReactiveUI.Binding.Reactive.IObservedChange<object, object>[]> getCurrentViewProperties, ReactiveUI.Binding.Reactive.BindingDirection direction) { }
+    }
+    public class PanelSetMethodBindingConverter : ReactiveUI.Binding.Reactive.ISetMethodBindingConverter
+    {
+        public PanelSetMethodBindingConverter() { }
+        public int GetAffinityForObjects(System.Type? fromType, System.Type? toType) { }
+        public object PerformSet(object? toTarget, object? newValue, object?[]? arguments) { }
+    }
+    public class PlatformOperations : ReactiveUI.IPlatformOperations
+    {
+        public PlatformOperations() { }
+        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+        public string? GetOrientation() { }
+    }
+    [System.Diagnostics.DebuggerDisplay("{ViewModel}")]
+    public class ReactiveUserControl<TViewModel> : System.Windows.Forms.UserControl, ReactiveUI.Binding.Reactive.IViewFor<TViewModel> where TViewModel : class
+    {
+        public ReactiveUserControl() { }
+        object? ReactiveUI.Binding.Reactive.IViewFor.ViewModel { get; set; }
+        [System.ComponentModel.Bindable(true)]
+        [System.ComponentModel.Category("ReactiveUI")]
+        [System.ComponentModel.Description("The ViewModel.")]
+        [System.ComponentModel.DesignerSerializationVisibility(System.ComponentModel.DesignerSerializationVisibility.Hidden)]
+        public TViewModel? ViewModel { get; set; }
+        protected override void Dispose(bool disposing) { }
+    }
+    [System.Diagnostics.DebuggerDisplay("ReactiveUserControlNonGeneric")]
+    public class ReactiveUserControlNonGeneric : System.Windows.Forms.UserControl, ReactiveUI.Binding.Reactive.IViewFor
+    {
+        public ReactiveUserControlNonGeneric() { }
+        object? ReactiveUI.Binding.Reactive.IViewFor.ViewModel { get; set; }
+        protected override void Dispose(bool disposing) { }
+    }
+    public class Registrations : ReactiveUI.IWantsToRegisterStuff
+    {
+        public Registrations() { }
+        public void Register(ReactiveUI.IRegistrar registrar) { }
+    }
+    [System.ComponentModel.DefaultProperty("ViewModel")]
+    [System.Diagnostics.DebuggerDisplay("{DefaultContent}, {Router}")]
+    public class RoutedControlHost : System.Windows.Forms.UserControl, ReactiveUI.IReactiveObject
+    {
+        public RoutedControlHost() { }
+        [System.ComponentModel.Category("ReactiveUI")]
+        [System.ComponentModel.Description("The default control when no viewmodel is specified")]
+        [System.ComponentModel.DesignerSerializationVisibility(System.ComponentModel.DesignerSerializationVisibility.Hidden)]
+        public System.Windows.Forms.Control? DefaultContent { get; set; }
+        [System.ComponentModel.Category("ReactiveUI")]
+        [System.ComponentModel.Description("The router.")]
+        [System.ComponentModel.DesignerSerializationVisibility(System.ComponentModel.DesignerSerializationVisibility.Hidden)]
+        public ReactiveUI.Reactive.RoutingState? Router { get; set; }
+        [System.ComponentModel.Browsable(false)]
+        [System.ComponentModel.DesignerSerializationVisibility(System.ComponentModel.DesignerSerializationVisibility.Hidden)]
+        public System.IObservable<string>? ViewContractObservable { get; set; }
+        [System.ComponentModel.Browsable(false)]
+        [System.ComponentModel.DesignerSerializationVisibility(System.ComponentModel.DesignerSerializationVisibility.Hidden)]
+        public ReactiveUI.Binding.Reactive.IViewLocator? ViewLocator { get; set; }
+        public event System.ComponentModel.PropertyChangedEventHandler? PropertyChanged;
+        public event System.ComponentModel.PropertyChangingEventHandler? PropertyChanging;
+        protected override void Dispose(bool disposing) { }
+        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+        void ReactiveUI.IReactiveObject.RaisePropertyChanged(System.ComponentModel.PropertyChangedEventArgs args) { }
+        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+        void ReactiveUI.IReactiveObject.RaisePropertyChanging(System.ComponentModel.PropertyChangingEventArgs args) { }
+    }
+    [System.Diagnostics.DebuggerDisplay("{DefaultContent}, {Router}")]
+    public class RoutedControlHostUnsafe : ReactiveUI.Reactive.Winforms.RoutedControlHost
+    {
+        public RoutedControlHostUnsafe() { }
+    }
+    public class TableContentSetMethodBindingConverter : ReactiveUI.Binding.Reactive.ISetMethodBindingConverter
+    {
+        public TableContentSetMethodBindingConverter() { }
+        public int GetAffinityForObjects(System.Type? fromType, System.Type? toType) { }
+        public object PerformSet(object? toTarget, object? newValue, object?[]? arguments) { }
+    }
+    [System.ComponentModel.DefaultProperty("ViewModel")]
+    [System.Diagnostics.DebuggerDisplay("{CurrentView}, {DefaultContent}")]
+    public class ViewModelControlHost : System.Windows.Forms.UserControl, ReactiveUI.Binding.Reactive.IViewFor, ReactiveUI.IReactiveObject
+    {
+        public ViewModelControlHost() { }
+        [System.ComponentModel.Bindable(true)]
+        [System.ComponentModel.Category("ReactiveUI")]
+        [System.ComponentModel.DefaultValue(true)]
+        [System.ComponentModel.Description("Cache Views")]
+        public bool CacheViews { get; set; }
+        [System.ComponentModel.Bindable(true)]
+        [System.ComponentModel.Category("ReactiveUI")]
+        [System.ComponentModel.Description("The Current View")]
+        [System.ComponentModel.DesignerSerializationVisibility(System.ComponentModel.DesignerSerializationVisibility.Hidden)]
+        public object? Content { get; protected set; }
+        public System.Windows.Forms.Control? CurrentView { get; }
+        [System.ComponentModel.Category("ReactiveUI")]
+        [System.ComponentModel.Description("The default control when no viewmodel is specified")]
+        [System.ComponentModel.DesignerSerializationVisibility(System.ComponentModel.DesignerSerializationVisibility.Hidden)]
+        public System.Windows.Forms.Control? DefaultContent { get; set; }
+        [System.ComponentModel.Browsable(false)]
+        [System.ComponentModel.DesignerSerializationVisibility(System.ComponentModel.DesignerSerializationVisibility.Hidden)]
+        public System.IObservable<string>? ViewContractObservable { get; set; }
+        [System.ComponentModel.Browsable(false)]
+        [System.ComponentModel.DesignerSerializationVisibility(System.ComponentModel.DesignerSerializationVisibility.Hidden)]
+        public ReactiveUI.Binding.Reactive.IViewLocator? ViewLocator { get; set; }
+        [System.ComponentModel.Bindable(true)]
+        [System.ComponentModel.Category("ReactiveUI")]
+        [System.ComponentModel.Description("The viewmodel to host.")]
+        [System.ComponentModel.DesignerSerializationVisibility(System.ComponentModel.DesignerSerializationVisibility.Hidden)]
+        public object? ViewModel { get; set; }
+        public static bool DefaultCacheViewsEnabled { get; set; }
+        public event System.ComponentModel.PropertyChangedEventHandler? PropertyChanged;
+        public event System.ComponentModel.PropertyChangingEventHandler? PropertyChanging;
+        protected override void Dispose(bool disposing) { }
+        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+        void ReactiveUI.IReactiveObject.RaisePropertyChanged(System.ComponentModel.PropertyChangedEventArgs args) { }
+        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+        void ReactiveUI.IReactiveObject.RaisePropertyChanging(System.ComponentModel.PropertyChangingEventArgs args) { }
+    }
+    [System.Diagnostics.DebuggerDisplay("{CurrentView}, {DefaultContent}")]
+    public class ViewModelControlHostUnsafe : ReactiveUI.Reactive.Winforms.ViewModelControlHost
+    {
+        public ViewModelControlHostUnsafe() { }
+    }
+}

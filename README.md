@@ -290,14 +290,12 @@ the [official migration documentation](https://docs.microsoft.com/dotnet/maui/mi
 
 ### MAUI Users
 
-ReactiveUI supports .NET 9 and .NET 10 for MAUI platforms:
+ReactiveUI supports .NET 10 and .NET 11 for MAUI platforms:
 
-- `net10.0-android` / `net9.0-android`
-- `net10.0-ios` / `net9.0-ios`
-- `net10.0-maccatalyst` / `net9.0-maccatalyst`
-- `net10.0-windows10.0.19041.0` / `net9.0-windows10.0.19041.0`
-
-Non-MAUI `net8.0` library targets remain fully supported.
+- `net10.0-android` / `net11.0-android`
+- `net10.0-ios` / `net11.0-ios`
+- `net10.0-maccatalyst` / `net11.0-maccatalyst`
+- `net10.0-windows10.0.19041.0` / `net11.0-windows10.0.19041.0`
 
 ## Examples
 

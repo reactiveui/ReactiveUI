@@ -21,7 +21,7 @@
   <ItemGroup>
     <Using Include="ReactiveUI.Primitives.Disposables"/>
   </ItemGroup>
-  <PropertyGroup Condition="$(TargetFramework.StartsWith('net8.0')) or $(TargetFramework.StartsWith('net9.0')) or $(TargetFramework.StartsWith('net10.0')) or $(TargetFramework.StartsWith('net11.0'))">
+  <PropertyGroup Condition="$(TargetFramework.StartsWith('net10.0')) or $(TargetFramework.StartsWith('net11.0'))">
     <IsAotCompatible>true</IsAotCompatible>
   </PropertyGroup>
 
@@ -65,7 +65,7 @@
     <Compile Include="..\Shared\ActivationSignals.cs" Link="Shared\ActivationSignals.cs"/>
   </ItemGroup>
   <!-- Base .NET platform registration (not a workload platform) — net/net4 TFMs (mirrors lean's net group). -->
-  <ItemGroup Condition=" $(TargetFramework.StartsWith('net4')) or '$(TargetFramework)' == 'net11.0' or '$(TargetFramework)' == 'net10.0' or '$(TargetFramework)' == 'net9.0' or '$(TargetFramework)' == 'net8.0' ">
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('net4')) or '$(TargetFramework)' == 'net11.0' or '$(TargetFramework)' == 'net10.0' ">
     <Compile Include="..\ReactiveUI\Platforms\net\**\*.cs" Link="Platforms\net\%(RecursiveDir)%(Filename)%(Extension)"/>
   </ItemGroup>
 

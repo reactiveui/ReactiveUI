@@ -39,7 +39,7 @@ This repository uses **SLNX** (XML-based solution format) instead of legacy `.sl
 
 ### Required SDKs
 
-* .NET **8.0**, **9.0**, **10.0** SDKs (all required)
+* .NET **10.0** and **11.0** SDKs (both required)
 
 ### Workload Restore (Required)
 
@@ -185,7 +185,7 @@ See `docs/RxSchedulers.md`.
 
 ## AOT Guidance (Critical)
 
-This repository targets net8.0+ and supports AOT/trimming scenarios.
+This repository targets net10.0+ and supports AOT/trimming scenarios.
 
 ### Primary Rule: Avoid Reflection Paths
 
