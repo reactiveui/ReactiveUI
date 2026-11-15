@@ -22,9 +22,6 @@ public partial class ReactiveObjectObservationIntegrationTests
     /// <summary>The expected notification count after the third property change.</summary>
     private const int ExpectedCountAfterThirdChange = 3;
 
-    /// <summary>The expected notification count after the fourth property change.</summary>
-    private const int ExpectedCountAfterFourthChange = 4;
-
     /// <summary>Test value "Foo".</summary>
     private const string FooText = "Foo";
 
@@ -37,17 +34,8 @@ public partial class ReactiveObjectObservationIntegrationTests
     /// <summary>Test value "Bamf".</summary>
     private const string BamfText = "Bamf";
 
-    /// <summary>Test value "Initial".</summary>
-    private const string InitialText = "Initial";
-
     /// <summary>Test value "Changed".</summary>
     private const string ChangedText = "Changed";
-
-    /// <summary>Test value "Pre".</summary>
-    private const string PreText = "Pre";
-
-    /// <summary>Test value "Test".</summary>
-    private const string TestText = "Test";
 
     /// <summary>Test value "abc".</summary>
     private const string AbcText = "abc";
@@ -58,20 +46,11 @@ public partial class ReactiveObjectObservationIntegrationTests
     /// <summary>Test value "B".</summary>
     private const string BText = "B";
 
-    /// <summary>Test value "Value1".</summary>
-    private const string Value1Text = "Value1";
-
-    /// <summary>Test value "Value2".</summary>
-    private const string Value2Text = "Value2";
-
     /// <summary>The "IsOnlyOneWord" property name used in expression-chain tests.</summary>
     private const string IsOnlyOneWordName = "IsOnlyOneWord";
 
     /// <summary>The "Child" property name used in expression-chain tests.</summary>
     private const string ChildName = "Child";
-
-    /// <summary>The "Child.IsOnlyOneWord" nested property path used in expression-chain tests.</summary>
-    private const string ChildIsOnlyOneWordName = "Child.IsOnlyOneWord";
 
     /// <summary>Test value "1".</summary>
     private const string OneText = "1";

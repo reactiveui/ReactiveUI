@@ -12,7 +12,7 @@ namespace ReactiveUI.Documentation.DefaultExceptionHandler;
 public sealed class BankAccountService : IEnableLogger
 {
     /// <summary>The accounts the server knows about.</summary>
-    private static readonly BankAccount[] _accounts =
+    private readonly BankAccount[] _accounts =
     [
         new("checking-01", "Ada Lovelace", 500.00M),
         new("savings-02", "Grace Hopper", 1200.50M),

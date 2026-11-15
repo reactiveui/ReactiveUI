@@ -99,8 +99,8 @@ public class CommandBindingIntegrationTests
         /// <summary>Gets the command under test.</summary>
         public ReactiveCommand<RxVoid, RxVoid> Command { get; } = ReactiveCommand.Create(static () => { }, outputScheduler: Sequencer.Immediate);
 
-        /// <summary>Gets the expression-backed parameter.</summary>
-        public RxVoid Parameter => default;
+        /// <summary>Gets the command parameter.</summary>
+        public RxVoid Parameter { get; }
 
         /// <inheritdoc/>
         public void Dispose() => Command.Dispose();

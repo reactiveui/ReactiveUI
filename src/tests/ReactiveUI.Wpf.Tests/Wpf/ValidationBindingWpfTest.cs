@@ -745,7 +745,7 @@ public class ValidationBindingWpfTest
         public TextBox TestControl { get; } = new();
 
         /// <summary>Gets a control that always throws when accessed, used to test missing-control handling.</summary>
-        public TextBox NonExistentControl => throw new InvalidOperationException("This property should not be accessed");
+        public TextBox NonExistentControl => throw new InvalidOperationException($"{GetType().Name}.{nameof(NonExistentControl)} should not be accessed.");
     }
 
     /// <summary>A mock window-based view that hosts a named text box.</summary>

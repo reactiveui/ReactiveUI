@@ -10,5 +10,5 @@ namespace ReactiveUI.Documentation.Registration;
 public sealed class SettingsViewModel
 {
     /// <summary>Gets the title the screen shows in its header.</summary>
-    public string Title => "Settings";
+    public string Title { get; } = "Settings";
 }

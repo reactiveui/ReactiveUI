@@ -25,7 +25,7 @@ public sealed class RecipeListViewModel : ReactiveObject, IRoutableViewModel
     public IScreen HostScreen { get; }
 
     /// <summary>Gets the recipes the page lists.</summary>
-    public IReadOnlyList<RecipeItem> Recipes => RecipeBook.Recipes;
+    public IReadOnlyList<RecipeItem> Recipes { get; } = RecipeBook.Recipes;
 
     /// <summary>Gets the command that opens a recipe's detail page.</summary>
     public ReactiveCommand<RecipeItem, IRoutableViewModel> Open { get; }

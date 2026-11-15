@@ -15,6 +15,9 @@ namespace ReactiveUI.Documentation.PlatformAndroid;
 [System.Diagnostics.DebuggerDisplay("AttendanceTrackerService")]
 public sealed class AttendanceTrackerService : Service
 {
+    /// <summary>The subjects recorded as absent during this service's lifetime.</summary>
+    private readonly List<string> _absences = [];
+
     /// <summary>The binder handed to a bound client, exposing this service directly. Created lazily in
     /// <see cref="OnBind"/>, rather than in the constructor, so <see langword="this"/> never escapes before
     /// construction finishes.</summary>
@@ -25,8 +28,11 @@ public sealed class AttendanceTrackerService : Service
 
     /// <summary>Records that a student was marked absent from a lesson.</summary>
     /// <param name="subject">The subject of the lesson the student missed.</param>
-    public void RecordAbsence(string subject) =>
+    public void RecordAbsence(string subject)
+    {
+        _absences.Add(subject);
         TimetableLog.Info($"AttendanceTrackerService recorded an absence from {subject}.");
+    }
 
     /// <inheritdoc/>
     public override void OnDestroy()

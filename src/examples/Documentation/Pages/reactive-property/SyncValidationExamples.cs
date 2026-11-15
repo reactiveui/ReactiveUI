@@ -11,6 +11,9 @@ namespace ReactiveUI.Documentation.ReactiveProperty;
 /// <summary>Shows synchronous validation on <see cref="ReactiveProperty{T}"/>, and how errors are read back.</summary>
 public static class SyncValidationExamples
 {
+    /// <summary>The validation errors reported for students below the minimum club age.</summary>
+    private static readonly string[] _minimumAgeErrors = ["The student is too young for any club."];
+
     /// <summary>
     /// A validator that returns a single message runs on the initial value unless <c>ignoreInitialError</c> is
     /// <see langword="true"/>; <see cref="ReactiveProperty{T}.CheckValidation"/> re-runs a validator without
@@ -49,11 +52,11 @@ public static class SyncValidationExamples
     public static void ValidateWithMultipleErrors()
     {
         ReactiveProperty<int> age = new(5, RxSchedulers.MainThreadScheduler, false, false);
-        _ = age.AddValidationError(static value => value < 8 ? new[] { "The student is too young for any club." } : null);
+        _ = age.AddValidationError(static value => value < 8 ? _minimumAgeErrors : null);
 
         ReactiveProperty<int> ageIgnoringInitialError = new(5, RxSchedulers.MainThreadScheduler, false, false);
         _ = ageIgnoringInitialError.AddValidationError(
-            static value => value < 8 ? new[] { "The student is too young for any club." } : null,
+            static value => value < 8 ? _minimumAgeErrors : null,
             ignoreInitialError: true);
 
         Console.WriteLine(age.HasErrors);
@@ -79,7 +82,7 @@ public static class SyncValidationExamples
     public static void GetErrorsReturnsCurrentErrors()
     {
         ReactiveProperty<int> age = new(5, RxSchedulers.MainThreadScheduler, false, false);
-        _ = age.AddValidationError(static value => value < 8 ? new[] { "The student is too young for any club." } : null);
+        _ = age.AddValidationError(static value => value < 8 ? _minimumAgeErrors : null);
 
         IEnumerable? errors = age.GetErrors(nameof(age.Value));
         if (errors is not null)

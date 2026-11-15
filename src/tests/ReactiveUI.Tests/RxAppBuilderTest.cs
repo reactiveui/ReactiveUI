@@ -156,10 +156,8 @@ public class RxAppBuilderTest
             "Design",
             "SST2324:Member is public but its containing type is not publicly reachable",
             Justification = "the public surface is required for interface/reflection binding; the containing test double is an intentionally non-public detail.")]
-        public void RegisterConstant(object? value, Type? serviceType, string? contract)
-        {
-            // No-op: this test resolver does not store registrations.
-        }
+        public void RegisterConstant(object? value, Type? serviceType, string? contract) =>
+            RegisterConstant(value, contract);
 
         /// <inheritdoc/>
         public void RegisterLazySingleton<
@@ -189,10 +187,8 @@ public class RxAppBuilderTest
             "Design",
             "SST2324:Member is public but its containing type is not publicly reachable",
             Justification = "the public surface is required for interface/reflection binding; the containing test double is an intentionally non-public detail.")]
-        public void RegisterLazySingleton(Func<object?> factory, Type? serviceType, string? contract)
-        {
-            // No-op: this test resolver does not store registrations.
-        }
+        public void RegisterLazySingleton(Func<object?> factory, Type? serviceType, string? contract) =>
+            RegisterLazySingleton(factory, contract);
 
         /// <inheritdoc/>
         public IDisposable ServiceRegistrationCallback(Type serviceType, Action<IDisposable> callback) =>

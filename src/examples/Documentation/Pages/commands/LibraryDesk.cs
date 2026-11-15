@@ -13,7 +13,7 @@ namespace ReactiveUI.Documentation.Commands;
 public sealed class LibraryDesk : ReactiveObject
 {
     /// <summary>The books the desk knows about.</summary>
-    private static readonly Book[] _catalogue =
+    private readonly Book[] _catalogue =
     [
         new Book(1, "Clean Code", "Robert C. Martin"),
         new Book(2, "The Pragmatic Programmer", "Andrew Hunt"),
@@ -81,7 +81,7 @@ public sealed class LibraryDesk : ReactiveObject
     /// <param name="cancellationToken">A token that cancels the refresh.</param>
     /// <returns>A task that completes once the cache is refreshed.</returns>
     public Task RefreshLocalCacheAsync(CancellationToken cancellationToken) =>
-        Task.Delay(TimeSpan.FromMilliseconds(10), cancellationToken);
+        Task.Delay(TimeSpan.FromMilliseconds(10), _timeProvider, cancellationToken);
 
     /// <summary>Takes every book on loan back, after writing the returns to the desk's ledger.</summary>
     /// <returns>A task that completes once every book has been returned.</returns>

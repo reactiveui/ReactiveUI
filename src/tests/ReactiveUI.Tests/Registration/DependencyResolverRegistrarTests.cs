@@ -372,28 +372,6 @@ public class DependencyResolverRegistrarTests
         public IDisposable ServiceRegistrationCallback<T>(string? contract, Action<IDisposable> callback) =>
             Scope.Empty;
 
-        /// <summary>Gets the registered service for the given type and contract; this stub always returns <see langword="null"/>.</summary>
-        /// <param name="serviceType">The requested service type.</param>
-        /// <param name="contract">The optional registration contract.</param>
-        /// <returns>Always <see langword="null"/>.</returns>
-        [SuppressMessage(
-            "Design",
-            "SST2324:Public member on a non-public type",
-            Justification = "the public surface is required for interface/reflection binding; the containing "
-                + "test double is an intentionally non-public detail.")]
-        public object? GetService(Type? serviceType, string? contract) => null;
-
-        /// <summary>Gets the registered services for the given type and contract; this stub always returns an empty sequence.</summary>
-        /// <param name="serviceType">The requested service type.</param>
-        /// <param name="contract">The optional registration contract.</param>
-        /// <returns>An empty sequence.</returns>
-        [SuppressMessage(
-            "Design",
-            "SST2324:Public member on a non-public type",
-            Justification = "the public surface is required for interface/reflection binding; the containing "
-                + "test double is an intentionally non-public detail.")]
-        public IEnumerable<object> GetServices(Type? serviceType, string? contract) => [];
-
         /// <inheritdoc />
         public void Dispose()
         {

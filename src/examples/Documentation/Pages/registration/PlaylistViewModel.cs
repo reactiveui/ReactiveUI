@@ -10,5 +10,5 @@ namespace ReactiveUI.Documentation.Registration;
 public sealed class PlaylistViewModel
 {
     /// <summary>Gets the title the screen shows in its header.</summary>
-    public string Title => "Now Playing";
+    public string Title { get; } = "Now Playing";
 }
