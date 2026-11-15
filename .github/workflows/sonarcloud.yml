@@ -14,9 +14,9 @@ jobs:
         uses: reactiveui/actions-common/.github/workflows/workflow-common-sonarcloud.yml@main
         with:
             productNamespacePrefix: ReactiveUI
+            solutionFile: reactiveui.slnx
             installWorkloads: true
             # Test only the test projects: the solution also builds the documentation example apps, which are not tests.
-            # The device test app needs an emulator or simulator; device-tests.yml runs it.
             testProjects: |
                 tests/**/*.csproj
                 !tests/ReactiveUI.Device.Tests/**

@@ -31,6 +31,7 @@
         <WindowsPackageType>None</WindowsPackageType>
         <!-- Carry the runtime from the referenced SDK so CI runs against that exact version. -->
         <WindowsAppSDKSelfContained Condition="'$(OS)' == 'Windows_NT'">true</WindowsAppSDKSelfContained>
+        <RuntimeIdentifier Condition="'$(OS)' == 'Windows_NT' and '$(RuntimeIdentifier)' == ''">win-x64</RuntimeIdentifier>
         <WindowsAppSDKSelfContained Condition="'$(OS)' != 'Windows_NT'">false</WindowsAppSDKSelfContained>
         <GenerateAppxPackageOnBuild>false</GenerateAppxPackageOnBuild>
         <PublishAppxPackage>false</PublishAppxPackage>

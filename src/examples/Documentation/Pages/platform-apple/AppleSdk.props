@@ -1,0 +1,5 @@
+<Project>
+  <!-- Import after framework inference, before the workload selects its older net10 compatibility SDK. -->
+  <Import Project="Sdk.props" Sdk="Microsoft.iOS.Sdk.net10.0_27.2" Version="27.2.10000" Condition="'$(TargetFramework)' == 'net10.0-ios'" />
+  <Import Project="Sdk.props" Sdk="Microsoft.macOS.Sdk.net10.0_27.2" Version="27.2.10000" Condition="'$(TargetFramework)' == 'net10.0-macos'" />
+</Project>

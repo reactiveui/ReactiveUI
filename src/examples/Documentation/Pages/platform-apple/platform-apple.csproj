@@ -1,10 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AfterTargetFrameworkInferenceTargets>$(MSBuildThisFileDirectory)AppleSdk.props</AfterTargetFrameworkInferenceTargets>
+  </PropertyGroup>
 
   <!-- Apple targets are real device apps, not consoles: they replace most of what Documentation/Directory.Build.props
        assumes about a page project (single TFM net10.0, a console Main, NativeAOT publish). The iOS and macOS
        workloads exist only on Windows and macOS, so a Linux build compiles a placeholder instead. -->
   <PropertyGroup Condition="$([MSBuild]::IsOsPlatform('Windows')) or $([MSBuild]::IsOsPlatform('OSX'))">
-    <TargetFrameworks>net10.0-ios;net10.0-macos</TargetFrameworks>
+    <TargetFrameworks>net10.0-ios;net10.0-macos;net11.0-ios;net11.0-macos</TargetFrameworks>
     <TargetFramework></TargetFramework>
     <ApplicationId>net.reactiveui.documentation.platformapple</ApplicationId>
     <ApplicationTitle>ReactiveUI Apple Examples</ApplicationTitle>
@@ -21,6 +24,11 @@
     <EnableTrimAnalyzer>false</EnableTrimAnalyzer>
     <EnableAotAnalyzer>false</EnableAotAnalyzer>
     <EnableSingleFileAnalyzer>false</EnableSingleFileAnalyzer>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="!($([MSBuild]::IsOsPlatform('Windows')) or $([MSBuild]::IsOsPlatform('OSX')))">
+    <TargetFrameworks>net10.0;net11.0</TargetFrameworks>
+    <TargetFramework></TargetFramework>
   </PropertyGroup>
 
   <PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">

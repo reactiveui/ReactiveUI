@@ -16,15 +16,29 @@ jobs:
     uses: reactiveui/actions-common/.github/workflows/workflow-common-setup-and-build.yml@main
     with:
       configuration: Release
+      solutionFile: reactiveui.slnx
       productNamespacePrefix: ReactiveUI
       installWorkloads: true
-      # The .NET 11 device app builds on its matching Xcode image in device-tests.yml.
-      macosSolutionFile: reactiveui-macos.slnf
-      macosXcodeVersion: '26.0.1'
       # Test only the test projects: the solution also builds the documentation example apps, which are not tests.
-      # The device test app needs an emulator or simulator; device-tests.yml runs it.
       testProjects: |
         tests/**/*.csproj
         !tests/ReactiveUI.Device.Tests/**
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+  apple-examples:
+    runs-on: xcode-27
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 0
+      - name: Setup .NET
+        uses: reactiveui/actions-common/.github/actions/dotnet-environment@main
+        with:
+          solution-file: reactiveui-apple.slnx
+          install-workloads: 'true'
+      - name: Build Apple examples
+        uses: reactiveui/actions-common/.github/actions/dotnet-build@main
+        with:
+          solution-file: reactiveui-apple.slnx
