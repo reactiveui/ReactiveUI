@@ -38,7 +38,6 @@
     </When>
     <Otherwise>
       <PropertyGroup Label="Framework-Aligned Versions">
-        <AspNetVersion Condition="$(TargetFramework.StartsWith('netstandard'))">3.1.32</AspNetVersion>
         <SystemTextJsonVersion>10.0.15</SystemTextJsonVersion>
         <MicrosoftExtensionsVersion>10.0.15</MicrosoftExtensionsVersion>
       </PropertyGroup>
@@ -47,9 +46,7 @@
 
   <ItemGroup Label="ReactiveUI Primitives">
     <PackageVersion Include="ReactiveUI.Primitives" Version="$(PrimitivesVersion)"/>
-    <PackageVersion Include="ReactiveUI.Primitives.Core" Version="$(PrimitivesVersion)"/>
     <PackageVersion Include="ReactiveUI.Primitives.Reactive" Version="$(PrimitivesVersion)"/>
-    <PackageVersion Include="ReactiveUI.Disposables" Version="$(PrimitivesVersion)"/>
     <PackageVersion Include="ReactiveUI.Primitives.Wpf" Version="$(PrimitivesVersion)"/>
     <PackageVersion Include="ReactiveUI.Primitives.Wpf.Reactive" Version="$(PrimitivesVersion)"/>
     <PackageVersion Include="ReactiveUI.Primitives.WinUI" Version="$(PrimitivesVersion)"/>
@@ -86,20 +83,13 @@
     <PackageVersion Include="Splat.Microsoft.Extensions.DependencyInjection" Version="$(SplatVersion)"/>
   </ItemGroup>
 
-  <ItemGroup Label="Akavache">
-    <PackageVersion Include="Akavache.Sqlite3" Version="14.0.0"/>
-    <PackageVersion Include="Akavache.SystemTextJson" Version="14.0.0"/>
-  </ItemGroup>
-
   <ItemGroup Label="Testing">
     <PackageVersion Include="TUnit" Version="$(TUnitVersion)"/>
     <PackageVersion Include="TUnit.Core" Version="$(TUnitVersion)"/>
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.12.0"/>
     <PackageVersion Include="Microsoft.Testing.Extensions.CodeCoverage" Version="18.12.0"/>
-    <PackageVersion Include="Microsoft.Testing.Platform.MSBuild" Version="2.5.3"/>
     <PackageVersion Include="Microsoft.Reactive.Testing" Version="7.0.0"/>
     <PackageVersion Include="System.Reactive" Version="7.0.0"/>
-    <PackageVersion Include="Mocks.Maui" Version="1.2.5"/>
   </ItemGroup>
 
   <ItemGroup Label="Analyzers">
@@ -109,7 +99,6 @@
     <PackageVersion Include="Roslynator.Analyzers" Version="5.0.1"/>
     <PackageVersion Include="SonarAnalyzer.CSharp" Version="10.36.0.15337"/>
     <PackageVersion Include="Microsoft.CodeAnalysis.Analyzers" Version="5.12.0"/>
-    <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="5.12.0"/>
     <PackageVersion Include="PublicApiSharp.Analyzers" Version="2.2.0"/>
   </ItemGroup>
 
@@ -122,7 +111,6 @@
     <PackageVersion Include="Microsoft.Bcl.TimeProvider" Version="10.0.15"/>
     <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="$(MicrosoftExtensionsVersion)"/>
     <PackageVersion Include="Microsoft.Extensions.DependencyModel" Version="$(MicrosoftExtensionsVersion)"/>
-    <PackageVersion Include="System.Collections.Immutable" Version="$(MicrosoftExtensionsVersion)"/>
     <PackageVersion Include="System.Text.Json" Version="$(SystemTextJsonVersion)"/>
   </ItemGroup>
 
@@ -143,11 +131,6 @@
     <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="10.0.15"/>
   </ItemGroup>
 
-  <ItemGroup Label="Legacy Compat Shims">
-    <PackageVersion Include="System.IO.FileSystem.Primitives" Version="4.3.0"/>
-    <PackageVersion Include="System.Runtime.Serialization.Primitives" Version="4.3.0"/>
-  </ItemGroup>
-
   <ItemGroup Label="Platform - Android (AndroidX Lifecycle, aligned to 2.10.x)">
     <PackageVersion Include="Xamarin.AndroidX.Lifecycle.Runtime" Version="$(XamarinAndroidXLifecycleLiveDataVersion)"/>
     <PackageVersion Include="Xamarin.AndroidX.Lifecycle.Process" Version="$(XamarinAndroidXLifecycleLiveDataVersion)"/>
@@ -157,14 +140,12 @@
     <PackageVersion Include="Xamarin.AndroidX.Lifecycle.Runtime.Ktx.Android" Version="$(XamarinAndroidXLifecycleLiveDataVersion)"/>
     <PackageVersion Include="Xamarin.AndroidX.Lifecycle.ViewModelSavedState" Version="$(XamarinAndroidXLifecycleLiveDataVersion)"/>
     <PackageVersion Include="Xamarin.AndroidX.Lifecycle.LiveData" Version="$(XamarinAndroidXLifecycleLiveDataVersion)"/>
-    <PackageVersion Include="Xamarin.AndroidX.Lifecycle.LiveData.Core.Ktx" Version="$(XamarinAndroidXLifecycleLiveDataVersion)"/>
   </ItemGroup>
 
   <ItemGroup Label="Platform - Android (Fragment / Collection / SavedState / Preference)">
     <PackageVersion Include="Xamarin.AndroidX.Fragment" Version="1.9.1"/>
     <PackageVersion Include="Xamarin.AndroidX.Fragment.Ktx" Version="1.9.1"/>
     <PackageVersion Include="Xamarin.AndroidX.Collection.Jvm" Version="1.6.0.1"/>
-    <PackageVersion Include="Xamarin.AndroidX.Collection.Ktx" Version="1.6.0.1"/>
     <PackageVersion Include="Xamarin.AndroidX.SavedState" Version="1.5.0.1"/>
     <PackageVersion Include="Xamarin.AndroidX.SavedState.SavedState.Ktx" Version="1.5.0.1"/>
     <PackageVersion Include="Xamarin.AndroidX.Preference" Version="1.2.1.18"/>
@@ -182,10 +163,4 @@
     <PackageVersion Include="System.ComponentModel.Annotations" Version="5.0.0"/>
   </ItemGroup>
 
-  <ItemGroup Label="Polyfills - netstandard" Condition="$(TargetFramework.StartsWith('netstandard'))">
-    <PackageVersion Include="System.ComponentModel" Version="4.3.0"/>
-    <PackageVersion Include="System.ComponentModel.Annotations" Version="5.0.0"/>
-    <PackageVersion Include="System.Diagnostics.Contracts" Version="4.3.0"/>
-    <PackageVersion Include="System.Dynamic.Runtime" Version="4.3.0"/>
-  </ItemGroup>
 </Project>
