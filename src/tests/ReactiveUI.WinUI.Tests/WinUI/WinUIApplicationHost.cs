@@ -5,7 +5,6 @@
 
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
-using TUnit.Core.Exceptions;
 using WinRT;
 
 namespace ReactiveUI.Tests.WinUI;
@@ -18,11 +17,6 @@ namespace ReactiveUI.Tests.WinUI;
 /// until the application exits, so it is given a dedicated STA background thread; the process can still
 /// terminate normally once the run finishes because that thread is a background thread.
 /// </para>
-/// <para>
-/// Reaching the Windows App SDK at all also requires the framework package to be resolved first. This test
-/// host is unpackaged, so <see cref="WindowsAppRuntimeBootstrap"/> does that on first use, before anything
-/// here touches a WinRT type.
-/// </para>
 /// </remarks>
 internal static class WinUIApplicationHost
 {
@@ -32,17 +26,9 @@ internal static class WinUIApplicationHost
     /// <summary>Runs <paramref name="body"/> on the XAML application's UI thread and awaits its completion.</summary>
     /// <param name="body">The work to run on the UI thread.</param>
     /// <returns>A task that completes when <paramref name="body"/> has completed, faulting with its exception.</returns>
-    /// <exception cref="SkipTestException">No usable Windows App Runtime was found.</exception>
     /// <exception cref="InvalidOperationException">The dispatcher queue refused to accept the work.</exception>
-    /// <remarks>
-    /// Every executor that needs XAML funnels through here, so this is the one place the runtime prerequisite has
-    /// to be enforced — including for test classes written later. Skipping before the application is started keeps
-    /// a machine without the runtime reporting a reason per test instead of dying inside the native loader.
-    /// </remarks>
     internal static async Task RunOnUIThreadAsync(Func<ValueTask> body)
     {
-        WindowsAppRuntimeBootstrap.SkipIfUnavailable();
-
         var queue = await Startup.Value.ConfigureAwait(false);
         var completion = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
 

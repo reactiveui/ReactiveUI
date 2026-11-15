@@ -28,18 +28,10 @@
       <PropertyGroup>
         <UseWinUI>true</UseWinUI>
         <DefineConstants>$(DefineConstants);IS_WINUI;WINUI_TARGET</DefineConstants>
-        <!-- The test host is a plain console executable, not an MSIX app, so the Windows App SDK framework
-             package has to be resolved by the bootstrapper at start-up. -->
         <WindowsPackageType>None</WindowsPackageType>
-        <WindowsAppSDKSelfContained>false</WindowsAppSDKSelfContained>
-        <!-- WindowsPackageType=None would otherwise have the SDK emit a module initializer that bootstraps
-             before Main and calls Environment.Exit with the HRESULT when no framework package matches. That
-             kills the test host before the platform discovers a test, which surfaces as a zero-test run and a
-             failed job rather than as a missing prerequisite. WindowsAppRuntimeBootstrap does it explicitly
-             instead, so an absent runtime is reported and the WinUI tests skip. Only the bootstrap targets
-             emit the version constants it needs, hence asking for them directly. -->
-        <WindowsAppSdkBootstrapInitialize>false</WindowsAppSdkBootstrapInitialize>
-        <WindowsAppSdkIncludeVersionInfo>true</WindowsAppSdkIncludeVersionInfo>
+        <!-- Carry the runtime from the referenced SDK so CI runs against that exact version. -->
+        <WindowsAppSDKSelfContained Condition="'$(OS)' == 'Windows_NT'">true</WindowsAppSDKSelfContained>
+        <WindowsAppSDKSelfContained Condition="'$(OS)' != 'Windows_NT'">false</WindowsAppSDKSelfContained>
         <GenerateAppxPackageOnBuild>false</GenerateAppxPackageOnBuild>
         <PublishAppxPackage>false</PublishAppxPackage>
         <AppxPackageSigningEnabled>false</AppxPackageSigningEnabled>

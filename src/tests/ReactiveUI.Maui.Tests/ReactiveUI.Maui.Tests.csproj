@@ -24,7 +24,8 @@
     <PublishAppxPackage>false</PublishAppxPackage>
     <AppxPackageSigningEnabled>false</AppxPackageSigningEnabled>
 
-    <!-- Optional: if CI machines don't have the runtime installed -->
-    <WindowsAppSDKSelfContained>false</WindowsAppSDKSelfContained>
+    <!-- Carry the runtime from the referenced SDK so CI runs against that exact version. -->
+    <WindowsAppSDKSelfContained Condition="'$(OS)' == 'Windows_NT'">true</WindowsAppSDKSelfContained>
+    <WindowsAppSDKSelfContained Condition="'$(OS)' != 'Windows_NT'">false</WindowsAppSDKSelfContained>
   </PropertyGroup>
 </Project>

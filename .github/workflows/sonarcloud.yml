@@ -15,7 +15,6 @@ jobs:
         with:
             productNamespacePrefix: ReactiveUI
             installWorkloads: true
-            installWindowsAppRuntime: true
             # Test only the test projects: the solution also builds the documentation example apps, which are not tests.
             # The device test app needs an emulator or simulator; device-tests.yml runs it.
             testProjects: |
