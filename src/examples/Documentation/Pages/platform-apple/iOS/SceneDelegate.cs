@@ -35,19 +35,23 @@ public sealed class SceneDelegate : UIWindowSceneDelegate
     public override void DidBecomeActive(UIScene scene)
     {
         UIApplication application = UIApplication.SharedApplication;
-        if (application.Delegate is AppDelegate appDelegate)
+        if (application.Delegate is not AppDelegate appDelegate)
         {
-            appDelegate.OnActivated(application);
+            return;
         }
+
+        appDelegate.OnActivated(application);
     }
 
     /// <inheritdoc/>
     public override void DidEnterBackground(UIScene scene)
     {
         UIApplication application = UIApplication.SharedApplication;
-        if (application.Delegate is AppDelegate appDelegate)
+        if (application.Delegate is not AppDelegate appDelegate)
         {
-            appDelegate.DidEnterBackground(application);
+            return;
         }
+
+        appDelegate.DidEnterBackground(application);
     }
 }

@@ -12,7 +12,7 @@ namespace ReactiveUI.Documentation.PlatformApple;
 internal static class LibraryComposition
 {
     /// <summary>Creates the root view controller: a split view on iPad, a tab bar everywhere else.</summary>
-    /// <returns>The root view controller for <see cref="AppDelegate.Window"/>.</returns>
+    /// <returns>The root view controller for the library scene.</returns>
     internal static UIViewController CreateRootViewController()
     {
         Member ada = new("M-1", "Ada");
