@@ -3,6 +3,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics.CodeAnalysis;
+
 namespace ReactiveUI.Testing;
 
 /// <summary>Default methods for the <see cref="IBuilder"/> abstraction.</summary>
@@ -30,6 +32,7 @@ public static partial class IBuilderExtensions
         /// <param name="field">The field.</param>
         /// <param name="values">The values.</param>
         /// <returns>The builder.</returns>
+        [SuppressMessage("Design", "CA1045:Do not pass types by reference", Justification = "Preserves the existing public fluent builder signature used with backing fields.")]
         public TBuilder With<TField>(
             ref List<TField>? field,
             IEnumerable<TField> values)
@@ -46,6 +49,7 @@ public static partial class IBuilderExtensions
         /// <param name="field">The field.</param>
         /// <param name="value">The value.</param>
         /// <returns>The builder.</returns>
+        [SuppressMessage("Design", "CA1045:Do not pass types by reference", Justification = "Preserves the existing public fluent builder signature used with backing fields.")]
         public TBuilder With<TField>(ref List<TField>? field, TField value)
         {
             ArgumentExceptionHelper.ThrowIfNull(field);
@@ -60,6 +64,7 @@ public static partial class IBuilderExtensions
         /// <param name="dictionary">The dictionary.</param>
         /// <param name="keyValuePair">The key value pair.</param>
         /// <returns>The builder.</returns>
+        [SuppressMessage("Design", "CA1045:Do not pass types by reference", Justification = "Preserves the existing public fluent builder signature used with backing fields.")]
         public TBuilder With<TKey, TField>(
             ref Dictionary<TKey, TField> dictionary,
             KeyValuePair<TKey, TField> keyValuePair)
@@ -78,6 +83,7 @@ public static partial class IBuilderExtensions
         /// <param name="key">The key.</param>
         /// <param name="value">The value.</param>
         /// <returns>The builder.</returns>
+        [SuppressMessage("Design", "CA1045:Do not pass types by reference", Justification = "Preserves the existing public fluent builder signature used with backing fields.")]
         public TBuilder With<TKey, TField>(
             ref Dictionary<TKey, TField> dictionary,
             TKey key,
@@ -106,6 +112,7 @@ public static partial class IBuilderExtensions
         /// <param name="dictionary">The dictionary.</param>
         /// <param name="keyValuePair">The key value pair.</param>
         /// <returns> The builder.</returns>
+        [SuppressMessage("Design", "CA1045:Do not pass types by reference", Justification = "The caller's backing dictionary must be passed by reference so the builder can replace it.")]
         public TBuilder With<TKey, TField>(
             ref Dictionary<TKey, TField> dictionary,
             IDictionary<TKey, TField> keyValuePair)

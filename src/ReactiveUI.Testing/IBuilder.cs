@@ -9,4 +9,5 @@ namespace ReactiveUI.Testing;
 
 /// <summary>An interface for building.</summary>
 [SuppressMessage("Design", "SST1437:Avoid empty interfaces", Justification = "Marker interface constraining the fluent builder extensions.")]
+[SuppressMessage("Design", "CA1040:Avoid empty interfaces", Justification = "Marker interface constraining the existing public fluent builder extensions.")]
 public interface IBuilder;
