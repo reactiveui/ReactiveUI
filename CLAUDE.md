@@ -228,7 +228,6 @@ Before suppressing anything:
 
 * `.editorconfig` formatting/naming conventions
 * StyleCop analyzers (build fails on violations)
-* Roslynator analyzers
 * Analysis level: latest
 * Warnings treated as errors (notably nullable and CS4014)
 * **Public APIs require XML documentation**, including protected methods on public types.
@@ -255,7 +254,7 @@ If a specific file already follows a local style, adhere to existing file conven
 **No `#pragma warning disable`** in production code.
 
 * **StyleCop warnings (SA****) must be fixed**, never suppressed.
-* **No analyzer warning (CA****, S**** Sonar, RCS**** Roslynator, IL**** trimming/AOT, etc.) may be suppressed without explicit human approval** — see "Suppressions: Last Resort Only" above. Fix the code first; if a suppression seems unavoidable, stop and ask.
+* **No analyzer warning (CA****, S**** Sonar, IL**** trimming/AOT, etc.) may be suppressed without explicit human approval** — see "Suppressions: Last Resort Only" above. Fix the code first; if a suppression seems unavoidable, stop and ask.
 
 Example:
 

@@ -53,7 +53,6 @@
         <ProjectReference Include="..\..\ReactiveUI.Winforms.Reactive\ReactiveUI.Winforms.Reactive.csproj"/>
         <Using Include="ReactiveUI.Reactive.Winforms"/>
         <Using Include="ReactiveUI.Primitives.Reactive.Concurrency"/>
-        <PackageReference Include="System.ValueTuple"/>
         <Compile Include="..\ReactiveUI.WinForms.Tests\winforms\**\*.cs" Link="winforms\%(RecursiveDir)%(Filename)%(Extension)"/>
         <Compile Include="..\ReactiveUI.NonParallel.Mobile.Tests\Locator\Mocks\*.cs" Exclude="..\ReactiveUI.NonParallel.Mobile.Tests\Locator\Mocks\Routable*.cs;..\ReactiveUI.NonParallel.Mobile.Tests\Locator\Mocks\IRoutable*.cs" Link="Shared\Mocks\%(Filename)%(Extension)"/>
         <Compile Include="..\ReactiveUI.NonParallel.Mobile.Tests\Mixins\LoggingRegistrationScope.cs" Link="Shared\Infrastructure\LoggingRegistrationScope.cs"/>

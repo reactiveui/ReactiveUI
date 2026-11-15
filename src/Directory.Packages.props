@@ -96,7 +96,6 @@
     <PackageVersion Include="StyleSharp.Analyzers" Version="$(RoslynCommonAnalyzersVersion)"/>
     <PackageVersion Include="PerformanceSharp.Analyzers" Version="$(RoslynCommonAnalyzersVersion)"/>
     <PackageVersion Include="SecuritySharp.Analyzers" Version="$(RoslynCommonAnalyzersVersion)"/>
-    <PackageVersion Include="Roslynator.Analyzers" Version="5.0.1"/>
     <PackageVersion Include="SonarAnalyzer.CSharp" Version="10.36.0.15337"/>
     <PackageVersion Include="Microsoft.CodeAnalysis.Analyzers" Version="5.12.0"/>
     <PackageVersion Include="PublicApiSharp.Analyzers" Version="2.2.0"/>
@@ -153,10 +152,6 @@
 
   <ItemGroup Label="Platform - WinUI (non-MAUI only)" Condition="'$(UseMaui)' != 'true'">
     <PackageVersion Include="Microsoft.WindowsAppSDK" Version="2.6.5"/>
-  </ItemGroup>
-
-  <ItemGroup Label="Polyfills - net4 (System.ValueTuple)" Condition="$(TargetFramework.StartsWith('net4'))">
-    <PackageVersion Include="System.ValueTuple" Version="4.6.2"/>
   </ItemGroup>
 
   <ItemGroup Label="Polyfills - ComponentModel.Annotations" Condition="$(TargetFramework.StartsWith('net4')) or $(TargetFramework.EndsWith('-windows10.0.17763.0')) or $(TargetFramework.EndsWith('-windows10.0.19041.0'))">

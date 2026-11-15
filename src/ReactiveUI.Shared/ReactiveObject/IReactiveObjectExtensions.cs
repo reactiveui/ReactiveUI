@@ -40,6 +40,10 @@ public static class IReactiveObjectExtensions
         /// <param name="propertyName">The name of the property, usually
         /// automatically provided through the CallerMemberName attribute.</param>
         /// <returns>The newly set value, normally discarded.</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage(
+            "Design",
+            "CA1045:Do not pass types by reference",
+            Justification = "The backing field must be passed by reference to assign it between the changing and changed notifications.")]
         public TRet RaiseAndSetIfChanged<TRet>(
             ref TRet backingField,
             TRet newValue,

@@ -31,11 +31,6 @@ internal sealed class MemberNotNullAttribute :
     Attribute
 {
     /// <summary>Initializes a new instance of the <see cref="MemberNotNullAttribute"/> class.</summary>
-    /// <param name="member">Field or property member name.</param>
-    public MemberNotNullAttribute(string member) =>
-        Members = [member];
-
-    /// <summary>Initializes a new instance of the <see cref="MemberNotNullAttribute"/> class.</summary>
     /// <param name="members">Field or property member names.</param>
     public MemberNotNullAttribute(params string[] members) =>
         Members = members;
