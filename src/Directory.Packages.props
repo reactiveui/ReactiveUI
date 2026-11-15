@@ -5,10 +5,10 @@
   </PropertyGroup>
 
   <PropertyGroup Label="Shared Version Variables">
-    <SplatVersion>21.0.0</SplatVersion>
-    <PrimitivesVersion>9.0.0</PrimitivesVersion>
-    <BindingVersion>9.1.0</BindingVersion>
-    <TUnitVersion>1.84.0</TUnitVersion>
+    <SplatVersion>22.0.1</SplatVersion>
+    <PrimitivesVersion>10.0.0</PrimitivesVersion>
+    <BindingVersion>10.0.0</BindingVersion>
+    <TUnitVersion>1.85.0</TUnitVersion>
     <!-- StyleSharp.Analyzers, PerformanceSharp.Analyzers and SecuritySharp.Analyzers ship from the
          same release pipeline and always share a version. -->
     <RoslynCommonAnalyzersVersion>5.2.0</RoslynCommonAnalyzersVersion>
@@ -74,7 +74,7 @@
   </ItemGroup>
 
   <ItemGroup Label="ReactiveUI Source Generators">
-    <PackageVersion Include="ReactiveUI.SourceGenerators" Version="4.2.0"/>
+    <PackageVersion Include="ReactiveUI.SourceGenerators" Version="5.0.0"/>
   </ItemGroup>
 
   <ItemGroup Label="Rx Ecosystem">
@@ -87,8 +87,8 @@
   </ItemGroup>
 
   <ItemGroup Label="Akavache">
-    <PackageVersion Include="Akavache.Sqlite3" Version="13.0.0"/>
-    <PackageVersion Include="Akavache.SystemTextJson" Version="13.0.0"/>
+    <PackageVersion Include="Akavache.Sqlite3" Version="14.0.0"/>
+    <PackageVersion Include="Akavache.SystemTextJson" Version="14.0.0"/>
   </ItemGroup>
 
   <ItemGroup Label="Testing">
@@ -124,7 +124,7 @@
     <PackageVersion Include="Microsoft.Extensions.DependencyModel" Version="$(MicrosoftExtensionsVersion)"/>
     <PackageVersion Include="System.Collections.Immutable" Version="$(MicrosoftExtensionsVersion)"/>
     <PackageVersion Include="System.Text.Json" Version="$(SystemTextJsonVersion)"/>
-    <PackageVersion Include="Microsoft.Data.Sqlite.Core" Version="10.0.15"/>
+    <PackageVersion Include="Microsoft.Data.Sqlite.Core" Version="$(MicrosoftExtensionsVersion)"/>
     <PackageVersion Include="SQLitePCLRaw.bundle_green" Version="2.1.11"/>
   </ItemGroup>
 
