@@ -13,5 +13,5 @@ public sealed class LibraryShellViewModel : ReactiveObject, IScreen
     public RoutingState Router { get; } = new();
 
     /// <summary>Gets the title the macOS window shows for the shell.</summary>
-    public string Title => "Library";
+    public string Title { get; } = "Library";
 }
