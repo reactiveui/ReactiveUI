@@ -28,6 +28,9 @@ jobs:
 
   apple-examples:
     runs-on: xcode-27
+    env:
+      # The .NET Apple SDK requires 27.2; this image defaults to 27.1.
+      DEVELOPER_DIR: /Applications/Xcode_27.2.app/Contents/Developer
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
