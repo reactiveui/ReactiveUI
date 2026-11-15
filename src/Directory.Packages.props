@@ -124,8 +124,6 @@
     <PackageVersion Include="Microsoft.Extensions.DependencyModel" Version="$(MicrosoftExtensionsVersion)"/>
     <PackageVersion Include="System.Collections.Immutable" Version="$(MicrosoftExtensionsVersion)"/>
     <PackageVersion Include="System.Text.Json" Version="$(SystemTextJsonVersion)"/>
-    <PackageVersion Include="Microsoft.Data.Sqlite.Core" Version="$(MicrosoftExtensionsVersion)"/>
-    <PackageVersion Include="SQLitePCLRaw.bundle_green" Version="2.1.11"/>
   </ItemGroup>
 
   <ItemGroup Label="Platform - Windows / WinUI / WPF">
