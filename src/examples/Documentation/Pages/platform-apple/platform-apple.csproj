@@ -33,6 +33,7 @@
 
   <PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">
     <SupportedOSPlatformVersion>15.0</SupportedOSPlatformVersion>
+    <AppBundleManifest>iOS/Info.plist</AppBundleManifest>
     <!-- Simulator only: the example is never signed or deployed to hardware. -->
     <RuntimeIdentifier Condition="'$(RuntimeIdentifier)' == '' and $([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture) == 'Arm64'">iossimulator-arm64</RuntimeIdentifier>
     <RuntimeIdentifier Condition="'$(RuntimeIdentifier)' == ''">iossimulator-x64</RuntimeIdentifier>
@@ -40,7 +41,7 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'macos'">
-    <SupportedOSPlatformVersion>12.0</SupportedOSPlatformVersion>
+    <SupportedOSPlatformVersion>14.0</SupportedOSPlatformVersion>
     <!-- Name the runtime so restore and build agree on it on every host. -->
     <RuntimeIdentifier Condition="'$(RuntimeIdentifier)' == '' and $([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture) == 'Arm64'">osx-arm64</RuntimeIdentifier>
     <RuntimeIdentifier Condition="'$(RuntimeIdentifier)' == ''">osx-x64</RuntimeIdentifier>

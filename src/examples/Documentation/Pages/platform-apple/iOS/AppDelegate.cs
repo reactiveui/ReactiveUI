@@ -9,16 +9,13 @@ using UIKit;
 
 namespace ReactiveUI.Documentation.PlatformApple;
 
-/// <summary>The app's UIApplicationDelegate: builds ReactiveUI, wires up state suspension, and shows the shell.</summary>
+/// <summary>Configures ReactiveUI and state suspension for the application.</summary>
 [Register(nameof(AppDelegate))]
 [System.Diagnostics.DebuggerDisplay("AppDelegate")]
 public sealed class AppDelegate : UIApplicationDelegate
 {
     /// <summary>Keeps UIKit lifecycle callbacks translated into suspend/resume signals for as long as the process lives.</summary>
     private AutoSuspendHelper<AppDelegate>? _autoSuspendHelper;
-
-    /// <inheritdoc/>
-    public override UIWindow? Window { get; set; }
 
     /// <inheritdoc/>
     public override bool FinishedLaunching(UIApplication application, NSDictionary? launchOptions)
@@ -47,18 +44,6 @@ public sealed class AppDelegate : UIApplicationDelegate
         PlatformOperations platformOperations = new();
         string? orientation = platformOperations.GetOrientation();
         Console.WriteLine($"Device orientation: {orientation}.");
-
-        if (OperatingSystem.IsIOSVersionAtLeast(26))
-        {
-            // iOS 26 deprecates window construction outside a UIWindowScene; this sample targets 15 through 25 and
-            // stays on the classic, scene-less API below that ceiling.
-            throw new PlatformNotSupportedException("This sample targets iOS 15 through 25.");
-        }
-
-        UIWindow window = new(UIScreen.MainScreen.Bounds);
-        window.RootViewController = LibraryComposition.CreateRootViewController();
-        window.MakeKeyAndVisible();
-        Window = window;
 
         return true;
     }
