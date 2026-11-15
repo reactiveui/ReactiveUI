@@ -20,7 +20,7 @@ public static class AppBuilderTestExamples
     /// <returns>A task that completes once the test body has run.</returns>
     public static Task BuildAStudentSynchronously()
     {
-        GradeCalculatorAppBuilderTests fixture = new();
+        GradeCalculatorAppBuilderTests fixture = new("Katherine Johnson");
         Task test = fixture.BuildAStudentSynchronously();
 
         return test;
@@ -34,7 +34,7 @@ public static class AppBuilderTestExamples
     /// <returns>A task that completes once the test body has run.</returns>
     public static Task RecordAGradeAsynchronously()
     {
-        GradeCalculatorAppBuilderTests fixture = new();
+        GradeCalculatorAppBuilderTests fixture = new("Rosalind Franklin");
         Task test = fixture.RecordAGradeAsynchronously();
 
         return test;
@@ -45,18 +45,22 @@ public static class AppBuilderTestExamples
     }
 
     /// <summary>A test fixture that derives from <see cref="AppBuilderTestBase"/> to reach its protected helpers.</summary>
-    private sealed class GradeCalculatorAppBuilderTests : AppBuilderTestBase
+    /// <param name="studentName">The student whose grades the fixture exercises.</param>
+    private sealed class GradeCalculatorAppBuilderTests(string studentName) : AppBuilderTestBase
     {
+        /// <summary>The student whose grades the fixture exercises.</summary>
+        private readonly string _studentName = studentName;
+
         /// <summary>Builds a student and prints its name and average inside a reset app-builder context.</summary>
         /// <returns>A task that completes once the test body has run.</returns>
         public Task BuildAStudentSynchronously() =>
-            RunAppBuilderTestAsync(static () =>
+            RunAppBuilderTestAsync(() =>
             {
                 IReactiveUIBuilder builder = RxAppBuilder.CreateReactiveUIBuilder().WithMainThreadScheduler(Sequencer.Immediate);
                 _ = builder.WithCoreServices().BuildApp();
 
                 using GradeCalculatorViewModel viewModel = new StudentBuilder()
-                    .WithName("Katherine Johnson")
+                    .WithName(_studentName)
                     .WithGrades([95, 89])
                     .Build();
 
@@ -67,12 +71,12 @@ public static class AppBuilderTestExamples
         /// <summary>Records a grade and prints it inside a reset app-builder context.</summary>
         /// <returns>A task that completes once the test body has run.</returns>
         public Task RecordAGradeAsynchronously() =>
-            RunAppBuilderTestAsync(static async () =>
+            RunAppBuilderTestAsync(async () =>
             {
                 IReactiveUIBuilder builder = RxAppBuilder.CreateReactiveUIBuilder().WithMainThreadScheduler(Sequencer.Immediate);
                 _ = builder.WithCoreServices().BuildApp();
 
-                using GradeCalculatorViewModel viewModel = new StudentBuilder().WithName("Rosalind Franklin").Build();
+                using GradeCalculatorViewModel viewModel = new StudentBuilder().WithName(_studentName).Build();
 
                 GradeRecorded recorded = await viewModel.RecordGrade.Execute(84);
                 Console.WriteLine(recorded.StudentName);
