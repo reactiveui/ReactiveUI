@@ -6,12 +6,9 @@
 namespace ReactiveUI.Documentation.Registration;
 
 /// <summary>
-/// The library module's catalog of tracks. A registrar only ever holds this behind a <see cref="Func{TResult}"/>
-/// factory, so nothing in the compiled code calls <c>new TrackLibrary()</c> directly. A trimmed build can only
-/// see that call by tracing through the factory delegate, which the linker does not do, so the attribute tells it
-/// to keep the type anyway.
+/// The library module's catalog of tracks. Its registration factory constructs it directly,
+/// allowing the trimmer to follow the constructor and its dependencies.
 /// </summary>
-[Preserve(AllMembers = true)]
 [System.Diagnostics.DebuggerDisplay("TrackLibrary Titles = {Titles.Count}")]
 public sealed class TrackLibrary : ITrackLibrary
 {

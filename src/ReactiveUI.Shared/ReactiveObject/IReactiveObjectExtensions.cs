@@ -11,7 +11,6 @@ namespace ReactiveUI.Reactive;
 namespace ReactiveUI;
 #endif
 /// <summary>Extension methods associated with the IReactiveObject interface.</summary>
-[Preserve(AllMembers = true)]
 public static class IReactiveObjectExtensions
 {
 #if NETSTANDARD || NETFRAMEWORK

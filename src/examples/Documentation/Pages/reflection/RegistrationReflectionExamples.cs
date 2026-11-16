@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics.CodeAnalysis;
 using ReactiveUI.Builder;
 using Splat;
 
@@ -19,6 +20,7 @@ public static class RegistrationReflectionExamples
     /// <see cref="DependencyResolverMixins.RegisterViewsForViewModels"/> walks every type in the assembly, finds the
     /// ones that implement <see cref="IViewFor{T}"/>, and registers each against the view model type it names.
     /// </summary>
+    [DynamicDependency(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor | DynamicallyAccessedMemberTypes.PublicProperties, typeof(MusicPlayerScreen))]
     public static void ScanAnAssemblyForViews()
     {
         using ModernDependencyResolver resolver = new();
@@ -37,6 +39,7 @@ public static class RegistrationReflectionExamples
     /// <see cref="IReactiveUIBuilder.WithViewsFromAssembly"/> runs the same scan while the app starts, as part of the
     /// builder chain, instead of calling <see cref="DependencyResolverMixins.RegisterViewsForViewModels"/> directly.
     /// </summary>
+    [DynamicDependency(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor | DynamicallyAccessedMemberTypes.PublicProperties, typeof(MusicPlayerScreen))]
     public static void RegisterViewsWhileBuildingTheApp()
     {
         using ModernDependencyResolver resolver = new();

@@ -8,10 +8,9 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace ReactiveUI;
 
-/// <summary>Indicates that the attributed code element should be preserved during linking or code optimization processes.</summary>
-/// <remarks>Apply this attribute to prevent code elements from being removed or altered by tools that perform
-/// code trimming, such as linkers or obfuscators. This is typically used to ensure that reflection or dynamic access to
-/// the member remains functional after build-time optimizations.</remarks>
+/// <summary>Provides compatibility with linkers that recognize the legacy Preserve attribute.</summary>
+/// <remarks>Use <c>DynamicDependency</c> on reachable methods to preserve known members, or
+/// <c>DynamicallyAccessedMembers</c> to describe reflection requirements on type parameters and values.</remarks>
 [ExcludeFromCodeCoverage]
 [AttributeUsage(AttributeTargets.All)]
 [DebuggerDisplay("{AllMembers}")]
