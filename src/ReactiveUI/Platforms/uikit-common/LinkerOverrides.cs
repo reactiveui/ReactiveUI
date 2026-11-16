@@ -13,10 +13,10 @@ namespace ReactiveUI.Cocoa;
 #endif
 
 /// <summary>This class exists to force the MT linker to include properties called by RxUI via reflection.</summary>
-[Preserve(AllMembers = true)]
 internal static class LinkerOverrides
 {
     /// <summary>Forces the linker to preserve UIKit members accessed by ReactiveUI via reflection.</summary>
+    [Preserve]
     [SuppressMessage("Major Bug", "SST1189:Remove this self-assignment", Justification = "Deliberate self-assignment preserves both the getter and setter from the linker.")]
     internal static void KeepMe()
     {

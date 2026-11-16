@@ -12,10 +12,10 @@ namespace ReactiveUI.Cocoa;
 #endif
 
 /// <summary>Forces the linker to preserve iOS-only UIKit members not present on every Apple platform.</summary>
-[Preserve(AllMembers = true)]
 internal static class IosLinkerOverrides
 {
     /// <summary>Forces the linker to preserve iOS-only UIKit members (UISlider, UIRefreshControl, UISwitch).</summary>
+    [Preserve]
     internal static void KeepMe()
     {
         // UISlider

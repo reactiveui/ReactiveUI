@@ -14,7 +14,6 @@ namespace ReactiveUI;
 #endif
 
 /// <summary>Extension methods associated with the IMutableDependencyResolver interface.</summary>
-[Preserve(AllMembers = true)]
 public static class DependencyResolverMixins
 {
     /// <summary>Provides view-registration extension members for <see cref="IMutableDependencyResolver"/>.</summary>
