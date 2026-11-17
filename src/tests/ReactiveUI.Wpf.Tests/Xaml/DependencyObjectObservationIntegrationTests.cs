@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Windows;
 using System.Windows.Controls;
 using ReactiveUI.Tests.Wpf;
 using ReactiveUI.Tests.Xaml.Mocks;
@@ -74,5 +75,51 @@ public class DependencyObjectObservationIntegrationTests
         await Assert.That(values).Count().IsEqualTo(ExpectedCountTwo);
         await Assert.That(values[0]).IsNull();
         await Assert.That(values[1]).IsEqualTo("First");
+    }
+
+    /// <summary>Read-only dependency properties notify through both generated and runtime observations.</summary>
+    /// <param name="runtimeFallback">Whether to observe through the runtime fallback.</param>
+    /// <returns>A task representing the asynchronous test.</returns>
+    [Test]
+    [Arguments(false)]
+    [Arguments(true)]
+    public async Task WhenAnyValue_ReadOnlyDependencyProperty_DeliversChanges(bool runtimeFallback)
+    {
+        var view = new ReadOnlyFixture();
+        var values = new List<bool>();
+        var changes = runtimeFallback
+            ? view.WhenAnyValueUnsafe(static x => x.Enabled)
+            : view.WhenAnyValue(static x => x.Enabled);
+        var subscription = changes.Subscribe(values.Add);
+
+        view.SetEnabled(true);
+        subscription.Dispose();
+        view.SetEnabled(false);
+
+        await Assert.That(values).IsEquivalentTo([false, true]);
+    }
+
+    /// <summary>A dependency object whose value can only be written with its registration key.</summary>
+    public sealed class ReadOnlyFixture : DependencyObject
+    {
+        /// <summary>Identifies the read-only dependency property.</summary>
+        public static readonly DependencyProperty EnabledProperty;
+
+        /// <summary>The key required to change the dependency property's value.</summary>
+        private static readonly DependencyPropertyKey _enabledPropertyKey = DependencyProperty.RegisterReadOnly(
+            nameof(Enabled),
+            typeof(bool),
+            typeof(ReadOnlyFixture),
+            new(false));
+
+        /// <summary>Initializes static members of the <see cref="ReadOnlyFixture"/> class.</summary>
+        static ReadOnlyFixture() => EnabledProperty = _enabledPropertyKey.DependencyProperty;
+
+        /// <summary>Gets the value exposed to observation.</summary>
+        public bool Enabled => (bool)GetValue(EnabledProperty);
+
+        /// <summary>Changes the value using the private registration key.</summary>
+        /// <param name="value">The next value.</param>
+        public void SetEnabled(bool value) => SetValue(_enabledPropertyKey, value);
     }
 }

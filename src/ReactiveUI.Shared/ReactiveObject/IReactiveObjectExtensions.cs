@@ -254,7 +254,7 @@ public static class IReactiveObjectExtensions
     /// <summary>Re-types the change-argument stream from the non-generic <see cref="IReactiveObject"/> form to the caller's <typeparamref name="TSender"/>.</summary>
     /// <typeparam name="TSender">The reactive object type observed.</typeparam>
     /// <param name="source">The source change-argument stream.</param>
-    private sealed class ChangeArgsCastObservable<TSender>(IObservable<IReactivePropertyChangedEventArgs<IReactiveObject>> source) : IObservable<IReactivePropertyChangedEventArgs<TSender>>
+    internal sealed class ChangeArgsCastObservable<TSender>(IObservable<IReactivePropertyChangedEventArgs<IReactiveObject>> source) : IObservable<IReactivePropertyChangedEventArgs<TSender>>
         where TSender : IReactiveObject
     {
         /// <inheritdoc/>
@@ -271,7 +271,7 @@ public static class IReactiveObjectExtensions
             /// <inheritdoc/>
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public void OnNext(IReactivePropertyChangedEventArgs<IReactiveObject> value) =>
-                downstream.OnNext((IReactivePropertyChangedEventArgs<TSender>)(object)value);
+                downstream.OnNext(value as IReactivePropertyChangedEventArgs<TSender> ?? new ChangeArgs(value));
 
             /// <inheritdoc/>
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -280,6 +280,17 @@ public static class IReactiveObjectExtensions
             /// <inheritdoc/>
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public void OnCompleted() => downstream.OnCompleted();
+        }
+
+        /// <summary>Preserves notification data when shared state was initialized with a broader sender type.</summary>
+        /// <param name="value">The notification from the shared state.</param>
+        private sealed class ChangeArgs(IReactivePropertyChangedEventArgs<IReactiveObject> value) : IReactivePropertyChangedEventArgs<TSender>
+        {
+            /// <inheritdoc/>
+            public string? PropertyName => value.PropertyName;
+
+            /// <inheritdoc/>
+            public TSender Sender => (TSender)value.Sender;
         }
     }
 }
