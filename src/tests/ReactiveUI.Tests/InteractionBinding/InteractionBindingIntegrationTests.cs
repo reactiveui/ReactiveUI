@@ -21,7 +21,7 @@ public class InteractionBindingIntegrationTests
 
         _ = view.BindInteraction(
             vm,
-            vm => vm.InteractionViewModel.Interaction1,
+            static vm => vm.InteractionViewModel.Interaction1,
             static input =>
             {
                 input.SetOutput(true);
@@ -43,7 +43,7 @@ public class InteractionBindingIntegrationTests
 
         _ = view.BindInteraction(
             vm,
-            vm => vm.InteractionViewModel.Interaction1,
+            static vm => vm.InteractionViewModel.Interaction1,
             static input =>
             {
                 input.SetOutput(true);
@@ -71,7 +71,7 @@ public class InteractionBindingIntegrationTests
             var weakRef = new WeakReference(vm.InteractionViewModel);
             var disposable = view.BindInteraction(
                 vm,
-                vm => vm.InteractionViewModel.Interaction1,
+                static vm => vm.InteractionViewModel.Interaction1,
                 static input =>
                 {
                     input.SetOutput(true);
@@ -100,7 +100,7 @@ public class InteractionBindingIntegrationTests
 
         _ = view.BindInteraction(
             vm,
-            vm => vm.Interaction1,
+            static vm => vm.Interaction1,
             static input =>
             {
                 input.SetOutput(true);
@@ -122,7 +122,7 @@ public class InteractionBindingIntegrationTests
 
         _ = view.BindInteraction(
             vm,
-            vm => vm.Interaction1,
+            static vm => vm.Interaction1,
             static input =>
             {
                 input.SetOutput(true);
@@ -146,7 +146,7 @@ public class InteractionBindingIntegrationTests
 
         _ = view.BindInteraction(
             vm,
-            vm => vm.Interaction1,
+            static vm => vm.Interaction1,
             static input =>
             {
                 input.SetOutput(true);
@@ -168,7 +168,7 @@ public class InteractionBindingIntegrationTests
 
         _ = view.BindInteraction(
             vm,
-            vm => vm.Interaction1,
+            static vm => vm.Interaction1,
             static input =>
             {
                 input.SetOutput(true);
@@ -192,7 +192,7 @@ public class InteractionBindingIntegrationTests
 
         _ = view.BindInteraction(
             vm,
-            vm => vm.InteractionViewModel.Interaction1,
+            static vm => vm.InteractionViewModel.Interaction1,
             static input =>
             {
                 input.SetOutput(true);
@@ -216,7 +216,7 @@ public class InteractionBindingIntegrationTests
 
         _ = view.BindInteraction(
             vm,
-            vm => vm.Interaction1,
+            static vm => vm.Interaction1,
             static input =>
             {
                 input.SetOutput(true);
@@ -240,7 +240,7 @@ public class InteractionBindingIntegrationTests
 
         _ = view.BindInteraction(
             vm,
-            vm => vm.InteractionViewModel.Interaction1,
+            static vm => vm.InteractionViewModel.Interaction1,
             static input =>
             {
                 input.SetOutput(true);
@@ -264,7 +264,7 @@ public class InteractionBindingIntegrationTests
 
         _ = view.BindInteraction(
             vm,
-            vm => vm.Interaction1,
+            static vm => vm.Interaction1,
             static input =>
             {
                 input.SetOutput(true);
@@ -288,7 +288,7 @@ public class InteractionBindingIntegrationTests
 
         _ = view.BindInteraction(
             vm,
-            vm => vm.InteractionViewModel.Interaction1,
+            static vm => vm.InteractionViewModel.Interaction1,
             static input =>
             {
                 input.SetOutput(true);
@@ -310,7 +310,7 @@ public class InteractionBindingIntegrationTests
 
         _ = view.BindInteraction(
             vm,
-            vm => vm.Interaction1,
+            static vm => vm.Interaction1,
             static input =>
             {
                 input.SetOutput(true);
@@ -332,7 +332,7 @@ public class InteractionBindingIntegrationTests
 
         var disposable = view.BindInteraction(
             vm,
-            vm => vm.Interaction1,
+            static vm => vm.Interaction1,
             static input =>
             {
                 input.SetOutput(true);
@@ -355,7 +355,7 @@ public class InteractionBindingIntegrationTests
 
         _ = view.BindInteraction(
             vm,
-            vm => vm.Interaction1,
+            static vm => vm.Interaction1,
             static input =>
             {
                 input.SetOutput(true);
@@ -378,7 +378,7 @@ public class InteractionBindingIntegrationTests
 
         _ = view.BindInteraction(
             vm,
-            vm => vm.InteractionViewModel.Interaction1,
+            static vm => vm.InteractionViewModel.Interaction1,
             static input =>
             {
                 input.SetOutput(true);
@@ -400,7 +400,7 @@ public class InteractionBindingIntegrationTests
 
         _ = view.BindInteraction(
             vm,
-            vm => vm.Interaction1,
+            static vm => vm.Interaction1,
             static input =>
             {
                 input.SetOutput(true);
@@ -422,7 +422,7 @@ public class InteractionBindingIntegrationTests
 
         var disposable = view.BindInteraction(
             vm,
-            vm => vm.Interaction1,
+            static vm => vm.Interaction1,
             static input =>
             {
                 input.SetOutput(true);
@@ -445,7 +445,7 @@ public class InteractionBindingIntegrationTests
 
         _ = view.BindInteraction(
             vm,
-            vm => vm.Interaction1,
+            static vm => vm.Interaction1,
             static input =>
             {
                 input.SetOutput(true);
@@ -474,7 +474,7 @@ public class InteractionBindingIntegrationTests
             var weakRef = new WeakReference(vm);
             var disposable = view.BindInteraction(
                 vm,
-                vm => vm.Interaction1,
+                static vm => vm.Interaction1,
                 static input =>
                 {
                     input.SetOutput(true);

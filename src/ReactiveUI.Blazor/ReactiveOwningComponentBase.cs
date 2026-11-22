@@ -83,16 +83,6 @@ public class ReactiveOwningComponentBase<T> : OwningComponentBase<T>, IViewFor<T
     }
 
     /// <inheritdoc/>
-    [RequiresUnreferencedCode(
-        "OnAfterRender wires reactive subscriptions that may not be trimming-safe in all environments.")]
-    [SuppressMessage(
-        "AOT",
-        "IL3051:'RequiresDynamicCodeAttribute' annotations must match across all interface implementations or overrides.",
-        Justification = "ComponentBase is an external reference")]
-    [SuppressMessage(
-        "Trimming",
-        "IL2046:'RequiresUnreferencedCodeAttribute' annotations must match across all interface implementations or overrides.",
-        Justification = "ComponentBase is an external reference")]
     protected override void OnAfterRender(bool firstRender)
     {
         ReactiveComponentHelpers.HandleFirstRender(

@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>$(ReactiveUIWindowsOnlyTargets)</TargetFrameworks>
+    <AssemblyName>ReactiveUI.Wpf.Unsafe</AssemblyName>
+    <RootNamespace>ReactiveUI</RootNamespace>
+    <PackageDescription>Opt-in reflection and dynamic-code view hosts and binding hooks for ReactiveUI.WPF (ViewModelViewHostUnsafe, RoutedViewHostUnsafe, AutoDataTemplateBindingHookUnsafe).</PackageDescription>
+    <PackageId>ReactiveUI.WPF.Unsafe</PackageId>
+    <UseWpf>true</UseWpf>
+    <PackageTags>mvvm;reactiveui;rx;reactive extensions;observable;LINQ;events;frp;wpf;net;netframework;netcore;unsafe</PackageTags>
+    <IsAotCompatible>false</IsAotCompatible>
+    <EnableAotAnalyzer>false</EnableAotAnalyzer>
+    <EnableTrimAnalyzer>false</EnableTrimAnalyzer>
+    <EnableSingleFileAnalyzer>false</EnableSingleFileAnalyzer>
+    <IsTrimmable>false</IsTrimmable>
+  </PropertyGroup>
+  <ItemGroup>
+    <Using Include="ReactiveUI"/>
+    <Using Include="ReactiveUI.Internal"/>
+    <Using Include="ReactiveUI.Builder"/>
+    <Using Include="ReactiveUI.Interfaces"/>
+    <Using Include="ReactiveUI.Primitives.Disposables"/>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ReactiveUI.Wpf\ReactiveUI.Wpf.csproj"/>
+    <ProjectReference Include="..\ReactiveUI.Unsafe\ReactiveUI.Unsafe.csproj"/>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\Shared\ArgumentValidation.cs" Link="Shared\ArgumentValidation.cs"/>
+    <Compile Include="..\Shared\Platform\ItemsControlTemplateBinding.cs" Link="Shared\Platform\ItemsControlTemplateBinding.cs"/>
+  </ItemGroup>
+</Project>

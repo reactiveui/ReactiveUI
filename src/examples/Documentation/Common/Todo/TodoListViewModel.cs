@@ -36,7 +36,7 @@ public sealed class TodoListViewModel : ReactiveObject, IActivatableViewModel, I
         Load = ReactiveCommand.CreateFromTask(_store.QueryAsync);
         _subscriptions.Add(Load.Subscribe(rows => AllItems = rows));
 
-        IObservable<bool> canAdd = this.WhenAnyValue(x => x.NewTitle).Select(static title => !string.IsNullOrWhiteSpace(title));
+        IObservable<bool> canAdd = this.WhenAnyValue(static x => x.NewTitle).Select(static title => !string.IsNullOrWhiteSpace(title));
         Add = ReactiveCommand.CreateFromTask(cancellationToken => _store.AddAsync(NewTitle.Trim(), cancellationToken), canAdd);
         _subscriptions.Add(Add.Subscribe(added =>
         {
@@ -52,9 +52,9 @@ public sealed class TodoListViewModel : ReactiveObject, IActivatableViewModel, I
         Delete = ReactiveCommand.CreateFromTask<TodoItem, bool>(DeleteAsync);
         _subscriptions.Add(Delete.ThrownExceptions.Subscribe(ex => ErrorMessage = ex.Message));
 
-        _items = this.WhenAnyValue(x => x.AllItems, x => x.FilterText, Filter)
+        _items = this.WhenAnyValue(static x => x.AllItems, static x => x.FilterText, Filter)
             .ToProperty(this, nameof(Items), []);
-        _remainingCount = this.WhenAnyValue(x => x.AllItems)
+        _remainingCount = this.WhenAnyValue(static x => x.AllItems)
             .Select(static all => all.Count(static item => !item.IsDone))
             .ToProperty(this, nameof(RemainingCount));
         _isLoading = Load.IsExecuting.ToProperty(this, nameof(IsLoading));

@@ -75,7 +75,7 @@ public class LobbyViewModel : ReactiveObject, IRoutableViewModel
             .Concat(Signal.Blend(localRoomsChanged, remoteRoomsChanged)
                 .EmitIfQuiet(TimeSpan.FromMilliseconds(RoomsChangedQuietWindowMilliseconds), RxSchedulers.TaskpoolScheduler));
 
-        _ = this.WhenAnyObservable(x => x.RoomsChanged)
+        _ = this.WhenAnyObservable(static x => x.RoomsChanged)
             .Select(static _ => (IReadOnlyList<ChatRoom>)[.. GetState().Rooms])
             .ObserveOn(RxSchedulers.MainThreadScheduler)
             .ToProperty(this, nameof(Rooms), out _rooms);

@@ -21,7 +21,7 @@ public static class BindCommandExamples
         _ = await viewModel.Load.Execute();
         using TodoListView view = new() { ViewModel = viewModel };
 
-        using IDisposable binding = view.BindCommand(viewModel, x => x.Add, v => v.AddButton);
+        using IDisposable binding = view.BindCommand(viewModel, static x => x.Add, static v => v.AddButton);
 
         view.AddButton.PerformClick();
         Console.WriteLine(viewModel.Items.Count);
@@ -51,9 +51,9 @@ public static class BindCommandExamples
 
         using IDisposable binding = view.BindCommand(
             viewModel,
-            x => x.Complete,
-            v => v.CompleteButton,
-            view.WhenAnyValue(v => v.ItemList.SelectedItem).WhereNotNull());
+            static x => x.Complete,
+            static v => v.CompleteButton,
+            view.WhenAnyValue(static v => v.ItemList.SelectedItem).WhereNotNull());
 
         view.ItemList.SelectedItem = viewModel.Items[0];
         Task<TodoItem> completed = viewModel.Complete.FirstAsync().ToTask();

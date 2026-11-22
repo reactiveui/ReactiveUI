@@ -33,6 +33,7 @@
       </PropertyGroup>
       <ItemGroup>
         <ProjectReference Include="..\..\ReactiveUI.Winforms\ReactiveUI.Winforms.csproj"/>
+        <ProjectReference Include="..\..\ReactiveUI.Winforms.Unsafe\ReactiveUI.Winforms.Unsafe.csproj"/>
         <Using Include="ReactiveUI.Winforms"/>
         <Using Include="ReactiveUI.Builder"/>
         <Compile Include="winforms\**\*.cs"/>
@@ -45,6 +46,7 @@
       </PropertyGroup>
       <ItemGroup>
         <ProjectReference Include="..\..\ReactiveUI.Winforms\ReactiveUI.Winforms.csproj"/>
+        <ProjectReference Include="..\..\ReactiveUI.Winforms.Unsafe\ReactiveUI.Winforms.Unsafe.csproj"/>
         <Using Include="ReactiveUI.Winforms"/>
         <Using Include="ReactiveUI.Builder"/>
         <Compile Include="winforms\**\*.cs"/>

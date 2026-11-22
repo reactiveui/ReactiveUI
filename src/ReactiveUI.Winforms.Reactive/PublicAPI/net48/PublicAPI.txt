@@ -66,6 +66,7 @@ namespace ReactiveUI.Reactive.Winforms
     public class RoutedControlHost : System.Windows.Forms.UserControl, ReactiveUI.IReactiveObject
     {
         public RoutedControlHost() { }
+        protected RoutedControlHost(System.Func<ReactiveUI.Binding.Reactive.IViewLocator, object, string?, ReactiveUI.Binding.Reactive.IViewFor?> resolveView) { }
         [System.ComponentModel.Category("ReactiveUI")]
         [System.ComponentModel.Description("The default control when no viewmodel is specified")]
         [System.ComponentModel.DesignerSerializationVisibility(System.ComponentModel.DesignerSerializationVisibility.Hidden)]
@@ -88,11 +89,6 @@ namespace ReactiveUI.Reactive.Winforms
         [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
         void ReactiveUI.IReactiveObject.RaisePropertyChanging(System.ComponentModel.PropertyChangingEventArgs args) { }
     }
-    [System.Diagnostics.DebuggerDisplay("{DefaultContent}, {Router}")]
-    public class RoutedControlHostUnsafe : ReactiveUI.Reactive.Winforms.RoutedControlHost
-    {
-        public RoutedControlHostUnsafe() { }
-    }
     public class TableContentSetMethodBindingConverter : ReactiveUI.Binding.Reactive.ISetMethodBindingConverter
     {
         public TableContentSetMethodBindingConverter() { }
@@ -104,6 +100,7 @@ namespace ReactiveUI.Reactive.Winforms
     public class ViewModelControlHost : System.Windows.Forms.UserControl, ReactiveUI.Binding.Reactive.IViewFor, ReactiveUI.IReactiveObject
     {
         public ViewModelControlHost() { }
+        protected ViewModelControlHost(System.Func<ReactiveUI.Binding.Reactive.IViewLocator, object, string?, ReactiveUI.Binding.Reactive.IViewFor?> resolveView) { }
         [System.ComponentModel.Bindable(true)]
         [System.ComponentModel.Category("ReactiveUI")]
         [System.ComponentModel.DefaultValue(true)]
@@ -138,10 +135,5 @@ namespace ReactiveUI.Reactive.Winforms
         void ReactiveUI.IReactiveObject.RaisePropertyChanged(System.ComponentModel.PropertyChangedEventArgs args) { }
         [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
         void ReactiveUI.IReactiveObject.RaisePropertyChanging(System.ComponentModel.PropertyChangingEventArgs args) { }
-    }
-    [System.Diagnostics.DebuggerDisplay("{CurrentView}, {DefaultContent}")]
-    public class ViewModelControlHostUnsafe : ReactiveUI.Reactive.Winforms.ViewModelControlHost
-    {
-        public ViewModelControlHostUnsafe() { }
     }
 }

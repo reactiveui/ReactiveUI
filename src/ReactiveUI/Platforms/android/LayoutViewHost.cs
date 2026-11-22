@@ -22,7 +22,7 @@ namespace ReactiveUI;
 /// </para>
 /// <para>
 /// Every constructor is safe to trim and to compile ahead of time. Wire child controls in the <c>bind</c> callback,
-/// or derive from <see cref="LayoutViewHostUnsafe"/> to wire them by reflection.
+/// or derive from <c>LayoutViewHostUnsafe</c> (from <c>ReactiveUI.Unsafe</c>) to wire them by reflection.
 /// </para>
 /// </summary>
 [System.Diagnostics.DebuggerDisplay("{View}")]

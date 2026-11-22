@@ -16,13 +16,6 @@ namespace ReactiveUI
         public static System.Lazy<System.Windows.DataTemplate> DefaultItemTemplate { get; }
         public bool ExecuteHook(object? source, object target, System.Func<ReactiveUI.Binding.IObservedChange<object, object>[]> getCurrentViewModelProperties, System.Func<ReactiveUI.Binding.IObservedChange<object, object>[]> getCurrentViewProperties, ReactiveUI.Binding.BindingDirection direction) { }
     }
-    [System.Diagnostics.DebuggerDisplay("AutoDataTemplateBindingHookUnsafe")]
-    public class AutoDataTemplateBindingHookUnsafe : ReactiveUI.Binding.IPropertyBindingHook
-    {
-        public AutoDataTemplateBindingHookUnsafe() { }
-        public static System.Lazy<System.Windows.DataTemplate> DefaultItemTemplate { get; }
-        public bool ExecuteHook(object? source, object target, System.Func<ReactiveUI.Binding.IObservedChange<object, object>[]> getCurrentViewModelProperties, System.Func<ReactiveUI.Binding.IObservedChange<object, object>[]> getCurrentViewProperties, ReactiveUI.Binding.BindingDirection direction) { }
-    }
     [System.Diagnostics.DebuggerDisplay("{IdleTimeout}")]
     public class AutoSuspendHelper : Splat.IEnableLogger
     {
@@ -65,6 +58,7 @@ namespace ReactiveUI
     public class RoutedViewHost : ReactiveUI.TransitioningContentControl, ReactiveUI.Binding.IActivatableView, Splat.IEnableLogger
     {
         public RoutedViewHost() { }
+        protected RoutedViewHost(System.Func<ReactiveUI.Binding.IViewLocator, object, string?, ReactiveUI.Binding.IViewFor?> resolveView) { }
         public static readonly System.Windows.DependencyProperty DefaultContentProperty;
         public static readonly System.Windows.DependencyProperty RouterProperty;
         public static readonly System.Windows.DependencyProperty ViewContractObservableProperty;
@@ -73,11 +67,6 @@ namespace ReactiveUI
         public string? ViewContract { get; set; }
         public System.IObservable<string?> ViewContractObservable { get; set; }
         public ReactiveUI.Binding.IViewLocator? ViewLocator { get; set; }
-    }
-    [System.Diagnostics.DebuggerDisplay("{Router}, {DefaultContent}")]
-    public class RoutedViewHostUnsafe : ReactiveUI.RoutedViewHost
-    {
-        public RoutedViewHostUnsafe() { }
     }
     [System.Diagnostics.DebuggerDisplay("{Transition}, {Direction}")]
     [System.Windows.TemplatePart(Name="PART_Container", Type=typeof(System.Windows.FrameworkElement))]
@@ -124,6 +113,7 @@ namespace ReactiveUI
     public class ViewModelViewHost : ReactiveUI.TransitioningContentControl, ReactiveUI.Binding.IViewFor, Splat.IEnableLogger
     {
         public ViewModelViewHost() { }
+        protected ViewModelViewHost(System.Func<ReactiveUI.Binding.IViewLocator, object, string?, ReactiveUI.Binding.IViewFor?> resolveView) { }
         public static readonly System.Windows.DependencyProperty ContractFallbackByPassProperty;
         public static readonly System.Windows.DependencyProperty DefaultContentProperty;
         public static readonly System.Windows.DependencyProperty ViewContractObservableProperty;
@@ -135,11 +125,6 @@ namespace ReactiveUI
         public ReactiveUI.Binding.IViewLocator? ViewLocator { get; set; }
         public object? ViewModel { get; set; }
         protected virtual void ResolveViewForViewModel(object? viewModel, string? contract) { }
-    }
-    [System.Diagnostics.DebuggerDisplay("{ViewContractObservable}, {DefaultContent}")]
-    public class ViewModelViewHostUnsafe : ReactiveUI.ViewModelViewHost
-    {
-        public ViewModelViewHostUnsafe() { }
     }
     public static class WpfViewForMixins
     {

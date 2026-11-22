@@ -4,7 +4,6 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
@@ -19,21 +18,9 @@ namespace ReactiveUI;
 /// <summary>Loads and saves state to persistent storage under the platform Application Support directory.</summary>
 /// <remarks>
 /// <para>
-/// This driver supports two serialization modes:
+/// Uses source-generated System.Text.Json via overloads accepting <see cref="JsonTypeInfo{T}"/>.
+/// For reflection-based serialization, use <c>AppSupportJsonSuspensionDriverUnsafe</c> from <c>ReactiveUI.Unsafe</c>.
 /// </para>
-/// <list type="bullet">
-/// <item>
-/// <description>
-/// Source-generated System.Text.Json via overloads accepting <see cref="JsonTypeInfo{T}"/>. This is trimming/AOT-friendly.
-/// </description>
-/// </item>
-/// <item>
-/// <description>
-/// Reflection-based System.Text.Json via <see cref="ISuspensionDriver"/> interface methods. These are marked with
-/// <see cref="RequiresUnreferencedCodeAttribute"/> and <see cref="RequiresDynamicCodeAttribute"/>.
-/// </description>
-/// </item>
-/// </list>
 /// <para>
 /// The persisted file name is <c>state.dat</c>.
 /// </para>
@@ -90,26 +77,6 @@ public sealed class AppSupportJsonSuspensionDriver : ISuspensionDriver
     }
 
     /// <inheritdoc />
-    [RequiresUnreferencedCode("Uses reflection-based System.Text.Json serialization for 'object'. Prefer LoadState<T>(JsonTypeInfo<T>) for trimming/AOT.")]
-    [RequiresDynamicCode("Uses reflection-based System.Text.Json serialization for 'object'. Prefer LoadState<T>(JsonTypeInfo<T>) for trimming/AOT.")]
-    public IObservable<object?> LoadState()
-    {
-        try
-        {
-            var path = GetStatePath();
-            using var stream = File.OpenRead(path);
-
-            // Reflection-based: object deserialization typically requires metadata at runtime.
-            var result = JsonSerializer.Deserialize<object>(stream);
-            return Signal.Emit(result);
-        }
-        catch (Exception ex)
-        {
-            return Signal.Fail<object?>(ex);
-        }
-    }
-
-    /// <inheritdoc />
     public IObservable<RxVoid> SaveState<T>(T state, JsonTypeInfo<T> typeInfo)
     {
         ArgumentExceptionHelper.ThrowIfNull(typeInfo);
@@ -120,25 +87,6 @@ public sealed class AppSupportJsonSuspensionDriver : ISuspensionDriver
             using var stream = File.Open(path, FileMode.Create, FileAccess.Write, FileShare.None);
 
             JsonSerializer.Serialize(stream, state, typeInfo);
-            return ImmutableReturnRxVoidSignal.Instance;
-        }
-        catch (Exception ex)
-        {
-            return Signal.Fail<RxVoid>(ex);
-        }
-    }
-
-    /// <inheritdoc />
-    [RequiresUnreferencedCode("Uses reflection-based System.Text.Json serialization for generic T. Prefer SaveState<T>(T, JsonTypeInfo<T>) for trimming/AOT.")]
-    [RequiresDynamicCode("Uses reflection-based System.Text.Json serialization for generic T. Prefer SaveState<T>(T, JsonTypeInfo<T>) for trimming/AOT.")]
-    public IObservable<RxVoid> SaveState<T>(T state)
-    {
-        try
-        {
-            var path = GetStatePath();
-            using var stream = File.Open(path, FileMode.Create, FileAccess.Write, FileShare.None);
-
-            JsonSerializer.Serialize(stream, state);
             return ImmutableReturnRxVoidSignal.Instance;
         }
         catch (Exception ex)

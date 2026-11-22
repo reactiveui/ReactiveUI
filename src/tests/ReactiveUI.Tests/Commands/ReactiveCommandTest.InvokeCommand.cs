@@ -19,7 +19,7 @@ public partial class ReactiveCommandTest
         var canExecute = new BehaviorSignal<bool>(false);
         var target = new CommandHolder();
         var source = new Signal<RxVoid>();
-        _ = source.InvokeCommand(target, x => x.TheCommand!);
+        _ = source.InvokeCommand(target, static x => x.TheCommand!);
         target.TheCommand = ReactiveCommand.Create(
             () => executed = true,
             canExecute,
@@ -42,7 +42,7 @@ public partial class ReactiveCommandTest
         var canExecute = new BehaviorSignal<bool>(false);
         var target = new CommandHolder();
         var source = new Signal<RxVoid>();
-        _ = source.InvokeCommand(target, x => x.TheCommand!);
+        _ = source.InvokeCommand(target, static x => x.TheCommand!);
         target.TheCommand = ReactiveCommand.Create(
             () => executed = true,
             canExecute,
@@ -73,7 +73,7 @@ public partial class ReactiveCommandTest
         _ = command.ThrownExceptions.Subscribe();
         target.TheCommand = command;
         var source = new Signal<RxVoid>();
-        _ = source.InvokeCommand(target, x => x.TheCommand!);
+        _ = source.InvokeCommand(target, static x => x.TheCommand!);
 
         const int ExpectedCount = 2;
 
@@ -207,7 +207,7 @@ public partial class ReactiveCommandTest
         var executionCount = 0;
         var target = new ReactiveCommandHolder();
         var source = new Signal<int>();
-        _ = source.InvokeCommand(target, x => x.TheCommand!);
+        _ = source.InvokeCommand(target, static x => x.TheCommand!);
         target.TheCommand = ReactiveCommand.Create<int>(
             _ => ++executionCount,
             outputScheduler: Sequencer.Immediate);
@@ -229,7 +229,7 @@ public partial class ReactiveCommandTest
         var receivedParam = 0;
         var target = new ReactiveCommandHolder();
         var source = new Signal<int>();
-        _ = source.InvokeCommand(target, x => x.TheCommand!);
+        _ = source.InvokeCommand(target, static x => x.TheCommand!);
         target.TheCommand = ReactiveCommand.Create<int>(
             param => receivedParam = param,
             outputScheduler: Sequencer.Immediate);
@@ -247,7 +247,7 @@ public partial class ReactiveCommandTest
         var canExecute = new BehaviorSignal<bool>(false);
         var target = new ReactiveCommandHolder();
         var source = new Signal<int>();
-        _ = source.InvokeCommand(target, x => x.TheCommand!);
+        _ = source.InvokeCommand(target, static x => x.TheCommand!);
         target.TheCommand = ReactiveCommand.Create<int>(
             _ => executed = true,
             canExecute,
@@ -270,7 +270,7 @@ public partial class ReactiveCommandTest
         var canExecute = new BehaviorSignal<bool>(false);
         var target = new ReactiveCommandHolder();
         var source = new Signal<int>();
-        _ = source.InvokeCommand(target, x => x.TheCommand!);
+        _ = source.InvokeCommand(target, static x => x.TheCommand!);
         target.TheCommand = ReactiveCommand.Create<int>(
             _ => executed = true,
             canExecute,
@@ -300,7 +300,7 @@ public partial class ReactiveCommandTest
         var target = new ReactiveCommandHolder { TheCommand = command };
         _ = target.TheCommand.ThrownExceptions.Subscribe();
         var source = new Signal<int>();
-        _ = source.InvokeCommand(target, x => x.TheCommand!);
+        _ = source.InvokeCommand(target, static x => x.TheCommand!);
 
         const int ExpectedCount = 2;
 

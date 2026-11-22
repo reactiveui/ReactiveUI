@@ -39,7 +39,7 @@ public class CommandCanExecuteBenchmarks
         _viewModel = new();
         _command = ReactiveCommand.Create(
             static () => { },
-            _viewModel.WhenAnyValue(x => x.Count, static count => (count & 1) == 0),
+            _viewModel.WhenAnyValue(static x => x.Count, static count => (count & 1) == 0),
             Sequencer.Immediate);
         _subscription = _command.CanExecute.Subscribe(_sink);
     }

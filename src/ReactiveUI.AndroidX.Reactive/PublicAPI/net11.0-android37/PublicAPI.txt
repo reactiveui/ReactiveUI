@@ -1,19 +1,6 @@
 [assembly: System.Runtime.Versioning.SupportedOSPlatform("Android34.0")]
 namespace ReactiveUI.Reactive.AndroidX
 {
-    public static class ControlFetcherMixins
-    {
-        extension(AndroidX.Fragment.App.Fragment fragment)
-        {
-            [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("Android resource discovery uses reflection that may require dynamic code generation.")]
-            [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Android resource discovery uses reflection over generated resource types that may be trimmed.")]
-            [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-            public void WireUpControls(Android.Views.View inflatedView) { }
-            [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("Android resource discovery uses reflection that may require dynamic code generation.")]
-            [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Android resource discovery uses reflection over generated resource types that may be trimmed.")]
-            public void WireUpControls(Android.Views.View inflatedView, ReactiveUI.Reactive.ControlFetcherMixins.ResolveStrategy resolveMembers) { }
-        }
-    }
     [System.Diagnostics.DebuggerDisplay("{Activated}, {Deactivated}")]
     public class ReactiveAppCompatActivity : AndroidX.AppCompat.App.AppCompatActivity, ReactiveUI.IHandleObservableErrors, ReactiveUI.IReactiveNotifyPropertyChanged<ReactiveUI.Reactive.AndroidX.ReactiveAppCompatActivity>, ReactiveUI.IReactiveObject
     {

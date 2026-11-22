@@ -181,11 +181,11 @@ public static class CommandTypeExamples
 
         using ReactiveCommand<RxVoid, int> takeBackLoans = ReactiveCommand.Create(desk.ReturnAll);
         using ReactiveCommand<RxVoid, int> countShelf = ReactiveCommand.Create(() => desk.Search(string.Empty).Count);
-        using LoggingCombinedCommand<RxVoid, int> withCanExecuteAndScheduler = new([takeBackLoans, countShelf], desk.WhenAnyValue(d => d.IsOpen), Sequencer.Immediate);
+        using LoggingCombinedCommand<RxVoid, int> withCanExecuteAndScheduler = new([takeBackLoans, countShelf], desk.WhenAnyValue(static d => d.IsOpen), Sequencer.Immediate);
         IList<int> firstRun = await withCanExecuteAndScheduler.Execute();
 
         using ReactiveCommand<RxVoid, int> countShelfAgain = ReactiveCommand.Create(() => desk.Search(string.Empty).Count);
-        using LoggingCombinedCommand<RxVoid, int> withCanExecute = new([countShelfAgain], desk.WhenAnyValue(d => d.IsOpen));
+        using LoggingCombinedCommand<RxVoid, int> withCanExecute = new([countShelfAgain], desk.WhenAnyValue(static d => d.IsOpen));
         IList<int> secondRun = await withCanExecute.Execute();
 
         using ReactiveCommand<RxVoid, int> countShelfOnceMore = ReactiveCommand.Create(() => desk.Search(string.Empty).Count);

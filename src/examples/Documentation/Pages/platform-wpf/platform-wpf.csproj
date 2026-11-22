@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <ProjectReference Include="../../../../ReactiveUI.Wpf/ReactiveUI.Wpf.csproj" />
+    <ProjectReference Include="../../../../ReactiveUI.Wpf.Unsafe/ReactiveUI.Wpf.Unsafe.csproj" />
   </ItemGroup>
 
 </Project>

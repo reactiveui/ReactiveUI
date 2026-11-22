@@ -16,12 +16,12 @@ public static class CommandFactoryExamples
         List<string> log = [];
 
         using ReactiveCommand<RxVoid, RxVoid> open = ReactiveCommand.Create(() => log.Add("Desk opened"));
-        using ReactiveCommand<RxVoid, RxVoid> lendBook = ReactiveCommand.Create(() => log.Add("Book lent"), desk.WhenAnyValue(d => d.IsOpen));
+        using ReactiveCommand<RxVoid, RxVoid> lendBook = ReactiveCommand.Create(() => log.Add("Book lent"), desk.WhenAnyValue(static d => d.IsOpen));
 
         // The last argument is the output ISequencer: it picks where the command delivers its result, IsExecuting
         // and ThrownExceptions. Left out, a command uses RxSchedulers.MainThreadScheduler, the UI thread in an app.
         using ReactiveCommand<RxVoid, RxVoid> tidyShelf = ReactiveCommand.Create(() => log.Add("Shelf tidied"), Sequencer.Immediate);
-        using ReactiveCommand<RxVoid, RxVoid> waiveFee = ReactiveCommand.Create(() => log.Add("Late fee waived"), desk.WhenAnyValue(d => d.IsOpen), Sequencer.Immediate);
+        using ReactiveCommand<RxVoid, RxVoid> waiveFee = ReactiveCommand.Create(() => log.Add("Late fee waived"), desk.WhenAnyValue(static d => d.IsOpen), Sequencer.Immediate);
 
         _ = await open.Execute();
         _ = await lendBook.Execute();
@@ -53,11 +53,11 @@ public static class CommandFactoryExamples
         _ = desk.Borrow(1);
 
         using ReactiveCommand<RxVoid, int> countAll = ReactiveCommand.Create(() => desk.Search(string.Empty).Count);
-        using ReactiveCommand<RxVoid, int> countLoans = ReactiveCommand.Create(() => desk.LoanCount, desk.WhenAnyValue(d => d.IsOpen));
+        using ReactiveCommand<RxVoid, int> countLoans = ReactiveCommand.Create(() => desk.LoanCount, desk.WhenAnyValue(static d => d.IsOpen));
 
         // The ISequencer argument picks where the result is delivered; omitted, it defaults to RxSchedulers.MainThreadScheduler.
         using ReactiveCommand<RxVoid, int> countByTitle = ReactiveCommand.Create(() => desk.Search("Code").Count, Sequencer.Immediate);
-        using ReactiveCommand<RxVoid, int> countLoansImmediate = ReactiveCommand.Create(() => desk.LoanCount, desk.WhenAnyValue(d => d.IsOpen), Sequencer.Immediate);
+        using ReactiveCommand<RxVoid, int> countLoansImmediate = ReactiveCommand.Create(() => desk.LoanCount, desk.WhenAnyValue(static d => d.IsOpen), Sequencer.Immediate);
 
         Console.WriteLine(await countAll.Execute());
         Console.WriteLine(await countLoans.Execute());
@@ -79,9 +79,9 @@ public static class CommandFactoryExamples
         List<int> overdueNotices = [];
 
         using ReactiveCommand<int, RxVoid> flag = ReactiveCommand.Create<int>(overdueNotices.Add);
-        using ReactiveCommand<int, RxVoid> flagWhileOpen = ReactiveCommand.Create<int>(overdueNotices.Add, desk.WhenAnyValue(d => d.IsOpen));
+        using ReactiveCommand<int, RxVoid> flagWhileOpen = ReactiveCommand.Create<int>(overdueNotices.Add, desk.WhenAnyValue(static d => d.IsOpen));
         using ReactiveCommand<int, RxVoid> flagImmediate = ReactiveCommand.Create<int>(overdueNotices.Add, Sequencer.Immediate);
-        using ReactiveCommand<int, RxVoid> flagGuarded = ReactiveCommand.Create<int>(overdueNotices.Add, desk.WhenAnyValue(d => d.IsOpen), Sequencer.Immediate);
+        using ReactiveCommand<int, RxVoid> flagGuarded = ReactiveCommand.Create<int>(overdueNotices.Add, desk.WhenAnyValue(static d => d.IsOpen), Sequencer.Immediate);
 
         _ = await flag.Execute(1);
         _ = await flagWhileOpen.Execute(2);
@@ -101,11 +101,14 @@ public static class CommandFactoryExamples
         LibraryDesk desk = new();
 
         using ReactiveCommand<string, IReadOnlyList<Book>> search = ReactiveCommand.Create<string, IReadOnlyList<Book>>(desk.Search);
-        using ReactiveCommand<string, IReadOnlyList<Book>> searchWhileOpen = ReactiveCommand.Create<string, IReadOnlyList<Book>>(desk.Search, desk.WhenAnyValue(d => d.IsOpen));
+        using ReactiveCommand<string, IReadOnlyList<Book>> searchWhileOpen = ReactiveCommand.Create<string, IReadOnlyList<Book>>(desk.Search, desk.WhenAnyValue(static d => d.IsOpen));
 
         // The ISequencer argument picks where the search result is delivered; omitted, it defaults to RxSchedulers.MainThreadScheduler.
         using ReactiveCommand<string, IReadOnlyList<Book>> searchImmediate = ReactiveCommand.Create<string, IReadOnlyList<Book>>(desk.Search, Sequencer.Immediate);
-        using ReactiveCommand<string, IReadOnlyList<Book>> searchGuarded = ReactiveCommand.Create<string, IReadOnlyList<Book>>(desk.Search, desk.WhenAnyValue(d => d.IsOpen), Sequencer.Immediate);
+        using ReactiveCommand<string, IReadOnlyList<Book>> searchGuarded = ReactiveCommand.Create<string, IReadOnlyList<Book>>(
+            desk.Search,
+            desk.WhenAnyValue(static d => d.IsOpen),
+            Sequencer.Immediate);
 
         IReadOnlyList<Book> byTitle = await search.Execute("Refactoring");
         IReadOnlyList<Book> byAuthor = await searchWhileOpen.Execute("Fowler");
@@ -134,13 +137,13 @@ public static class CommandFactoryExamples
         LibraryDesk desk = new();
 
         using ReactiveCommand<RxVoid, int> sync = ReactiveCommand.CreateFromObservable(() => Signal.FromAsync(desk.SyncWithCentralCatalogueAsync));
-        using ReactiveCommand<RxVoid, int> syncWhileOpen = ReactiveCommand.CreateFromObservable(() => Signal.FromAsync(desk.SyncWithCentralCatalogueAsync), desk.WhenAnyValue(d => d.IsOpen));
+        using ReactiveCommand<RxVoid, int> syncWhileOpen = ReactiveCommand.CreateFromObservable(() => Signal.FromAsync(desk.SyncWithCentralCatalogueAsync), desk.WhenAnyValue(static d => d.IsOpen));
 
         // The ISequencer argument picks where the synced count is delivered; omitted, it defaults to RxSchedulers.MainThreadScheduler.
         using ReactiveCommand<RxVoid, int> syncImmediate = ReactiveCommand.CreateFromObservable(() => Signal.FromAsync(desk.SyncWithCentralCatalogueAsync), Sequencer.Immediate);
         using ReactiveCommand<RxVoid, int> syncGuarded = ReactiveCommand.CreateFromObservable(
             () => Signal.FromAsync(desk.SyncWithCentralCatalogueAsync),
-            desk.WhenAnyValue(d => d.IsOpen),
+            desk.WhenAnyValue(static d => d.IsOpen),
             Sequencer.Immediate);
 
         Console.WriteLine(await sync.Execute());
@@ -165,11 +168,11 @@ public static class CommandFactoryExamples
         LibraryDesk desk = new();
 
         using ReactiveCommand<int, Book> borrow = ReactiveCommand.CreateFromObservable<int, Book>(bookId => Signal.Emit(desk.Borrow(bookId)));
-        using ReactiveCommand<int, Book> borrowWhileOpen = ReactiveCommand.CreateFromObservable<int, Book>(bookId => Signal.Emit(desk.Borrow(bookId)), desk.WhenAnyValue(d => d.IsOpen));
+        using ReactiveCommand<int, Book> borrowWhileOpen = ReactiveCommand.CreateFromObservable<int, Book>(bookId => Signal.Emit(desk.Borrow(bookId)), desk.WhenAnyValue(static d => d.IsOpen));
         using ReactiveCommand<int, Book> borrowImmediate = ReactiveCommand.CreateFromObservable<int, Book>(bookId => Signal.Emit(desk.Borrow(bookId)), Sequencer.Immediate);
         using ReactiveCommand<int, Book> borrowGuarded = ReactiveCommand.CreateFromObservable<int, Book>(
             bookId => Signal.Emit(desk.Borrow(bookId)),
-            desk.WhenAnyValue(d => d.IsOpen),
+            desk.WhenAnyValue(static d => d.IsOpen),
             Sequencer.Immediate);
 
         Book first = await borrow.Execute(1);
@@ -205,7 +208,7 @@ public static class CommandFactoryExamples
         IList<int> firstRun = await endOfDay.Execute();
 
         using ReactiveCommand<RxVoid, int> countShelfWhileOpen = ReactiveCommand.Create(() => desk.Search(string.Empty).Count);
-        using CombinedReactiveCommand<RxVoid, int> endOfDayWhileOpen = ReactiveCommand.CreateCombined([countShelfWhileOpen], desk.WhenAnyValue(d => d.IsOpen));
+        using CombinedReactiveCommand<RxVoid, int> endOfDayWhileOpen = ReactiveCommand.CreateCombined([countShelfWhileOpen], desk.WhenAnyValue(static d => d.IsOpen));
         IList<int> secondRun = await endOfDayWhileOpen.Execute();
 
         // The ISequencer argument picks where the combined list is delivered; omitted, it defaults to RxSchedulers.MainThreadScheduler.
@@ -214,7 +217,7 @@ public static class CommandFactoryExamples
         IList<int> thirdRun = await endOfDayImmediate.Execute();
 
         using ReactiveCommand<RxVoid, int> countShelfGuarded = ReactiveCommand.Create(() => desk.Search(string.Empty).Count);
-        using CombinedReactiveCommand<RxVoid, int> endOfDayGuarded = ReactiveCommand.CreateCombined([countShelfGuarded], desk.WhenAnyValue(d => d.IsOpen), Sequencer.Immediate);
+        using CombinedReactiveCommand<RxVoid, int> endOfDayGuarded = ReactiveCommand.CreateCombined([countShelfGuarded], desk.WhenAnyValue(static d => d.IsOpen), Sequencer.Immediate);
         IList<int> fourthRun = await endOfDayGuarded.Execute();
 
         Console.WriteLine(firstRun[0]);

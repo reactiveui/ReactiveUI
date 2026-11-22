@@ -190,7 +190,6 @@ public class RoutingState : ReactiveObject
     /// <summary>Sets up reactive commands and observables after deserialization.</summary>
     /// <param name="sc">The streaming context for deserialization.</param>
     [OnDeserialized]
-    [RequiresUnreferencedCode("RoutingState uses ReactiveCommand which may require unreferenced code.")]
     [MemberNotNull(
         nameof(NavigationStackChanged),
         nameof(CurrentViewModel),

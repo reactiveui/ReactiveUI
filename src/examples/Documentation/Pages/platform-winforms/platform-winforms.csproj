@@ -14,6 +14,7 @@
 
   <ItemGroup>
     <ProjectReference Include="$(MSBuildThisFileDirectory)../../../../ReactiveUI.Winforms/ReactiveUI.Winforms.csproj" />
+    <ProjectReference Include="$(MSBuildThisFileDirectory)../../../../ReactiveUI.Winforms.Unsafe/ReactiveUI.Winforms.Unsafe.csproj" />
   </ItemGroup>
 
   <!-- This page is its own self-contained WinForms scenario (books, members, loans) and uses none of the shared

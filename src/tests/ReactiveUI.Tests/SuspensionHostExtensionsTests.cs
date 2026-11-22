@@ -9,9 +9,9 @@ using ReactiveUI.Tests.Utilities.SuspensionHost;
 using TUnit.Core.Executors;
 
 #if REACTIVE_SHIM
-using ISuspensionDriverContract = ReactiveUI.Reactive.ISuspensionDriver;
+using ISuspensionDriverContract = ReactiveUI.Reactive.IUnsafeSuspensionDriver;
 #else
-using ISuspensionDriverContract = ReactiveUI.ISuspensionDriver;
+using ISuspensionDriverContract = ReactiveUI.IUnsafeSuspensionDriver;
 #endif
 
 namespace ReactiveUI.Tests;
@@ -42,7 +42,7 @@ public class SuspensionHostExtensionsTests
     [Test]
     public async Task DummySuspensionDriver_LoadState_ReturnsDefaultObservable()
     {
-        var driver = new DummySuspensionDriver();
+        var driver = new DummySuspensionDriverUnsafe();
         object? result = null;
 
         using var subscription = driver.LoadState().ObserveOn(Sequencer.Immediate).Subscribe(state => result = state);
@@ -55,7 +55,7 @@ public class SuspensionHostExtensionsTests
     [Test]
     public async Task DummySuspensionDriver_SaveState_ReturnsUnitObservable()
     {
-        var driver = new DummySuspensionDriver();
+        var driver = new DummySuspensionDriverUnsafe();
         var wasCalled = false;
 
         using var subscription = driver.SaveState(new DummyAppState()).ObserveOn(Sequencer.Immediate).Subscribe(_ => wasCalled = true);

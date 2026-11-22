@@ -61,6 +61,7 @@
   </ItemGroup>
 
   <ItemGroup Condition="$([MSBuild]::IsOsPlatform('Windows')) or $([MSBuild]::IsOsPlatform('OSX'))">
+    <ProjectReference Include="$(MSBuildThisFileDirectory)../../../../ReactiveUI.Unsafe/ReactiveUI.Unsafe.csproj" />
     <Compile Remove="LinuxPlaceholder/**" />
   </ItemGroup>
 

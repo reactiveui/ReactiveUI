@@ -19,7 +19,7 @@ public static class DataBindingExamples
         using TodoListViewModel viewModel = new(InMemoryTodoStore.CreateSeeded());
         using TodoListView view = new() { ViewModel = viewModel };
 
-        using IReactiveBinding<TodoListView, BindingChange> binding = view.Bind(viewModel, x => x.NewTitle, v => v.NewTitleBox.Text);
+        using IReactiveBinding<TodoListView, BindingChange> binding = view.Bind(viewModel, static x => x.NewTitle, static v => v.NewTitleBox.Text);
 
         view.NewTitleBox.Text = ElectricianTitle;
         Console.WriteLine(viewModel.NewTitle);
@@ -39,7 +39,7 @@ public static class DataBindingExamples
         using TodoListViewModel viewModel = new(InMemoryTodoStore.CreateSeeded());
         using TodoListView view = new() { ViewModel = viewModel };
 
-        using IReactiveBinding<TodoListView, IReadOnlyList<TodoItem>> binding = view.OneWayBind(viewModel, x => x.Items, v => v.ItemList.Items);
+        using IReactiveBinding<TodoListView, IReadOnlyList<TodoItem>> binding = view.OneWayBind(viewModel, static x => x.Items, static v => v.ItemList.Items);
 
         _ = await viewModel.Load.Execute();
         Console.WriteLine(view.ItemList.Items.Count);
@@ -61,8 +61,8 @@ public static class DataBindingExamples
 
         using IReactiveBinding<TodoListView, string> binding = view.OneWayBind(
             viewModel,
-            x => x.RemainingCount,
-            v => v.RemainingLabel.Text,
+            static x => x.RemainingCount,
+            static v => v.RemainingLabel.Text,
             static count => count == 1 ? "1 item left" : $"{count} items left");
 
         _ = await viewModel.Load.Execute();
@@ -83,9 +83,9 @@ public static class DataBindingExamples
         using TodoListViewModel viewModel = new(InMemoryTodoStore.CreateSeeded());
         using TodoListView view = new() { ViewModel = viewModel };
 
-        using IDisposable binding = viewModel.WhenAnyValue(x => x.ErrorMessage)
+        using IDisposable binding = viewModel.WhenAnyValue(static x => x.ErrorMessage)
             .Select(static message => message.Length > 0)
-            .BindTo(view, v => v.ErrorLabel.IsVisible);
+            .BindTo(view, static v => v.ErrorLabel.IsVisible);
         Console.WriteLine(view.ErrorLabel.IsVisible);
 
         _ = await viewModel.Load.Execute();

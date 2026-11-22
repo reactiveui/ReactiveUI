@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>$(ReactiveUIWindowsOnlyTargets)</TargetFrameworks>
+    <AssemblyName>ReactiveUI.Winforms.Unsafe.Reactive</AssemblyName>
+    <RootNamespace>ReactiveUI.Reactive.Winforms</RootNamespace>
+    <PackageDescription>Opt-in reflection and dynamic-code control hosts for ReactiveUI.WinForms.Reactive (ViewModelControlHostUnsafe, RoutedControlHostUnsafe).</PackageDescription>
+    <PackageId>ReactiveUI.WinForms.Unsafe.Reactive</PackageId>
+    <UseWindowsForms>true</UseWindowsForms>
+    <PackageTags>mvvm;reactiveui;rx;reactive extensions;observable;LINQ;events;frp;winforms;net;net472;unsafe</PackageTags>
+    <IsAotCompatible>false</IsAotCompatible>
+    <EnableAotAnalyzer>false</EnableAotAnalyzer>
+    <EnableTrimAnalyzer>false</EnableTrimAnalyzer>
+    <EnableSingleFileAnalyzer>false</EnableSingleFileAnalyzer>
+    <IsTrimmable>false</IsTrimmable>
+  </PropertyGroup>
+  <ItemGroup>
+    <Using Include="ReactiveUI.Internal"/>
+    <Using Include="ReactiveUI.Primitives.Disposables"/>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\ReactiveUI.Winforms.Unsafe\**\*.cs" Exclude="..\ReactiveUI.Winforms.Unsafe\obj\**\*.cs;..\ReactiveUI.Winforms.Unsafe\bin\**\*.cs" Link="ReactiveUI.Winforms.Unsafe\%(RecursiveDir)%(Filename)%(Extension)"/>
+    <Compile Include="..\Shared\ArgumentValidation.cs" Link="Shared\ArgumentValidation.cs"/>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ReactiveUI.Winforms.Reactive\ReactiveUI.Winforms.Reactive.csproj"/>
+    <ProjectReference Include="..\ReactiveUI.Unsafe.Reactive\ReactiveUI.Unsafe.Reactive.csproj"/>
+  </ItemGroup>
+</Project>

@@ -28,7 +28,7 @@ public sealed class WeekdayViewHost : ReactiveViewHost<WeekdayViewModel>
             attachToRoot: false,
             bind: static (host, view) => ((WeekdayViewHost)host)._weekdayLabel = view.FindViewById<TextView>(Resource.Id.weekdayLabel))
     {
-        this.WhenAnyValue(host => host.ViewModel).Subscribe(weekday =>
+        this.WhenAnyValue(static host => host.ViewModel).Subscribe(weekday =>
             _weekdayLabel!.Text = weekday is null ? null : $"{weekday.Name} ({weekday.LessonCount} lessons)");
     }
 }

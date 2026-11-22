@@ -103,7 +103,7 @@ public class SuspensionTests
     public async Task BundleDriver_SaveAndLoad_ByReflection_RoundTrips()
     {
         AutoSuspendHelper.LatestBundle = new();
-        var driver = new BundleSuspensionDriver();
+        var driver = new BundleSuspensionDriverUnsafe();
 
         _ = await driver.SaveState(SavedState).FirstValueAsync(out _).WithTimeout(Saving);
         var loaded = await driver.LoadState().FirstValueAsync(out _).WithTimeout(Loading);

@@ -21,6 +21,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\ReactiveUI.Reactive\ReactiveUI.Reactive.csproj"/>
+    <ProjectReference Include="..\..\ReactiveUI.Unsafe.Reactive\ReactiveUI.Unsafe.Reactive.csproj"/>
   </ItemGroup>
 
   <ItemGroup>

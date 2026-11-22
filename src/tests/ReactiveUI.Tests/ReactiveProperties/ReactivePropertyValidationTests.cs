@@ -277,4 +277,19 @@ public class ReactivePropertyValidationTests
 
         await Assert.That(rp.GetErrors(null)?.OfType<string>()).Contains(AsyncError);
     }
+
+    /// <summary>Verifies that explicit DataAnnotations validation works without reflection.</summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task AddValidation_WithExplicitAttributes_ValidatesWithoutReflection()
+    {
+        using var rp = new ReactiveProperty<string?>(string.Empty, Sequencer.Immediate, false, false)
+            .AddValidation("Name", new System.ComponentModel.DataAnnotations.RequiredAttribute());
+
+        await Assert.That(rp.HasErrors).IsTrue();
+
+        rp.Value = "Ada";
+
+        await Assert.That(rp.HasErrors).IsFalse();
+    }
 }

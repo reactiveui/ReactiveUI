@@ -1,0 +1,42 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>$(ReactiveUIWinUITargets)</TargetFrameworks>
+    <TargetPlatformMinVersion>10.0.19041.0</TargetPlatformMinVersion>
+    <AssemblyName>ReactiveUI.WinUI.Unsafe</AssemblyName>
+    <PackageId>ReactiveUI.WinUI.Unsafe</PackageId>
+    <PackageDescription>Opt-in reflection and dynamic-code view hosts and binding hooks for ReactiveUI.WinUI (ViewModelViewHostUnsafe, RoutedViewHostUnsafe, AutoDataTemplateBindingHookUnsafe).</PackageDescription>
+    <RootNamespace>ReactiveUI.WinUI.Desktop</RootNamespace>
+    <PackageTags>mvvm;reactiveui;rx;reactive extensions;observable;LINQ;events;winui;unsafe</PackageTags>
+    <UseWinUI>true</UseWinUI>
+    <DefineConstants>IS_WINUI;WINUI_TARGET;</DefineConstants>
+    <RuntimeIdentifiers>win-x64;win-x86;win-arm64</RuntimeIdentifiers>
+    <EnableMsixTooling Condition="$([MSBuild]::IsOsPlatform('Windows'))">true</EnableMsixTooling>
+    <WindowsSdkPackageVersion>10.0.19041.48</WindowsSdkPackageVersion>
+    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.19041.0</SupportedOSPlatformVersion>
+    <TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.19041.0</TargetPlatformMinVersion>
+    <IsAotCompatible>false</IsAotCompatible>
+    <EnableAotAnalyzer>false</EnableAotAnalyzer>
+    <EnableTrimAnalyzer>false</EnableTrimAnalyzer>
+    <EnableSingleFileAnalyzer>false</EnableSingleFileAnalyzer>
+    <IsTrimmable>false</IsTrimmable>
+  </PropertyGroup>
+  <ItemGroup>
+    <Using Include="ReactiveUI.Internal"/>
+    <Using Include="ReactiveUI.Primitives.Disposables"/>
+  </ItemGroup>
+  <Import Project="..\ReactiveUI.WinUI\build\SkipMakePriOnNonWindows.targets"
+          Condition="!$([MSBuild]::IsOsPlatform('Windows'))" />
+  <ItemGroup>
+    <PackageReference Include="Microsoft.WindowsAppSDK"/>
+    <PackageReference Include="Microsoft.Windows.SDK.BuildTools"/>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ReactiveUI.WinUI\ReactiveUI.WinUI.csproj"/>
+    <ProjectReference Include="..\ReactiveUI.Unsafe\ReactiveUI.Unsafe.csproj"/>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\ReactiveUI.WinUI\ViewModelViewHostConverter.cs" Link="ViewModelViewHostConverter.cs"/>
+    <Compile Include="..\Shared\ArgumentValidation.cs" Link="Shared\ArgumentValidation.cs"/>
+    <Compile Include="..\Shared\Platform\ItemsControlTemplateBinding.cs" Link="Shared\Platform\ItemsControlTemplateBinding.cs"/>
+  </ItemGroup>
+</Project>

@@ -30,7 +30,7 @@ public sealed class AppDelegate : NSApplicationDelegate
         _autoSuspendHelper.DidFinishLaunching(notification);
         RxSuspension.SuspensionHost.CreateNewAppState = static () => new LibraryAppState();
 
-        AppSupportJsonSuspensionDriver driver = new();
+        AppSupportJsonSuspensionDriverUnsafe driver = new();
         RxSuspension.SuspensionHost.SetupDefaultSuspendResume(driver);
 
         _ = driver.SaveState(new LibraryAppState { LastViewedBook = "Dune" }, LibraryAppStateJsonContext.Default.LibraryAppState)

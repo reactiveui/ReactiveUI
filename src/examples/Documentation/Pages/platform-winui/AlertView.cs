@@ -18,7 +18,7 @@ public sealed class AlertView : ReactiveUserControl<AlertViewModel>
 
         this.WhenActivated(disposables =>
         {
-            IDisposable subscription = this.OneWayBind(ViewModel, viewModel => viewModel.Message, view => view.Label.Text);
+            IDisposable subscription = this.OneWayBind(ViewModel, static viewModel => viewModel.Message, static view => view.Label.Text);
             disposables(subscription);
         });
     }

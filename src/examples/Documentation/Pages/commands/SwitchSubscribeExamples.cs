@@ -18,7 +18,7 @@ public static class SwitchSubscribeExamples
         DeskConsoleViewModel console = new();
         List<int> matchCounts = [];
 
-        using IDisposable subscription = console.WhenAnyValue(v => v.Progress).SwitchSubscribe(matchCounts.Add);
+        using IDisposable subscription = console.WhenAnyValue(static v => v.Progress).SwitchSubscribe(matchCounts.Add);
 
         ScheduledSignal<int> firstSearch = new(Sequencer.Immediate);
         console.Progress = firstSearch;
@@ -43,7 +43,7 @@ public static class SwitchSubscribeExamples
         List<int> matchCounts = [];
         List<string> notes = [];
 
-        using IDisposable subscription = console.WhenAnyValue(v => v.Progress).SwitchSubscribe(
+        using IDisposable subscription = console.WhenAnyValue(static v => v.Progress).SwitchSubscribe(
             matchCounts.Add,
             error => notes.Add($"Search failed: {error.Message}"),
             () => notes.Add("Search completed"));
@@ -67,7 +67,7 @@ public static class SwitchSubscribeExamples
         DeskConsoleViewModel console = new();
         List<int> matchCounts = [];
 
-        using IDisposable subscription = console.WhenAnyValue(v => v.ActiveSession)
+        using IDisposable subscription = console.WhenAnyValue(static v => v.ActiveSession)
             .SwitchSubscribe(static session => session.MatchCount, matchCounts.Add);
 
         ScheduledSignal<int> firstCount = new(Sequencer.Immediate);
@@ -92,7 +92,7 @@ public static class SwitchSubscribeExamples
         List<int> matchCounts = [];
         List<string> notes = [];
 
-        using IDisposable subscription = console.WhenAnyValue(v => v.ActiveSession).SwitchSubscribe(
+        using IDisposable subscription = console.WhenAnyValue(static v => v.ActiveSession).SwitchSubscribe(
             static session => session.MatchCount,
             matchCounts.Add,
             error => notes.Add($"Search failed: {error.Message}"),
@@ -117,7 +117,7 @@ public static class SwitchSubscribeExamples
         DeskConsoleViewModel console = new();
         List<int> matchCounts = [];
 
-        IObservable<int> matchCount = console.WhenAnyValue(v => v.ActiveSession).SwitchSelect(static session => session.MatchCount);
+        IObservable<int> matchCount = console.WhenAnyValue(static v => v.ActiveSession).SwitchSelect(static session => session.MatchCount);
         using IDisposable subscription = matchCount.Subscribe(matchCounts.Add);
 
         ScheduledSignal<int> count = new(Sequencer.Immediate);
@@ -138,7 +138,7 @@ public static class SwitchSubscribeExamples
         DeskConsoleViewModel console = new();
         List<string> firstTitles = [];
 
-        using IDisposable subscription = console.WhenAnyValue(v => v.SearchCommand)
+        using IDisposable subscription = console.WhenAnyValue(static v => v.SearchCommand)
             .SwitchSubscribe(matches => firstTitles.Add(matches[0].Title));
 
         using ReactiveCommand<string, IReadOnlyList<Book>> byTitle = ReactiveCommand.Create<string, IReadOnlyList<Book>>(desk.Search, Sequencer.Immediate);
@@ -164,7 +164,7 @@ public static class SwitchSubscribeExamples
         List<string> titles = [];
         List<string> notes = [];
 
-        using IDisposable subscription = console.WhenAnyValue(v => v.SearchCommand).SwitchSubscribe(
+        using IDisposable subscription = console.WhenAnyValue(static v => v.SearchCommand).SwitchSubscribe(
             matches => titles.Add(matches[0].Title),
             error => notes.Add($"Search failed: {error.Message}"),
             () => notes.Add("Command replaced"));
@@ -187,7 +187,7 @@ public static class SwitchSubscribeExamples
         DeskConsoleViewModel console = new();
         List<bool> busyChanges = [];
 
-        using IDisposable subscription = console.WhenAnyValue(v => v.SearchCommand)
+        using IDisposable subscription = console.WhenAnyValue(static v => v.SearchCommand)
             .SwitchSubscribe(static cmd => cmd.IsExecuting, busyChanges.Add);
 
         using ReactiveCommand<string, IReadOnlyList<Book>> search = ReactiveCommand.Create<string, IReadOnlyList<Book>>(desk.Search, Sequencer.Immediate);
@@ -209,7 +209,7 @@ public static class SwitchSubscribeExamples
         List<bool> busyChanges = [];
         List<string> notes = [];
 
-        using IDisposable subscription = console.WhenAnyValue(v => v.SearchCommand).SwitchSubscribe(
+        using IDisposable subscription = console.WhenAnyValue(static v => v.SearchCommand).SwitchSubscribe(
             static cmd => cmd.IsExecuting,
             busyChanges.Add,
             error => notes.Add($"Search failed: {error.Message}"),
@@ -233,7 +233,7 @@ public static class SwitchSubscribeExamples
         DeskConsoleViewModel console = new();
         List<bool> busyChanges = [];
 
-        IObservable<bool> isBusy = console.WhenAnyValue(v => v.SearchCommand).SwitchSelect(static cmd => cmd.IsExecuting);
+        IObservable<bool> isBusy = console.WhenAnyValue(static v => v.SearchCommand).SwitchSelect(static cmd => cmd.IsExecuting);
         using IDisposable subscription = isBusy.Subscribe(busyChanges.Add);
 
         using ReactiveCommand<string, IReadOnlyList<Book>> search = ReactiveCommand.Create<string, IReadOnlyList<Book>>(desk.Search, Sequencer.Immediate);

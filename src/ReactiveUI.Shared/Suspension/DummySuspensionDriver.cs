@@ -3,8 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Text.Json.Serialization.Metadata;
 
@@ -23,30 +21,8 @@ namespace ReactiveUI;
 public sealed class DummySuspensionDriver : ISuspensionDriver
 {
     /// <inheritdoc />
-    [RequiresUnreferencedCode(
-        "Implementations commonly use reflection-based serialization. "
-        + "Prefer LoadState<T>(JsonTypeInfo<T>) for trimming or AOT scenarios.")]
-    [RequiresDynamicCode(
-        "Implementations commonly use reflection-based serialization. "
-        + "Prefer LoadState<T>(JsonTypeInfo<T>) for trimming or AOT scenarios.")]
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public IObservable<object?> LoadState() =>
-        new ReturnSignal<object?>(null, Sequencer.Immediate);
-
-    /// <inheritdoc />
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public IObservable<T?> LoadState<T>(JsonTypeInfo<T> typeInfo) => new ReturnSignal<T?>(default, Sequencer.Immediate);
-
-    /// <inheritdoc />
-    [RequiresUnreferencedCode(
-        "Implementations commonly use reflection-based serialization. "
-        + "Prefer SaveState<T>(T, JsonTypeInfo<T>) for trimming or AOT scenarios.")]
-    [RequiresDynamicCode(
-        "Implementations commonly use reflection-based serialization. "
-        + "Prefer SaveState<T>(T, JsonTypeInfo<T>) for trimming or AOT scenarios.")]
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public IObservable<RxVoid> SaveState<T>(T state) =>
-        ImmutableReturnRxVoidSignal.Instance;
 
     /// <inheritdoc />
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

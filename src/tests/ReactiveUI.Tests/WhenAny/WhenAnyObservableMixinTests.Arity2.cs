@@ -20,8 +20,8 @@ public partial class WhenAnyObservableMixinTests
         vm.ObservableProperty2 = subj2;
         var list = new List<string>();
         _ = vm.WhenAnyObservable(
-            x => x.ObservableProperty1,
-            x => x.ObservableProperty2).ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
+            static x => x.ObservableProperty1,
+            static x => x.ObservableProperty2).ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
         subj1.OnNext("test");
         subj2.OnNext("test");
         await Assert.That(list).Count().IsGreaterThan(0);
@@ -39,8 +39,8 @@ public partial class WhenAnyObservableMixinTests
         vm.ObservableProperty2 = subj2;
         var list = new List<string>();
         _ = vm.WhenAnyObservable(
-            x => x.ObservableProperty1,
-            x => x.ObservableProperty2,
+            static x => x.ObservableProperty1,
+            static x => x.ObservableProperty2,
             static (_, _) => "x").ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
         subj1.OnNext("test");
         subj2.OnNext("test");

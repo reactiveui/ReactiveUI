@@ -21,7 +21,7 @@ public sealed class CourseListViewModel : ReactiveObject, IRoutableViewModel
         Courses = courses;
         Students = [.. courses.SelectMany(static course => course.Students)];
 
-        _summary = this.WhenAnyValue(x => x.SelectedStudent)
+        _summary = this.WhenAnyValue(static x => x.SelectedStudent)
             .Select(static student => student is null ? null : new StudentSummaryViewModel(student))
             .ToProperty(this, nameof(Summary));
 

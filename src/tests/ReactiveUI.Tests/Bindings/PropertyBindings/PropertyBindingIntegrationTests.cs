@@ -25,7 +25,7 @@ public class PropertyBindingIntegrationTests
         var viewModel = new TestViewModel { Name = InitialText };
         var view = new TestView { ViewModel = viewModel };
 
-        using (var binding = view.Bind(viewModel, vm => vm.Name, v => v.NameText))
+        using (var binding = view.Bind(viewModel, static vm => vm.Name, static v => v.NameText))
         {
             await Assert.That(view.NameText).IsEqualTo(InitialText);
         }
@@ -42,7 +42,7 @@ public class PropertyBindingIntegrationTests
         var viewModel = new TestViewModel { Name = InitialText };
         var view = new TestView { ViewModel = viewModel };
 
-        using var binding = view.Bind(viewModel, vm => vm.Name, v => v.NameText);
+        using var binding = view.Bind(viewModel, static vm => vm.Name, static v => v.NameText);
 
         // VM to View
         await Assert.That(view.NameText).IsEqualTo(InitialText);
@@ -68,8 +68,8 @@ public class PropertyBindingIntegrationTests
 
         using var binding = view.Bind(
             viewModel,
-            vm => vm.Count,
-            v => v.NameText,
+            static vm => vm.Count,
+            static v => v.NameText,
             static count => $"Count: {count}",
             static text => int.TryParse(text?.Replace("Count: ", string.Empty, StringComparison.Ordinal), out var n) ? n : 0);
 
@@ -88,8 +88,8 @@ public class PropertyBindingIntegrationTests
 
         using var binding = view.Bind(
             (TestViewModel)null!,
-            vm => vm.Name!,
-            v => v.NameText!);
+            static vm => vm.Name!,
+            static v => v.NameText!);
 
         // Should not throw, but won't update anything
         await Assert.That(view.NameText).IsNull();
@@ -133,8 +133,8 @@ public class PropertyBindingIntegrationTests
 
         using var binding = view.Bind(
             viewModel,
-            vm => vm.Count,
-            v => v.NameText);
+            static vm => vm.Count,
+            static v => v.NameText);
 
         // Should convert int to string automatically
         await Assert.That(view.NameText).IsEqualTo("42");
@@ -151,7 +151,7 @@ public class PropertyBindingIntegrationTests
         var target = new TestViewModel();
         var source = new BehaviorSignal<string>(InitialText);
 
-        using (var binding = source.BindTo(target, t => t.Name))
+        using (var binding = source.BindTo(target, static t => t.Name))
         {
             await Assert.That(target.Name).IsEqualTo(InitialText);
         }
@@ -168,7 +168,7 @@ public class PropertyBindingIntegrationTests
         var target = new TestViewModel();
         var source = new BehaviorSignal<string>(InitialText);
 
-        using var binding = source.BindTo(target, t => t.Name);
+        using var binding = source.BindTo(target, static t => t.Name);
 
         await Assert.That(target.Name).IsEqualTo(InitialText);
 
@@ -208,7 +208,7 @@ public class PropertyBindingIntegrationTests
         var viewModel = new TestViewModel { Name = InitialText };
         var view = new TestView { ViewModel = viewModel };
 
-        using (var binding = view.OneWayBind(viewModel, vm => vm.Name, v => v.NameText))
+        using (var binding = view.OneWayBind(viewModel, static vm => vm.Name, static v => v.NameText))
         {
             await Assert.That(view.NameText).IsEqualTo(InitialText);
         }
@@ -225,7 +225,7 @@ public class PropertyBindingIntegrationTests
         var viewModel = new TestViewModel { Name = InitialText };
         var view = new TestView { ViewModel = viewModel };
 
-        using var binding = view.OneWayBind(viewModel, vm => vm.Name, v => v.NameText);
+        using var binding = view.OneWayBind(viewModel, static vm => vm.Name, static v => v.NameText);
 
         // VM to View
         await Assert.That(view.NameText).IsEqualTo(InitialText);
@@ -247,8 +247,8 @@ public class PropertyBindingIntegrationTests
 
         using var binding = view.OneWayBind(
             (TestViewModel)null!,
-            vm => vm.Name!,
-            v => v.NameText!);
+            static vm => vm.Name!,
+            static v => v.NameText!);
 
         await Assert.That(view.NameText).IsNull();
     }
@@ -265,8 +265,8 @@ public class PropertyBindingIntegrationTests
 
         using var binding = view.OneWayBind(
             viewModel,
-            vm => vm.Count,
-            v => v.NameText,
+            static vm => vm.Count,
+            static v => v.NameText,
             static count => $"The count is: {count}");
 
         await Assert.That(view.NameText).IsEqualTo("The count is: 42");
@@ -287,8 +287,8 @@ public class PropertyBindingIntegrationTests
 
         using var binding = view.OneWayBind(
             viewModel,
-            vm => vm.Count,
-            v => v.NameText);
+            static vm => vm.Count,
+            static v => v.NameText);
 
         await Assert.That(view.NameText).IsEqualTo("42");
 

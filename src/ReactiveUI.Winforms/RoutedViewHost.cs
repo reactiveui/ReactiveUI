@@ -24,7 +24,7 @@ namespace ReactiveUI.Winforms;
 /// <remarks>
 /// The host asks the view locator for each page's view by the view model's run-time type, without building any type
 /// at run time. The default locator checks the view lookup the source generator writes, then the views the app added
-/// with <c>Map</c>. A view registered only with the service locator needs <see cref="RoutedControlHostUnsafe"/>.
+/// with <c>Map</c>. A view registered only with the service locator needs <c>RoutedControlHostUnsafe</c> from <c>ReactiveUI.WinForms.Unsafe</c>.
 /// </remarks>
 [DefaultProperty("ViewModel")]
 [DebuggerDisplay("{DefaultContent}, {Router}")]
@@ -54,7 +54,7 @@ public partial class RoutedControlHost : UserControl, IReactiveObject
         "Design",
         "SST2403:'this' escapes before construction finishes",
         Justification = "'this' is passed to BindingSink; the WinForms designer-mandated constructor wires this control's bindings; the single-threaded control is never published elsewhere.")]
-    private protected RoutedControlHost(Func<IViewLocator, object, string?, IViewFor?> resolveView)
+    protected RoutedControlHost(Func<IViewLocator, object, string?, IViewFor?> resolveView)
     {
         _resolveView = resolveView;
         InitializeComponent();
@@ -182,8 +182,8 @@ public partial class RoutedControlHost : UserControl, IReactiveObject
 
             // Router.CurrentViewModel + ViewContractObservable -> resolve and host the matching view.
             _viewModelContract = new(
-                host.WhenAnyObservable(x => x.Router!.CurrentViewModel),
-                host.WhenAnyObservable(x => x.ViewContractObservable!),
+                host.WhenAnyObservable(static x => x.Router!.CurrentViewModel),
+                host.WhenAnyObservable(static x => x.ViewContractObservable!),
                 OnViewModelContract,
                 RxState.DefaultExceptionHandler.OnNext);
         }

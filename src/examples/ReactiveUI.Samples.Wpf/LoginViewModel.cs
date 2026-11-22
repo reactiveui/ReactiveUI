@@ -19,8 +19,8 @@ public class LoginViewModel : ReactiveObject, IDisposable
     public LoginViewModel(ISequencer scheduler)
     {
         var canLogin = this.WhenAnyValue(
-            vm => vm.UserName,
-            vm => vm.Password,
+            static vm => vm.UserName,
+            static vm => vm.Password,
             static (user, pass) => !string.IsNullOrWhiteSpace(user) && !string.IsNullOrWhiteSpace(pass));
 
         Login = ReactiveCommand.CreateFromTask(

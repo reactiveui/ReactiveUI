@@ -1,0 +1,51 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>$(ReactiveUIPlatformTargetFrameworks)</TargetFrameworks>
+    <AssemblyName>ReactiveUI.Unsafe.Reactive</AssemblyName>
+    <RootNamespace>ReactiveUI.Reactive</RootNamespace>
+    <PackageId>ReactiveUI.Unsafe.Reactive</PackageId>
+    <PackageDescription>Opt-in reflection and dynamic-code APIs for ReactiveUI.Reactive (Unsafe view hosts, assembly view scanning, reflection AutoPersist, reflection suspension, and Android control wire-up).</PackageDescription>
+    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">15.0</SupportedOSPlatformVersion>
+    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">15.0</SupportedOSPlatformVersion>
+    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">35.0</SupportedOSPlatformVersion>
+    <IsAotCompatible>false</IsAotCompatible>
+    <EnableAotAnalyzer>false</EnableAotAnalyzer>
+    <EnableTrimAnalyzer>false</EnableTrimAnalyzer>
+    <EnableSingleFileAnalyzer>false</EnableSingleFileAnalyzer>
+    <IsTrimmable>false</IsTrimmable>
+  </PropertyGroup>
+  <ItemGroup>
+    <Using Include="ReactiveUI.Internal"/>
+    <Using Include="ReactiveUI.Primitives.Disposables"/>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ReactiveUI.Reactive\ReactiveUI.Reactive.csproj"/>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\ReactiveUI.Unsafe.Shared\**\*.cs" Link="ReactiveUI.Unsafe.Shared\%(RecursiveDir)%(Filename)%(Extension)"/>
+    <Compile Include="..\Shared\ArgumentValidation.cs" Link="Shared\ArgumentValidation.cs"/>
+    <Compile Include="..\Shared\DelegateObserver.cs" Link="Shared\DelegateObserver.cs"/>
+  </ItemGroup>
+  <ItemGroup Condition="$(TargetFramework.StartsWith('net4'))">
+    <PackageReference Include="System.ComponentModel.Annotations"/>
+    <PackageReference Include="System.Text.Json"/>
+  </ItemGroup>
+  <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios' or $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">
+    <Compile Include="..\ReactiveUI.Unsafe\Platforms\apple-common\**\*.cs" Link="Platforms\apple-common\%(RecursiveDir)%(Filename)%(Extension)"/>
+    <Compile Include="..\ReactiveUI.Unsafe\Platforms\uikit-common\**\*.cs" Link="Platforms\uikit-common\%(RecursiveDir)%(Filename)%(Extension)"/>
+  </ItemGroup>
+  <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'macos'">
+    <Compile Include="..\ReactiveUI.Unsafe\Platforms\apple-common\**\*.cs" Link="Platforms\apple-common\%(RecursiveDir)%(Filename)%(Extension)"/>
+  </ItemGroup>
+  <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tvos'">
+    <Compile Include="..\ReactiveUI.Unsafe\Platforms\apple-common\**\*.cs" Link="Platforms\apple-common\%(RecursiveDir)%(Filename)%(Extension)"/>
+    <Compile Include="..\ReactiveUI.Unsafe\Platforms\uikit-common\**\*.cs" Link="Platforms\uikit-common\%(RecursiveDir)%(Filename)%(Extension)"/>
+  </ItemGroup>
+  <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
+    <Compile Include="..\ReactiveUI.Unsafe\Platforms\android\**\*.cs" Link="Platforms\android\%(RecursiveDir)%(Filename)%(Extension)"/>
+    <Compile Include="..\Shared\TaskObserverBridge.cs" Link="Shared\TaskObserverBridge.cs"/>
+  </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="ReactiveUI.Reactive.Tests"/>
+  </ItemGroup>
+</Project>

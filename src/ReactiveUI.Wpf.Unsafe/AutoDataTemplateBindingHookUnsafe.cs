@@ -6,6 +6,7 @@
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Windows;
+using System.Windows.Markup;
 
 #if REACTIVE_SHIM
 namespace ReactiveUI.Reactive;
@@ -41,7 +42,7 @@ public class AutoDataTemplateBindingHookUnsafe : IPropertyBindingHook
 {
     /// <summary>Gets the default item template, which hosts each item in a <see cref="ViewModelViewHostUnsafe"/>.</summary>
     public static Lazy<DataTemplate> DefaultItemTemplate { get; } =
-        new(static () => AutoDataTemplateBindingHook.CreateItemTemplate(nameof(ViewModelViewHostUnsafe)));
+        new(static () => CreateItemTemplate(nameof(ViewModelViewHostUnsafe)));
 
     /// <inheritdoc/>
     public bool ExecuteHook(
@@ -60,5 +61,25 @@ public class AutoDataTemplateBindingHookUnsafe : IPropertyBindingHook
 
         itemsControl.ItemTemplate = DefaultItemTemplate.Value;
         return true;
+    }
+
+    /// <summary>Builds an item template that hosts each item in the named host type from this assembly.</summary>
+    /// <param name="hostTypeName">The name of the host type, which lives in this type's namespace and assembly.</param>
+    /// <returns>The item template.</returns>
+    private static DataTemplate CreateItemTemplate(string hostTypeName)
+    {
+#if REACTIVE_SHIM
+        const string XamlClrNamespace = "clr-namespace:ReactiveUI.Reactive";
+#else
+        const string XamlClrNamespace = "clr-namespace:ReactiveUI";
+#endif
+        var assemblyName = typeof(ViewModelViewHostUnsafe).Assembly.FullName;
+        assemblyName = assemblyName?.Substring(0, assemblyName.IndexOf(','));
+
+        var template =
+            $"<DataTemplate xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation' xmlns:xaml='{XamlClrNamespace};assembly={assemblyName}'>"
+            + $" <xaml:{hostTypeName} ViewModel=\"{{Binding Mode=OneWay}}\" VerticalContentAlignment=\"Stretch\" HorizontalContentAlignment=\"Stretch\" IsTabStop=\"False\" /></DataTemplate>";
+
+        return (DataTemplate)XamlReader.Parse(template);
     }
 }

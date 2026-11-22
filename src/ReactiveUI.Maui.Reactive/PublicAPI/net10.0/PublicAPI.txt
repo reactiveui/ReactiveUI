@@ -233,6 +233,7 @@ namespace ReactiveUI.Reactive.Maui
     public class RoutedViewHost : Microsoft.Maui.Controls.NavigationPage, ReactiveUI.Binding.Reactive.IActivatableView, Splat.IEnableLogger
     {
         public RoutedViewHost() { }
+        protected RoutedViewHost(System.Func<ReactiveUI.Binding.Reactive.IViewLocator, object, string?, ReactiveUI.Binding.Reactive.IViewFor?> resolveView) { }
         public static readonly Microsoft.Maui.Controls.BindableProperty RouterProperty;
         public static readonly Microsoft.Maui.Controls.BindableProperty SetTitleOnNavigateProperty;
         public ReactiveUI.Reactive.RoutingState Router { get; set; }
@@ -248,16 +249,11 @@ namespace ReactiveUI.Reactive.Maui
         protected override Microsoft.Maui.Controls.Page PageForViewModel(ReactiveUI.Reactive.IRoutableViewModel vm) { }
         protected override System.IObservable<Microsoft.Maui.Controls.Page> PagesForViewModel(ReactiveUI.Reactive.IRoutableViewModel? vm) { }
     }
-    [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("RoutedViewHostUnsafe asks the service locator for IViewFor<> closed over the view model's run-time type. Use RoutedViewHost, which uses the generated view lookup and Map registrations, to stay ahead-of-time safe.")]
-    [System.Diagnostics.DebuggerDisplay("{Router}, {SetTitleOnNavigate}")]
-    public class RoutedViewHostUnsafe : ReactiveUI.Reactive.Maui.RoutedViewHost
-    {
-        public RoutedViewHostUnsafe() { }
-    }
     [System.Diagnostics.DebuggerDisplay("{ViewModel}, {DefaultContent}")]
     public class ViewModelViewHost : Microsoft.Maui.Controls.ContentView, ReactiveUI.Binding.Reactive.IViewFor
     {
         public ViewModelViewHost() { }
+        protected ViewModelViewHost(System.Func<ReactiveUI.Binding.Reactive.IViewLocator, object, string?, ReactiveUI.Binding.Reactive.IViewFor?> resolveView) { }
         public static readonly Microsoft.Maui.Controls.BindableProperty ContractFallbackByPassProperty;
         public static readonly Microsoft.Maui.Controls.BindableProperty DefaultContentProperty;
         public static readonly Microsoft.Maui.Controls.BindableProperty ViewContractObservableProperty;
@@ -278,12 +274,6 @@ namespace ReactiveUI.Reactive.Maui
         public TViewModel? ViewModel { get; set; }
         [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
         protected override void ResolveViewForViewModel(object? viewModel, string? contract) { }
-    }
-    [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("ViewModelViewHostUnsafe asks the service locator for IViewFor<> closed over the view model's run-time type. Use ViewModelViewHost, which uses the generated view lookup and Map registrations, to stay ahead-of-time safe.")]
-    [System.Diagnostics.DebuggerDisplay("{ViewModel}, {DefaultContent}")]
-    public class ViewModelViewHostUnsafe : ReactiveUI.Reactive.Maui.ViewModelViewHost
-    {
-        public ViewModelViewHostUnsafe() { }
     }
     public sealed class VisibilityToBooleanTypeConverter : ReactiveUI.Binding.Reactive.BindingTypeConverter<Microsoft.Maui.Visibility, bool>
     {

@@ -27,7 +27,7 @@ namespace ReactiveUI;
 /// The host asks the view locator for each page's view by the view model's run-time type, without building any type
 /// at run time, so it is safe to trim and to compile ahead of time. The default locator checks the view lookup the
 /// source generator writes, then the views the app added with <c>Map</c>. A view registered only with the service
-/// locator needs <see cref="RoutedViewHostUnsafe"/>.
+/// locator needs <c>RoutedViewHostUnsafe</c>.
 /// </remarks>
 [DebuggerDisplay("Router = {Router}")]
 public partial class RoutedViewHost : TransitioningContentControl, IActivatableView, IMauiRoutedViewHost
@@ -65,7 +65,7 @@ public partial class RoutedViewHost : TransitioningContentControl, IActivatableV
         "Design",
         "SST2403:'this' escapes before construction finishes",
         Justification = "The single-threaded UI control hands 'this' to MauiReactiveHelpers to observe its own dependency-property changes; it is never published to another thread.")]
-    private protected RoutedViewHost(Func<IViewLocator, object, string?, IViewFor?> resolveView)
+    protected RoutedViewHost(Func<IViewLocator, object, string?, IViewFor?> resolveView)
     {
         _resolveView = resolveView;
         HorizontalContentAlignment = HorizontalAlignment.Stretch;
@@ -132,7 +132,7 @@ public partial class RoutedViewHost : TransitioningContentControl, IActivatableV
         var view = ViewHostResolution.ResolveViewWithFallback(_resolveView, ViewLocator, route.ViewModel, route.Contract, contractFallbackByPass: false)
             ?? throw new InvalidOperationException(
                 $"Couldn't find view for '{route.ViewModel}'. The view locator checked the generated view lookup and its Map registrations; "
-                + $"use {nameof(RoutedViewHostUnsafe)} to also resolve a view registered only with the service locator.");
+                + "use RoutedViewHostUnsafe to also resolve a view registered only with the service locator.");
         view.ViewModel = route.ViewModel;
         Content = view;
     }

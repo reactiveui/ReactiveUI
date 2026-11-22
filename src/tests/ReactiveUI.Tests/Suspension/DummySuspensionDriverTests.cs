@@ -29,7 +29,7 @@ public class DummySuspensionDriverTests
     public async Task DummySuspensionDriver_LoadState_ReturnsObservable()
     {
         // Arrange
-        var driver = new DummySuspensionDriver();
+        var driver = new DummySuspensionDriverUnsafe();
 
         // Act
         var result = driver.LoadState();
@@ -44,7 +44,7 @@ public class DummySuspensionDriverTests
     public async Task DummySuspensionDriver_SaveState_NullState_ReturnsObservable()
     {
         // Arrange
-        var driver = new DummySuspensionDriver();
+        var driver = new DummySuspensionDriverUnsafe();
 
         // Act
         var result = driver.SaveState<object>(null!);
@@ -59,7 +59,7 @@ public class DummySuspensionDriverTests
     public async Task DummySuspensionDriver_SaveState_ReturnsObservable()
     {
         // Arrange
-        var driver = new DummySuspensionDriver();
+        var driver = new DummySuspensionDriverUnsafe();
         var state = new { TestProperty = "test" };
 
         // Act

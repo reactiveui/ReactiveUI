@@ -19,14 +19,14 @@ public static class CommandFactoryBackgroundExamples
         List<string> log = [];
 
         using ReactiveCommand<RxVoid, RxVoid> logOpened = ReactiveCommand.CreateRunInBackground(() => log.Add("Desk opened"));
-        using ReactiveCommand<RxVoid, RxVoid> logWhileOpen = ReactiveCommand.CreateRunInBackground(() => log.Add("Book lent"), desk.WhenAnyValue(d => d.IsOpen));
+        using ReactiveCommand<RxVoid, RxVoid> logWhileOpen = ReactiveCommand.CreateRunInBackground(() => log.Add("Book lent"), desk.WhenAnyValue(static d => d.IsOpen));
 
         // The third argument is the background ISequencer, where the execute action runs; omitted, it defaults to
         // RxSchedulers.TaskpoolScheduler. The fourth is the output ISequencer, where the result, IsExecuting and
         // ThrownExceptions are delivered; omitted, it defaults to RxSchedulers.MainThreadScheduler.
         using ReactiveCommand<RxVoid, RxVoid> logBackground = ReactiveCommand.CreateRunInBackground(
             () => log.Add("Shelf tidied"),
-            desk.WhenAnyValue(d => d.IsOpen),
+            desk.WhenAnyValue(static d => d.IsOpen),
             Sequencer.Immediate);
         using ReactiveCommand<RxVoid, RxVoid> logBackgroundAndOutput = ReactiveCommand.CreateRunInBackground(
             () => log.Add("Late fee waived"),
@@ -34,7 +34,7 @@ public static class CommandFactoryBackgroundExamples
             Sequencer.Immediate);
         using ReactiveCommand<RxVoid, RxVoid> logAll = ReactiveCommand.CreateRunInBackground(
             () => log.Add("Catalogue reindexed"),
-            desk.WhenAnyValue(d => d.IsOpen),
+            desk.WhenAnyValue(static d => d.IsOpen),
             Sequencer.Immediate,
             Sequencer.Immediate);
 
@@ -65,12 +65,12 @@ public static class CommandFactoryBackgroundExamples
         List<int> overdueNotices = [];
 
         using ReactiveCommand<int, RxVoid> flag = ReactiveCommand.CreateRunInBackground<int>(overdueNotices.Add);
-        using ReactiveCommand<int, RxVoid> flagWhileOpen = ReactiveCommand.CreateRunInBackground<int>(overdueNotices.Add, desk.WhenAnyValue(d => d.IsOpen));
+        using ReactiveCommand<int, RxVoid> flagWhileOpen = ReactiveCommand.CreateRunInBackground<int>(overdueNotices.Add, desk.WhenAnyValue(static d => d.IsOpen));
 
         // The background ISequencer is where the execute action runs; omitted, it defaults to RxSchedulers.TaskpoolScheduler.
-        using ReactiveCommand<int, RxVoid> flagBackground = ReactiveCommand.CreateRunInBackground<int>(overdueNotices.Add, desk.WhenAnyValue(d => d.IsOpen), Sequencer.Immediate);
+        using ReactiveCommand<int, RxVoid> flagBackground = ReactiveCommand.CreateRunInBackground<int>(overdueNotices.Add, desk.WhenAnyValue(static d => d.IsOpen), Sequencer.Immediate);
         using ReactiveCommand<int, RxVoid> flagBackgroundAndOutput = ReactiveCommand.CreateRunInBackground<int>(overdueNotices.Add, Sequencer.Immediate, Sequencer.Immediate);
-        using ReactiveCommand<int, RxVoid> flagAll = ReactiveCommand.CreateRunInBackground<int>(overdueNotices.Add, desk.WhenAnyValue(d => d.IsOpen), Sequencer.Immediate, Sequencer.Immediate);
+        using ReactiveCommand<int, RxVoid> flagAll = ReactiveCommand.CreateRunInBackground<int>(overdueNotices.Add, desk.WhenAnyValue(static d => d.IsOpen), Sequencer.Immediate, Sequencer.Immediate);
 
         _ = await flag.Execute(1);
         _ = await flagWhileOpen.Execute(2);
@@ -92,12 +92,16 @@ public static class CommandFactoryBackgroundExamples
         _ = desk.Borrow(1);
 
         using ReactiveCommand<RxVoid, int> countAll = ReactiveCommand.CreateRunInBackground(() => desk.Search(string.Empty).Count);
-        using ReactiveCommand<RxVoid, int> countLoans = ReactiveCommand.CreateRunInBackground(() => desk.LoanCount, desk.WhenAnyValue(d => d.IsOpen));
+        using ReactiveCommand<RxVoid, int> countLoans = ReactiveCommand.CreateRunInBackground(() => desk.LoanCount, desk.WhenAnyValue(static d => d.IsOpen));
 
         // The background ISequencer is where the execute function runs; omitted, it defaults to RxSchedulers.TaskpoolScheduler.
-        using ReactiveCommand<RxVoid, int> countBackground = ReactiveCommand.CreateRunInBackground(() => desk.LoanCount, desk.WhenAnyValue(d => d.IsOpen), Sequencer.Immediate);
+        using ReactiveCommand<RxVoid, int> countBackground = ReactiveCommand.CreateRunInBackground(() => desk.LoanCount, desk.WhenAnyValue(static d => d.IsOpen), Sequencer.Immediate);
         using ReactiveCommand<RxVoid, int> countBackgroundAndOutput = ReactiveCommand.CreateRunInBackground(() => desk.Search("Code").Count, Sequencer.Immediate, Sequencer.Immediate);
-        using ReactiveCommand<RxVoid, int> countAllOverloads = ReactiveCommand.CreateRunInBackground(() => desk.LoanCount, desk.WhenAnyValue(d => d.IsOpen), Sequencer.Immediate, Sequencer.Immediate);
+        using ReactiveCommand<RxVoid, int> countAllOverloads = ReactiveCommand.CreateRunInBackground(
+            () => desk.LoanCount,
+            desk.WhenAnyValue(static d => d.IsOpen),
+            Sequencer.Immediate,
+            Sequencer.Immediate);
 
         Console.WriteLine(await countAll.Execute());
         Console.WriteLine(await countLoans.Execute());
@@ -120,12 +124,12 @@ public static class CommandFactoryBackgroundExamples
         LibraryDesk desk = new();
 
         using ReactiveCommand<string, IReadOnlyList<Book>> search = ReactiveCommand.CreateRunInBackground<string, IReadOnlyList<Book>>(desk.Search);
-        using ReactiveCommand<string, IReadOnlyList<Book>> searchWhileOpen = ReactiveCommand.CreateRunInBackground<string, IReadOnlyList<Book>>(desk.Search, desk.WhenAnyValue(d => d.IsOpen));
+        using ReactiveCommand<string, IReadOnlyList<Book>> searchWhileOpen = ReactiveCommand.CreateRunInBackground<string, IReadOnlyList<Book>>(desk.Search, desk.WhenAnyValue(static d => d.IsOpen));
 
         // The background ISequencer is where the execute function runs; omitted, it defaults to RxSchedulers.TaskpoolScheduler.
         using ReactiveCommand<string, IReadOnlyList<Book>> searchBackground = ReactiveCommand.CreateRunInBackground<string, IReadOnlyList<Book>>(
             desk.Search,
-            desk.WhenAnyValue(d => d.IsOpen),
+            desk.WhenAnyValue(static d => d.IsOpen),
             Sequencer.Immediate);
         using ReactiveCommand<string, IReadOnlyList<Book>> searchBackgroundAndOutput = ReactiveCommand.CreateRunInBackground<string, IReadOnlyList<Book>>(
             desk.Search,
@@ -133,7 +137,7 @@ public static class CommandFactoryBackgroundExamples
             Sequencer.Immediate);
         using ReactiveCommand<string, IReadOnlyList<Book>> searchAllOverloads = ReactiveCommand.CreateRunInBackground<string, IReadOnlyList<Book>>(
             desk.Search,
-            desk.WhenAnyValue(d => d.IsOpen),
+            desk.WhenAnyValue(static d => d.IsOpen),
             Sequencer.Immediate,
             Sequencer.Immediate);
 

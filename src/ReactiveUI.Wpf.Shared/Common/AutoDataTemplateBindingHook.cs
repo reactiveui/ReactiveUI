@@ -20,7 +20,7 @@ namespace ReactiveUI;
 /// <remarks>
 /// The default template hosts each item in a <see cref="ViewModelViewHost"/>, which finds the view through the
 /// generated view lookup and the view locator's <c>Map</c> registrations. For view models whose view is registered
-/// only with the service locator, also register <see cref="AutoDataTemplateBindingHookUnsafe"/>.
+/// only with the service locator, also register <c>AutoDataTemplateBindingHookUnsafe</c> from <c>ReactiveUI.WPF.Unsafe</c>.
 /// </remarks>
 public class AutoDataTemplateBindingHook : IPropertyBindingHook
 {

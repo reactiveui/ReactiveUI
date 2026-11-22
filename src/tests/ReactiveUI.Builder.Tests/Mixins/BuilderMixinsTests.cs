@@ -690,20 +690,10 @@ public class BuilderMixinsTests
     private sealed class TestSuspensionDriver : ISuspensionDriver
     {
         /// <inheritdoc/>
-        public IObservable<object?> LoadState() => Signal.Emit<object?>(null);
-
-        /// <inheritdoc/>
         public IObservable<T?> LoadState<T>(JsonTypeInfo<T> typeInfo)
         {
             _ = typeInfo;
             return Signal.Emit<T?>(default);
-        }
-
-        /// <inheritdoc/>
-        public IObservable<RxVoid> SaveState<T>(T state)
-        {
-            _ = state;
-            return Signal.Emit(RxVoid.Default);
         }
 
         /// <inheritdoc/>

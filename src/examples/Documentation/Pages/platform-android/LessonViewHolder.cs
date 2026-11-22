@@ -24,7 +24,7 @@ public sealed class LessonViewHolder : ReactiveRecyclerViewViewHolder<LessonView
         // like-named resource in the inflated row layout.
         this.WireUpControls();
 
-        _subscriptions.Add(this.WhenAnyValue(holder => holder.ViewModel).Subscribe(lesson =>
+        _subscriptions.Add(this.WhenAnyValue(static holder => holder.ViewModel).Subscribe(lesson =>
         {
             SubjectLabel!.Text = lesson?.Subject;
             RoomLabel!.Text = lesson is null ? null : $"Room {lesson.Room}";

@@ -65,7 +65,6 @@ namespace ReactiveUI.Reactive.Blazor
         public T? ViewModel { get; set; }
         public event System.ComponentModel.PropertyChangedEventHandler? PropertyChanged;
         protected override void Dispose(bool disposing) { }
-        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("OnAfterRender wires reactive subscriptions that may not be trimming-safe in all environments.")]
         protected override void OnAfterRender(bool firstRender) { }
         protected override void OnInitialized() { }
         protected virtual void OnPropertyChanged(string? propertyName = null) { }

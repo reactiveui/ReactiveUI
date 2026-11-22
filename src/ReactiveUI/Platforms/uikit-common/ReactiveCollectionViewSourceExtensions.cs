@@ -27,8 +27,6 @@ public static class ReactiveCollectionViewSourceExtensions
         /// <param name="collectionView">Collection view.</param>
         /// <param name="cellKey">Cell key.</param>
         /// <returns>The <see cref="IDisposable"/> used to dispose this binding.</returns>
-        [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
-        [RequiresDynamicCode("Uses dynamic binding paths which may require runtime code generation or reflection-based invocation.")]
         [SuppressMessage(
             "Design",
             "SST2307:Generic method type parameters should be inferable from the parameters",
@@ -47,8 +45,6 @@ public static class ReactiveCollectionViewSourceExtensions
         /// <param name="cellKey">Cell key.</param>
         /// <param name="initializeCellAction">Initialize cell action.</param>
         /// <returns>The <see cref="IDisposable"/> used to dispose this binding.</returns>
-        [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
-        [RequiresDynamicCode("Uses dynamic binding paths which may require runtime code generation or reflection-based invocation.")]
         [SuppressMessage(
             "Design",
             "SST2307:Generic method type parameters should be inferable from the parameters",
@@ -70,8 +66,6 @@ public static class ReactiveCollectionViewSourceExtensions
         /// <param name="initSource">Optionally initializes some property of
         /// the <see cref="ReactiveCollectionViewSource{TSource}"/>.</param>
         /// <returns>The <see cref="IDisposable"/> used to dispose this binding.</returns>
-        [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
-        [RequiresDynamicCode("Uses dynamic binding paths which may require runtime code generation or reflection-based invocation.")]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IDisposable BindTo<TSource, TCell>(
             UICollectionView collectionView,
@@ -100,8 +94,6 @@ public static class ReactiveCollectionViewSourceExtensions
         /// <typeparam name="TCell">Type of the <see cref="UICollectionViewCell"/>.</typeparam>
         /// <param name="collectionView">Collection view.</param>
         /// <returns>The <see cref="IDisposable"/> used to dispose this binding.</returns>
-        [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
-        [RequiresDynamicCode("Uses dynamic binding paths which may require runtime code generation or reflection-based invocation.")]
         [SuppressMessage(
             "Design",
             "SST2307:Generic method type parameters should be inferable from the parameters",
@@ -123,8 +115,6 @@ public static class ReactiveCollectionViewSourceExtensions
         /// <param name="collectionView">Collection view.</param>
         /// <param name="initializeCellAction">Initialize cell action.</param>
         /// <returns>The <see cref="IDisposable"/> used to dispose this binding.</returns>
-        [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
-        [RequiresDynamicCode("Uses dynamic binding paths which may require runtime code generation or reflection-based invocation.")]
         [SuppressMessage(
             "Design",
             "SST2307:Generic method type parameters should be inferable from the parameters",
@@ -149,8 +139,6 @@ public static class ReactiveCollectionViewSourceExtensions
         /// <param name="initSource">Optionally initializes some property of
         /// the <see cref="ReactiveCollectionViewSource{TSource}"/>.</param>
         /// <returns>The <see cref="IDisposable"/> used to dispose this binding.</returns>
-        [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
-        [RequiresDynamicCode("Uses dynamic binding paths which may require runtime code generation or reflection-based invocation.")]
         public IDisposable BindTo<TSource, TCell>(
             UICollectionView collectionView,
             Action<TCell>? initializeCellAction,
@@ -184,8 +172,6 @@ public static class ReactiveCollectionViewSourceExtensions
         /// </summary>
         /// <param name="collectionView">Collection view.</param>
         /// <returns>The <see cref="IDisposable"/> used to dispose this binding.</returns>
-        [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
-        [RequiresDynamicCode("Uses dynamic binding paths which may require runtime code generation or reflection-based invocation.")]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IDisposable BindTo(UICollectionView collectionView) =>
             sectionsObservable.BindTo(collectionView, initSource: null);
@@ -202,8 +188,6 @@ public static class ReactiveCollectionViewSourceExtensions
         /// <param name="initSource">Optionally initializes some property of
         /// the <see cref="ReactiveCollectionViewSource{TSource}"/>.</param>
         /// <returns>The <see cref="IDisposable"/> used to dispose this binding.</returns>
-        [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
-        [RequiresDynamicCode("Uses dynamic binding paths which may require runtime code generation or reflection-based invocation.")]
         public IDisposable BindTo(
             UICollectionView collectionView,
             Func<ReactiveCollectionViewSource<TSource>, IDisposable>? initSource)

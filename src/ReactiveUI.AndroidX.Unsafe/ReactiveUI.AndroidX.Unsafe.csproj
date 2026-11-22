@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>$(ReactiveUIAndroidTargets)</TargetFrameworks>
+    <AssemblyName>ReactiveUI.AndroidX.Unsafe</AssemblyName>
+    <RootNamespace>ReactiveUI.AndroidX</RootNamespace>
+    <PackageDescription>Opt-in reflection and dynamic-code APIs for ReactiveUI.AndroidX (Fragment WireUpControls).</PackageDescription>
+    <PackageId>ReactiveUI.AndroidX.Unsafe</PackageId>
+    <PackageTags>mvvm;reactiveui;rx;reactive extensions;observable;LINQ;events;frp;androidx;android;net;unsafe</PackageTags>
+    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">34.0</SupportedOSPlatformVersion>
+    <IsAotCompatible>false</IsAotCompatible>
+    <EnableAotAnalyzer>false</EnableAotAnalyzer>
+    <EnableTrimAnalyzer>false</EnableTrimAnalyzer>
+    <EnableSingleFileAnalyzer>false</EnableSingleFileAnalyzer>
+    <IsTrimmable>false</IsTrimmable>
+  </PropertyGroup>
+  <ItemGroup>
+    <Using Include="ReactiveUI.Internal"/>
+    <Using Include="ReactiveUI.Primitives.Disposables"/>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\Shared\ArgumentValidation.cs" Link="Shared\ArgumentValidation.cs"/>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ReactiveUI.AndroidX\ReactiveUI.AndroidX.csproj"/>
+    <ProjectReference Include="..\ReactiveUI.Unsafe\ReactiveUI.Unsafe.csproj"/>
+  </ItemGroup>
+</Project>

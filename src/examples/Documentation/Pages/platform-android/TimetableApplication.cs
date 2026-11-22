@@ -46,7 +46,7 @@ public sealed class TimetableApplication : Application
         _ = AutoSuspendHelper.UntimelyDemise.Subscribe(static _ => TimetableLog.Info("AutoSuspendHelper reported an untimely demise."));
         RxSuspension.SuspensionHost.CreateNewAppState = static () => new TimetableAppState();
 
-        BundleSuspensionDriver driver = new();
+        BundleSuspensionDriverUnsafe driver = new();
         RxSuspension.SuspensionHost.SetupDefaultSuspendResume(driver);
 
         TimetableLog.Info("TimetableApplication started; AutoSuspendHelper and BundleSuspensionDriver are wired up.");

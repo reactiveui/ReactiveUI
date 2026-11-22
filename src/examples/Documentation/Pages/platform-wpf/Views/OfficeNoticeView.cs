@@ -21,7 +21,7 @@ public sealed class OfficeNoticeView : ReactiveUserControl<OfficeNoticeViewModel
     public OfficeNoticeView()
     {
         Content = MessageText;
-        _ = this.WhenActivated(d => this.OneWayBind(ViewModel, vm => vm.Message, v => v.MessageText.Text).DisposeWith(d));
+        _ = this.WhenActivated(d => this.OneWayBind(ViewModel, static vm => vm.Message, static v => v.MessageText.Text).DisposeWith(d));
     }
 
     /// <summary>Gets the text block that shows the notice.</summary>

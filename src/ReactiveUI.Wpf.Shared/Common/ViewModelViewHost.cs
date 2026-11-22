@@ -37,7 +37,7 @@ namespace ReactiveUI;
 /// <remarks>
 /// The host asks the view locator for the view by the view model's run-time type, without building any type at run
 /// time. The default locator checks the view lookup the source generator writes, then the views the app added with
-/// <c>Map</c>. A view registered only with the service locator needs <see cref="ViewModelViewHostUnsafe"/>, which also
+/// <c>Map</c>. A view registered only with the service locator needs <c>ViewModelViewHostUnsafe</c> from <c>ReactiveUI.WPF.Unsafe</c>, which also
 /// asks the service locator for <see cref="IViewFor{T}"/> closed over the view model's run-time type.
 /// </remarks>
 [DebuggerDisplay("{ViewContractObservable}, {DefaultContent}")]
@@ -81,7 +81,7 @@ public
 
     /// <summary>Initializes a new instance of the <see cref="ViewModelViewHost"/> class with its view lookup.</summary>
     /// <param name="resolveView">Asks a view locator for the view of a view model under a contract.</param>
-    private protected ViewModelViewHost(Func<IViewLocator, object, string?, IViewFor?> resolveView)
+    protected ViewModelViewHost(Func<IViewLocator, object, string?, IViewFor?> resolveView)
     {
         _resolveView = resolveView;
         var platformGetter = ViewContractObservableHelpers.GetPlatformOrientation(this.Log());
@@ -95,7 +95,7 @@ public
             }));
 
         var contractChanged = new StartWithObservable<string?>(
-            this.WhenAnyObservable(x => x.ViewContractObservable).Do(x => _viewContract = x),
+            this.WhenAnyObservable(static x => x.ViewContractObservable).Do(x => _viewContract = x),
             ViewContract);
         var viewModelChanged = new StartWithObservable<object?>(
             this.WhenAnyValue(static x => x.ViewModel),
@@ -171,6 +171,6 @@ public
             return;
         }
 
-        this.Log().Warn(ViewHostResolution.NoViewFoundWarning(GetType().Name, viewModel, nameof(ViewModelViewHostUnsafe)));
+        this.Log().Warn(ViewHostResolution.NoViewFoundWarning(GetType().Name, viewModel, "ViewModelViewHostUnsafe"));
     }
 }

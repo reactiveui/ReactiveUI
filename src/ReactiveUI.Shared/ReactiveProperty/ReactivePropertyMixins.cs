@@ -4,11 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Collections;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq.Expressions;
-using System.Reflection;
 using System.Runtime.CompilerServices;
-
 #if !XAMARINIOS && !XAMARINMAC && !XAMARINTVOS && !MONOANDROID
 using System.ComponentModel.DataAnnotations;
 #endif
@@ -19,9 +15,6 @@ namespace ReactiveUI.Reactive;
 namespace ReactiveUI;
 #endif
 /// <summary>Provides extension methods for adding validation and observing validation errors on ReactiveProperty instances.</summary>
-/// <remarks>These mixins enable integration of DataAnnotations-based validation and error observation with
-/// ReactiveProperty. Some methods may use reflection and are not compatible with ahead-of-time (AOT) compilation; refer
-/// to individual method documentation for details.</remarks>
 public static class ReactivePropertyMixins
 {
     /// <summary>Provides validation and error-observation extension members for <see cref="ReactiveProperty{T}"/>.</summary>
@@ -30,39 +23,44 @@ public static class ReactivePropertyMixins
     extension<T>(ReactiveProperty<T> self)
     {
 #if !XAMARINIOS && !XAMARINMAC && !XAMARINTVOS && !MONOANDROID
-        /// <summary>
-        /// Adds DataAnnotations-based validation to the specified reactive property using the validation attributes defined
-        /// on the property.
-        /// </summary>
-        /// <param name="selfSelector">An expression that selects the reactive property to be validated. This is used to discover validation attributes
-        /// and display metadata. Cannot be null.</param>
-        /// <returns>The same reactive property instance with validation enabled based on the discovered validation attributes.</returns>
-        /// <remarks>This method uses reflection to discover DataAnnotations attributes and is not compatible with
-        /// trimming or AOT scenarios. For environments where reflection is restricted, use manual validation instead. The
-        /// validation logic is based on the attributes applied to the property referenced by the selector
-        /// expression.</remarks>
-        [RequiresUnreferencedCode(
-            "DataAnnotations validation uses reflection to discover attributes and is not trim-safe. Use manual validation for AOT scenarios.")]
-        public ReactiveProperty<T> AddValidation(
-            Expression<Func<ReactiveProperty<T>?>> selfSelector)
+        /// <summary>Adds DataAnnotations validation to the reactive property using explicit attributes without reflection.</summary>
+        /// <param name="attributes">The validation attributes to evaluate against the property value.</param>
+        /// <returns>The same reactive property instance with validation enabled.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public ReactiveProperty<T> AddValidation(params ValidationAttribute[] attributes) =>
+            self.AddValidation(displayName: null, attributes);
+
+        /// <summary>Adds DataAnnotations validation to the reactive property using explicit attributes and a display name without reflection.</summary>
+        /// <param name="displayName">The optional display name used in validation error messages.</param>
+        /// <param name="attributes">The validation attributes to evaluate against the property value.</param>
+        /// <returns>The same reactive property instance with validation enabled.</returns>
+        public ReactiveProperty<T> AddValidation(string? displayName, params ValidationAttribute[] attributes)
         {
-            ArgumentExceptionHelper.ThrowIfNull(selfSelector);
             ArgumentExceptionHelper.ThrowIfNull(self);
+            ArgumentExceptionHelper.ThrowIfNull(attributes);
 
-            var propertyInfo = (PropertyInfo)((MemberExpression)selfSelector.Body).Member;
-            var display = propertyInfo.GetCustomAttribute<DisplayAttribute>();
-            ValidationAttribute[] attrs = [.. propertyInfo.GetCustomAttributes<ValidationAttribute>()];
-
-            ValidationContext context = new(self, null, null) { DisplayName = display?.GetName() ?? propertyInfo.Name, MemberName = nameof(ReactiveProperty<>.Value) };
-
-            if (attrs.Length != 0)
+            if (attributes.Length == 0)
             {
-                _ = self.AddValidationError(x =>
-                {
-                    List<ValidationResult> validationResults = [];
-                    return Validator.TryValidateValue(x!, context, validationResults, attrs) ? null : validationResults[0].ErrorMessage;
-                });
+                return self;
             }
+
+#if NET8_0_OR_GREATER
+            ValidationContext context = new(self, displayName ?? nameof(ReactiveProperty<>.Value), null, null) { MemberName = nameof(ReactiveProperty<>.Value) };
+#else
+            ValidationContext context = new(self, null, null) { MemberName = nameof(ReactiveProperty<>.Value) };
+            if (displayName is not null)
+            {
+                context.DisplayName = displayName;
+            }
+#endif
+
+            _ = self.AddValidationError(x =>
+            {
+                List<ValidationResult> validationResults = [];
+                return Validator.TryValidateValue(x!, context, validationResults, attributes)
+                    ? null
+                    : validationResults[0].ErrorMessage;
+            });
 
             return self;
         }

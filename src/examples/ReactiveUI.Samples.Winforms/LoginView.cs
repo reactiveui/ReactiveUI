@@ -44,16 +44,16 @@ public sealed class LoginView : UserControl, IViewFor<LoginViewModel>
 
         _ = this.WhenActivated(d =>
         {
-            _ = this.Bind(ViewModel, vm => vm.UserName, v => v.UserNameBox.Text)
+            _ = this.Bind(ViewModel, static vm => vm.UserName, static v => v.UserNameBox.Text)
                 .DisposeWith(d);
 
-            _ = this.Bind(ViewModel, vm => vm.Password, v => v.PasswordBox.Text)
+            _ = this.Bind(ViewModel, static vm => vm.Password, static v => v.PasswordBox.Text)
                 .DisposeWith(d);
 
-            _ = this.BindCommand(ViewModel, vm => vm.Login, v => v.LoginButton)
+            _ = this.BindCommand(ViewModel, static vm => vm.Login, static v => v.LoginButton)
                 .DisposeWith(d);
 
-            _ = this.BindCommand(ViewModel, vm => vm.Cancel, v => v.CancelButton)
+            _ = this.BindCommand(ViewModel, static vm => vm.Cancel, static v => v.CancelButton)
                 .DisposeWith(d);
 
             _ = ViewModel.Login

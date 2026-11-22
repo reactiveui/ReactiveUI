@@ -24,7 +24,7 @@ public class WhenAnyValueSubscribeRaceTests
         var values = new List<string?>();
 
         // Mutate while the observer is delivering its initial value.
-        using var subscription = fixture.WhenAnyValue(x => x.IsOnlyOneWord).Subscribe(value =>
+        using var subscription = fixture.WhenAnyValue(static x => x.IsOnlyOneWord).Subscribe(value =>
         {
             values.Add(value);
             if (values.Count != 1)
@@ -48,7 +48,7 @@ public class WhenAnyValueSubscribeRaceTests
         var values = new List<int>();
 
         const int RacedValue = 2;
-        using var subscription = notifier.WhenAnyValue(x => x.Value).Subscribe(value =>
+        using var subscription = notifier.WhenAnyValue(static x => x.Value).Subscribe(value =>
         {
             values.Add(value);
             if (values.Count != 1)
@@ -93,7 +93,7 @@ public class WhenAnyValueSubscribeRaceTests
             mutatorReady.Wait();
 
             string? latest = null;
-            using (fixture.WhenAnyValue(x => x.IsOnlyOneWord).Subscribe(v => latest = v))
+            using (fixture.WhenAnyValue(static x => x.IsOnlyOneWord).Subscribe(v => latest = v))
             {
                 mutatorDone.Wait();
                 mutator.Join();

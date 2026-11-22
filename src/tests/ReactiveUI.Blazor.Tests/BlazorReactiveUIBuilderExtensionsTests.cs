@@ -326,10 +326,6 @@ public class BlazorReactiveUIBuilderExtensionsTests
         }
 
         /// <inheritdoc/>
-        public IReactiveUIBuilder WithViewsFromAssembly(System.Reflection.Assembly assembly) =>
-            throw new NotSupportedException();
-
-        /// <inheritdoc/>
         public IReactiveUIBuilder UsingSplatModule<T>(T registrationModule)
             where T : Splat.Builder.IModule => throw new NotSupportedException();
 

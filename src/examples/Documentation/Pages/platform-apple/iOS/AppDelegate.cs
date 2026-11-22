@@ -29,7 +29,7 @@ public sealed class AppDelegate : UIApplicationDelegate
 
         RxSuspension.SuspensionHost.CreateNewAppState = static () => new LibraryAppState();
 
-        AppSupportJsonSuspensionDriver driver = new("Library");
+        AppSupportJsonSuspensionDriverUnsafe driver = new("Library");
         RxSuspension.SuspensionHost.SetupDefaultSuspendResume(driver);
 
         _ = driver.SaveState(new LibraryAppState { LastViewedBook = "Pride and Prejudice" }, LibraryAppStateJsonContext.Default.LibraryAppState)

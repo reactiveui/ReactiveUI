@@ -457,17 +457,6 @@ public partial class SuspensionHostExtensionsAotTests
         }
 
         /// <inheritdoc/>
-        [RequiresUnreferencedCode("Reflection-based serialization")]
-        [RequiresDynamicCode("Reflection-based serialization")]
-        public IObservable<object?> LoadState()
-        {
-            LoadStateCallCount++;
-            return ShouldThrowOnLoad ? Signal.Fail<object?>(
-                    new InvalidOperationException("Failed to load state"),
-                    Sequencer.Immediate) : Signal.Emit((object?)StateToLoad, Sequencer.Immediate);
-        }
-
-        /// <inheritdoc/>
         public IObservable<TState?> LoadState<TState>(JsonTypeInfo<TState> typeInfo)
         {
             LoadStateCallCount++;
@@ -480,11 +469,6 @@ public partial class SuspensionHostExtensionsAotTests
 
             return StateToLoad is TState typedState ? Signal.Emit<TState?>(typedState, Sequencer.Immediate) : Signal.Emit<TState?>(default, Sequencer.Immediate);
         }
-
-        /// <inheritdoc/>
-        [RequiresUnreferencedCode("Reflection-based serialization")]
-        [RequiresDynamicCode("Reflection-based serialization")]
-        public IObservable<RxVoid> SaveState<TState>(TState state) => SaveStateCore(state);
 
         /// <inheritdoc/>
         public IObservable<RxVoid> SaveState<TState>(TState state, JsonTypeInfo<TState> typeInfo)

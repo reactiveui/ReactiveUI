@@ -259,7 +259,7 @@ public class ReactiveObjectTests
     public void ReactiveObjectShouldRethrowException()
     {
         var fixture = new TestFixture();
-        var observable = fixture.WhenAnyValue(x => x.IsOnlyOneWord).Skip(1);
+        var observable = fixture.WhenAnyValue(static x => x.IsOnlyOneWord).Skip(1);
         _ = observable.Subscribe(static _ => throw new InvalidOperationException("This is a test."));
 
         _ = Assert.Throws<Exception>(() => fixture.IsOnlyOneWord = "Two Words");
