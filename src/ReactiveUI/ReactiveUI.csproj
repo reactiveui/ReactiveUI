@@ -41,6 +41,7 @@
     <Compile Include="..\Shared\DelegateObserver.cs" Link="Shared\DelegateObserver.cs"/>
     <Compile Include="..\Shared\TaskObserverBridge.cs" Link="Shared\TaskObserverBridge.cs"/>
     <Compile Include="..\Shared\ActivationSignals.cs" Link="Shared\ActivationSignals.cs"/>
+    <Compile Include="..\Shared\Suspension\SuspensionHostHelpers.cs" Link="Shared\Suspension\SuspensionHostHelpers.cs"/>
   </ItemGroup>
   <!-- Shared source carries no per-file usings for the namespaces it shifts between leaves; the lean leaf
        imports them globally here (unshifted). The .Reactive leaf imports the shifted forms (Directory.Build.props). -->
@@ -80,6 +81,7 @@
   <!-- Apple Platforms reuse the platform-lib-only fused sinks from Shared\Platform (excluded from the core compile above). -->
   <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios' or $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst' or $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'macos' or $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tvos'">
     <Compile Include="..\Shared\Platform\FromEventObservable.cs" Link="Shared\Platform\FromEventObservable.cs"/>
+    <Compile Include="..\Shared\Platform\AppleAppDirectoryHelper.cs" Link="Shared\Platform\AppleAppDirectoryHelper.cs"/>
   </ItemGroup>
   <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
     <Compile Include="Platforms\android\**\*.cs"/>

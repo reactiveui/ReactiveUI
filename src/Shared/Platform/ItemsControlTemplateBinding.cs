@@ -5,10 +5,13 @@
 
 // WPF and WinUI each have their own ItemsControl with the same members; the alias lets the one
 // implementation below compile against whichever of the two the consuming assembly targets.
+using System.Reflection;
 using System.Runtime.CompilerServices;
 #if WINUI_TARGET
 using ItemsControl = Microsoft.UI.Xaml.Controls.ItemsControl;
 #else
+using System.Windows;
+using System.Windows.Markup;
 using ItemsControl = System.Windows.Controls.ItemsControl;
 #endif
 
@@ -72,4 +75,27 @@ internal static class ItemsControlTemplateBinding
 
         return wantsDefaultTemplate ? itemsControl : null;
     }
+#if !WINUI_TARGET
+
+    /// <summary>Builds a WPF item template that hosts each item in the named host type from <paramref name="hostAssembly"/>.</summary>
+    /// <param name="hostTypeName">The name of the host type in the ReactiveUI namespace.</param>
+    /// <param name="hostAssembly">The assembly declaring the host type.</param>
+    /// <returns>The parsed <see cref="DataTemplate"/>.</returns>
+    internal static DataTemplate CreateWpfItemTemplate(string hostTypeName, Assembly hostAssembly)
+    {
+#if REACTIVE_SHIM
+        const string XamlClrNamespace = "clr-namespace:ReactiveUI.Reactive";
+#else
+        const string XamlClrNamespace = "clr-namespace:ReactiveUI";
+#endif
+        var assemblyName = hostAssembly.FullName;
+        assemblyName = assemblyName?.Substring(0, assemblyName.IndexOf(','));
+
+        var template =
+            $"<DataTemplate xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation' xmlns:xaml='{XamlClrNamespace};assembly={assemblyName}'>"
+            + $" <xaml:{hostTypeName} ViewModel=\"{{Binding Mode=OneWay}}\" VerticalContentAlignment=\"Stretch\" HorizontalContentAlignment=\"Stretch\" IsTabStop=\"False\" /></DataTemplate>";
+
+        return (DataTemplate)XamlReader.Parse(template);
+    }
+#endif
 }

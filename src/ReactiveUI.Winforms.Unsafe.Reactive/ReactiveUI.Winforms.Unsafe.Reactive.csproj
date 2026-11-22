@@ -20,6 +20,7 @@
   <ItemGroup>
     <Compile Include="..\ReactiveUI.Winforms.Unsafe\**\*.cs" Exclude="..\ReactiveUI.Winforms.Unsafe\obj\**\*.cs;..\ReactiveUI.Winforms.Unsafe\bin\**\*.cs" Link="ReactiveUI.Winforms.Unsafe\%(RecursiveDir)%(Filename)%(Extension)"/>
     <Compile Include="..\Shared\ArgumentValidation.cs" Link="Shared\ArgumentValidation.cs"/>
+    <Compile Include="..\ReactiveUI.Unsafe.Shared\ViewResolutionMessages.cs" Link="ViewResolutionMessages.cs"/>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ReactiveUI.Winforms.Reactive\ReactiveUI.Winforms.Reactive.csproj"/>

@@ -25,5 +25,6 @@
     <Compile Include="..\ReactiveUI.Wpf.Unsafe\**\*.cs" Exclude="..\ReactiveUI.Wpf.Unsafe\obj\**\*.cs;..\ReactiveUI.Wpf.Unsafe\bin\**\*.cs" Link="ReactiveUI.Wpf.Unsafe\%(RecursiveDir)%(Filename)%(Extension)"/>
     <Compile Include="..\Shared\ArgumentValidation.cs" Link="Shared\ArgumentValidation.cs"/>
     <Compile Include="..\Shared\Platform\ItemsControlTemplateBinding.cs" Link="Shared\Platform\ItemsControlTemplateBinding.cs"/>
+    <Compile Include="..\ReactiveUI.Unsafe.Shared\ViewResolutionMessages.cs" Link="ViewResolutionMessages.cs"/>
   </ItemGroup>
 </Project>

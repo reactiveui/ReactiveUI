@@ -25,6 +25,7 @@
     <Compile Include="..\ReactiveUI.Unsafe.Shared\**\*.cs" Link="ReactiveUI.Unsafe.Shared\%(RecursiveDir)%(Filename)%(Extension)"/>
     <Compile Include="..\Shared\ArgumentValidation.cs" Link="Shared\ArgumentValidation.cs"/>
     <Compile Include="..\Shared\DelegateObserver.cs" Link="Shared\DelegateObserver.cs"/>
+    <Compile Include="..\Shared\Suspension\SuspensionHostHelpers.cs" Link="Shared\Suspension\SuspensionHostHelpers.cs"/>
   </ItemGroup>
   <ItemGroup Condition="$(TargetFramework.StartsWith('net4'))">
     <PackageReference Include="System.ComponentModel.Annotations"/>
@@ -40,6 +41,9 @@
   <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tvos'">
     <Compile Include="..\ReactiveUI.Unsafe\Platforms\apple-common\**\*.cs" Link="Platforms\apple-common\%(RecursiveDir)%(Filename)%(Extension)"/>
     <Compile Include="..\ReactiveUI.Unsafe\Platforms\uikit-common\**\*.cs" Link="Platforms\uikit-common\%(RecursiveDir)%(Filename)%(Extension)"/>
+  </ItemGroup>
+  <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios' or $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst' or $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'macos' or $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tvos'">
+    <Compile Include="..\Shared\Platform\AppleAppDirectoryHelper.cs" Link="Shared\Platform\AppleAppDirectoryHelper.cs"/>
   </ItemGroup>
   <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
     <Compile Include="..\ReactiveUI.Unsafe\Platforms\android\**\*.cs" Link="Platforms\android\%(RecursiveDir)%(Filename)%(Extension)"/>

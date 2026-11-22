@@ -34,6 +34,9 @@
   <Import Project="..\ReactiveUI.Maui\build\SkipMakePriOnNonWindows.targets"
           Condition="!$([MSBuild]::IsOsPlatform('Windows')) and $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'" />
   <ItemGroup>
+    <Compile Include="..\ReactiveUI.Unsafe.Shared\ViewResolutionMessages.cs" Link="ViewResolutionMessages.cs"/>
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\ReactiveUI.Maui\ReactiveUI.Maui.csproj"/>
     <ProjectReference Include="..\ReactiveUI.Unsafe\ReactiveUI.Unsafe.csproj"/>
   </ItemGroup>

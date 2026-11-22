@@ -35,6 +35,7 @@
           Condition="!$([MSBuild]::IsOsPlatform('Windows')) and $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'" />
   <ItemGroup>
     <Compile Include="..\ReactiveUI.Maui.Unsafe\**\*.cs" Exclude="..\ReactiveUI.Maui.Unsafe\obj\**\*.cs;..\ReactiveUI.Maui.Unsafe\bin\**\*.cs" Link="ReactiveUI.Maui.Unsafe\%(RecursiveDir)%(Filename)%(Extension)"/>
+    <Compile Include="..\ReactiveUI.Unsafe.Shared\ViewResolutionMessages.cs" Link="ViewResolutionMessages.cs"/>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ReactiveUI.Maui.Reactive\ReactiveUI.Maui.Reactive.csproj"/>

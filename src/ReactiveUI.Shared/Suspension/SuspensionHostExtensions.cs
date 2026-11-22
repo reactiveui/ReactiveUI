@@ -31,7 +31,7 @@ public static class SuspensionHostExtensions
     /// The pending one-time app-state load of each host, keyed by host so that every host loads through the driver it
     /// was set up with. The table holds its keys weakly, so it does not keep a host alive.
     /// </summary>
-    private static readonly ConditionalWeakTable<ISuspensionHost, PendingLoad> _pendingLoads = new();
+    private static readonly ConditionalWeakTable<ISuspensionHost, SuspensionHostHelpers.PendingLoad> _pendingLoads = new();
 
     /// <summary>Provides strongly-typed app-state access and suspend/resume setup extension members for <see cref="ISuspensionHost{TAppState}"/>.</summary>
     /// <typeparam name="TAppState">The application state type.</typeparam>
@@ -97,34 +97,14 @@ public static class SuspensionHostExtensions
                 return EmptyDisposable.Instance;
             }
 
-            var pendingLoad = _pendingLoads.GetValue(item, static _ => new PendingLoad());
+            var pendingLoad = _pendingLoads.GetValue(item, static _ => new SuspensionHostHelpers.PendingLoad());
             pendingLoad.Arm(() => EnsureLoadAppState(item, resolvedDriver, typeInfo));
 
-            MultipleDisposable ret = [];
-            ret.Add(item.ShouldInvalidateState.Subscribe(new DriverOperationObserver<RxVoid>(
+            return SuspensionHostHelpers.SubscribeLifecycle(
                 item,
-                _ => resolvedDriver.InvalidateState(),
-                static _ => { },
-                "Invalidated app state",
-                "Tried to invalidate app state")));
-
-            ret.Add(item.ShouldPersistState.Subscribe(new DriverOperationObserver<IDisposable>(
-                item,
-                _ =>
-                {
-                    // Materialize app state (one-time load) before saving, so a shutdown that races ahead of
-                    // the resume/launch load still persists real state rather than null (see #4353).
-                    pendingLoad.Run();
-                    return resolvedDriver.SaveState(item.AppStateValue!, typeInfo);
-                },
-                static token => token.Dispose(),
-                "Persisted application state",
-                "Tried to persist app state")));
-
-            ret.Add(item.IsResuming.Subscribe(new DelegateObserver<RxVoid>(_ => pendingLoad.Run())));
-            ret.Add(item.IsLaunchingNew.Subscribe(new DelegateObserver<RxVoid>(_ => pendingLoad.Run())));
-
-            return ret;
+                pendingLoad,
+                resolvedDriver.InvalidateState,
+                () => resolvedDriver.SaveState(item.AppStateValue!, typeInfo));
         }
     }
 
@@ -148,7 +128,7 @@ public static class SuspensionHostExtensions
         try
         {
             // Fall back to a freshly created state when the driver yields no persisted state (see #4349).
-            item.AppStateValue = WaitForResult(driver.LoadState(typeInfo)) ?? item.CreateNewAppStateTyped?.Invoke();
+            item.AppStateValue = SuspensionHostHelpers.WaitForResult(driver.LoadState(typeInfo)) ?? item.CreateNewAppStateTyped?.Invoke();
         }
         catch (Exception ex)
         {
@@ -163,28 +143,10 @@ public static class SuspensionHostExtensions
     /// <param name="item">The suspension host.</param>
     private static void RunPendingLoad(ISuspensionHost item)
     {
-        if (!_pendingLoads.TryGetValue(item, out var pendingLoad))
+        if (_pendingLoads.TryGetValue(item, out var pendingLoad))
         {
-            return;
+            pendingLoad.Run();
         }
-
-        pendingLoad.Run();
-    }
-
-    /// <summary>Subscribes to a single-value observable and blocks until it terminates, returning its last value.</summary>
-    /// <typeparam name="T">The value type.</typeparam>
-    /// <param name="source">The source observable.</param>
-    /// <returns>The last value produced by the source, or default if none was produced.</returns>
-    private static T? WaitForResult<T>(IObservable<T> source)
-    {
-        using var signal = new ManualResetEventSlim(false);
-        var observer = new BlockingObserver<T>(signal);
-        using (source.Subscribe(observer))
-        {
-            signal.Wait();
-        }
-
-        return observer.GetResult();
     }
 
     /// <summary>Emits the current typed app state (when present) followed by every non-null assignment. Specialised to <see cref="ObserveAppState{TAppState}(ISuspensionHost{TAppState})"/>.</summary>
@@ -230,140 +192,5 @@ public static class SuspensionHostExtensions
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public void OnCompleted() => downstream.OnCompleted();
         }
-    }
-
-    /// <summary>
-    /// For each lifecycle signal, runs a suspension-driver operation, logging success and swallowing/logging failures,
-    /// and runs a finalizer afterwards. Fuses the prior <c>SelectMany</c> + <c>Finally</c> + <c>LoggedCatch</c> +
-    /// <c>Subscribe</c> pipeline into one observer.
-    /// </summary>
-    /// <typeparam name="TArg">The lifecycle signal type.</typeparam>
-    /// <param name="logHost">The object used for logging.</param>
-    /// <param name="operation">Produces the driver operation for a signal.</param>
-    /// <param name="onFinally">Runs after the operation terminates (for example, disposing the persist token).</param>
-    /// <param name="successMessage">Logged when the operation succeeds.</param>
-    /// <param name="errorMessage">Logged when the operation (or its creation) fails.</param>
-    private sealed class DriverOperationObserver<TArg>(
-        IEnableLogger logHost,
-        Func<TArg, IObservable<RxVoid>> operation,
-        Action<TArg> onFinally,
-        string successMessage,
-        string errorMessage) : IObserver<TArg>
-    {
-        /// <inheritdoc/>
-        public void OnNext(TArg value)
-        {
-            IObservable<RxVoid> op;
-            try
-            {
-                op = operation(value);
-            }
-            catch (Exception ex)
-            {
-                logHost.Log().Warn(ex, errorMessage);
-                onFinally(value);
-                return;
-            }
-
-            _ = op.Subscribe(new ResultObserver(logHost, value, onFinally, successMessage, errorMessage));
-        }
-
-        /// <inheritdoc/>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void OnError(Exception error) => logHost.Log().Warn(error, errorMessage);
-
-        /// <inheritdoc/>
-        public void OnCompleted()
-        {
-        }
-
-        /// <summary>Logs the result of a single driver operation and runs the finalizer exactly once.</summary>
-        /// <param name="logHost">The object used for logging.</param>
-        /// <param name="arg">The signal the operation was run for.</param>
-        /// <param name="onFinally">Runs after the operation terminates.</param>
-        /// <param name="successMessage">Logged when the operation succeeds.</param>
-        /// <param name="errorMessage">Logged when the operation fails.</param>
-        private sealed class ResultObserver(
-            IEnableLogger logHost,
-            TArg arg,
-            Action<TArg> onFinally,
-            string successMessage,
-            string errorMessage) : IObserver<RxVoid>
-        {
-            /// <summary>Whether the finalizer has run; latched to 1 by the first thread to reach it.</summary>
-            private int _finished;
-
-            /// <inheritdoc/>
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public void OnNext(RxVoid value) => logHost.Log().Info(successMessage);
-
-            /// <inheritdoc/>
-            public void OnError(Exception error)
-            {
-                logHost.Log().Warn(error, errorMessage);
-                Finish();
-            }
-
-            /// <inheritdoc/>
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public void OnCompleted() => Finish();
-
-            /// <summary>Runs the finalizer exactly once.</summary>
-            private void Finish()
-            {
-                if (Interlocked.Exchange(ref _finished, 1) != 0)
-                {
-                    return;
-                }
-
-                onFinally(arg);
-            }
-        }
-    }
-
-    /// <summary>Holds one host's pending one-time app-state load, bound to the driver that host was set up with.</summary>
-    private sealed class PendingLoad
-    {
-        /// <summary>The load to run, or <see langword="null"/> once it has run or before any setup.</summary>
-        private Func<IObservable<RxVoid>>? _load;
-
-        /// <summary>Registers the load to run, replacing any load that has not run yet.</summary>
-        /// <param name="load">The load to run.</param>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Arm(Func<IObservable<RxVoid>> load) => Volatile.Write(ref _load, load);
-
-        /// <summary>Runs the registered load exactly once; later calls do nothing until the next <see cref="Arm"/>.</summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Run() => Interlocked.Exchange(ref _load, null)?.Invoke();
-    }
-
-    /// <summary>Captures the last value (or terminal error) of a blocking subscription and signals on termination.</summary>
-    /// <typeparam name="T">The value type.</typeparam>
-    /// <param name="signal">Set when the source terminates.</param>
-    private sealed class BlockingObserver<T>(ManualResetEventSlim signal) : IObserver<T>
-    {
-        /// <summary>The last value produced by the source.</summary>
-        private T? _value;
-
-        /// <summary>The terminal error, if the source errored.</summary>
-        private Exception? _error;
-
-        /// <inheritdoc/>
-        public void OnNext(T value) => _value = value;
-
-        /// <inheritdoc/>
-        public void OnError(Exception error)
-        {
-            _error = error;
-            signal.Set();
-        }
-
-        /// <inheritdoc/>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void OnCompleted() => signal.Set();
-
-        /// <summary>Returns the captured value, rethrowing any terminal error.</summary>
-        /// <returns>The last value produced by the source.</returns>
-        public T? GetResult() => _error is not null ? throw _error : _value;
     }
 }

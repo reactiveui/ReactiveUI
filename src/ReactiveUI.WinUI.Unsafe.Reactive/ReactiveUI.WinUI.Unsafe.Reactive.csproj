@@ -39,5 +39,6 @@
     <Compile Include="..\ReactiveUI.WinUI\ViewModelViewHostConverter.cs" Link="ViewModelViewHostConverter.cs"/>
     <Compile Include="..\Shared\ArgumentValidation.cs" Link="Shared\ArgumentValidation.cs"/>
     <Compile Include="..\Shared\Platform\ItemsControlTemplateBinding.cs" Link="Shared\Platform\ItemsControlTemplateBinding.cs"/>
+    <Compile Include="..\ReactiveUI.Unsafe.Shared\ViewResolutionMessages.cs" Link="ViewResolutionMessages.cs"/>
   </ItemGroup>
 </Project>
