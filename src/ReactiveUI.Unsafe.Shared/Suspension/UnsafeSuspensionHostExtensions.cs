@@ -17,6 +17,16 @@ namespace ReactiveUI;
 /// <summary>Reflection-based suspension host extension methods for untyped <see cref="ISuspensionHost"/>.</summary>
 public static class UnsafeSuspensionHostExtensions
 {
+    /// <summary>Trim/AOT diagnostic message for reflection-based suspension driver overloads.</summary>
+    private const string UnsafeDriverMessage =
+        "This overload may invoke IUnsafeSuspensionDriver.LoadState()/SaveState<T>(T), which are commonly reflection-based. "
+        + "Prefer SetupDefaultSuspendResume<TAppState>(..., JsonTypeInfo<TAppState>, ...) for trimming/AOT scenarios.";
+
+    /// <summary>Trim/AOT diagnostic message for reflection-based WhenAny state observation.</summary>
+    private const string UnsafeWhenAnyMessage =
+        "This overload uses WhenAny, which can require unreferenced/dynamic code in trimming/AOT scenarios. "
+        + "Prefer ObserveAppState<TAppState>(ISuspensionHost<TAppState>) for trimming/AOT scenarios.";
+
     /// <summary>A shared completed RxVoid signal.</summary>
     private static readonly IObservable<RxVoid> _completed = ImmutableReturnRxVoidSignal.Instance;
 
@@ -30,12 +40,8 @@ public static class UnsafeSuspensionHostExtensions
         /// <summary>Get the current App State of a class derived from ISuspensionHost.</summary>
         /// <typeparam name="T">The app state type.</typeparam>
         /// <returns>The app state.</returns>
-        [RequiresUnreferencedCode(
-            "This overload may invoke IUnsafeSuspensionDriver.LoadState(), which is commonly reflection-based. "
-            + "Prefer GetAppState<TAppState>(ISuspensionHost<TAppState>) used with SetupDefaultSuspendResume<TAppState>(..., JsonTypeInfo<TAppState>, ...) for trimming/AOT scenarios.")]
-        [RequiresDynamicCode(
-            "This overload may invoke IUnsafeSuspensionDriver.LoadState(), which is commonly reflection-based. "
-            + "Prefer GetAppState<TAppState>(ISuspensionHost<TAppState>) used with SetupDefaultSuspendResume<TAppState>(..., JsonTypeInfo<TAppState>, ...) for trimming/AOT scenarios.")]
+        [RequiresUnreferencedCode(UnsafeDriverMessage)]
+        [RequiresDynamicCode(UnsafeDriverMessage)]
         [SuppressMessage(
             "Design",
             "SST2307:Generic method type parameters should be inferable from the parameters",
@@ -55,12 +61,8 @@ public static class UnsafeSuspensionHostExtensions
         /// <summary>Observe changes to the AppState of a class derived from ISuspensionHost.</summary>
         /// <typeparam name="T">The observable type.</typeparam>
         /// <returns>An observable of the app state.</returns>
-        [RequiresUnreferencedCode(
-            "This overload uses WhenAny, which can require unreferenced/dynamic code in trimming/AOT scenarios. "
-            + "Prefer ObserveAppState<TAppState>(ISuspensionHost<TAppState>) for trimming/AOT scenarios.")]
-        [RequiresDynamicCode(
-            "This overload uses WhenAny, which can require unreferenced/dynamic code in trimming/AOT scenarios. "
-            + "Prefer ObserveAppState<TAppState>(ISuspensionHost<TAppState>) for trimming/AOT scenarios.")]
+        [RequiresUnreferencedCode(UnsafeWhenAnyMessage)]
+        [RequiresDynamicCode(UnsafeWhenAnyMessage)]
         [SuppressMessage(
             "Design",
             "SST2307:Generic method type parameters should be inferable from the parameters",
@@ -77,28 +79,17 @@ public static class UnsafeSuspensionHostExtensions
 
         /// <summary>Setup our suspension driver for a class derived off ISuspensionHost interface using a resolved driver.</summary>
         /// <returns>A disposable which will stop responding to Suspend and Resume requests.</returns>
-        [RequiresUnreferencedCode(
-            "This overload may invoke IUnsafeSuspensionDriver.LoadState()/SaveState<T>(T), which are commonly reflection-based. "
-            + "Prefer SetupDefaultSuspendResume<TAppState>(..., JsonTypeInfo<TAppState>, ...) for trimming/AOT scenarios.")]
-        [RequiresDynamicCode(
-            "This overload may invoke IUnsafeSuspensionDriver.LoadState()/SaveState<T>(T), which are commonly reflection-based. "
-            + "Prefer SetupDefaultSuspendResume<TAppState>(..., JsonTypeInfo<TAppState>, ...) for trimming/AOT scenarios.")]
+        [RequiresUnreferencedCode(UnsafeDriverMessage)]
+        [RequiresDynamicCode(UnsafeDriverMessage)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IDisposable SetupDefaultSuspendResume() =>
             item.SetupDefaultSuspendResume(null);
 
-        /// <summary>
-        /// Setup our suspension driver for a class derived off ISuspensionHost interface.
-        /// This will make your suspension host respond to suspend and resume requests.
-        /// </summary>
+        /// <summary>Setup our suspension driver for a class derived off ISuspensionHost interface.</summary>
         /// <param name="driver">The unsafe suspension driver.</param>
         /// <returns>A disposable which will stop responding to Suspend and Resume requests.</returns>
-        [RequiresUnreferencedCode(
-            "This overload may invoke IUnsafeSuspensionDriver.LoadState()/SaveState<T>(T), which are commonly reflection-based. "
-            + "Prefer SetupDefaultSuspendResume<TAppState>(..., JsonTypeInfo<TAppState>, ...) for trimming/AOT scenarios.")]
-        [RequiresDynamicCode(
-            "This overload may invoke IUnsafeSuspensionDriver.LoadState()/SaveState<T>(T), which are commonly reflection-based. "
-            + "Prefer SetupDefaultSuspendResume<TAppState>(..., JsonTypeInfo<TAppState>, ...) for trimming/AOT scenarios.")]
+        [RequiresUnreferencedCode(UnsafeDriverMessage)]
+        [RequiresDynamicCode(UnsafeDriverMessage)]
         public IDisposable SetupDefaultSuspendResume(IUnsafeSuspensionDriver? driver)
         {
             ArgumentExceptionHelper.ThrowIfNull(item);
@@ -128,12 +119,8 @@ public static class UnsafeSuspensionHostExtensions
     /// <param name="item">The suspension host.</param>
     /// <param name="driver">The unsafe suspension driver.</param>
     /// <returns>A completed observable.</returns>
-    [RequiresUnreferencedCode(
-        "This overload may invoke IUnsafeSuspensionDriver.LoadState(), which is commonly reflection-based. "
-        + "Prefer SetupDefaultSuspendResume<TAppState>(..., JsonTypeInfo<TAppState>, ...) for trimming/AOT scenarios.")]
-    [RequiresDynamicCode(
-        "This overload may invoke IUnsafeSuspensionDriver.LoadState(), which is commonly reflection-based. "
-        + "Prefer SetupDefaultSuspendResume<TAppState>(..., JsonTypeInfo<TAppState>, ...) for trimming/AOT scenarios.")]
+    [RequiresUnreferencedCode(UnsafeDriverMessage)]
+    [RequiresDynamicCode(UnsafeDriverMessage)]
     private static IObservable<RxVoid> EnsureLoadAppState(ISuspensionHost item, IUnsafeSuspensionDriver driver)
     {
         if (item.AppState is not null)
