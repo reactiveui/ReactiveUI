@@ -568,32 +568,8 @@ public static partial class AutoPersistHelperMixins
             [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)]
             Type type)
         {
-            var hasDataContract = type.GetCustomAttributes(typeof(DataContractAttribute), true).Length > 0;
-
-            var properties = type.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly);
-
-            HashSet<string>? set = null;
-
-            for (var i = 0; i < properties.Length; i++)
-            {
-                var p = properties[i];
-                if (!HasDataMemberAttribute(p))
-                {
-                    continue;
-                }
-
-                set ??= [with(StringComparer.Ordinal)];
-                _ = set.Add(p.Name);
-            }
-
-            set ??= [with(StringComparer.Ordinal)];
+            var set = AutoPersistMetadataInspector.Inspect(type, out var hasDataContract);
             return new(hasDataContract, set);
         }
-
-        /// <summary>Determines whether a property is annotated with <c>[DataMember]</c>.</summary>
-        /// <param name="property">The property to inspect.</param>
-        /// <returns><see langword="true"/> if the property is annotated; otherwise <see langword="false"/>.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static bool HasDataMemberAttribute(PropertyInfo property) => property.IsDefined(typeof(DataMemberAttribute), true);
     }
 }

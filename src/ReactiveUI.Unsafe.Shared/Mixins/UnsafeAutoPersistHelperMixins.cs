@@ -6,9 +6,7 @@
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Diagnostics.CodeAnalysis;
-using System.Reflection;
 using System.Runtime.CompilerServices;
-using System.Runtime.Serialization;
 
 #if REACTIVE_SHIM
 namespace ReactiveUI.Reactive;
@@ -246,23 +244,7 @@ public static class UnsafeAutoPersistHelperMixins
     /// <returns>The computed persistence metadata.</returns>
     private static AutoPersistHelperMixins.AutoPersistMetadata CreateMetadataFromRuntimeType(Type type)
     {
-        var hasDataContract = type.GetCustomAttributes(typeof(DataContractAttribute), true).Length > 0;
-        var properties = type.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly);
-
-        HashSet<string>? set = null;
-        for (var i = 0; i < properties.Length; i++)
-        {
-            var property = properties[i];
-            if (!property.IsDefined(typeof(DataMemberAttribute), true))
-            {
-                continue;
-            }
-
-            set ??= [with(StringComparer.Ordinal)];
-            _ = set.Add(property.Name);
-        }
-
-        set ??= [with(StringComparer.Ordinal)];
+        var set = AutoPersistMetadataInspector.Inspect(type, out var hasDataContract);
         return new(hasDataContract, set);
     }
 }

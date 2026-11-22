@@ -26,6 +26,7 @@
     <Compile Include="..\Shared\ArgumentValidation.cs" Link="Shared\ArgumentValidation.cs"/>
     <Compile Include="..\Shared\DelegateObserver.cs" Link="Shared\DelegateObserver.cs"/>
     <Compile Include="..\Shared\Suspension\SuspensionHostHelpers.cs" Link="Shared\Suspension\SuspensionHostHelpers.cs"/>
+    <Compile Include="..\Shared\Mixins\AutoPersistMetadataInspector.cs" Link="Shared\Mixins\AutoPersistMetadataInspector.cs"/>
   </ItemGroup>
   <ItemGroup Condition="$(TargetFramework.StartsWith('net4'))">
     <PackageReference Include="System.ComponentModel.Annotations"/>
