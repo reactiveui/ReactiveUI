@@ -231,6 +231,30 @@ public partial class SuspensionHostExtensionsAotTests
         await Assert.That((object?)state).IsNull();
     }
 
+    /// <summary>Verifies the typed EnsureLoadAppState leaves state null when there is no factory and the driver loads nothing.</summary>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task EnsureLoadAppState_Typed_DriverLoadsNothingAndNoFactory_LeavesStateNull()
+    {
+        using var host = new SuspensionHost<TestAppState>
+        {
+            CreateNewAppStateTyped = null,
+            IsLaunchingNew = Signal.Silent<RxVoid>(),
+            IsResuming = Signal.Silent<RxVoid>(),
+            ShouldPersistState = Signal.Silent<IDisposable>(),
+            ShouldInvalidateState = Signal.Silent<RxVoid>(),
+        };
+
+        var driver = new TestSuspensionDriver<TestAppState> { StateToLoad = null };
+
+        using var disposable = host.SetupDefaultSuspendResume(TestAppStateContext.Default.TestAppState, driver);
+
+        var state = host.GetAppState();
+
+        await Assert.That((object?)state).IsNull();
+        await Assert.That(driver.LoadStateCallCount).IsEqualTo(1);
+    }
+
     /// <summary>Verifies the typed EnsureLoadAppState still loads through the setup driver after the locator loses its drivers.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]

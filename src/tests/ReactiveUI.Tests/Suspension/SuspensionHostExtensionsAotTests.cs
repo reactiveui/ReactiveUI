@@ -96,6 +96,32 @@ public partial class SuspensionHostExtensionsAotTests
         await Assert.That(driver.LoadStateCallCount).IsEqualTo(1);
     }
 
+    /// <summary>Verifies the untyped GetAppState triggers the load registered by a typed setup.</summary>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task GetAppState_UntypedAfterTypedSetup_TriggersEnsureLoadAppState()
+    {
+        using var host = new SuspensionHost<TestAppState>
+        {
+            CreateNewAppStateTyped = static () => new() { Value = FactoryStateValue },
+            IsLaunchingNew = Signal.Silent<RxVoid>(),
+            IsResuming = Signal.Silent<RxVoid>(),
+            ShouldPersistState = Signal.Silent<IDisposable>(),
+            ShouldInvalidateState = Signal.Silent<RxVoid>(),
+        };
+
+        var driver = new TestSuspensionDriver<TestAppState> { StateToLoad = new() { Value = LoadedStateValue } };
+
+        using var disposable = host.SetupDefaultSuspendResume(TestAppStateContext.Default.TestAppState, driver);
+
+        ISuspensionHost untypedHost = host;
+        var state = untypedHost.GetAppState<TestAppState>();
+
+        await Assert.That(state).IsNotNull();
+        await Assert.That(state.Value).IsEqualTo(LoadedStateValue);
+        await Assert.That(driver.LoadStateCallCount).IsEqualTo(1);
+    }
+
     /// <summary>Verifies the typed ObserveAppState emits the current value immediately on subscription.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]

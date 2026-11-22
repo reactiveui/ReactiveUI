@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Text.Json.Serialization.Metadata;
 using ReactiveUI.Primitives.Disposables;
@@ -32,6 +33,24 @@ public static class SuspensionHostExtensions
     /// was set up with. The table holds its keys weakly, so it does not keep a host alive.
     /// </summary>
     private static readonly ConditionalWeakTable<ISuspensionHost, SuspensionHostHelpers.PendingLoad> _pendingLoads = new();
+
+    /// <summary>Provides the app-state load hook for the untyped <see cref="ISuspensionHost"/>.</summary>
+    /// <param name="item">The suspension host.</param>
+    extension(ISuspensionHost item)
+    {
+        /// <summary>Runs the one-time app-state load that a typed <c>SetupDefaultSuspendResume</c> call registered for the host, if it has not run yet.</summary>
+        /// <remarks>
+        /// The typed <c>GetAppState</c> does this itself. This member exists so that <c>ReactiveUI.Unsafe</c> can read the
+        /// state of a host through the untyped <see cref="ISuspensionHost"/> after a typed setup.
+        /// </remarks>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public void EnsureAppStateLoaded()
+        {
+            ArgumentExceptionHelper.ThrowIfNull(item);
+
+            RunPendingLoad(item);
+        }
+    }
 
     /// <summary>Provides strongly-typed app-state access and suspend/resume setup extension members for <see cref="ISuspensionHost{TAppState}"/>.</summary>
     /// <typeparam name="TAppState">The application state type.</typeparam>

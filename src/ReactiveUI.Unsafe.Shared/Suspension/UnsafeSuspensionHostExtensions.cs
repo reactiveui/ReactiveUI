@@ -55,6 +55,9 @@ public static class UnsafeSuspensionHostExtensions
                 pendingLoad.Run();
             }
 
+            // A host set up through the typed, source-generated overload keeps its pending load in the core package.
+            item.EnsureAppStateLoaded();
+
             return (T)item.AppState!;
         }
 
@@ -96,7 +99,7 @@ public static class UnsafeSuspensionHostExtensions
 
             var resolvedDriver = driver
                 ?? AppLocator.Current.GetService<IUnsafeSuspensionDriver>()
-                ?? AppLocator.Current.GetService<ISuspensionDriver>() as IUnsafeSuspensionDriver;
+                ?? ToUnsafeDriver(AppLocator.Current.GetService<ISuspensionDriver>());
 
             if (resolvedDriver is null)
             {
@@ -140,6 +143,20 @@ public static class UnsafeSuspensionHostExtensions
 
         return _completed;
     }
+
+    /// <summary>Gets the reflection-capable form of a driver registered as <see cref="ISuspensionDriver"/>.</summary>
+    /// <param name="driver">The registered driver, if any.</param>
+    /// <returns>The driver itself when it is already reflection-capable, an adapter around it otherwise, or <see langword="null"/> when there is none.</returns>
+    private static IUnsafeSuspensionDriver? ToUnsafeDriver(ISuspensionDriver? driver) =>
+        driver switch
+        {
+            null => null,
+            IUnsafeSuspensionDriver unsafeDriver => unsafeDriver,
+
+            // The platform registrations register only the ahead-of-time safe drivers, so the default driver would
+            // otherwise never be found by the reflection-based setup.
+            _ => new ReflectionSuspensionDriverAdapter(driver),
+        };
 
     /// <summary>Emits only the non-null values of a <c>WhenAny</c> stream, cast to the requested type.</summary>
     /// <typeparam name="TResult">The requested app-state type.</typeparam>
