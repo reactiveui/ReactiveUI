@@ -7,6 +7,11 @@ using System.Linq.Expressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+#if REACTIVE_SHIM
+using ReactiveUI.Reactive.Internal;
+#else
+using ReactiveUI.Internal;
+#endif
 using ReactiveUI.Tests.Wpf;
 using ReactiveUI.Tests.Xaml.Mocks;
 using Splat;
@@ -221,7 +226,9 @@ public class UnsafeViewResolutionTests
     [Test]
     public async Task AutoDataTemplateBindingHookUnsafe_HostsTheItemInAViewModelViewHostUnsafe()
     {
-        var host = AutoDataTemplateBindingHook.CreateItemTemplate(nameof(ViewModelViewHostUnsafe)).LoadContent() as ViewModelViewHostUnsafe;
+        var host = ItemsControlTemplateBinding
+            .CreateWpfItemTemplate(nameof(ViewModelViewHostUnsafe), typeof(ViewModelViewHostUnsafe).Assembly)
+            .LoadContent() as ViewModelViewHostUnsafe;
 
         using (Assert.Multiple())
         {

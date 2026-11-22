@@ -158,7 +158,7 @@ public class ReactivePropertyMixinsTests
         var property = new ReactiveProperty<string>();
 
         // Act & Assert
-        await Assert.That(() => property.AddValidation((System.Linq.Expressions.Expression<Func<ReactiveProperty<string>>>)null!))
+        await Assert.That(() => property.AddValidation((System.Linq.Expressions.Expression<Func<ReactiveProperty<string>?>>)null!))
             .Throws<ArgumentNullException>();
     }
 
