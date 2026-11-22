@@ -138,7 +138,7 @@ public class CommandBindingImplementationTests
         var received = 0;
         view.ViewModel.Command1 = ReactiveCommand.Create<int>(i => received = i);
 
-        _ = view.BindCommand(view.ViewModel, x => x.Command1, x => x.Command1, x => x.Value, nameof(CustomClickButton.CustomClick));
+        _ = view.BindCommand(view.ViewModel, static x => x.Command1, static x => x.Command1, static x => x.Value, nameof(CustomClickButton.CustomClick));
 
         view.ViewModel.Value = FirstValue;
         view.Command1.RaiseCustomClick();
@@ -159,7 +159,7 @@ public class CommandBindingImplementationTests
         var received = 0;
         view.ViewModel.Command1 = ReactiveCommand.Create<int>(i => received = i);
 
-        _ = view.BindCommand(view.ViewModel, x => x.Command1, x => x.Command1, x => x.Value, nameof(CustomClickButton.CustomClick));
+        _ = view.BindCommand(view.ViewModel, static x => x.Command1, static x => x.Command1, static x => x.Value, nameof(CustomClickButton.CustomClick));
 
         view.ViewModel.Value = FirstValue;
         view.Command1.RaiseCustomClick();
@@ -181,7 +181,7 @@ public class CommandBindingImplementationTests
         view.ViewModel.Command1 = ReactiveCommand.Create<int>(i => received = i);
         view.ViewModel.Value = InitialValue;
 
-        _ = view.BindCommand(view.ViewModel, x => x.Command1, x => x.Command1, x => x.Value, nameof(CustomClickButton.CustomClick));
+        _ = view.BindCommand(view.ViewModel, static x => x.Command1, static x => x.Command1, static x => x.Value, nameof(CustomClickButton.CustomClick));
 
         view.Command1.RaiseCustomClick();
         await Assert.That(received).IsEqualTo(InitialValue);
@@ -205,8 +205,8 @@ public class CommandBindingImplementationTests
         var received = 0;
         view.ViewModel.Command1 = ReactiveCommand.Create<int>(i => received = i);
         view.ViewModel.Value = InitialValue;
-        var value = view.ViewModel.WhenAnyValue(v => v.Value);
-        _ = view.BindCommand(view.ViewModel, x => x.Command1, x => x.Command1, value, nameof(CustomClickButton.CustomClick));
+        var value = view.ViewModel.WhenAnyValue(static v => v.Value);
+        _ = view.BindCommand(view.ViewModel, static x => x.Command1, static x => x.Command1, value, nameof(CustomClickButton.CustomClick));
 
         view.Command1.RaiseCustomClick();
         await Assert.That(received).IsEqualTo(InitialValue);

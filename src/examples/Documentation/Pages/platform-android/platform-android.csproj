@@ -34,6 +34,7 @@
 
   <ItemGroup>
     <ProjectReference Include="$(MSBuildThisFileDirectory)../../../../ReactiveUI.AndroidX/ReactiveUI.AndroidX.csproj" />
+    <ProjectReference Include="$(MSBuildThisFileDirectory)../../../../ReactiveUI.AndroidX.Unsafe/ReactiveUI.AndroidX.Unsafe.csproj" />
   </ItemGroup>
 
   <!-- The shared Common apps (Todo, GitHub) declare their own console-only "Button", "TextBox" etc. stand-ins,

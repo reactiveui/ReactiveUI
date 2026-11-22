@@ -42,7 +42,7 @@ namespace ReactiveUI;
 /// The host asks the view locator for each page's view by the view model's run-time type, without building any type
 /// at run time, so it is safe to trim and to compile ahead of time. The default locator checks the view lookup the
 /// source generator writes, then the views the app added with <c>Map</c>. A view registered only with the service
-/// locator needs <see cref="RoutedViewHostUnsafe"/>.
+/// locator needs <c>RoutedViewHostUnsafe</c> from <c>ReactiveUI.Unsafe</c>.
 /// </para>
 /// </remarks>
 /// <example>
@@ -85,7 +85,7 @@ public class RoutedViewHost : ReactiveNavigationController
 
     /// <summary>Initializes a new instance of the <see cref="RoutedViewHost"/> class with its view lookup.</summary>
     /// <param name="resolveView">Asks a view locator for the view of a view model under a contract.</param>
-    private protected RoutedViewHost(Func<IViewLocator, object, string?, IViewFor?> resolveView)
+    protected RoutedViewHost(Func<IViewLocator, object, string?, IViewFor?> resolveView)
     {
         _resolveView = resolveView;
         ViewContractObservable = Signal.Emit<string?>(null);
@@ -279,7 +279,7 @@ public class RoutedViewHost : ReactiveNavigationController
     /// <returns>A disposable that represents the subscription.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private IDisposable SubscribeToNavigateBack() =>
-        this.WhenAnyObservable(x => x.Router!.NavigateBack!)
+        this.WhenAnyObservable(static x => x.Router!.NavigateBack!)
             .Subscribe(new DelegateObserver<IRoutableViewModel>(navigateBack =>
             {
                 _ = navigateBack;
@@ -305,7 +305,7 @@ public class RoutedViewHost : ReactiveNavigationController
         var view = _resolveView(ViewLocator ?? GetCurrent(), viewModel, contract)
             ?? throw new InvalidOperationException(
                 $"Couldn't find a view for view model type {viewModel.GetType().Name}. The view locator checked the generated view lookup "
-                + $"and its Map registrations; use {nameof(RoutedViewHostUnsafe)} to also resolve a view registered only with the service locator.");
+                + "and its Map registrations; use RoutedViewHostUnsafe (from ReactiveUI.Unsafe) to also resolve a view registered only with the service locator.");
         view.ViewModel = viewModel;
 
         return view is not NSViewController viewController

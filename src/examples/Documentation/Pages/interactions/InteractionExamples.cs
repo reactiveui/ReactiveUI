@@ -110,7 +110,7 @@ public static class InteractionExamples
         _ = await viewModel.Load.Execute();
         using TodoListView view = new() { ViewModel = viewModel };
 
-        using IDisposable binding = view.BindInteraction(viewModel, x => x.ConfirmDelete, static context =>
+        using IDisposable binding = view.BindInteraction(viewModel, static x => x.ConfirmDelete, static context =>
         {
             Console.WriteLine($"The view asks: delete '{context.Input.Title}'?");
             context.SetOutput(true);

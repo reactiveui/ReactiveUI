@@ -38,17 +38,17 @@ public partial class WhenAnyObservableMixinTests
         vm.ObservableProperty11 = subj11;
         var list = new List<string>();
         _ = vm.WhenAnyObservable(
-            x => x.ObservableProperty1,
-            x => x.ObservableProperty2,
-            x => x.ObservableProperty3,
-            x => x.ObservableProperty4,
-            x => x.ObservableProperty5,
-            x => x.ObservableProperty6,
-            x => x.ObservableProperty7,
-            x => x.ObservableProperty8,
-            x => x.ObservableProperty9,
-            x => x.ObservableProperty10,
-            x => x.ObservableProperty11).ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
+            static x => x.ObservableProperty1,
+            static x => x.ObservableProperty2,
+            static x => x.ObservableProperty3,
+            static x => x.ObservableProperty4,
+            static x => x.ObservableProperty5,
+            static x => x.ObservableProperty6,
+            static x => x.ObservableProperty7,
+            static x => x.ObservableProperty8,
+            static x => x.ObservableProperty9,
+            static x => x.ObservableProperty10,
+            static x => x.ObservableProperty11).ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
         subj1.OnNext("test");
         subj2.OnNext("test");
         subj3.OnNext("test");
@@ -93,17 +93,17 @@ public partial class WhenAnyObservableMixinTests
         vm.ObservableProperty11 = subj11;
         var list = new List<string>();
         _ = vm.WhenAnyObservable(
-            x => x.ObservableProperty1,
-            x => x.ObservableProperty2,
-            x => x.ObservableProperty3,
-            x => x.ObservableProperty4,
-            x => x.ObservableProperty5,
-            x => x.ObservableProperty6,
-            x => x.ObservableProperty7,
-            x => x.ObservableProperty8,
-            x => x.ObservableProperty9,
-            x => x.ObservableProperty10,
-            x => x.ObservableProperty11,
+            static x => x.ObservableProperty1,
+            static x => x.ObservableProperty2,
+            static x => x.ObservableProperty3,
+            static x => x.ObservableProperty4,
+            static x => x.ObservableProperty5,
+            static x => x.ObservableProperty6,
+            static x => x.ObservableProperty7,
+            static x => x.ObservableProperty8,
+            static x => x.ObservableProperty9,
+            static x => x.ObservableProperty10,
+            static x => x.ObservableProperty11,
             static (_, _, _, _, _, _, _, _, _, _, _) => "x").ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
         subj1.OnNext("test");
         subj2.OnNext("test");

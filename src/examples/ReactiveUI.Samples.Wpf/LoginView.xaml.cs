@@ -29,13 +29,13 @@ public partial class LoginView : ReactiveUserControl<LoginViewModel>
 
         _ = this.WhenActivated(d =>
         {
-            _ = this.Bind(ViewModel, vm => vm.UserName, v => v.Username.Text)
+            _ = this.Bind(ViewModel, static vm => vm.UserName, static v => v.Username.Text)
                 .DisposeWith(d);
 
-            _ = this.BindCommand(ViewModel, vm => vm.Login, v => v.Login)
+            _ = this.BindCommand(ViewModel, static vm => vm.Login, static v => v.Login)
                 .DisposeWith(d);
 
-            _ = this.BindCommand(ViewModel, vm => vm.Cancel, v => v.Cancel)
+            _ = this.BindCommand(ViewModel, static vm => vm.Cancel, static v => v.Cancel)
                 .DisposeWith(d);
 
             // WPF PasswordBox doesn't support data binding, so marshal changes manually.
@@ -43,7 +43,7 @@ public partial class LoginView : ReactiveUserControl<LoginViewModel>
                     h => Password.PasswordChanged += h,
                     h => Password.PasswordChanged -= h)
                 .Select(_ => Password.Password)
-                .BindTo(this, v => v.ViewModel!.Password)
+                .BindTo(this, static v => v.ViewModel!.Password)
                 .DisposeWith(d);
 
             _ = ViewModel.Login

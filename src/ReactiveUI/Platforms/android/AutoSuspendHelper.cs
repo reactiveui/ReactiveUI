@@ -19,7 +19,7 @@ namespace ReactiveUI;
 /// Register this helper inside your <see cref="Application"/> subclass to translate Activity lifecycle callbacks into
 /// <see cref="RxSuspension.SuspensionHost"/> signals. The helper automatically distinguishes cold starts from restores by
 /// inspecting <see cref="LatestBundle"/> and routes pause/save events to <see cref="ISuspensionDriver"/> via
-/// <see cref="SuspensionHostExtensions.SetupDefaultSuspendResume(ISuspensionHost, ISuspensionDriver?)"/>.
+/// <see cref="SuspensionHostExtensions.SetupDefaultSuspendResume{TAppState}(ISuspensionHost{TAppState}, System.Text.Json.Serialization.Metadata.JsonTypeInfo{TAppState}, ISuspensionDriver?)"/>.
 /// </para>
 /// <para>
 /// Example usage:

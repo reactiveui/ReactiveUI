@@ -250,7 +250,7 @@ public partial class ReactiveObjectObservationIntegrationTests
 
         IEnumerable<AccountUser>? result = null;
 
-        _ = fixture.WhenAnyValue(x => x.AccountService.AccountUsers)
+        _ = fixture.WhenAnyValue(static x => x.AccountService.AccountUsers)
             .Where(static users => users.Count > 0)
             .Select(static users => users.Values.Where(static x => !string.IsNullOrWhiteSpace(x.LastName)))
             .Subscribe(dict => result = dict);
@@ -270,8 +270,8 @@ public partial class ReactiveObjectObservationIntegrationTests
         IEnumerable<AccountUser>? result = null;
 
         _ = fixture.WhenAnyValue(
-            x => x.ProjectService.Projects,
-            x => x.AccountService.AccountUsers).Where(static tuple => tuple.Property1?.Count > 0 && tuple.Property2?.Count > 0).Select(static tuple =>
+            static x => x.ProjectService.Projects,
+            static x => x.AccountService.AccountUsers).Where(static tuple => tuple.Property1?.Count > 0 && tuple.Property2?.Count > 0).Select(static tuple =>
                 {
                     var (_, users) = tuple;
 
@@ -292,7 +292,7 @@ public partial class ReactiveObjectObservationIntegrationTests
 
         IEnumerable<AccountUser?>? result = null;
 
-        _ = fixture.WhenAnyValue(x => x.AccountService.AccountUsersNullable)
+        _ = fixture.WhenAnyValue(static x => x.AccountService.AccountUsersNullable)
             .Where(static users => users.Count > 0)
             .Select(static users => users.Values.Where(static x => !string.IsNullOrWhiteSpace(x?.LastName)))
             .Subscribe(dict => result = dict);
@@ -312,8 +312,8 @@ public partial class ReactiveObjectObservationIntegrationTests
         IEnumerable<AccountUser?>? result = null;
 
         _ = fixture.WhenAnyValue(
-            x => x.ProjectService.ProjectsNullable,
-            x => x.AccountService.AccountUsersNullable).Where(static tuple => tuple.Property1.Count > 0 && tuple.Property2?.Count > 0).Select(static tuple =>
+            static x => x.ProjectService.ProjectsNullable,
+            static x => x.AccountService.AccountUsersNullable).Where(static tuple => tuple.Property1.Count > 0 && tuple.Property2?.Count > 0).Select(static tuple =>
                 {
                     var (_, users) = tuple;
 
@@ -409,7 +409,7 @@ public partial class ReactiveObjectObservationIntegrationTests
 
         var observedValue = 1;
 
-        _ = obj.WhenAnyValue(x => x.SomeOtherParam).Subscribe(x => observedValue = x);
+        _ = obj.WhenAnyValue(static x => x.SomeOtherParam).Subscribe(x => observedValue = x);
 
         obj.SomeOtherParam = ExpectedValue;
 
@@ -426,7 +426,7 @@ public partial class ReactiveObjectObservationIntegrationTests
 
         var fixture = new TestFixture { IsNotNullString = FooText, IsOnlyOneWord = BazText, PocoProperty = BamfText };
 
-        _ = fixture.WhenAnyValue(x => x.IsNotNullString).ObserveOn(Sequencer.Immediate).Subscribe(__ => whenAnyTid = Environment.CurrentManagedThreadId);
+        _ = fixture.WhenAnyValue(static x => x.IsNotNullString).ObserveOn(Sequencer.Immediate).Subscribe(__ => whenAnyTid = Environment.CurrentManagedThreadId);
 
         fixture.IsNotNullString = BarText;
 
@@ -507,8 +507,8 @@ public partial class ReactiveObjectObservationIntegrationTests
         var output2 = new List<IObservedChange<HostTestFixture, string>>();
 
         _ = fixture.WhenAny(
-            x => x.SomeOtherParam,
-            x => x.Child!.IsNotNullString,
+            static x => x.SomeOtherParam,
+            static x => x.Child!.IsNotNullString,
             static (sop, nns) => (sop, nns)).Subscribe(x =>
             {
                 output1.Add(x.sop);
@@ -619,8 +619,8 @@ public partial class ReactiveObjectObservationIntegrationTests
         var output2 = new List<string>();
 
         _ = fixture.WhenAnyValue(
-            x => x.SomeOtherParam,
-            x => x.Child!.IsNotNullString,
+            static x => x.SomeOtherParam,
+            static x => x.Child!.IsNotNullString,
             static (sop, nns) => (sop, nns)).Subscribe(x =>
             {
                 output1.Add(x.sop);

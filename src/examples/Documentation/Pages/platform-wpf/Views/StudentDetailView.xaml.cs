@@ -22,11 +22,11 @@ public partial class StudentDetailView : ReactiveUserControl<StudentDetailViewMo
 
         _ = this.WhenActivated(d =>
         {
-            _ = this.OneWayBind(ViewModel, vm => vm.Student.Name, v => v.NameText.Text)
+            _ = this.OneWayBind(ViewModel, static vm => vm.Student.Name, static v => v.NameText.Text)
                 .DisposeWith(d);
             _ = this.BindWithValidation(ViewModel!, vm => vm.Grade, v => v.GradeBox.Text)
                 .DisposeWith(d);
-            _ = this.BindCommand(ViewModel, vm => vm.GoBack, v => v.BackButton)
+            _ = this.BindCommand(ViewModel, static vm => vm.GoBack, static v => v.BackButton)
                 .DisposeWith(d);
 
             // BindingRoot is the same view model as ViewModel, exposed under the name every ReactiveUI view uses;

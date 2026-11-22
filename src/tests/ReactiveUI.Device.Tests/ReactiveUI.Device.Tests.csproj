@@ -60,6 +60,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\ReactiveUI\ReactiveUI.csproj" />
+    <ProjectReference Include="..\..\ReactiveUI.Unsafe\ReactiveUI.Unsafe.csproj" />
   </ItemGroup>
 
   <!-- Platform folders compile only for their own target framework. -->
@@ -71,6 +72,7 @@
 
   <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
     <ProjectReference Include="..\..\ReactiveUI.AndroidX\ReactiveUI.AndroidX.csproj" />
+    <ProjectReference Include="..\..\ReactiveUI.AndroidX.Unsafe\ReactiveUI.AndroidX.Unsafe.csproj" />
     <Compile Include="Platforms\Android\**\*.cs" />
     <None Remove="Platforms\Android\**\*.cs" />
     <!-- TUnit's implicit usings bring in TUnit.Core.Context, which every Android view constructor collides with. -->

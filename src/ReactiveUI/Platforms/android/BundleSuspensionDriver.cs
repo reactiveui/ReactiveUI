@@ -3,7 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using System.Text.Json.Serialization.Metadata;
 using ReactiveUI.Internal;
@@ -16,47 +15,14 @@ namespace ReactiveUI;
 /// <summary>Loads and saves application state using the platform bundle.</summary>
 /// <remarks>
 /// <para>
-/// This driver supports both legacy reflection-based System.Text.Json serialization
-/// and trimming/AOT-safe serialization via source-generated <see cref="JsonTypeInfo{T}"/>.
+/// Uses trimming/AOT-safe serialization via source-generated <see cref="JsonTypeInfo{T}"/>.
+/// For reflection-based serialization, use <c>BundleSuspensionDriverUnsafe</c> from <c>ReactiveUI.Unsafe</c>.
 /// </para>
 /// </remarks>
 public sealed class BundleSuspensionDriver : ISuspensionDriver
 {
     /// <summary>The bundle key under which the serialized application state is stored.</summary>
     private const string StateKey = "__state";
-
-    /// <inheritdoc />
-    [RequiresUnreferencedCode(
-        "Implementations commonly use reflection-based serialization. "
-        + "Prefer LoadState<T>(JsonTypeInfo<T>) for trimming or AOT scenarios.")]
-    [RequiresDynamicCode(
-        "Implementations commonly use reflection-based serialization. "
-        + "Prefer LoadState<T>(JsonTypeInfo<T>) for trimming or AOT scenarios.")]
-    public IObservable<object?> LoadState()
-    {
-        try
-        {
-            if (AutoSuspendHelper.LatestBundle is null)
-            {
-                return Signal.Fail<object?>(
-                    new InvalidOperationException("New bundle detected; no persisted state is available."));
-            }
-
-            var buffer = AutoSuspendHelper.LatestBundle.GetByteArray(StateKey);
-            return buffer is null ? Signal.Fail<object?>(
-                    new InvalidOperationException("The persisted state buffer could not be found.")) : new TaskObservable<object?>(DeserializeAsync());
-
-            async Task<object?> DeserializeAsync()
-            {
-                await using MemoryStream stream = new(buffer, false);
-                return await JsonSerializer.DeserializeAsync<object>(stream).ConfigureAwait(false);
-            }
-        }
-        catch (Exception ex)
-        {
-            return Signal.Fail<object?>(ex);
-        }
-    }
 
     /// <inheritdoc />
     public IObservable<T?> LoadState<T>(JsonTypeInfo<T> typeInfo)
@@ -84,29 +50,6 @@ public sealed class BundleSuspensionDriver : ISuspensionDriver
         catch (Exception ex)
         {
             return Signal.Fail<T?>(ex);
-        }
-    }
-
-    /// <inheritdoc />
-    [RequiresUnreferencedCode(
-        "Implementations commonly use reflection-based serialization. "
-        + "Prefer SaveState<T>(T, JsonTypeInfo<T>) for trimming or AOT scenarios.")]
-    [RequiresDynamicCode(
-        "Implementations commonly use reflection-based serialization. "
-        + "Prefer SaveState<T>(T, JsonTypeInfo<T>) for trimming or AOT scenarios.")]
-    public IObservable<RxVoid> SaveState<T>(T state)
-    {
-        try
-        {
-            using MemoryStream stream = new();
-            JsonSerializer.Serialize(stream, state);
-
-            AutoSuspendHelper.LatestBundle?.PutByteArray(StateKey, stream.ToArray());
-            return ImmutableReturnRxVoidSignal.Instance;
-        }
-        catch (Exception ex)
-        {
-            return Signal.Fail<RxVoid>(ex);
         }
     }
 

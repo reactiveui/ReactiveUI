@@ -35,7 +35,7 @@ public class NestedWhenAnyValueBenchmarks
     public void Setup()
     {
         _viewModel = new NestedBenchmarkViewModel { Child = new() };
-        _subscription = _viewModel.WhenAnyValue(x => x.Child!.First).Subscribe(_sink);
+        _subscription = _viewModel.WhenAnyValue(static x => x.Child!.First).Subscribe(_sink);
     }
 
     /// <summary>Disposes the standing subscription.</summary>

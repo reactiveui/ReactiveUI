@@ -23,9 +23,9 @@ public partial class CourseInfoPage : ReactivePage<CourseInfoPageViewModel>
 
         _ = this.WhenActivated(d =>
         {
-            _ = this.OneWayBind(ViewModel, vm => vm.CourseCount, v => v.CourseCountText.Text, static count => $"Courses: {count}")
+            _ = this.OneWayBind(ViewModel, static vm => vm.CourseCount, static v => v.CourseCountText.Text, static count => $"Courses: {count}")
                 .DisposeWith(d);
-            _ = this.OneWayBind(ViewModel, vm => vm.StudentCount, v => v.StudentCountText.Text, static count => $"Students: {count}")
+            _ = this.OneWayBind(ViewModel, static vm => vm.StudentCount, static v => v.StudentCountText.Text, static count => $"Students: {count}")
                 .DisposeWith(d);
 
             // BindingRoot is the same view model as ViewModel, exposed under the name every ReactiveUI view uses so

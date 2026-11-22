@@ -49,7 +49,7 @@ public sealed class DeskAnnouncementCommand : ReactiveCommandBase<RxVoid, string
         _desk = desk;
         _announce = announce;
         _canExecuteValue = desk.IsOpen;
-        _canExecuteSubscription = _desk.WhenAnyValue(d => d.IsOpen).Skip(1).Subscribe(isOpen =>
+        _canExecuteSubscription = _desk.WhenAnyValue(static d => d.IsOpen).Skip(1).Subscribe(isOpen =>
         {
             _canExecuteValue = isOpen;
             OnCanExecuteChanged(isOpen);

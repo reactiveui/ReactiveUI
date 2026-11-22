@@ -23,7 +23,7 @@ public sealed class StationListPageView : ReactiveUserControl<StationListPageVie
         this.WhenActivated(disposables =>
         {
             // ReadingsList has no ItemTemplate, so AutoDataTemplateBindingHook gives it the default one as this binds.
-            IDisposable subscription = this.OneWayBind(ViewModel, viewModel => viewModel.Readings, view => view.ReadingsList.ItemsSource);
+            IDisposable subscription = this.OneWayBind(ViewModel, static viewModel => viewModel.Readings, static view => view.ReadingsList.ItemsSource);
             disposables(subscription);
 
             bool usesDefaultTemplate = ReferenceEquals(ReadingsList.ItemTemplate, AutoDataTemplateBindingHook.DefaultItemTemplate.Value);

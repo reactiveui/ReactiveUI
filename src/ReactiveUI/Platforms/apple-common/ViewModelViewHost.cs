@@ -42,7 +42,7 @@ namespace ReactiveUI;
 /// The host asks the view locator for the view by the view model's run-time type, without building any type at run
 /// time, so it is safe to trim and to compile ahead of time. The default locator checks the view lookup the source
 /// generator writes, then the views the app added with <c>Map</c>. A view registered only with the service locator
-/// needs <see cref="ViewModelViewHostUnsafe"/>.
+/// needs <c>ViewModelViewHostUnsafe</c> from <c>ReactiveUI.Unsafe</c>.
 /// </para>
 /// </remarks>
 /// <example>
@@ -92,7 +92,7 @@ public class ViewModelViewHost : ReactiveViewController
     /// <summary>Initializes a new instance of the <see cref="ViewModelViewHost"/> class with its view lookup.</summary>
     /// <param name="resolveView">Asks a view locator for the view of a view model under a contract.</param>
     [SuppressMessage("Correctness", "SST2403:Do not let 'this' escape from a constructor", Justification = "Wrappers read this host only after construction; the reference does not outlive it.")]
-    private protected ViewModelViewHost(Func<IViewLocator, object, string?, IViewFor?> resolveView)
+    protected ViewModelViewHost(Func<IViewLocator, object, string?, IViewFor?> resolveView)
     {
         _resolveView = resolveView;
         _currentView = new();
@@ -292,7 +292,7 @@ public class ViewModelViewHost : ReactiveViewController
             }
 
             message += ". The view locator checked the generated view lookup and its Map registrations; "
-                + $"use {nameof(ViewModelViewHostUnsafe)} to also resolve a view registered only with the service locator.";
+                + "use ViewModelViewHostUnsafe (from ReactiveUI.Unsafe) to also resolve a view registered only with the service locator.";
             throw new InvalidOperationException(message);
         }
 

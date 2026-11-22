@@ -5,6 +5,11 @@
 
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+#if NET9_0_OR_GREATER
+using GateLock = System.Threading.Lock;
+#else
+using GateLock = object;
+#endif
 
 #if REACTIVE_SHIM
 namespace ReactiveUI.Reactive;
@@ -172,6 +177,80 @@ public class CombinedReactiveCommand<TParam, TResult> : ReactiveCommandBase<TPar
         _innerCommand.Dispose();
     }
 
+    /// <summary>Disposes every non-null subscription in the array.</summary>
+    /// <param name="subscriptions">The subscriptions to dispose.</param>
+    private static void DisposeAll(IDisposable?[] subscriptions)
+    {
+        for (var i = 0; i < subscriptions.Length; i++)
+        {
+            subscriptions[i]?.Dispose();
+        }
+    }
+
+    /// <summary>Records an arrival for one source while holding the sink's gate.</summary>
+    /// <typeparam name="T">The source value type.</typeparam>
+    /// <param name="index">The source index.</param>
+    /// <param name="value">The reported value.</param>
+    /// <param name="latest">The latest values array.</param>
+    /// <param name="has">The arrival-tracking array.</param>
+    /// <param name="haveCount">The count of sources that have reported at least once.</param>
+    /// <returns><see langword="true"/> once every source has reported at least one value.</returns>
+    private static bool TryRecordValue<T>(int index, T value, T[] latest, bool[] has, ref int haveCount)
+    {
+        if (!has[index])
+        {
+            has[index] = true;
+            haveCount++;
+        }
+
+        latest[index] = value;
+        return haveCount >= latest.Length;
+    }
+
+    /// <summary>Marks a sink stopped on error if it has not already terminated.</summary>
+    /// <param name="gate">The sink's synchronization gate.</param>
+    /// <param name="stopped">The sink's stopped flag.</param>
+    /// <returns><see langword="true"/> if the caller should forward the error downstream.</returns>
+    private static bool TryFail(GateLock gate, ref bool stopped)
+    {
+        lock (gate)
+        {
+            if (stopped)
+            {
+                return false;
+            }
+
+            stopped = true;
+            return true;
+        }
+    }
+
+    /// <summary>Records one source completion and marks the sink stopped once all sources have completed.</summary>
+    /// <param name="gate">The sink's synchronization gate.</param>
+    /// <param name="stopped">The sink's stopped flag.</param>
+    /// <param name="doneCount">The count of completed sources.</param>
+    /// <param name="count">The total number of sources.</param>
+    /// <returns><see langword="true"/> if the caller should complete the downstream observer.</returns>
+    private static bool TryComplete(GateLock gate, ref bool stopped, ref int doneCount, int count)
+    {
+        lock (gate)
+        {
+            if (stopped)
+            {
+                return false;
+            }
+
+            doneCount++;
+            if (doneCount < count)
+            {
+                return false;
+            }
+
+            stopped = true;
+            return true;
+        }
+    }
+
     /// <summary>
     /// Combines the latest <c>CanExecute</c> of the parent gate and every child command, emitting true only when all of
     /// them are currently true. Specialised to the combined command; no generic combine-latest operator.
@@ -235,13 +314,8 @@ public class CombinedReactiveCommand<TParam, TResult> : ReactiveCommandBase<TPar
             }
 
             /// <inheritdoc/>
-            public void Dispose()
-            {
-                for (var i = 0; i < _subscriptions.Length; i++)
-                {
-                    _subscriptions[i]?.Dispose();
-                }
-            }
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public void Dispose() => DisposeAll(_subscriptions);
 
             /// <summary>Subscribes to every source, driving the combined value.</summary>
             internal void Run()
@@ -260,19 +334,7 @@ public class CombinedReactiveCommand<TParam, TResult> : ReactiveCommandBase<TPar
                 bool all;
                 lock (_gate)
                 {
-                    if (_stopped)
-                    {
-                        return;
-                    }
-
-                    if (!_has[index])
-                    {
-                        _has[index] = true;
-                        _haveCount++;
-                    }
-
-                    _latest[index] = value;
-                    if (_haveCount < _latest.Length)
+                    if (_stopped || !TryRecordValue(index, value, _latest, _has, ref _haveCount))
                     {
                         return;
                     }
@@ -297,39 +359,19 @@ public class CombinedReactiveCommand<TParam, TResult> : ReactiveCommandBase<TPar
             /// <param name="error">The error to forward.</param>
             private void OnErrorAt(Exception error)
             {
-                lock (_gate)
+                if (TryFail(_gate, ref _stopped))
                 {
-                    if (_stopped)
-                    {
-                        return;
-                    }
-
-                    _stopped = true;
+                    _downstream.OnError(error);
                 }
-
-                _downstream.OnError(error);
             }
 
             /// <summary>Completes the downstream once every source has completed.</summary>
             private void OnCompletedAt()
             {
-                lock (_gate)
+                if (TryComplete(_gate, ref _stopped, ref _doneCount, _latest.Length))
                 {
-                    if (_stopped)
-                    {
-                        return;
-                    }
-
-                    _doneCount++;
-                    if (_doneCount < _latest.Length)
-                    {
-                        return;
-                    }
-
-                    _stopped = true;
+                    _downstream.OnCompleted();
                 }
-
-                _downstream.OnCompleted();
             }
 
             /// <summary>Routes one source's notifications to the parent sink, tagged with its index.</summary>
@@ -415,13 +457,8 @@ public class CombinedReactiveCommand<TParam, TResult> : ReactiveCommandBase<TPar
             }
 
             /// <inheritdoc/>
-            public void Dispose()
-            {
-                for (var i = 0; i < _subscriptions.Length; i++)
-                {
-                    _subscriptions[i]?.Dispose();
-                }
-            }
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public void Dispose() => DisposeAll(_subscriptions);
 
             /// <summary>Subscribes to every child execution, driving the combined list.</summary>
             internal void Run()
@@ -440,19 +477,7 @@ public class CombinedReactiveCommand<TParam, TResult> : ReactiveCommandBase<TPar
                 IList<TResult> list;
                 lock (_gate)
                 {
-                    if (_stopped)
-                    {
-                        return;
-                    }
-
-                    if (!_has[index])
-                    {
-                        _has[index] = true;
-                        _haveCount++;
-                    }
-
-                    _latest[index] = value;
-                    if (_haveCount < _latest.Length)
+                    if (_stopped || !TryRecordValue(index, value, _latest, _has, ref _haveCount))
                     {
                         return;
                     }
@@ -467,39 +492,19 @@ public class CombinedReactiveCommand<TParam, TResult> : ReactiveCommandBase<TPar
             /// <param name="error">The error to forward.</param>
             private void OnErrorAt(Exception error)
             {
-                lock (_gate)
+                if (TryFail(_gate, ref _stopped))
                 {
-                    if (_stopped)
-                    {
-                        return;
-                    }
-
-                    _stopped = true;
+                    _downstream.OnError(error);
                 }
-
-                _downstream.OnError(error);
             }
 
             /// <summary>Completes the downstream once every child execution has completed.</summary>
             private void OnCompletedAt()
             {
-                lock (_gate)
+                if (TryComplete(_gate, ref _stopped, ref _doneCount, _latest.Length))
                 {
-                    if (_stopped)
-                    {
-                        return;
-                    }
-
-                    _doneCount++;
-                    if (_doneCount < _latest.Length)
-                    {
-                        return;
-                    }
-
-                    _stopped = true;
+                    _downstream.OnCompleted();
                 }
-
-                _downstream.OnCompleted();
             }
 
             /// <summary>Routes one child execution's notifications to the parent sink, tagged with its index.</summary>
@@ -614,13 +619,8 @@ public class CombinedReactiveCommand<TParam, TResult> : ReactiveCommandBase<TPar
             }
 
             /// <inheritdoc/>
-            public void Dispose()
-            {
-                for (var i = 0; i < _subscriptions.Length; i++)
-                {
-                    _subscriptions[i]?.Dispose();
-                }
-            }
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public void Dispose() => DisposeAll(_subscriptions);
 
             /// <summary>Subscribes to every source, forwarding merged exceptions.</summary>
             internal void Run()
@@ -650,39 +650,19 @@ public class CombinedReactiveCommand<TParam, TResult> : ReactiveCommandBase<TPar
             /// <param name="error">The error to forward.</param>
             private void OnErrorAt(Exception error)
             {
-                lock (_gate)
+                if (TryFail(_gate, ref _stopped))
                 {
-                    if (_stopped)
-                    {
-                        return;
-                    }
-
-                    _stopped = true;
+                    _downstream.OnError(error);
                 }
-
-                _downstream.OnError(error);
             }
 
             /// <summary>Completes the downstream once every source has completed.</summary>
             private void OnCompletedAt()
             {
-                lock (_gate)
+                if (TryComplete(_gate, ref _stopped, ref _doneCount, _count))
                 {
-                    if (_stopped)
-                    {
-                        return;
-                    }
-
-                    _doneCount++;
-                    if (_doneCount < _count)
-                    {
-                        return;
-                    }
-
-                    _stopped = true;
+                    _downstream.OnCompleted();
                 }
-
-                _downstream.OnCompleted();
             }
 
             /// <summary>Routes one source's notifications to the parent sink.</summary>

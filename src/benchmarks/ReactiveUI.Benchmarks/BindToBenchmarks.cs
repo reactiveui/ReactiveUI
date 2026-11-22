@@ -32,7 +32,7 @@ public class BindToBenchmarks
     {
         _source = CreateSource();
         _target = new();
-        _binding = _source.Values.BindTo(_target, x => x.Count);
+        _binding = _source.Values.BindTo(_target, static x => x.Count);
     }
 
     /// <summary>Disposes the binding and the source.</summary>
@@ -57,7 +57,7 @@ public class BindToBenchmarks
     [Benchmark]
     public void Bind()
     {
-        using var binding = _source.Values.BindTo(_target, x => x.Count);
+        using var binding = _source.Values.BindTo(_target, static x => x.Count);
     }
 
     /// <summary>Creates a source view model exposing the inner observable.</summary>

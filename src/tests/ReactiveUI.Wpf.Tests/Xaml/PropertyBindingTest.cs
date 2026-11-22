@@ -404,8 +404,8 @@ public partial class PropertyBindingTest
         var view = new PropertyBindView { ViewModel = null };
 
         _ = Assert.Throws<ArgumentNullException>(() =>
-             view.WhenAnyValue(x => x.FakeControl.NullHatingString)
-                 .BindTo(view.ViewModel, x => x.Property1));
+             view.WhenAnyValue(static x => x.FakeControl.NullHatingString)
+                 .BindTo(view.ViewModel, static x => x.Property1));
     }
 
     /// <summary>Tests that BindTo two-way selected item of ItemControl.</summary>

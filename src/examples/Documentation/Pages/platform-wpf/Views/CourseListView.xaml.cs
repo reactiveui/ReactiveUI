@@ -34,17 +34,17 @@ public partial class CourseListView : ReactiveUserControl<CourseListViewModel>
         _ = this.WhenActivated(d =>
         {
             SummaryHost.ViewLocator = ViewLocator.GetCurrent();
-            _ = this.OneWayBind(ViewModel, vm => vm.Students, v => v.StudentList.ItemsSource)
+            _ = this.OneWayBind(ViewModel, static vm => vm.Students, static v => v.StudentList.ItemsSource)
                 .DisposeWith(d);
-            _ = this.Bind(ViewModel, vm => vm.SelectedStudent, v => v.StudentList.SelectedItem)
+            _ = this.Bind(ViewModel, static vm => vm.SelectedStudent, static v => v.StudentList.SelectedItem)
                 .DisposeWith(d);
-            _ = this.OneWayBind(ViewModel, vm => vm.Summary, v => v.SummaryHost.ViewModel)
+            _ = this.OneWayBind(ViewModel, static vm => vm.Summary, static v => v.SummaryHost.ViewModel)
                 .DisposeWith(d);
             _ = this.BindCommand(
                     ViewModel,
-                    vm => vm.OpenStudent,
-                    v => v.OpenButton,
-                    this.WhenAnyValue(v => v.ViewModel!.SelectedStudent).WhereNotNull())
+                    static vm => vm.OpenStudent,
+                    static v => v.OpenButton,
+                    this.WhenAnyValue(static v => v.ViewModel!.SelectedStudent).WhereNotNull())
                 .DisposeWith(d);
         });
     }

@@ -35,7 +35,7 @@ namespace ReactiveUI;
 /// A template loaded at run time resolves a static resource from the application's resources, so the converter is
 /// added to the current application's <see cref="Microsoft.UI.Xaml.Application.Resources"/> under a key that starts
 /// with the ReactiveUI namespace. For view models whose view is registered only with the service locator, also
-/// register <see cref="AutoDataTemplateBindingHookUnsafe"/>.
+/// register <c>AutoDataTemplateBindingHookUnsafe</c>.
 /// </para>
 /// </remarks>
 #else

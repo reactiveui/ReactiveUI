@@ -9,6 +9,7 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="$(MSBuildThisFileDirectory)../../../../ReactiveUI.Maui/ReactiveUI.Maui.csproj" />
+    <ProjectReference Include="$(MSBuildThisFileDirectory)../../../../ReactiveUI.Maui.Unsafe/ReactiveUI.Maui.Unsafe.csproj" />
     <!-- MAUI's implicit usings bring in Microsoft.Maui.Controls, whose Label/Button collide with the console
          stand-in controls under Common/Controls (and the Common apps that use them). This page uses real MAUI
          controls instead, so it drops those shared files rather than editing Common. -->

@@ -21,7 +21,8 @@ namespace ReactiveUI;
 /// <para>
 /// Instantiate this helper inside your <see cref="NSApplicationDelegate"/> to map <c>DidFinishLaunching</c>,
 /// <c>DidBecomeActive</c>, and termination callbacks to the shared <see cref="ISuspensionHost"/> streams. Pair it with
-/// <see cref="SuspensionHostExtensions.SetupDefaultSuspendResume(ISuspensionHost, ISuspensionDriver?)"/> to persist
+/// <see cref="SuspensionHostExtensions.SetupDefaultSuspendResume{TAppState}(ISuspensionHost{TAppState}, System.Text.Json.Serialization.Metadata.JsonTypeInfo{TAppState}, ISuspensionDriver?)"/>
+/// to persist
 /// view model state using a platform-specific <see cref="ISuspensionDriver"/> implementation.
 /// </para>
 /// <para>

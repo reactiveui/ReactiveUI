@@ -8,14 +8,6 @@ namespace ReactiveUI.Reactive
         public static System.Lazy<Microsoft.UI.Xaml.DataTemplate> DefaultItemTemplate { get; }
         public bool ExecuteHook(object? source, object target, System.Func<ReactiveUI.Binding.Reactive.IObservedChange<object, object>[]> getCurrentViewModelProperties, System.Func<ReactiveUI.Binding.Reactive.IObservedChange<object, object>[]> getCurrentViewProperties, ReactiveUI.Binding.Reactive.BindingDirection direction) { }
     }
-    [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("AutoDataTemplateBindingHookUnsafe hosts each item in a ViewModelViewHostUnsafe, which asks the service locator for IViewFor<> closed over the view model's run-time type. Use AutoDataTemplateBindingHook, which uses the generated view lookup and Map registrations, to stay ahead-of-time safe.")]
-    [System.Diagnostics.DebuggerDisplay("AutoDataTemplateBindingHookUnsafe")]
-    public class AutoDataTemplateBindingHookUnsafe : ReactiveUI.Binding.Reactive.IPropertyBindingHook
-    {
-        public AutoDataTemplateBindingHookUnsafe() { }
-        public static System.Lazy<Microsoft.UI.Xaml.DataTemplate> DefaultItemTemplate { get; }
-        public bool ExecuteHook(object? source, object target, System.Func<ReactiveUI.Binding.Reactive.IObservedChange<object, object>[]> getCurrentViewModelProperties, System.Func<ReactiveUI.Binding.Reactive.IObservedChange<object, object>[]> getCurrentViewProperties, ReactiveUI.Binding.Reactive.BindingDirection direction) { }
-    }
     [System.Flags]
     public enum BooleanToVisibilityHint
     {
@@ -63,6 +55,7 @@ namespace ReactiveUI.Reactive
     public class RoutedViewHost : ReactiveUI.Reactive.TransitioningContentControl, ReactiveUI.Binding.Reactive.IActivatableView
     {
         public RoutedViewHost() { }
+        protected RoutedViewHost(System.Func<ReactiveUI.Binding.Reactive.IViewLocator, object, string?, ReactiveUI.Binding.Reactive.IViewFor?> resolveView) { }
         public static readonly Microsoft.UI.Xaml.DependencyProperty DefaultContentProperty;
         public static readonly Microsoft.UI.Xaml.DependencyProperty RouterProperty;
         public static readonly Microsoft.UI.Xaml.DependencyProperty ViewContractObservableProperty;
@@ -89,14 +82,6 @@ namespace ReactiveUI.Reactive
         public ReactiveUI.Binding.Reactive.IViewLocator? ViewLocator { get; set; }
         void ReactiveUI.Reactive.Maui.Internal.IMauiRoutedViewHost.SetObservedViewContract(string? contract) { }
     }
-    [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("RoutedViewHostUnsafe asks the service locator for IViewFor<> closed over the view model's run-time type. Use RoutedViewHost, which uses the generated view lookup and Map registrations, to stay ahead-of-time safe.")]
-    [System.Diagnostics.DebuggerDisplay("Router = {Router}")]
-    [WinRT.WinRTExposedType(typeof(ReactiveUI.Reactive.RoutedViewHostUnsafeWinRTTypeDetails))]
-    [WinRT.WinRTRuntimeClassName("Microsoft.UI.Xaml.IUIElementOverrides")]
-    public class RoutedViewHostUnsafe : ReactiveUI.Reactive.RoutedViewHost
-    {
-        public RoutedViewHostUnsafe() { }
-    }
     [System.Diagnostics.DebuggerDisplay("TransitioningContentControl")]
     [WinRT.WinRTExposedType(typeof(ReactiveUI.Reactive.TransitioningContentControlWinRTTypeDetails))]
     [WinRT.WinRTRuntimeClassName("Microsoft.UI.Xaml.IUIElementOverrides")]
@@ -110,6 +95,7 @@ namespace ReactiveUI.Reactive
     public class ViewModelViewHost : ReactiveUI.Reactive.TransitioningContentControl, ReactiveUI.Binding.Reactive.IViewFor, Splat.IEnableLogger
     {
         public ViewModelViewHost() { }
+        protected ViewModelViewHost(System.Func<ReactiveUI.Binding.Reactive.IViewLocator, object, string?, ReactiveUI.Binding.Reactive.IViewFor?> resolveView) { }
         public static readonly Microsoft.UI.Xaml.DependencyProperty ContractFallbackByPassProperty;
         public static readonly Microsoft.UI.Xaml.DependencyProperty DefaultContentProperty;
         public static readonly Microsoft.UI.Xaml.DependencyProperty ViewContractObservableProperty;
@@ -140,14 +126,6 @@ namespace ReactiveUI.Reactive
         public ReactiveUI.Binding.Reactive.IViewLocator? ViewLocator { get; set; }
         public TViewModel? ViewModel { get; set; }
         protected virtual void ResolveViewForViewModel(TViewModel? viewModel, string? contract) { }
-    }
-    [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("ViewModelViewHostUnsafe asks the service locator for IViewFor<> closed over the view model's run-time type. Use ViewModelViewHost, which uses the generated view lookup and Map registrations, to stay ahead-of-time safe.")]
-    [System.Diagnostics.DebuggerDisplay("{ViewContractObservable}, {DefaultContent}")]
-    [WinRT.WinRTExposedType(typeof(ReactiveUI.Reactive.ViewModelViewHostUnsafeWinRTTypeDetails))]
-    [WinRT.WinRTRuntimeClassName("Microsoft.UI.Xaml.IUIElementOverrides")]
-    public class ViewModelViewHostUnsafe : ReactiveUI.Reactive.ViewModelViewHost
-    {
-        public ViewModelViewHostUnsafe() { }
     }
     public sealed class VisibilityToBooleanTypeConverter : ReactiveUI.Binding.Reactive.BindingTypeConverter<Microsoft.UI.Xaml.Visibility, bool>
     {

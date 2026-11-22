@@ -35,11 +35,11 @@ public class BindBenchmarks
     {
         _oneWayViewModel = new();
         var oneWayView = new BenchmarkView { ViewModel = _oneWayViewModel };
-        _oneWayBinding = oneWayView.OneWayBind(_oneWayViewModel, x => x.First, x => x.FirstText);
+        _oneWayBinding = oneWayView.OneWayBind(_oneWayViewModel, static x => x.First, static x => x.FirstText);
 
         _twoWayViewModel = new();
         var twoWayView = new BenchmarkView { ViewModel = _twoWayViewModel };
-        _twoWayBinding = twoWayView.Bind(_twoWayViewModel, x => x.First, x => x.FirstText);
+        _twoWayBinding = twoWayView.Bind(_twoWayViewModel, static x => x.First, static x => x.FirstText);
     }
 
     /// <summary>Disposes the live bindings.</summary>
@@ -55,7 +55,7 @@ public class BindBenchmarks
     public void OneWayBind_Setup()
     {
         var view = new BenchmarkView { ViewModel = _oneWayViewModel };
-        using var binding = view.OneWayBind(_oneWayViewModel, x => x.First, x => x.FirstText);
+        using var binding = view.OneWayBind(_oneWayViewModel, static x => x.First, static x => x.FirstText);
     }
 
     /// <summary>Measures cold setup + dispose of a two-way binding.</summary>
@@ -63,7 +63,7 @@ public class BindBenchmarks
     public void Bind_Setup()
     {
         var view = new BenchmarkView { ViewModel = _twoWayViewModel };
-        using var binding = view.Bind(_twoWayViewModel, x => x.First, x => x.FirstText);
+        using var binding = view.Bind(_twoWayViewModel, static x => x.First, static x => x.FirstText);
     }
 
     /// <summary>Measures view-model to view propagation through a live one-way binding.</summary>

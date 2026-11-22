@@ -16,7 +16,8 @@ namespace ReactiveUI;
 /// <remarks>
 /// <para>
 /// Create a single instance of this helper in <see cref="Application.OnStartup(StartupEventArgs)"/> to forward the
-/// <c>Startup</c>, <c>Activated</c>, <c>Deactivated</c>, and <c>Exit</c> events. Combine it with <see cref="SuspensionHostExtensions.SetupDefaultSuspendResume(ISuspensionHost, ISuspensionDriver?)"/>
+/// <c>Startup</c>, <c>Activated</c>, <c>Deactivated</c>, and <c>Exit</c> events. Combine it with
+/// <see cref="SuspensionHostExtensions.SetupDefaultSuspendResume{TAppState}(ISuspensionHost{TAppState}, System.Text.Json.Serialization.Metadata.JsonTypeInfo{TAppState}, ISuspensionDriver?)"/>
 /// to flush <see cref="ISuspensionHost.AppState"/> to disk whenever the window loses focus for longer than <see cref="IdleTimeout"/> or when the
 /// process exits.
 /// </para>

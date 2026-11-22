@@ -376,7 +376,7 @@ public partial class ReactiveCommandTest
         var executionCount = 0;
         var target = new CommandHolder();
         var source = new Signal<RxVoid>();
-        _ = source.InvokeCommand(target, x => x.TheCommand!);
+        _ = source.InvokeCommand(target, static x => x.TheCommand!);
         target.TheCommand = ReactiveCommand.Create(
             () => ++executionCount,
             outputScheduler: Sequencer.Immediate);
@@ -397,7 +397,7 @@ public partial class ReactiveCommandTest
     {
         var target = new CommandHolder();
         var source = new Signal<int>();
-        _ = source.InvokeCommand(target, x => x.TheCommand!);
+        _ = source.InvokeCommand(target, static x => x.TheCommand!);
         var command = new FakeCommand();
         target.TheCommand = command;
 

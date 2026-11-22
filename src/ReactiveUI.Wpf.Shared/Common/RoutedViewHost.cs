@@ -39,7 +39,7 @@ namespace ReactiveUI;
 /// <remarks>
 /// The host asks the view locator for each page's view by the view model's run-time type, without building any type
 /// at run time. The default locator checks the view lookup the source generator writes, then the views the app added
-/// with <c>Map</c>. A view registered only with the service locator needs <see cref="RoutedViewHostUnsafe"/>.
+/// with <c>Map</c>. A view registered only with the service locator needs <c>RoutedViewHostUnsafe</c> from <c>ReactiveUI.WPF.Unsafe</c>.
 /// </remarks>
 [DebuggerDisplay("{Router}, {DefaultContent}")]
 public
@@ -78,7 +78,7 @@ public
 
     /// <summary>Initializes a new instance of the <see cref="RoutedViewHost"/> class with its view lookup.</summary>
     /// <param name="resolveView">Asks a view locator for the view of a view model under a contract.</param>
-    private protected RoutedViewHost(Func<IViewLocator, object, string?, IViewFor?> resolveView)
+    protected RoutedViewHost(Func<IViewLocator, object, string?, IViewFor?> resolveView)
     {
         _resolveView = resolveView;
         HorizontalContentAlignment = HorizontalAlignment.Stretch;
@@ -96,11 +96,11 @@ public
 
         IRoutableViewModel? currentViewModel = null;
         var viewModelAndContract = new StartWithObservable<IRoutableViewModel?>(
-                this.WhenAnyObservable(x => x.Router.CurrentViewModel).Do(x => currentViewModel = x),
+                this.WhenAnyObservable(static x => x.Router.CurrentViewModel).Do(x => currentViewModel = x),
                 currentViewModel)
             .CombineLatest(
                 new StartWithObservable<string?>(
-                    this.WhenAnyObservable(x => x.ViewContractObservable).Do(x => _viewContract = x),
+                    this.WhenAnyObservable(static x => x.ViewContractObservable).Do(x => _viewContract = x),
                     ViewContract),
                 static (viewModel, contract) => (viewModel, contract));
 
@@ -172,7 +172,7 @@ public
         var view = ViewHostResolution.ResolveViewWithFallback(_resolveView, ViewLocator, x.ViewModel, x.Contract, contractFallbackByPass: false)
                    ?? throw new InvalidOperationException(
                        $"Couldn't find view for '{x.ViewModel}'. The view locator checked the generated view lookup and its Map registrations; "
-                       + $"use {nameof(RoutedViewHostUnsafe)} to also resolve a view registered only with the service locator.");
+                       + "use RoutedViewHostUnsafe to also resolve a view registered only with the service locator.");
         view.ViewModel = x.ViewModel;
         Content = view;
     }

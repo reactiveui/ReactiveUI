@@ -263,13 +263,6 @@ public interface IReactiveUIBuilder : IAppBuilder
     /// <returns>The builder instance for chaining.</returns>
     IReactiveUIBuilder WithConvertersFrom(IReadonlyDependencyResolver resolver);
 
-    /// <summary>Withes the views from assembly.</summary>
-    /// <param name="assembly">The assembly.</param>
-    /// <returns>The builder instance for chaining.</returns>
-    [RequiresUnreferencedCode(
-        "Scans assembly for IViewFor implementations using reflection. For AOT compatibility, use the ReactiveUIBuilder pattern to RegisterView explicitly.")]
-    IReactiveUIBuilder WithViewsFromAssembly(Assembly assembly);
-
     /// <summary>Using the splat module.</summary>
     /// <typeparam name="T">The Splat Module Type.</typeparam>
     /// <param name="registrationModule">The registration module to add.</param>

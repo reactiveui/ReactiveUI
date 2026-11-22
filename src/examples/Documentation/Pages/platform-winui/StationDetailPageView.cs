@@ -56,7 +56,7 @@ public sealed class StationDetailPageView : ReactivePage<StationDetailPageViewMo
             _ = ToVisibility.TryConvert(viewModel.Reading.IsStormy, BooleanToVisibilityHint.None, out Visibility stormVisibility);
             _stormBadge.Visibility = stormVisibility;
 
-            IDisposable subscription = viewModel.WhenAnyValue(vm => vm.ManualOverrideVisible)
+            IDisposable subscription = viewModel.WhenAnyValue(static vm => vm.ManualOverrideVisible)
                 .Subscribe(visible =>
                 {
                     // Inverse: the panel is shown when the flag is false (nothing overridden yet needs no extra chrome)

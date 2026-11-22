@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>$(ReactiveUIWindowsOnlyTargets)</TargetFrameworks>
+    <AssemblyName>ReactiveUI.Winforms.Unsafe</AssemblyName>
+    <RootNamespace>ReactiveUI.Winforms</RootNamespace>
+    <PackageDescription>Opt-in reflection and dynamic-code control hosts for ReactiveUI.WinForms (ViewModelControlHostUnsafe, RoutedControlHostUnsafe).</PackageDescription>
+    <PackageId>ReactiveUI.WinForms.Unsafe</PackageId>
+    <UseWindowsForms>true</UseWindowsForms>
+    <PackageTags>mvvm;reactiveui;rx;reactive extensions;observable;LINQ;events;frp;winforms;net;net472;unsafe</PackageTags>
+    <IsAotCompatible>false</IsAotCompatible>
+    <EnableAotAnalyzer>false</EnableAotAnalyzer>
+    <EnableTrimAnalyzer>false</EnableTrimAnalyzer>
+    <EnableSingleFileAnalyzer>false</EnableSingleFileAnalyzer>
+    <IsTrimmable>false</IsTrimmable>
+  </PropertyGroup>
+  <ItemGroup>
+    <Using Include="ReactiveUI.Internal"/>
+    <Using Include="ReactiveUI.Primitives.Disposables"/>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\Shared\ArgumentValidation.cs" Link="Shared\ArgumentValidation.cs"/>
+    <Compile Include="..\ReactiveUI.Unsafe.Shared\ViewResolutionMessages.cs" Link="ViewResolutionMessages.cs"/>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ReactiveUI.Winforms\ReactiveUI.Winforms.csproj"/>
+    <ProjectReference Include="..\ReactiveUI.Unsafe\ReactiveUI.Unsafe.csproj"/>
+  </ItemGroup>
+</Project>

@@ -21,7 +21,7 @@ public static class CommandFactoryTaskExamples
         Console.WriteLine(desk.LoanCount);
 
         _ = desk.Borrow(3);
-        using ReactiveCommand<RxVoid, RxVoid> returnAllWhileOpen = ReactiveCommand.CreateFromTask(desk.ReturnAllBooksAsync, desk.WhenAnyValue(d => d.IsOpen));
+        using ReactiveCommand<RxVoid, RxVoid> returnAllWhileOpen = ReactiveCommand.CreateFromTask(desk.ReturnAllBooksAsync, desk.WhenAnyValue(static d => d.IsOpen));
         _ = await returnAllWhileOpen.Execute();
         Console.WriteLine(desk.LoanCount);
 
@@ -32,7 +32,7 @@ public static class CommandFactoryTaskExamples
         Console.WriteLine(desk.LoanCount);
 
         _ = desk.Borrow(1);
-        using ReactiveCommand<RxVoid, RxVoid> returnAllGuarded = ReactiveCommand.CreateFromTask(desk.ReturnAllBooksAsync, desk.WhenAnyValue(d => d.IsOpen), Sequencer.Immediate);
+        using ReactiveCommand<RxVoid, RxVoid> returnAllGuarded = ReactiveCommand.CreateFromTask(desk.ReturnAllBooksAsync, desk.WhenAnyValue(static d => d.IsOpen), Sequencer.Immediate);
         _ = await returnAllGuarded.Execute();
         Console.WriteLine(desk.LoanCount);
 
@@ -55,14 +55,14 @@ public static class CommandFactoryTaskExamples
         Console.WriteLine(await returnAll.Execute());
 
         _ = desk.Borrow(3);
-        using ReactiveCommand<RxVoid, int> returnAllWhileOpen = ReactiveCommand.CreateFromTask(desk.ReturnAllBooksWithCountAsync, desk.WhenAnyValue(d => d.IsOpen));
+        using ReactiveCommand<RxVoid, int> returnAllWhileOpen = ReactiveCommand.CreateFromTask(desk.ReturnAllBooksWithCountAsync, desk.WhenAnyValue(static d => d.IsOpen));
         Console.WriteLine(await returnAllWhileOpen.Execute());
 
         using ReactiveCommand<RxVoid, int> returnAllImmediate = ReactiveCommand.CreateFromTask(desk.ReturnAllBooksWithCountAsync, Sequencer.Immediate);
         Console.WriteLine(await returnAllImmediate.Execute());
 
         _ = desk.Borrow(1);
-        using ReactiveCommand<RxVoid, int> returnAllGuarded = ReactiveCommand.CreateFromTask(desk.ReturnAllBooksWithCountAsync, desk.WhenAnyValue(d => d.IsOpen), Sequencer.Immediate);
+        using ReactiveCommand<RxVoid, int> returnAllGuarded = ReactiveCommand.CreateFromTask(desk.ReturnAllBooksWithCountAsync, desk.WhenAnyValue(static d => d.IsOpen), Sequencer.Immediate);
         Console.WriteLine(await returnAllGuarded.Execute());
 
         // Output:
@@ -79,9 +79,9 @@ public static class CommandFactoryTaskExamples
         LibraryDesk desk = new();
 
         using ReactiveCommand<RxVoid, RxVoid> refresh = ReactiveCommand.CreateFromTask(desk.RefreshLocalCacheAsync);
-        using ReactiveCommand<RxVoid, RxVoid> refreshWhileOpen = ReactiveCommand.CreateFromTask(desk.RefreshLocalCacheAsync, desk.WhenAnyValue(d => d.IsOpen));
+        using ReactiveCommand<RxVoid, RxVoid> refreshWhileOpen = ReactiveCommand.CreateFromTask(desk.RefreshLocalCacheAsync, desk.WhenAnyValue(static d => d.IsOpen));
         using ReactiveCommand<RxVoid, RxVoid> refreshImmediate = ReactiveCommand.CreateFromTask(desk.RefreshLocalCacheAsync, Sequencer.Immediate);
-        using ReactiveCommand<RxVoid, RxVoid> refreshGuarded = ReactiveCommand.CreateFromTask(desk.RefreshLocalCacheAsync, desk.WhenAnyValue(d => d.IsOpen), Sequencer.Immediate);
+        using ReactiveCommand<RxVoid, RxVoid> refreshGuarded = ReactiveCommand.CreateFromTask(desk.RefreshLocalCacheAsync, desk.WhenAnyValue(static d => d.IsOpen), Sequencer.Immediate);
 
         _ = await refresh.Execute();
         _ = await refreshWhileOpen.Execute();
@@ -105,9 +105,9 @@ public static class CommandFactoryTaskExamples
         LibraryDesk desk = new();
 
         using ReactiveCommand<RxVoid, int> sync = ReactiveCommand.CreateFromTask(desk.SyncWithCentralCatalogueAsync);
-        using ReactiveCommand<RxVoid, int> syncWhileOpen = ReactiveCommand.CreateFromTask(desk.SyncWithCentralCatalogueAsync, desk.WhenAnyValue(d => d.IsOpen));
+        using ReactiveCommand<RxVoid, int> syncWhileOpen = ReactiveCommand.CreateFromTask(desk.SyncWithCentralCatalogueAsync, desk.WhenAnyValue(static d => d.IsOpen));
         using ReactiveCommand<RxVoid, int> syncImmediate = ReactiveCommand.CreateFromTask(desk.SyncWithCentralCatalogueAsync, Sequencer.Immediate);
-        using ReactiveCommand<RxVoid, int> syncGuarded = ReactiveCommand.CreateFromTask(desk.SyncWithCentralCatalogueAsync, desk.WhenAnyValue(d => d.IsOpen), Sequencer.Immediate);
+        using ReactiveCommand<RxVoid, int> syncGuarded = ReactiveCommand.CreateFromTask(desk.SyncWithCentralCatalogueAsync, desk.WhenAnyValue(static d => d.IsOpen), Sequencer.Immediate);
 
         Console.WriteLine(await sync.Execute());
         Console.WriteLine(await syncWhileOpen.Execute());
@@ -137,9 +137,9 @@ public static class CommandFactoryTaskExamples
 
         Func<int, Task> sendReceipt = desk.SendRenewalReceiptAsync;
         using ReactiveCommand<int, RxVoid> receipt = ReactiveCommand.CreateFromTask(sendReceipt);
-        using ReactiveCommand<int, RxVoid> receiptWhileOpen = ReactiveCommand.CreateFromTask(sendReceipt, desk.WhenAnyValue(d => d.IsOpen));
+        using ReactiveCommand<int, RxVoid> receiptWhileOpen = ReactiveCommand.CreateFromTask(sendReceipt, desk.WhenAnyValue(static d => d.IsOpen));
         using ReactiveCommand<int, RxVoid> receiptImmediate = ReactiveCommand.CreateFromTask(sendReceipt, Sequencer.Immediate);
-        using ReactiveCommand<int, RxVoid> receiptGuarded = ReactiveCommand.CreateFromTask(sendReceipt, desk.WhenAnyValue(d => d.IsOpen), Sequencer.Immediate);
+        using ReactiveCommand<int, RxVoid> receiptGuarded = ReactiveCommand.CreateFromTask(sendReceipt, desk.WhenAnyValue(static d => d.IsOpen), Sequencer.Immediate);
 
         _ = await receipt.Execute(1);
         _ = await receiptWhileOpen.Execute(2);
@@ -160,9 +160,12 @@ public static class CommandFactoryTaskExamples
         _ = desk.Borrow(1);
 
         using ReactiveCommand<int, DateTimeOffset> renew = ReactiveCommand.CreateFromTask<int, DateTimeOffset>(desk.RenewLoanAsync);
-        using ReactiveCommand<int, DateTimeOffset> renewWhileOpen = ReactiveCommand.CreateFromTask<int, DateTimeOffset>(desk.RenewLoanAsync, desk.WhenAnyValue(d => d.IsOpen));
+        using ReactiveCommand<int, DateTimeOffset> renewWhileOpen = ReactiveCommand.CreateFromTask<int, DateTimeOffset>(desk.RenewLoanAsync, desk.WhenAnyValue(static d => d.IsOpen));
         using ReactiveCommand<int, DateTimeOffset> renewImmediate = ReactiveCommand.CreateFromTask<int, DateTimeOffset>(desk.RenewLoanAsync, Sequencer.Immediate);
-        using ReactiveCommand<int, DateTimeOffset> renewGuarded = ReactiveCommand.CreateFromTask<int, DateTimeOffset>(desk.RenewLoanAsync, desk.WhenAnyValue(d => d.IsOpen), Sequencer.Immediate);
+        using ReactiveCommand<int, DateTimeOffset> renewGuarded = ReactiveCommand.CreateFromTask<int, DateTimeOffset>(
+            desk.RenewLoanAsync,
+            desk.WhenAnyValue(static d => d.IsOpen),
+            Sequencer.Immediate);
 
         // Every renewal extends the same loan by 14 more days, so the gap between each due date stays 14 days no
         // matter how long the renewal itself took to run.
@@ -189,9 +192,9 @@ public static class CommandFactoryTaskExamples
 
         Func<int, CancellationToken, Task> sendReceipt = desk.SendRenewalReceiptAsync;
         using ReactiveCommand<int, RxVoid> receipt = ReactiveCommand.CreateFromTask(sendReceipt);
-        using ReactiveCommand<int, RxVoid> receiptWhileOpen = ReactiveCommand.CreateFromTask(sendReceipt, desk.WhenAnyValue(d => d.IsOpen));
+        using ReactiveCommand<int, RxVoid> receiptWhileOpen = ReactiveCommand.CreateFromTask(sendReceipt, desk.WhenAnyValue(static d => d.IsOpen));
         using ReactiveCommand<int, RxVoid> receiptImmediate = ReactiveCommand.CreateFromTask(sendReceipt, Sequencer.Immediate);
-        using ReactiveCommand<int, RxVoid> receiptGuarded = ReactiveCommand.CreateFromTask(sendReceipt, desk.WhenAnyValue(d => d.IsOpen), Sequencer.Immediate);
+        using ReactiveCommand<int, RxVoid> receiptGuarded = ReactiveCommand.CreateFromTask(sendReceipt, desk.WhenAnyValue(static d => d.IsOpen), Sequencer.Immediate);
 
         _ = await receipt.Execute(1);
         _ = await receiptWhileOpen.Execute(2);
@@ -211,9 +214,9 @@ public static class CommandFactoryTaskExamples
         LibraryDesk desk = new();
 
         using ReactiveCommand<int, Book> borrow = ReactiveCommand.CreateFromTask<int, Book>(desk.BorrowAsync);
-        using ReactiveCommand<int, Book> borrowWhileOpen = ReactiveCommand.CreateFromTask<int, Book>(desk.BorrowAsync, desk.WhenAnyValue(d => d.IsOpen));
+        using ReactiveCommand<int, Book> borrowWhileOpen = ReactiveCommand.CreateFromTask<int, Book>(desk.BorrowAsync, desk.WhenAnyValue(static d => d.IsOpen));
         using ReactiveCommand<int, Book> borrowImmediate = ReactiveCommand.CreateFromTask<int, Book>(desk.BorrowAsync, Sequencer.Immediate);
-        using ReactiveCommand<int, Book> borrowGuarded = ReactiveCommand.CreateFromTask<int, Book>(desk.BorrowAsync, desk.WhenAnyValue(d => d.IsOpen), Sequencer.Immediate);
+        using ReactiveCommand<int, Book> borrowGuarded = ReactiveCommand.CreateFromTask<int, Book>(desk.BorrowAsync, desk.WhenAnyValue(static d => d.IsOpen), Sequencer.Immediate);
 
         Book first = await borrow.Execute(1);
         Book second = await borrowWhileOpen.Execute(2);

@@ -47,6 +47,6 @@ public sealed class LessonPeekHost : ReactiveViewHost<LessonViewModel>
 
     /// <summary>Subscribes the label to view-model changes, shared by both constructors.</summary>
     private void Hook() =>
-        this.WhenAnyValue(host => host.ViewModel)
+        this.WhenAnyValue(static host => host.ViewModel)
             .Subscribe(lesson => _subjectLabel.Text = lesson is null ? null : $"Next: {lesson.Subject}");
 }

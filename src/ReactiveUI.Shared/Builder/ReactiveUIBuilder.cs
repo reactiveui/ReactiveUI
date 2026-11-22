@@ -220,19 +220,6 @@ public sealed partial class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, 
         return this;
     }
 
-    /// <summary>Automatically registers all views that implement IViewFor from the specified assembly.</summary>
-    /// <param name="assembly">The assembly to scan for views.</param>
-    /// <returns>The builder instance for method chaining.</returns>
-    [RequiresUnreferencedCode(
-        "Scans assembly for IViewFor implementations using reflection. For AOT compatibility, use the ReactiveUIBuilder pattern to RegisterView explicitly.")]
-    public IReactiveUIBuilder WithViewsFromAssembly(Assembly assembly)
-    {
-        ArgumentExceptionHelper.ThrowIfNull(assembly);
-
-        CurrentMutable.RegisterViewsForViewModels(assembly);
-        return this;
-    }
-
     /// <summary>Registers a platform-specific registration module by type.</summary>
     /// <typeparam name="T">The type of the registration module that implements IWantsToRegisterStuff.</typeparam>
     /// <returns>The builder instance for method chaining.</returns>

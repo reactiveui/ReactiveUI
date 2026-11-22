@@ -21,7 +21,7 @@ namespace ReactiveUI;
 /// <remarks>
 /// <para>
 /// Every constructor is safe to trim and to compile ahead of time. Wire child controls in the <c>bind</c> callback,
-/// or derive from <see cref="ReactiveViewHostUnsafe{TViewModel}"/> to wire them by reflection and fill
+/// or derive from <c>ReactiveViewHostUnsafe&lt;TViewModel&gt;</c> (from <c>ReactiveUI.Unsafe</c>) to wire them by reflection and fill
 /// <see cref="AllPublicProperties"/>.
 /// </para>
 /// </remarks>
@@ -165,7 +165,7 @@ public class ReactiveViewHost<TViewModel> :
     /// <remarks>
     /// This is used by legacy reflection-based wiring. It is not initialized by default in AOT-safe construction
     /// paths to avoid reflection and allocations. If a derived type requires this, derive from
-    /// <see cref="ReactiveViewHostUnsafe{TViewModel}"/>.
+    /// <c>ReactiveViewHostUnsafe&lt;TViewModel&gt;</c>.
     /// </remarks>
     [IgnoreDataMember]
     [JsonIgnore]

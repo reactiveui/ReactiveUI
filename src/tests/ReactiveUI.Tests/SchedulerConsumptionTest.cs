@@ -131,7 +131,7 @@ public class SchedulerConsumptionTest
             "Design",
             "SST2403:'this' escapes before construction finishes",
             Justification = "canonical ObservableAsPropertyHelper initialization requires 'this' in the constructor; the single-threaded fixture never exposes the half-built instance.")]
-        public ExampleViewModel() => _greeting = this.WhenAnyValue(x => x.Name)
+        public ExampleViewModel() => _greeting = this.WhenAnyValue(static x => x.Name)
             .Select(static name => $"Hello, {name ?? "World"}!")
             .ObserveOn(RxSchedulers.MainThreadScheduler)
             .ToProperty(this, nameof(Greeting), scheduler: RxSchedulers.MainThreadScheduler);

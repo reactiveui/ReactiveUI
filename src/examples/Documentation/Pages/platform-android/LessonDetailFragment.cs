@@ -42,7 +42,7 @@ public sealed class LessonDetailFragment : AndroidX.ReactiveFragment<LessonViewM
         View? icon = view.GetControl(GetType().Assembly, "detailIcon");
         TimetableLog.Info(icon is null ? "detailIcon was not found." : "detailIcon resolved directly with GetControl.");
 
-        this.WhenAnyValue(fragment => fragment.ViewModel).Subscribe(lesson =>
+        this.WhenAnyValue(static fragment => fragment.ViewModel).Subscribe(lesson =>
         {
             SubjectLabel!.Text = lesson?.Subject;
             RoomLabel!.Text = lesson is null ? null : $"Room {lesson.Room}";

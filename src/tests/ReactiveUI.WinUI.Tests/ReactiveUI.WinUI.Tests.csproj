@@ -44,6 +44,7 @@
         <PackageReference Include="Microsoft.WindowsAppSDK"/>
         <PackageReference Include="Microsoft.Windows.SDK.BuildTools"/>
         <ProjectReference Include="..\..\ReactiveUI.WinUI\ReactiveUI.WinUI.csproj"/>
+        <ProjectReference Include="..\..\ReactiveUI.WinUI.Unsafe\ReactiveUI.WinUI.Unsafe.csproj"/>
         <Using Include="ReactiveUI.Builder"/>
         <Compile Include="WinUI\**\*.cs"/>
         <Compile Include="AssemblyHooks.cs"/>

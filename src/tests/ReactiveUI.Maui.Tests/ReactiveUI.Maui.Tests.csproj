@@ -8,6 +8,7 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\ReactiveUI.Maui\ReactiveUI.Maui.csproj"/>
+    <ProjectReference Include="..\..\ReactiveUI.Maui.Unsafe\ReactiveUI.Maui.Unsafe.csproj"/>
     <ProjectReference Include="..\..\ReactiveUI\ReactiveUI.csproj"/>
     <ProjectReference Include="..\ReactiveUI.Test.Utilities\ReactiveUI.Test.Utilities.csproj"/>
   </ItemGroup>

@@ -50,15 +50,7 @@ public class ReactiveComponentBase<T> : ComponentBase, IViewFor<T>, INotifyPrope
     public T? ViewModel
     {
         get => field;
-        set
-        {
-            if (!ReactiveComponentHelpers.SetIfChanged(ref field, value))
-            {
-                return;
-            }
-
-            OnPropertyChanged();
-        }
+        set => ReactiveComponentHelpers.SetViewModel(ref field, value, OnPropertyChanged);
     }
 
     /// <inheritdoc />
@@ -91,13 +83,7 @@ public class ReactiveComponentBase<T> : ComponentBase, IViewFor<T>, INotifyPrope
     /// <inheritdoc/>
     protected override void OnAfterRender(bool firstRender)
     {
-        ReactiveComponentHelpers.HandleFirstRender(
-            firstRender,
-            _state,
-            () => ViewModel,
-            h => PropertyChanged += h,
-            h => PropertyChanged -= h,
-            () => InvokeAsync(StateHasChanged));
+        ReactiveComponentHelpers.HandleFirstRender<T, ReactiveComponentBase<T>>(firstRender, _state, this, () => InvokeAsync(StateHasChanged));
         base.OnAfterRender(firstRender);
     }
 

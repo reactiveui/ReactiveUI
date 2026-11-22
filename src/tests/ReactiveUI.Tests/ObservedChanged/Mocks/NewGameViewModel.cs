@@ -37,8 +37,8 @@ public class NewGameViewModel : ReactiveObject
 
         RemovePlayer = ReactiveCommand.Create<string>(player => Players.Remove(player));
         var canAddPlayer = this.WhenAnyValue(
-            x => x.Players.Count,
-            x => x.NewPlayerName,
+            static x => x.Players.Count,
+            static x => x.NewPlayerName,
             (count, newPlayerName) =>
                 count < MaxPlayers && !string.IsNullOrWhiteSpace(newPlayerName)
                 && !Players.Contains(newPlayerName));

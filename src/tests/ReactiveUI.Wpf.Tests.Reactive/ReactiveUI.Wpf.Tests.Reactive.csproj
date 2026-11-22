@@ -49,6 +49,7 @@
       </PropertyGroup>
       <ItemGroup>
         <ProjectReference Include="..\..\ReactiveUI.Wpf.Reactive\ReactiveUI.Wpf.Reactive.csproj"/>
+        <ProjectReference Include="..\..\ReactiveUI.Wpf.Unsafe.Reactive\ReactiveUI.Wpf.Unsafe.Reactive.csproj"/>
         <ProjectReference Include="..\..\ReactiveUI.Blend.Reactive\ReactiveUI.Blend.Reactive.csproj"/>
         <Using Include="ReactiveUI.Reactive.Blend"/>
         <Using Include="ReactiveUI.Reactive.Wpf.Binding"/>

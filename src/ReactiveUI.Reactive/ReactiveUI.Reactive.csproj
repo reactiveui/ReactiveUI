@@ -63,6 +63,8 @@
     <Compile Include="..\Shared\DelegateObserver.cs" Link="Shared\DelegateObserver.cs"/>
     <Compile Include="..\Shared\TaskObserverBridge.cs" Link="Shared\TaskObserverBridge.cs"/>
     <Compile Include="..\Shared\ActivationSignals.cs" Link="Shared\ActivationSignals.cs"/>
+    <Compile Include="..\Shared\Suspension\SuspensionHostHelpers.cs" Link="Shared\Suspension\SuspensionHostHelpers.cs"/>
+    <Compile Include="..\Shared\Mixins\AutoPersistMetadataInspector.cs" Link="Shared\Mixins\AutoPersistMetadataInspector.cs"/>
   </ItemGroup>
   <!-- Base .NET platform registration (not a workload platform) — net/net4 TFMs (mirrors lean's net group). -->
   <ItemGroup Condition=" $(TargetFramework.StartsWith('net4')) or '$(TargetFramework)' == 'net11.0' or '$(TargetFramework)' == 'net10.0' ">
@@ -97,6 +99,7 @@
   </ItemGroup>
   <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios' or $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst' or $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'macos' or $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tvos'">
     <Compile Include="..\Shared\Platform\FromEventObservable.cs" Link="Shared\Platform\FromEventObservable.cs"/>
+    <Compile Include="..\Shared\Platform\AppleAppDirectoryHelper.cs" Link="Shared\Platform\AppleAppDirectoryHelper.cs"/>
   </ItemGroup>
 
   <ItemGroup>

@@ -41,7 +41,7 @@ public class AutoDataTemplateBindingHookUnsafe : IPropertyBindingHook
 {
     /// <summary>Gets the default item template, which hosts each item in a <see cref="ViewModelViewHostUnsafe"/>.</summary>
     public static Lazy<DataTemplate> DefaultItemTemplate { get; } =
-        new(static () => AutoDataTemplateBindingHook.CreateItemTemplate(nameof(ViewModelViewHostUnsafe)));
+        new(static () => ItemsControlTemplateBinding.CreateWpfItemTemplate(nameof(ViewModelViewHostUnsafe), typeof(ViewModelViewHostUnsafe).Assembly));
 
     /// <inheritdoc/>
     public bool ExecuteHook(

@@ -19,7 +19,7 @@ public static class SuspensionReflectionExamples
     /// <returns>A task that completes once both driver calls have been awaited.</returns>
     public static async Task SaveAndLoadThroughTheUntypedDriver()
     {
-        DummySuspensionDriver driver = new();
+        DummySuspensionDriverUnsafe driver = new();
 
         _ = await driver.SaveState(new PlayerState("Africa", 210));
         object? loaded = await driver.LoadState();
@@ -68,8 +68,8 @@ public static class SuspensionReflectionExamples
         host.ShouldPersistState = Signal.Silent<IDisposable>();
         host.ShouldInvalidateState = Signal.Silent<RxVoid>();
 
-        DummySuspensionDriver driver = new();
-        AppLocator.CurrentMutable.RegisterConstant<ISuspensionDriver>(driver);
+        DummySuspensionDriverUnsafe driver = new();
+        AppLocator.CurrentMutable.RegisterConstant<IUnsafeSuspensionDriver>(driver);
 
         // No driver given: resolves the one just registered and loads the app state immediately, because
         // IsLaunchingNew already has a value.

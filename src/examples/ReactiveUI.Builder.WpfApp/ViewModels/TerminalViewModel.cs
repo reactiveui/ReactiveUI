@@ -55,17 +55,17 @@ public sealed class TerminalViewModel : ReactiveObject, IRoutableViewModel
         UrlPathSegment = "terminal";
         _processor = processor;
 
-        _amount = this.WhenAnyValue(x => x.AmountCents, static cents => cents / CentsPerUnit)
+        _amount = this.WhenAnyValue(static x => x.AmountCents, static cents => cents / CentsPerUnit)
             .ToProperty(this, nameof(Amount));
 
-        _formattedAmount = this.WhenAnyValue(x => x.Amount, static amount => amount.ToString("C", CultureInfo.CurrentCulture))
+        _formattedAmount = this.WhenAnyValue(static x => x.Amount, static amount => amount.ToString("C", CultureInfo.CurrentCulture))
             .ToProperty(this, nameof(FormattedAmount));
 
         AppendDigit = ReactiveCommand.Create<string>(AppendDigitImpl);
         Backspace = ReactiveCommand.Create(RemoveLastDigit);
         Clear = ReactiveCommand.Create(ClearAmount);
 
-        var canPay = this.WhenAnyValue(x => x.AmountCents, static cents => cents > 0);
+        var canPay = this.WhenAnyValue(static x => x.AmountCents, static cents => cents > 0);
         PayCommand = ReactiveCommand.CreateFromTask(ct => _processor.AuthorizeAsync(Amount, ct), canPay);
         _isBusy = PayCommand.IsExecuting.ToProperty(this, nameof(IsBusy));
 

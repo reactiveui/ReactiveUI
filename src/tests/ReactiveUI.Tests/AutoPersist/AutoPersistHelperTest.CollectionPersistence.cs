@@ -635,7 +635,7 @@ public partial class AutoPersistHelperTest
         var collection = new ReplaceableCollection<TestFixture>();
         var saveCount = 0;
 
-        _ = AutoPersistHelperMixins.AutoPersistCollection<TestFixture, ReplaceableCollection<TestFixture>, RxVoid>(
+        _ = UnsafeAutoPersistHelperMixins.AutoPersistCollection<TestFixture, ReplaceableCollection<TestFixture>, RxVoid>(
             collection,
             _ =>
             {
@@ -670,7 +670,7 @@ public partial class AutoPersistHelperTest
         var manualSave = new Signal<RxVoid>();
         var saveCount = 0;
 
-        _ = AutoPersistHelperMixins.AutoPersistCollection<TestFixture, CustomNotifyCollection<TestFixture>, RxVoid>(
+        _ = UnsafeAutoPersistHelperMixins.AutoPersistCollection<TestFixture, CustomNotifyCollection<TestFixture>, RxVoid>(
             collection,
             _ =>
             {

@@ -36,7 +36,7 @@ public class ToPropertyBenchmarks
     {
         _viewModel = new();
         _doubled = BenchmarkLinq.Select(
-                _viewModel.WhenAnyValue(x => x.Count),
+                _viewModel.WhenAnyValue(static x => x.Count),
                 static count => count * Multiplier)
             .ToProperty(_viewModel, DerivedPropertyName);
     }
@@ -52,7 +52,7 @@ public class ToPropertyBenchmarks
     public int Create()
     {
         using var helper = BenchmarkLinq.Select(
-                _viewModel.WhenAnyValue(x => x.Count),
+                _viewModel.WhenAnyValue(static x => x.Count),
                 static count => count * Multiplier)
             .ToProperty(_viewModel, DerivedPropertyName);
         return helper.Value;

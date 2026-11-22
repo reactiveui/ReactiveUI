@@ -16,17 +16,17 @@ public partial class WhenAnyMixinTests
         var vm = new WhenAnyArityTestViewModel();
         var list = new List<string>();
         _ = vm.WhenAny(
-            x => x.Property1,
-            x => x.Property2,
-            x => x.Property3,
-            x => x.Property4,
-            x => x.Property5,
-            x => x.Property6,
-            x => x.Property7,
-            x => x.Property8,
-            x => x.Property9,
-            x => x.Property10,
-            x => x.Property11,
+            static x => x.Property1,
+            static x => x.Property2,
+            static x => x.Property3,
+            static x => x.Property4,
+            static x => x.Property5,
+            static x => x.Property6,
+            static x => x.Property7,
+            static x => x.Property8,
+            static x => x.Property9,
+            static x => x.Property10,
+            static x => x.Property11,
             static (_, _, _, _, _, _, _, _, _, _, _) => "x").ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
@@ -39,17 +39,17 @@ public partial class WhenAnyMixinTests
         var vm = new WhenAnyArityTestViewModel();
         var list = new List<string>();
         _ = vm.WhenAnyValue(
-            x => x.Property1,
-            x => x.Property2,
-            x => x.Property3,
-            x => x.Property4,
-            x => x.Property5,
-            x => x.Property6,
-            x => x.Property7,
-            x => x.Property8,
-            x => x.Property9,
-            x => x.Property10,
-            x => x.Property11,
+            static x => x.Property1,
+            static x => x.Property2,
+            static x => x.Property3,
+            static x => x.Property4,
+            static x => x.Property5,
+            static x => x.Property6,
+            static x => x.Property7,
+            static x => x.Property8,
+            static x => x.Property9,
+            static x => x.Property10,
+            static x => x.Property11,
             static (_, _, _, _, _, _, _, _, _, _, _) => "x").ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }

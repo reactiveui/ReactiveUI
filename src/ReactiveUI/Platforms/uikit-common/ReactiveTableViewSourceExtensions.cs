@@ -28,8 +28,6 @@ public static class ReactiveTableViewSourceExtensions
         /// <param name="cellKey">Cell key.</param>
         /// <param name="sizeHint">Size hint.</param>
         /// <returns>The <see cref="IDisposable"/> used to dispose this binding.</returns>
-        [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
-        [RequiresDynamicCode("Uses dynamic binding paths which may require runtime code generation or reflection-based invocation.")]
         [SuppressMessage(
             "Design",
             "SST2307:Generic method type parameters should be inferable from the parameters",
@@ -50,8 +48,6 @@ public static class ReactiveTableViewSourceExtensions
         /// <param name="sizeHint">Size hint.</param>
         /// <param name="initializeCellAction">Initialize cell action.</param>
         /// <returns>The <see cref="IDisposable"/> used to dispose this binding.</returns>
-        [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
-        [RequiresDynamicCode("Uses dynamic binding paths which may require runtime code generation or reflection-based invocation.")]
         [SuppressMessage(
             "Design",
             "SST2307:Generic method type parameters should be inferable from the parameters",
@@ -75,8 +71,6 @@ public static class ReactiveTableViewSourceExtensions
         /// <param name="initSource">Optionally initializes some property of
         /// the <see cref="ReactiveTableViewSource{TSource}"/>.</param>
         /// <returns>The <see cref="IDisposable"/> used to dispose this binding.</returns>
-        [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
-        [RequiresDynamicCode("Uses dynamic binding paths which may require runtime code generation or reflection-based invocation.")]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IDisposable BindTo<TSource, TCell>(
             UITableView tableView,
@@ -108,8 +102,6 @@ public static class ReactiveTableViewSourceExtensions
         /// <param name="tableView">Table view.</param>
         /// <param name="sizeHint">Size hint.</param>
         /// <returns>The <see cref="IDisposable"/> used to dispose this binding.</returns>
-        [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
-        [RequiresDynamicCode("Uses dynamic binding paths which may require runtime code generation or reflection-based invocation.")]
         [SuppressMessage(
             "Design",
             "SST2307:Generic method type parameters should be inferable from the parameters",
@@ -133,8 +125,6 @@ public static class ReactiveTableViewSourceExtensions
         /// <param name="sizeHint">Size hint.</param>
         /// <param name="initializeCellAction">Initialize cell action.</param>
         /// <returns>The <see cref="IDisposable"/> used to dispose this binding.</returns>
-        [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
-        [RequiresDynamicCode("Uses dynamic binding paths which may require runtime code generation or reflection-based invocation.")]
         [SuppressMessage(
             "Design",
             "SST2307:Generic method type parameters should be inferable from the parameters",
@@ -161,8 +151,6 @@ public static class ReactiveTableViewSourceExtensions
         /// <param name="initSource">Optionally initializes some property of
         /// the <see cref="ReactiveTableViewSource{TSource}"/>.</param>
         /// <returns>The <see cref="IDisposable"/> used to dispose this binding.</returns>
-        [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
-        [RequiresDynamicCode("Uses dynamic binding paths which may require runtime code generation or reflection-based invocation.")]
         public IDisposable BindTo<TSource, TCell>(
             UITableView tableView,
             float sizeHint,
@@ -198,8 +186,6 @@ public static class ReactiveTableViewSourceExtensions
         /// </summary>
         /// <param name="tableView">Table view.</param>
         /// <returns>The <see cref="IDisposable"/> used to dispose this binding.</returns>
-        [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
-        [RequiresDynamicCode("Uses dynamic binding paths which may require runtime code generation or reflection-based invocation.")]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IDisposable BindTo(UITableView tableView) =>
             sectionsObservable.BindTo(tableView, initSource: null);
@@ -216,8 +202,6 @@ public static class ReactiveTableViewSourceExtensions
         /// <param name="initSource">Optionally initializes some property of
         /// the <see cref="ReactiveTableViewSource{TSource}"/>.</param>
         /// <returns>The <see cref="IDisposable"/> used to dispose this binding.</returns>
-        [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
-        [RequiresDynamicCode("Uses dynamic binding paths which may require runtime code generation or reflection-based invocation.")]
         public IDisposable BindTo(
             UITableView tableView,
             Func<ReactiveTableViewSource<TSource>, IDisposable>? initSource)

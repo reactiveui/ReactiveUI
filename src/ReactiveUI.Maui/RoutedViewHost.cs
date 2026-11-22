@@ -23,7 +23,7 @@ namespace ReactiveUI.Maui;
 /// The host asks the view locator for each page by the view model's run-time type, without building any type at run
 /// time, so it is safe to trim and to compile ahead of time. The default locator checks the view lookup the source
 /// generator writes, then the views the app added with <c>Map</c>. A page registered only with the service locator
-/// needs <see cref="RoutedViewHostUnsafe"/>.
+/// needs <c>RoutedViewHostUnsafe</c> from <c>ReactiveUI.Maui.Unsafe</c>.
 /// </remarks>
 /// <seealso cref="NavigationPage" />
 /// <seealso cref="IActivatableView" />
@@ -72,7 +72,7 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
         "Design",
         "SST2403:'this' escapes before construction finishes",
         Justification = "'this' is passed to the main-thread scheduler to marshal the initial navigation-stack sync onto the UI thread; the scheduled work runs after construction completes.")]
-    private protected RoutedViewHost(Func<IViewLocator, object, string?, IViewFor?> resolveView)
+    protected RoutedViewHost(Func<IViewLocator, object, string?, IViewFor?> resolveView)
     {
         _resolveView = resolveView;
 
@@ -232,7 +232,7 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
     /// <returns>The message.</returns>
     private static string NoViewMessage(IRoutableViewModel vm) =>
         $"Couldn't find a View for ViewModel '{vm.GetType().Name}'. The view locator checked the generated view lookup and its Map registrations; "
-        + $"use {nameof(RoutedViewHostUnsafe)} to also resolve an IViewFor<{vm.GetType().Name}> registered only with the service locator.";
+        + $"use RoutedViewHostUnsafe (from ReactiveUI.Maui.Unsafe) to also resolve an IViewFor<{vm.GetType().Name}> registered only with the service locator.";
 
     /// <summary>Performs the one-time initial navigation-stack sync, logging any failure instead of faulting an unobserved task.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>

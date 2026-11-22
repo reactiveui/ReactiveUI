@@ -16,7 +16,7 @@ public sealed class WeatherStateViewModel : ReactiveObject
     public WeatherStateViewModel()
     {
         RaiseAlert = ReactiveCommand.Create<string, object>(static message => message);
-        StateChanges = this.WhenAnyValue(viewModel => viewModel.State);
+        StateChanges = this.WhenAnyValue(static viewModel => viewModel.State);
     }
 
     /// <summary>Gets or sets the current condition: "Calm", "Windy" or "Stormy". Named after a WPF <c>VisualState</c>.</summary>

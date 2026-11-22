@@ -30,7 +30,7 @@ public sealed class RepositorySearchViewModel : ReactiveObject, IDisposable
     {
         Search = ReactiveCommand.CreateFromTask<string, IReadOnlyList<Repository>>(api.SearchRepositoriesAsync);
 
-        _subscriptions.Add(this.WhenAnyValue(x => x.SearchText)
+        _subscriptions.Add(this.WhenAnyValue(static x => x.SearchText)
             .Select(static text => text.Trim())
             .Where(static text => text.Length >= MinimumQueryLength)
             .InvokeCommand(Search));

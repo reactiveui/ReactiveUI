@@ -29,7 +29,7 @@ public sealed class FirstLessonPeekHost : ReactiveViewHostUnsafe<LessonViewModel
             attachToRoot: false,
             performAutoWireup: true,
             resolveStrategy: ControlFetcherMixins.ResolveStrategy.Implicit) =>
-        this.WhenAnyValue(host => host.ViewModel)
+        this.WhenAnyValue(static host => host.ViewModel)
             .Subscribe(lesson => PeekSubjectLabel!.Text = lesson is null ? null : $"First: {lesson.Subject}");
 
     /// <summary>Gets or sets the label the lesson's subject is written to; wired automatically from the constructor.</summary>

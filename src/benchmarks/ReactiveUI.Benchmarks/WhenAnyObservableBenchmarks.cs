@@ -31,7 +31,7 @@ public class WhenAnyObservableBenchmarks
     public void Setup()
     {
         _viewModel = CreateViewModel();
-        _subscription = _viewModel.WhenAnyObservable(x => x.Values).Subscribe(_sink);
+        _subscription = _viewModel.WhenAnyObservable(static x => x.Values).Subscribe(_sink);
     }
 
     /// <summary>Disposes the subscription and the view model.</summary>
@@ -56,7 +56,7 @@ public class WhenAnyObservableBenchmarks
     [Benchmark]
     public void Subscribe()
     {
-        using var subscription = _viewModel.WhenAnyObservable(x => x.Values).Subscribe(_sink);
+        using var subscription = _viewModel.WhenAnyObservable(static x => x.Values).Subscribe(_sink);
     }
 
     /// <summary>Creates a view model exposing the inner observable.</summary>

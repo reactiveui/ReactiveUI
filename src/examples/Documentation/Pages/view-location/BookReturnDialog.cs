@@ -19,10 +19,10 @@ public sealed class BookReturnDialog : ReactiveVendorDialog<BookReturnViewModel>
         this.WhenActivated(
             disposables =>
             {
-                disposables(this.OneWayBind(ViewModel, x => x.BookTitle, v => v.TitleLabel.Text));
-                disposables(this.Bind(ViewModel, x => x.IsDamaged, v => v.DamagedCheckBox.IsChecked));
+                disposables(this.OneWayBind(ViewModel, static x => x.BookTitle, static v => v.TitleLabel.Text));
+                disposables(this.Bind(ViewModel, static x => x.IsDamaged, static v => v.DamagedCheckBox.IsChecked));
             },
-            this.WhenAnyValue(x => x.ViewModel));
+            this.WhenAnyValue(static x => x.ViewModel));
 
     /// <summary>Gets the label that shows the title of the book being returned.</summary>
     public Label TitleLabel { get; } = new();

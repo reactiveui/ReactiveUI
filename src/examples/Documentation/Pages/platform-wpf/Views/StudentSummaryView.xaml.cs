@@ -26,7 +26,7 @@ public partial class StudentSummaryView : ReactiveUserControl<StudentSummaryView
     /// <returns>The subscriptions to dispose when the view deactivates.</returns>
     private IEnumerable<IDisposable> CreateBindings() =>
     [
-        this.OneWayBind(ViewModel, vm => vm.Student.Name, v => v.NameText.Text),
-        this.OneWayBind(ViewModel, vm => vm.Student.Grade, v => v.GradeText.Text, static grade => $"Grade: {grade}")
+        this.OneWayBind(ViewModel, static vm => vm.Student.Name, static v => v.NameText.Text),
+        this.OneWayBind(ViewModel, static vm => vm.Student.Grade, static v => v.GradeText.Text, static grade => $"Grade: {grade}")
     ];
 }

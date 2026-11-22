@@ -6,9 +6,9 @@
 
   <PropertyGroup Label="Shared Version Variables">
     <SplatVersion>22.0.1</SplatVersion>
-    <PrimitivesVersion>10.0.0</PrimitivesVersion>
-    <BindingVersion>10.0.0</BindingVersion>
-    <TUnitVersion>1.85.0</TUnitVersion>
+    <PrimitivesVersion>10.2.3</PrimitivesVersion>
+    <BindingVersion>12.1.0</BindingVersion>
+    <TUnitVersion>1.87.12</TUnitVersion>
     <!-- StyleSharp.Analyzers, PerformanceSharp.Analyzers and SecuritySharp.Analyzers ship from the
          same release pipeline and always share a version. -->
     <RoslynCommonAnalyzersVersion>5.2.0</RoslynCommonAnalyzersVersion>
@@ -71,7 +71,7 @@
   </ItemGroup>
 
   <ItemGroup Label="ReactiveUI Source Generators">
-    <PackageVersion Include="ReactiveUI.SourceGenerators" Version="5.0.0"/>
+    <PackageVersion Include="ReactiveUI.SourceGenerators" Version="7.1.0"/>
   </ItemGroup>
 
   <ItemGroup Label="Rx Ecosystem">
@@ -96,7 +96,7 @@
     <PackageVersion Include="StyleSharp.Analyzers" Version="$(RoslynCommonAnalyzersVersion)"/>
     <PackageVersion Include="PerformanceSharp.Analyzers" Version="$(RoslynCommonAnalyzersVersion)"/>
     <PackageVersion Include="SecuritySharp.Analyzers" Version="$(RoslynCommonAnalyzersVersion)"/>
-    <PackageVersion Include="SonarAnalyzer.CSharp" Version="10.36.0.15337"/>
+    <PackageVersion Include="SonarAnalyzer.CSharp" Version="10.37.0.15768"/>
     <PackageVersion Include="Microsoft.CodeAnalysis.Analyzers" Version="5.12.0"/>
     <PackageVersion Include="PublicApiSharp.Analyzers" Version="2.2.0"/>
   </ItemGroup>
@@ -107,7 +107,7 @@
   </ItemGroup>
 
   <ItemGroup Label="Microsoft Extensions / Runtime / Data">
-    <PackageVersion Include="Microsoft.Bcl.TimeProvider" Version="10.0.15"/>
+    <PackageVersion Include="Microsoft.Bcl.TimeProvider" Version="11.0.0"/>
     <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="$(MicrosoftExtensionsVersion)"/>
     <PackageVersion Include="Microsoft.Extensions.DependencyModel" Version="$(MicrosoftExtensionsVersion)"/>
     <PackageVersion Include="System.Text.Json" Version="$(SystemTextJsonVersion)"/>

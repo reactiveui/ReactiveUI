@@ -137,7 +137,7 @@ public class WpfActiveContentTests
     [Test]
     public async Task DummySuspensionDriverTest()
     {
-        var dsd = new DummySuspensionDriver();
+        var dsd = new DummySuspensionDriverUnsafe();
         int? loadResult = null;
         int? saveResult = null;
         int? invalidateResult = null;

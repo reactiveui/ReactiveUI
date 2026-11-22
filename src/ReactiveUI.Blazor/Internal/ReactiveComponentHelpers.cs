@@ -4,6 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using Microsoft.AspNetCore.Components;
 using ReactiveUI.Internal;
 using ReactiveUI.Primitives;
@@ -166,6 +167,29 @@ internal static class ReactiveComponentHelpers
         stateHasChangedCallback();
     }
 
+    /// <summary>Performs the shared first-render work for a reactive component implementing <see cref="IViewFor{T}"/> and <see cref="INotifyPropertyChanged"/>.</summary>
+    /// <typeparam name="T">The view model type.</typeparam>
+    /// <typeparam name="TComponent">The component type.</typeparam>
+    /// <param name="firstRender">Whether this is the first render of the component.</param>
+    /// <param name="state">The reactive component state.</param>
+    /// <param name="component">The component instance.</param>
+    /// <param name="stateHasChangedCallback">A callback that re-renders the component.</param>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal static void HandleFirstRender<T, TComponent>(
+        bool firstRender,
+        ReactiveComponentState state,
+        TComponent component,
+        Action stateHasChangedCallback)
+        where T : class, INotifyPropertyChanged
+        where TComponent : IViewFor<T>, INotifyPropertyChanged =>
+        HandleFirstRender(
+            firstRender,
+            state,
+            () => component.ViewModel,
+            h => component.PropertyChanged += h,
+            h => component.PropertyChanged -= h,
+            stateHasChangedCallback);
+
     /// <summary>
     /// Performs the shared dispose work for a reactive component: idempotently notifies deactivation and disposes the
     /// state when disposing managed resources.
@@ -222,5 +246,19 @@ internal static class ReactiveComponentHelpers
 
         field = value;
         return true;
+    }
+
+    /// <summary>Updates <paramref name="field"/> and invokes <paramref name="raisePropertyChanged"/> when the value changed.</summary>
+    /// <typeparam name="T">The view model type.</typeparam>
+    /// <param name="field">The backing field to update.</param>
+    /// <param name="value">The new value.</param>
+    /// <param name="raisePropertyChanged">The callback that raises <see cref="INotifyPropertyChanged.PropertyChanged"/>.</param>
+    internal static void SetViewModel<T>(ref T? field, T? value, Action<string?> raisePropertyChanged)
+        where T : class
+    {
+        if (SetIfChanged(ref field, value))
+        {
+            raisePropertyChanged(nameof(IViewFor.ViewModel));
+        }
     }
 }

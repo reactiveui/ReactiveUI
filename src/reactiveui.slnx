@@ -83,15 +83,29 @@
     </Folder>
     <Folder Name="/reactive/">
         <Project Path="ReactiveUI.AndroidX.Reactive/ReactiveUI.AndroidX.Reactive.csproj" />
+        <Project Path="ReactiveUI.AndroidX.Unsafe.Reactive/ReactiveUI.AndroidX.Unsafe.Reactive.csproj" />
         <Project Path="ReactiveUI.Blazor.Reactive/ReactiveUI.Blazor.Reactive.csproj" />
         <Project Path="ReactiveUI.Blend.Reactive/ReactiveUI.Blend.Reactive.csproj" />
         <Project Path="ReactiveUI.Drawing.Reactive/ReactiveUI.Drawing.Reactive.csproj" />
         <Project Path="ReactiveUI.Maui.Reactive/ReactiveUI.Maui.Reactive.csproj" />
+        <Project Path="ReactiveUI.Maui.Unsafe.Reactive/ReactiveUI.Maui.Unsafe.Reactive.csproj" />
         <Project Path="ReactiveUI.Reactive/ReactiveUI.Reactive.csproj" />
+        <Project Path="ReactiveUI.Unsafe.Reactive/ReactiveUI.Unsafe.Reactive.csproj" />
         <Project Path="ReactiveUI.WinUI.Reactive/ReactiveUI.WinUI.Reactive.csproj" />
+        <Project Path="ReactiveUI.WinUI.Unsafe.Reactive/ReactiveUI.WinUI.Unsafe.Reactive.csproj" />
         <Project Path="ReactiveUI.Testing.Reactive/ReactiveUI.Testing.Reactive.csproj" />
         <Project Path="ReactiveUI.Winforms.Reactive/ReactiveUI.Winforms.Reactive.csproj" />
+        <Project Path="ReactiveUI.Winforms.Unsafe.Reactive/ReactiveUI.Winforms.Unsafe.Reactive.csproj" />
         <Project Path="ReactiveUI.Wpf.Reactive/ReactiveUI.Wpf.Reactive.csproj" />
+        <Project Path="ReactiveUI.Wpf.Unsafe.Reactive/ReactiveUI.Wpf.Unsafe.Reactive.csproj" />
+    </Folder>
+    <Folder Name="/unsafe/">
+        <Project Path="ReactiveUI.AndroidX.Unsafe/ReactiveUI.AndroidX.Unsafe.csproj" />
+        <Project Path="ReactiveUI.Maui.Unsafe/ReactiveUI.Maui.Unsafe.csproj" />
+        <Project Path="ReactiveUI.Unsafe/ReactiveUI.Unsafe.csproj" />
+        <Project Path="ReactiveUI.Winforms.Unsafe/ReactiveUI.Winforms.Unsafe.csproj" />
+        <Project Path="ReactiveUI.WinUI.Unsafe/ReactiveUI.WinUI.Unsafe.csproj" />
+        <Project Path="ReactiveUI.Wpf.Unsafe/ReactiveUI.Wpf.Unsafe.csproj" />
     </Folder>
     <Project Path="ReactiveUI.AndroidX/ReactiveUI.AndroidX.csproj" />
     <Project Path="ReactiveUI.Blazor/ReactiveUI.Blazor.csproj">

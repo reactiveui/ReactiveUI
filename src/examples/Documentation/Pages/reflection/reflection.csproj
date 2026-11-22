@@ -14,4 +14,8 @@
     <EnableSingleFileAnalyzer>false</EnableSingleFileAnalyzer>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="$(MSBuildThisFileDirectory)../../../../ReactiveUI.Unsafe/ReactiveUI.Unsafe.csproj" />
+  </ItemGroup>
+
 </Project>

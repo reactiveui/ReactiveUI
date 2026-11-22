@@ -29,14 +29,14 @@ public sealed class TodoListView : ReactiveObject, IViewFor<TodoListViewModel>, 
         this.WhenActivated(
             disposables =>
             {
-                disposables(this.Bind(ViewModel, x => x.NewTitle, v => v.NewTitleBox.Text));
-                disposables(this.Bind(ViewModel, x => x.FilterText, v => v.FilterBox.Text));
-                disposables(this.OneWayBind(ViewModel, x => x.Items, v => v.ItemList.Items));
-                disposables(this.OneWayBind(ViewModel, x => x.RemainingCount, v => v.RemainingLabel.Text, static count => $"{count} left"));
-                disposables(this.OneWayBind(ViewModel, x => x.ErrorMessage, v => v.ErrorLabel.Text));
-                disposables(this.BindCommand(ViewModel, x => x.Add, v => v.AddButton));
+                disposables(this.Bind(ViewModel, static x => x.NewTitle, static v => v.NewTitleBox.Text));
+                disposables(this.Bind(ViewModel, static x => x.FilterText, static v => v.FilterBox.Text));
+                disposables(this.OneWayBind(ViewModel, static x => x.Items, static v => v.ItemList.Items));
+                disposables(this.OneWayBind(ViewModel, static x => x.RemainingCount, static v => v.RemainingLabel.Text, static count => $"{count} left"));
+                disposables(this.OneWayBind(ViewModel, static x => x.ErrorMessage, static v => v.ErrorLabel.Text));
+                disposables(this.BindCommand(ViewModel, static x => x.Add, static v => v.AddButton));
             },
-            this.WhenAnyValue(x => x.ViewModel));
+            this.WhenAnyValue(static x => x.ViewModel));
 
     /// <summary>Gets the box the user types a new title into.</summary>
     public TextBox NewTitleBox { get; } = new();

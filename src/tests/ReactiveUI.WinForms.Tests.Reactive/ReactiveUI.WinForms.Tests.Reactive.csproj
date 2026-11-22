@@ -39,6 +39,7 @@
       </PropertyGroup>
       <ItemGroup>
         <ProjectReference Include="..\..\ReactiveUI.Winforms.Reactive\ReactiveUI.Winforms.Reactive.csproj"/>
+        <ProjectReference Include="..\..\ReactiveUI.Winforms.Unsafe.Reactive\ReactiveUI.Winforms.Unsafe.Reactive.csproj"/>
         <Using Include="ReactiveUI.Reactive.Winforms"/>
         <Using Include="ReactiveUI.Primitives.Reactive.Concurrency"/>
         <Compile Include="..\ReactiveUI.WinForms.Tests\winforms\**\*.cs" Link="winforms\%(RecursiveDir)%(Filename)%(Extension)"/>
@@ -51,6 +52,7 @@
       </PropertyGroup>
       <ItemGroup>
         <ProjectReference Include="..\..\ReactiveUI.Winforms.Reactive\ReactiveUI.Winforms.Reactive.csproj"/>
+        <ProjectReference Include="..\..\ReactiveUI.Winforms.Unsafe.Reactive\ReactiveUI.Winforms.Unsafe.Reactive.csproj"/>
         <Using Include="ReactiveUI.Reactive.Winforms"/>
         <Using Include="ReactiveUI.Primitives.Reactive.Concurrency"/>
         <Compile Include="..\ReactiveUI.WinForms.Tests\winforms\**\*.cs" Link="winforms\%(RecursiveDir)%(Filename)%(Extension)"/>

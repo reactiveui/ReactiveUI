@@ -20,16 +20,16 @@ public partial class ReactiveObjectObservationIntegrationTests
         string? result = null;
 
         _ = fixture.WhenAnyValue(
-            x => x.Value1,
-            x => x.Value2,
-            x => x.Value3,
-            x => x.Value4,
-            x => x.Value5,
-            x => x.Value6,
-            x => x.Value7,
-            x => x.Value8,
-            x => x.Value9,
-            x => x.Value10,
+            static x => x.Value1,
+            static x => x.Value2,
+            static x => x.Value3,
+            static x => x.Value4,
+            static x => x.Value5,
+            static x => x.Value6,
+            static x => x.Value7,
+            static x => x.Value8,
+            static x => x.Value9,
+            static x => x.Value10,
             static (v1, v2, v3, v4, v5, v6, v7, v8, v9, v10) => (v1, v2, v3, v4, v5, v6, v7, v8, v9, v10)).Select(static tuple =>
         {
             var (value1, value2, value3, value4, value5, value6, value7, value8, value9, value10) = tuple;
@@ -50,17 +50,17 @@ public partial class ReactiveObjectObservationIntegrationTests
         string? result = null;
 
         _ = fixture.WhenAnyValue(
-            x => x.Value1,
-            x => x.Value2,
-            x => x.Value3,
-            x => x.Value4,
-            x => x.Value5,
-            x => x.Value6,
-            x => x.Value7,
-            x => x.Value8,
-            x => x.Value9,
-            x => x.Value10,
-            x => x.Value11,
+            static x => x.Value1,
+            static x => x.Value2,
+            static x => x.Value3,
+            static x => x.Value4,
+            static x => x.Value5,
+            static x => x.Value6,
+            static x => x.Value7,
+            static x => x.Value8,
+            static x => x.Value9,
+            static x => x.Value10,
+            static x => x.Value11,
             static (v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11) =>
                 (v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11)).Select(static tuple =>
         {
@@ -84,18 +84,18 @@ public partial class ReactiveObjectObservationIntegrationTests
         string? result = null;
 
         _ = fixture.WhenAnyValue(
-            x => x.Value1,
-            x => x.Value2,
-            x => x.Value3,
-            x => x.Value4,
-            x => x.Value5,
-            x => x.Value6,
-            x => x.Value7,
-            x => x.Value8,
-            x => x.Value9,
-            x => x.Value10,
-            x => x.Value11,
-            x => x.Value12,
+            static x => x.Value1,
+            static x => x.Value2,
+            static x => x.Value3,
+            static x => x.Value4,
+            static x => x.Value5,
+            static x => x.Value6,
+            static x => x.Value7,
+            static x => x.Value8,
+            static x => x.Value9,
+            static x => x.Value10,
+            static x => x.Value11,
+            static x => x.Value12,
             static (v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12) =>
                 (v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12)).Select(static tuple =>
         {
@@ -118,7 +118,7 @@ public partial class ReactiveObjectObservationIntegrationTests
 
         string? result = null;
 
-        _ = fixture.WhenAnyValue(x => x.Value1).Subscribe(value => result = value);
+        _ = fixture.WhenAnyValue(static x => x.Value1).Subscribe(value => result = value);
 
         await Assert.That(result).IsEqualTo(OneText);
     }
@@ -134,7 +134,7 @@ public partial class ReactiveObjectObservationIntegrationTests
 
         fixture.Value1 = null!;
 
-        _ = fixture.WhenAnyValue(x => x.Value1).Subscribe(value => result = value);
+        _ = fixture.WhenAnyValue(static x => x.Value1).Subscribe(value => result = value);
 
         await Assert.That(result).IsNull();
 
@@ -160,7 +160,7 @@ public partial class ReactiveObjectObservationIntegrationTests
 
         var result = string.Empty;
 
-        _ = fixture.WhenAnyValue(x => x.Value2).Subscribe(value => result = value);
+        _ = fixture.WhenAnyValue(static x => x.Value2).Subscribe(value => result = value);
 
         await Assert.That(result).IsNull();
 
@@ -187,8 +187,8 @@ public partial class ReactiveObjectObservationIntegrationTests
         string? result = null;
 
         _ = fixture.WhenAnyValue(
-            x => x.Value1,
-            x => x.Value2).Select(static tuple =>
+            static x => x.Value1,
+            static x => x.Value2).Select(static tuple =>
         {
             var (value1, value2) = tuple;
 
@@ -208,8 +208,8 @@ public partial class ReactiveObjectObservationIntegrationTests
         string? result = null;
 
         _ = fixture.WhenAnyValue(
-            x => x.Value1,
-            x => x.Value2,
+            static x => x.Value1,
+            static x => x.Value2,
             static (v1, v2) => (v1, v2)).Select(static tuple =>
         {
             var (value1, value2) = tuple;
@@ -230,9 +230,9 @@ public partial class ReactiveObjectObservationIntegrationTests
         string? result = null;
 
         _ = fixture.WhenAnyValue(
-            x => x.Value1,
-            x => x.Value2,
-            x => x.Value3).Select(static tuple =>
+            static x => x.Value1,
+            static x => x.Value2,
+            static x => x.Value3).Select(static tuple =>
         {
             var (value1, value2, value3) = tuple;
 
@@ -252,9 +252,9 @@ public partial class ReactiveObjectObservationIntegrationTests
         string? result = null;
 
         _ = fixture.WhenAnyValue(
-            x => x.Value1,
-            x => x.Value2,
-            x => x.Value3,
+            static x => x.Value1,
+            static x => x.Value2,
+            static x => x.Value3,
             static (v1, v2, v3) => (v1, v2, v3)).Select(static tuple =>
         {
             var (value1, value2, value3) = tuple;
@@ -275,10 +275,10 @@ public partial class ReactiveObjectObservationIntegrationTests
         string? result = null;
 
         _ = fixture.WhenAnyValue(
-            x => x.Value1,
-            x => x.Value2,
-            x => x.Value3,
-            x => x.Value4).Select(static tuple =>
+            static x => x.Value1,
+            static x => x.Value2,
+            static x => x.Value3,
+            static x => x.Value4).Select(static tuple =>
         {
             var (value1, value2, value3, value4) = tuple;
 
@@ -298,10 +298,10 @@ public partial class ReactiveObjectObservationIntegrationTests
         string? result = null;
 
         _ = fixture.WhenAnyValue(
-            x => x.Value1,
-            x => x.Value2,
-            x => x.Value3,
-            x => x.Value4,
+            static x => x.Value1,
+            static x => x.Value2,
+            static x => x.Value3,
+            static x => x.Value4,
             static (v1, v2, v3, v4) => (v1, v2, v3, v4)).Select(static tuple =>
         {
             var (value1, value2, value3, value4) = tuple;
@@ -322,11 +322,11 @@ public partial class ReactiveObjectObservationIntegrationTests
         string? result = null;
 
         _ = fixture.WhenAnyValue(
-            x => x.Value1,
-            x => x.Value2,
-            x => x.Value3,
-            x => x.Value4,
-            x => x.Value5).Select(static tuple =>
+            static x => x.Value1,
+            static x => x.Value2,
+            static x => x.Value3,
+            static x => x.Value4,
+            static x => x.Value5).Select(static tuple =>
         {
             var (value1, value2, value3, value4, value5) = tuple;
 
@@ -346,11 +346,11 @@ public partial class ReactiveObjectObservationIntegrationTests
         string? result = null;
 
         _ = fixture.WhenAnyValue(
-            x => x.Value1,
-            x => x.Value2,
-            x => x.Value3,
-            x => x.Value4,
-            x => x.Value5,
+            static x => x.Value1,
+            static x => x.Value2,
+            static x => x.Value3,
+            static x => x.Value4,
+            static x => x.Value5,
             static (v1, v2, v3, v4, v5) => (v1, v2, v3, v4, v5)).Select(static tuple =>
         {
             var (value1, value2, value3, value4, value5) = tuple;
@@ -371,12 +371,12 @@ public partial class ReactiveObjectObservationIntegrationTests
         string? result = null;
 
         _ = fixture.WhenAnyValue(
-            x => x.Value1,
-            x => x.Value2,
-            x => x.Value3,
-            x => x.Value4,
-            x => x.Value5,
-            x => x.Value6).Select(static tuple =>
+            static x => x.Value1,
+            static x => x.Value2,
+            static x => x.Value3,
+            static x => x.Value4,
+            static x => x.Value5,
+            static x => x.Value6).Select(static tuple =>
         {
             var (value1, value2, value3, value4, value5, value6) = tuple;
 
@@ -396,12 +396,12 @@ public partial class ReactiveObjectObservationIntegrationTests
         string? result = null;
 
         _ = fixture.WhenAnyValue(
-            x => x.Value1,
-            x => x.Value2,
-            x => x.Value3,
-            x => x.Value4,
-            x => x.Value5,
-            x => x.Value6,
+            static x => x.Value1,
+            static x => x.Value2,
+            static x => x.Value3,
+            static x => x.Value4,
+            static x => x.Value5,
+            static x => x.Value6,
             static (v1, v2, v3, v4, v5, v6) => (v1, v2, v3, v4, v5, v6)).Select(static tuple =>
         {
             var (value1, value2, value3, value4, value5, value6) = tuple;
@@ -422,13 +422,13 @@ public partial class ReactiveObjectObservationIntegrationTests
         string? result = null;
 
         _ = fixture.WhenAnyValue(
-            x => x.Value1,
-            x => x.Value2,
-            x => x.Value3,
-            x => x.Value4,
-            x => x.Value5,
-            x => x.Value6,
-            x => x.Value7).Select(static tuple =>
+            static x => x.Value1,
+            static x => x.Value2,
+            static x => x.Value3,
+            static x => x.Value4,
+            static x => x.Value5,
+            static x => x.Value6,
+            static x => x.Value7).Select(static tuple =>
         {
             var (value1, value2, value3, value4, value5, value6, value7) = tuple;
 
@@ -448,13 +448,13 @@ public partial class ReactiveObjectObservationIntegrationTests
         string? result = null;
 
         _ = fixture.WhenAnyValue(
-            x => x.Value1,
-            x => x.Value2,
-            x => x.Value3,
-            x => x.Value4,
-            x => x.Value5,
-            x => x.Value6,
-            x => x.Value7,
+            static x => x.Value1,
+            static x => x.Value2,
+            static x => x.Value3,
+            static x => x.Value4,
+            static x => x.Value5,
+            static x => x.Value6,
+            static x => x.Value7,
             static (v1, v2, v3, v4, v5, v6, v7) => (v1, v2, v3, v4, v5, v6, v7)).Select(static tuple =>
         {
             var (value1, value2, value3, value4, value5, value6, value7) = tuple;
@@ -475,14 +475,14 @@ public partial class ReactiveObjectObservationIntegrationTests
         string? result = null;
 
         _ = fixture.WhenAnyValue(
-            x => x.Value1,
-            x => x.Value2,
-            x => x.Value3,
-            x => x.Value4,
-            x => x.Value5,
-            x => x.Value6,
-            x => x.Value7,
-            x => x.Value8,
+            static x => x.Value1,
+            static x => x.Value2,
+            static x => x.Value3,
+            static x => x.Value4,
+            static x => x.Value5,
+            static x => x.Value6,
+            static x => x.Value7,
+            static x => x.Value8,
             static (v1, v2, v3, v4, v5, v6, v7, v8) => (v1, v2, v3, v4, v5, v6, v7, v8)).Select(static tuple =>
         {
             var (value1, value2, value3, value4, value5, value6, value7, value8) = tuple;
@@ -503,15 +503,15 @@ public partial class ReactiveObjectObservationIntegrationTests
         string? result = null;
 
         _ = fixture.WhenAnyValue(
-            x => x.Value1,
-            x => x.Value2,
-            x => x.Value3,
-            x => x.Value4,
-            x => x.Value5,
-            x => x.Value6,
-            x => x.Value7,
-            x => x.Value8,
-            x => x.Value9,
+            static x => x.Value1,
+            static x => x.Value2,
+            static x => x.Value3,
+            static x => x.Value4,
+            static x => x.Value5,
+            static x => x.Value6,
+            static x => x.Value7,
+            static x => x.Value8,
+            static x => x.Value9,
             static (v1, v2, v3, v4, v5, v6, v7, v8, v9) => (v1, v2, v3, v4, v5, v6, v7, v8, v9)).Select(static tuple =>
         {
             var (value1, value2, value3, value4, value5, value6, value7, value8, value9) = tuple;

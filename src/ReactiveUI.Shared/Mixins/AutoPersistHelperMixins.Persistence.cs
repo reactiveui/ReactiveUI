@@ -121,55 +121,6 @@ public static partial class AutoPersistHelperMixins
                 x => x.AutoPersist(doPersist, manualSaveSignal, metadataProvider(x), interval));
         }
 
-        /// <summary>Applies AutoPersistence to all objects in a collection.</summary>
-        /// <typeparam name="TDontCare">The signal type.</typeparam>
-        /// <param name="doPersist">The asynchronous method to call to save the object to disk.</param>
-        /// <param name="manualSaveSignal">When invoked, the object will be saved regardless of whether it has changed.</param>
-        /// <returns>A disposable to disable automatic persistence.</returns>
-        [RequiresUnreferencedCode("AutoPersist may reflect over the runtime type; prefer the AutoPersistMetadata overloads for trimming/AOT.")]
-        [RequiresDynamicCode("AutoPersist may reflect over the runtime type; prefer the AutoPersistMetadata overloads for trimming/AOT.")]
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public IDisposable AutoPersistCollection<TDontCare>(
-            Func<TItem, IObservable<RxVoid>> doPersist,
-            IObservable<TDontCare> manualSaveSignal) =>
-            @this.AutoPersistCollection(doPersist, manualSaveSignal, interval: null);
-
-        /// <summary>
-        /// Apply AutoPersistence to all objects in a collection. Items that are
-        /// no longer in the collection won't be persisted anymore.
-        /// </summary>
-        /// <typeparam name="TDontCare">The signal type.</typeparam>
-        /// <param name="doPersist">The asynchronous method to call to save the object to disk.</param>
-        /// <param name="manualSaveSignal">
-        /// When invoked, the object will be saved regardless of whether it has changed.
-        /// </param>
-        /// <param name="interval">
-        /// The interval to save the object on. Note that if an object is constantly changing,
-        /// it is possible that it will never be saved.
-        /// </param>
-        /// <returns>A disposable to disable automatic persistence.</returns>
-        [RequiresUnreferencedCode(
-            "AutoPersistCollection may reflect over runtime item types via AutoPersist when generic type parameters do not match item runtime types. "
-            + "In trimmed/AOT builds, required property/attribute metadata may be removed unless explicitly preserved. "
-            + "Prefer the overloads that accept AutoPersistMetadata or a metadata provider to avoid runtime reflection.")]
-        [RequiresDynamicCode(
-            "AutoPersistCollection may reflect over runtime item types via AutoPersist when generic type parameters do not match item runtime types. "
-            + "In trimmed/AOT builds, required property/attribute metadata may be removed unless explicitly preserved. "
-            + "Prefer the overloads that accept AutoPersistMetadata or a metadata provider to avoid runtime reflection.")]
-        public IDisposable AutoPersistCollection<TDontCare>(
-            Func<TItem, IObservable<RxVoid>> doPersist,
-            IObservable<TDontCare> manualSaveSignal,
-            TimeSpan? interval)
-        {
-            ArgumentExceptionHelper.ThrowIfNull(@this);
-            ArgumentExceptionHelper.ThrowIfNull(doPersist);
-            ArgumentExceptionHelper.ThrowIfNull(manualSaveSignal);
-
-            return TrackPerItemPersistence<TItem, TCollection>(
-                @this,
-                x => x.AutoPersist(doPersist, manualSaveSignal, interval));
-        }
-
         /// <summary>
         /// Call methods <paramref name="onAdd"/> and <paramref name="onRemove"/> whenever an object is added or
         /// removed from a collection. This method correctly handles both when
@@ -395,23 +346,6 @@ public static partial class AutoPersistHelperMixins
         }
     }
 
-    /// <summary>Gets metadata for a runtime type that is not statically known to the trimmer.</summary>
-    /// <param name="runtimeType">The runtime type.</param>
-    /// <returns>The computed persistence metadata.</returns>
-    /// <remarks>
-    /// This path is trimming/AOT unsafe unless the application explicitly preserves the required members
-    /// (properties and related attribute metadata) for <paramref name="runtimeType"/>.
-    /// </remarks>
-    [RequiresUnreferencedCode(
-        "AutoPersist reflects over the runtime type. In trimmed/AOT builds, required property/attribute metadata may be removed "
-        + "unless explicitly preserved. Prefer CreateMetadata<T>() and the overloads that accept AutoPersistMetadata.")]
-    [RequiresDynamicCode(
-        "AutoPersist reflects over the runtime type. In trimmed/AOT builds, required property/attribute metadata may be removed "
-        + "unless explicitly preserved. Prefer CreateMetadata<T>() and the overloads that accept AutoPersistMetadata.")]
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static PersistMetadata GetMetadataForUnknownRuntimeType(Type runtimeType) =>
-        PersistMetadataByType.GetValue(runtimeType, PersistMetadata.Create);
-
     /// <summary>Public-facing persistence metadata for AutoPersist.</summary>
     /// <remarks>
     /// This type exists so callers can provide persistence metadata explicitly in trimming/AOT scenarios,
@@ -634,32 +568,8 @@ public static partial class AutoPersistHelperMixins
             [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)]
             Type type)
         {
-            var hasDataContract = type.GetCustomAttributes(typeof(DataContractAttribute), true).Length > 0;
-
-            var properties = type.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly);
-
-            HashSet<string>? set = null;
-
-            for (var i = 0; i < properties.Length; i++)
-            {
-                var p = properties[i];
-                if (!HasDataMemberAttribute(p))
-                {
-                    continue;
-                }
-
-                set ??= [with(StringComparer.Ordinal)];
-                _ = set.Add(p.Name);
-            }
-
-            set ??= [with(StringComparer.Ordinal)];
+            var set = AutoPersistMetadataInspector.Inspect(type, out var hasDataContract);
             return new(hasDataContract, set);
         }
-
-        /// <summary>Determines whether a property is annotated with <c>[DataMember]</c>.</summary>
-        /// <param name="property">The property to inspect.</param>
-        /// <returns><see langword="true"/> if the property is annotated; otherwise <see langword="false"/>.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static bool HasDataMemberAttribute(PropertyInfo property) => property.IsDefined(typeof(DataMemberAttribute), true);
     }
 }

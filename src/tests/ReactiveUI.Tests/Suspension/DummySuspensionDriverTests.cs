@@ -29,7 +29,7 @@ public class DummySuspensionDriverTests
     public async Task DummySuspensionDriver_LoadState_ReturnsObservable()
     {
         // Arrange
-        var driver = new DummySuspensionDriver();
+        var driver = new DummySuspensionDriverUnsafe();
 
         // Act
         var result = driver.LoadState();
@@ -44,7 +44,7 @@ public class DummySuspensionDriverTests
     public async Task DummySuspensionDriver_SaveState_NullState_ReturnsObservable()
     {
         // Arrange
-        var driver = new DummySuspensionDriver();
+        var driver = new DummySuspensionDriverUnsafe();
 
         // Act
         var result = driver.SaveState<object>(null!);
@@ -59,7 +59,7 @@ public class DummySuspensionDriverTests
     public async Task DummySuspensionDriver_SaveState_ReturnsObservable()
     {
         // Arrange
-        var driver = new DummySuspensionDriver();
+        var driver = new DummySuspensionDriverUnsafe();
         var state = new { TestProperty = "test" };
 
         // Act
@@ -67,5 +67,31 @@ public class DummySuspensionDriverTests
 
         // Assert
         await Assert.That(result).IsNotNull();
+    }
+
+    /// <summary>Tests that DummySuspensionDriverUnsafe typed LoadState returns a default observable.</summary>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task DummySuspensionDriverUnsafe_TypedLoadState_ReturnsDefaultObservable()
+    {
+        var driver = new DummySuspensionDriverUnsafe();
+        var received = (string?)"initial";
+
+        using var subscription = driver.LoadState<string>(null!).Subscribe(value => received = value);
+
+        await Assert.That(received).IsNull();
+    }
+
+    /// <summary>Tests that DummySuspensionDriverUnsafe typed SaveState returns a unit observable.</summary>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task DummySuspensionDriverUnsafe_TypedSaveState_ReturnsUnitObservable()
+    {
+        var driver = new DummySuspensionDriverUnsafe();
+        var called = false;
+
+        using var subscription = driver.SaveState("state", null!).Subscribe(_ => called = true);
+
+        await Assert.That(called).IsTrue();
     }
 }

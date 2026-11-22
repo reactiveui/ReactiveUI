@@ -28,7 +28,7 @@ namespace ReactiveUI;
 /// The host asks the view locator for the view by the view model's run-time type, without building any type at run
 /// time, so it is safe to trim and to compile ahead of time. The default locator checks the view lookup the source
 /// generator writes, then the views the app added with <c>Map</c>. A view registered only with the service locator
-/// needs <see cref="ViewModelViewHostUnsafe"/>, which also asks the service locator for <see cref="IViewFor{T}"/>
+/// needs <c>ViewModelViewHostUnsafe</c>, which also asks the service locator for <see cref="IViewFor{T}"/>
 /// closed over the view model's run-time type.
 /// </remarks>
 [DebuggerDisplay("{ViewContractObservable}, {DefaultContent}")]
@@ -71,7 +71,7 @@ public partial class ViewModelViewHost : TransitioningContentControl, IViewFor, 
         "Design",
         "SST2403:'this' escapes before construction finishes",
         Justification = "The single-threaded UI control hands 'this' to MauiReactiveHelpers to observe its own dependency-property changes; it is never published to another thread.")]
-    private protected ViewModelViewHost(Func<IViewLocator, object, string?, IViewFor?> resolveView)
+    protected ViewModelViewHost(Func<IViewLocator, object, string?, IViewFor?> resolveView)
     {
         _resolveView = resolveView;
         MauiReactiveHelpers.InitializeViewModelViewHost(
@@ -137,6 +137,6 @@ public partial class ViewModelViewHost : TransitioningContentControl, IViewFor, 
             return;
         }
 
-        this.Log().Warn(ViewHostResolution.NoViewFoundWarning(GetType().Name, viewModel, nameof(ViewModelViewHostUnsafe)));
+        this.Log().Warn(ViewHostResolution.NoViewFoundWarning(GetType().Name, viewModel, "ViewModelViewHostUnsafe"));
     }
 }

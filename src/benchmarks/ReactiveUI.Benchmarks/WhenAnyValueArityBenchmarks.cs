@@ -66,10 +66,10 @@ public class WhenAnyValueArityBenchmarks
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static IObservable<int> Observe(BenchmarkViewModel viewModel) =>
         viewModel.WhenAnyValue(
-            x => x.First,
-            x => x.Second,
-            x => x.Third,
-            x => x.Fourth,
-            x => x.Count,
+            static x => x.First,
+            static x => x.Second,
+            static x => x.Third,
+            static x => x.Fourth,
+            static x => x.Count,
             static (first, second, third, fourth, count) => (first?.Length ?? 0) + (second?.Length ?? 0) + (third?.Length ?? 0) + (fourth?.Length ?? 0) + count);
 }

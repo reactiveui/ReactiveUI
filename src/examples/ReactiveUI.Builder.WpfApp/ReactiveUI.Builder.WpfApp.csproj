@@ -16,6 +16,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Bcl.TimeProvider" Condition="$(TargetFramework.StartsWith('net4'))"/>
     <ProjectReference Include="..\..\ReactiveUI.Wpf\ReactiveUI.Wpf.csproj"/>
+    <ProjectReference Include="..\..\ReactiveUI.Wpf.Unsafe\ReactiveUI.Wpf.Unsafe.csproj"/>
   </ItemGroup>
 
   <ItemGroup>

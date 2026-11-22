@@ -46,7 +46,7 @@ public static class PropertyExamples
     {
         using TodoListViewModel viewModel = new(InMemoryTodoStore.CreateSeeded());
 
-        using IDisposable subscription = viewModel.WhenAnyValue(x => x.NewTitle)
+        using IDisposable subscription = viewModel.WhenAnyValue(static x => x.NewTitle)
             .Subscribe(static title => Console.WriteLine($"[{title}]"));
 
         viewModel.NewTitle = GroceriesTitle;
@@ -66,7 +66,7 @@ public static class PropertyExamples
     {
         using TodoListViewModel viewModel = new(InMemoryTodoStore.CreateSeeded());
 
-        using IDisposable subscription = viewModel.WhenAnyValue(x => x.NewTitle)
+        using IDisposable subscription = viewModel.WhenAnyValue(static x => x.NewTitle)
             .Skip(1)
             .Subscribe(Console.WriteLine);
 
@@ -82,8 +82,8 @@ public static class PropertyExamples
         using TodoListViewModel viewModel = new(InMemoryTodoStore.CreateSeeded());
 
         using IDisposable subscription = viewModel.WhenAnyValue(
-                x => x.NewTitle,
-                x => x.FilterText,
+                static x => x.NewTitle,
+                static x => x.FilterText,
                 static (title, filter) => title.Length > 0 && filter.Length > 0
                     ? "Clear the filter to see the new item"
                     : "Ready")
@@ -107,7 +107,7 @@ public static class PropertyExamples
         TodoItem dentist = new() { Title = DentistTitle };
         SelectionHolder holder = new() { Selected = groceries };
 
-        using IDisposable subscription = holder.WhenAnyValue(x => x.Selected!.Title)
+        using IDisposable subscription = holder.WhenAnyValue(static x => x.Selected!.Title)
             .Subscribe(Console.WriteLine);
 
         groceries.Title = "Buy groceries and milk";

@@ -36,7 +36,7 @@ public static class RegistrationReflectionExamples
     }
 
     /// <summary>
-    /// <see cref="IReactiveUIBuilder.WithViewsFromAssembly"/> runs the same scan while the app starts, as part of the
+    /// <see cref="UnsafeReactiveUIBuilderExtensions.WithViewsFromAssembly"/> runs the same scan while the app starts, as part of the
     /// builder chain, instead of calling <see cref="DependencyResolverMixins.RegisterViewsForViewModels"/> directly.
     /// </summary>
     [DynamicDependency(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor | DynamicallyAccessedMemberTypes.PublicProperties, typeof(MusicPlayerScreen))]

@@ -85,7 +85,8 @@ public interface ISuspensionHost : IReactiveObject
 
     /// <summary>
     /// Gets or sets the current application state - get a typed version of this via
-    /// <see cref="SuspensionHostExtensions.GetAppState{T}(ISuspensionHost)"/>.
+    /// <c>UnsafeSuspensionHostExtensions.GetAppState&lt;T&gt;(ISuspensionHost)</c> (from <c>ReactiveUI.Unsafe</c>),
+    /// or use <see cref="ISuspensionHost{TAppState}"/> for AOT-safe typed access.
     /// The "application state" is a notion entirely defined
     /// via the client application - the framework places no restrictions on
     /// the object other than it can be serialized.
