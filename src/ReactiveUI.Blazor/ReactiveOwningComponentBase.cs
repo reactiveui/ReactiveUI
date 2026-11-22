@@ -85,13 +85,7 @@ public class ReactiveOwningComponentBase<T> : OwningComponentBase<T>, IViewFor<T
     /// <inheritdoc/>
     protected override void OnAfterRender(bool firstRender)
     {
-        ReactiveComponentHelpers.HandleFirstRender(
-            firstRender,
-            _state,
-            () => ViewModel,
-            h => PropertyChanged += h,
-            h => PropertyChanged -= h,
-            () => InvokeAsync(StateHasChanged));
+        ReactiveComponentHelpers.HandleFirstRender<T, ReactiveOwningComponentBase<T>>(firstRender, _state, this, () => InvokeAsync(StateHasChanged));
         base.OnAfterRender(firstRender);
     }
 
