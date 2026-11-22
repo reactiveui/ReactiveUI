@@ -47,3 +47,5 @@ await AsyncValidationExamples.ValidateAsynchronouslyWithMultipleErrors();
 IReactivePropertyExamples.UseThroughTheInterface();
 
 ReactivePropertyMixinsExamples.ObserveValidationErrorsAsAString();
+
+GeneratedValidationExamples.ValidateWithSourceGeneratedAttributes();

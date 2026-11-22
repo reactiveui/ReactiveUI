@@ -28,6 +28,8 @@ NoteExamples.DefaultIntervalIsThreeSeconds();
 
 NoteExamples.ManualSaveSignalWithDefaultInterval();
 
+await GeneratedAutoPersistExamples.SavesUsingGeneratedMetadata();
+
 CollectionPersistExamples.DefaultIntervalAppliesToEveryItem();
 
 await CollectionPersistExamples.PersistsEachNoteAfterAQuietPeriod();

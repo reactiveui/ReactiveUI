@@ -151,7 +151,7 @@ public class ReactiveCommandWinFormsOutputTests
         var viewModel = new ReactiveCommandOutputViewModel();
 
         var results = new List<string>();
-        _ = viewModel.WhenAnyObservable(vm => vm.NavigateCommand)
+        _ = viewModel.WhenAnyObservable(static vm => vm.NavigateCommand)
                  .Subscribe(results.Add);
 
         await viewModel.NavigateCommand.Execute(Page1);
@@ -198,7 +198,7 @@ public class ReactiveCommandWinFormsOutputTests
         _ = viewModel.NavigateCommand.Subscribe(results.Add);
 
         var source = new Signal<string>();
-        _ = source.InvokeCommand(viewModel, vm => vm.NavigateCommand);
+        _ = source.InvokeCommand(viewModel, static vm => vm.NavigateCommand);
         source.OnNext(Page1);
 
         await Assert.That(results).Count().IsEqualTo(1);

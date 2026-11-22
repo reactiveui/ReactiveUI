@@ -24,6 +24,8 @@ ViewRegistrationExamples.RegisterAViewForAViewModel();
 
 ViewRegistrationExamples.RegisterASingletonViewForAViewModel();
 
+GeneratedViewRegistrationExamples.RegisterViewsWithSourceGenerator();
+
 CoreRegistrationExamples.SeeWhatRegistrationsAdds();
 
 CoreRegistrationExamples.SeeWhatPlatformRegistrationsAdds();

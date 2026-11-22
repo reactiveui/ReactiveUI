@@ -279,7 +279,7 @@ public class RoutedViewHost : ReactiveNavigationController
     /// <returns>A disposable that represents the subscription.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private IDisposable SubscribeToNavigateBack() =>
-        this.WhenAnyObservable(x => x.Router!.NavigateBack!)
+        this.WhenAnyObservable(static x => x.Router!.NavigateBack!)
             .Subscribe(new DelegateObserver<IRoutableViewModel>(navigateBack =>
             {
                 _ = navigateBack;

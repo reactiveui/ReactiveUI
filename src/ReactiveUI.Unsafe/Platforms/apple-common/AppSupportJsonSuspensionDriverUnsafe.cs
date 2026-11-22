@@ -106,6 +106,7 @@ public sealed class AppSupportJsonSuspensionDriverUnsafe : IUnsafeSuspensionDriv
     /// <param name="targetDir">The platform search path directory.</param>
     /// <param name="subDir">The application-specific subdirectory name.</param>
     /// <returns>The fully qualified directory path.</returns>
+    /// <exception cref="InvalidOperationException">Thrown when the platform application support directory or bundle identifier cannot be resolved.</exception>
     private static string CreateAppDirectory(NSSearchPathDirectory targetDir, string subDir)
     {
         var fm = new NSFileManager();

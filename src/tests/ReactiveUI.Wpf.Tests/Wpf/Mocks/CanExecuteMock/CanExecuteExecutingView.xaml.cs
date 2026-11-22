@@ -20,8 +20,8 @@ public partial class CanExecuteExecutingView
         ViewModel = new();
         _ = this.WhenActivated(d =>
         {
-            d(this.BindCommand(ViewModel, vm => vm.Command3, v => v.Execute));
-            d(this.OneWayBind(ViewModel, vm => vm.Result, v => v.Result.Text));
+            d(this.BindCommand(ViewModel, static vm => vm.Command3, static v => v.Execute));
+            d(this.OneWayBind(ViewModel, static vm => vm.Result, static v => v.Result.Text));
         });
     }
 }

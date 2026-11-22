@@ -158,7 +158,7 @@ public class ReactivePropertyMixinsTests
         var property = new ReactiveProperty<string>();
 
         // Act & Assert
-        await Assert.That(() => property.AddValidation(null!))
+        await Assert.That(() => property.AddValidation((System.Linq.Expressions.Expression<Func<ReactiveProperty<string>>>)null!))
             .Throws<ArgumentNullException>();
     }
 
@@ -171,7 +171,7 @@ public class ReactivePropertyMixinsTests
         ReactiveProperty<string>? property = null;
 
         // Act & Assert
-        await Assert.That(() => ReactivePropertyMixins.AddValidation(property!, () => property!))
+        await Assert.That(() => UnsafeReactivePropertyMixins.AddValidation(property!, () => property!))
             .Throws<ArgumentNullException>();
     }
 
