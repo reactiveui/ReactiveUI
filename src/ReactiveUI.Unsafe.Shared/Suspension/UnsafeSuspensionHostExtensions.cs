@@ -144,7 +144,7 @@ public static class UnsafeSuspensionHostExtensions
     /// <summary>Emits only the non-null values of a <c>WhenAny</c> stream, cast to the requested type.</summary>
     /// <typeparam name="TResult">The requested app-state type.</typeparam>
     /// <param name="source">The source app-state value stream.</param>
-    private sealed class NonNullCastObservable<TResult>(IObservable<object?> source) : IObservable<TResult>
+    internal sealed class NonNullCastObservable<TResult>(IObservable<object?> source) : IObservable<TResult>
         where TResult : class
     {
         /// <inheritdoc/>

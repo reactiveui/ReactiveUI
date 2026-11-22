@@ -292,4 +292,32 @@ public class ReactivePropertyValidationTests
 
         await Assert.That(rp.HasErrors).IsFalse();
     }
+
+    /// <summary>Verifies that explicit DataAnnotations validation without a display name validates properly.</summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task AddValidation_WithoutDisplayName_ValidatesWithoutReflection()
+    {
+        using var rp = new ReactiveProperty<string?>(string.Empty, Sequencer.Immediate, false, false)
+            .AddValidation(new System.ComponentModel.DataAnnotations.RequiredAttribute());
+
+        await Assert.That(rp.HasErrors).IsTrue();
+
+        rp.Value = "Grace";
+
+        await Assert.That(rp.HasErrors).IsFalse();
+    }
+
+    /// <summary>Verifies that passing no validation attributes returns the same property without errors.</summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task AddValidation_WithEmptyAttributes_ReturnsSameInstanceWithoutErrors()
+    {
+        using var rp = new ReactiveProperty<string?>(string.Empty, Sequencer.Immediate, false, false);
+
+        var result = rp.AddValidation();
+
+        await Assert.That(result).IsSameReferenceAs(rp);
+        await Assert.That(rp.HasErrors).IsFalse();
+    }
 }

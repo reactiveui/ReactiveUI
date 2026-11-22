@@ -472,6 +472,141 @@ public class SuspensionHostExtensionsTests
         await Assert.That(secondDriver.LastSavedState).IsSameReferenceAs(secondDriver.StateToLoad);
     }
 
+    /// <summary>Verifies that a synchronous exception from a driver operation logs and still disposes the persist token.</summary>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task SetupDefaultSuspendResume_DriverThrowsSynchronously_DisposesPersistToken()
+    {
+        var persistSubject = new Signal<IDisposable>();
+        using var host = new SuspensionHost
+        {
+            AppState = new DummyAppState(),
+            IsLaunchingNew = Signal.Silent<RxVoid>(),
+            IsResuming = Signal.Silent<RxVoid>(),
+            ShouldInvalidateState = Signal.Silent<RxVoid>(),
+            ShouldPersistState = persistSubject,
+        };
+
+        var driver = new TestSuspensionDriver { ThrowSynchronouslyOnSave = true };
+        using var setup = host.SetupDefaultSuspendResume(driver);
+
+        var token = new CountingDisposable();
+        persistSubject.OnNext(token);
+
+        await Assert.That(token.DisposeCount).IsEqualTo(1);
+    }
+
+    /// <summary>Verifies that an erroring driver observable logs and still disposes the persist token.</summary>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task SetupDefaultSuspendResume_DriverObservableErrors_DisposesPersistToken()
+    {
+        var persistSubject = new Signal<IDisposable>();
+        using var host = new SuspensionHost
+        {
+            AppState = new DummyAppState(),
+            IsLaunchingNew = Signal.Silent<RxVoid>(),
+            IsResuming = Signal.Silent<RxVoid>(),
+            ShouldInvalidateState = Signal.Silent<RxVoid>(),
+            ShouldPersistState = persistSubject,
+        };
+
+        var driver = new TestSuspensionDriver { FailAsyncOnSave = true };
+        using var setup = host.SetupDefaultSuspendResume(driver);
+
+        var token = new CountingDisposable();
+        persistSubject.OnNext(token);
+
+        await Assert.That(token.DisposeCount).IsEqualTo(1);
+    }
+
+    /// <summary>Verifies that lifecycle signal errors and completions are handled without throwing.</summary>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task SetupDefaultSuspendResume_LifecycleSignalsErrorAndComplete_HandledGracefully()
+    {
+        var invalidateSubject = new Signal<RxVoid>();
+        var persistSubject = new Signal<IDisposable>();
+        using var host = new SuspensionHost
+        {
+            AppState = new DummyAppState(),
+            IsLaunchingNew = Signal.Silent<RxVoid>(),
+            IsResuming = Signal.Silent<RxVoid>(),
+            ShouldInvalidateState = invalidateSubject,
+            ShouldPersistState = persistSubject,
+        };
+
+        var driver = new TestSuspensionDriver();
+        using var setup = host.SetupDefaultSuspendResume(driver);
+
+        await Assert.That(() =>
+        {
+            invalidateSubject.OnError(new InvalidOperationException("signal failure"));
+            persistSubject.OnCompleted();
+        }).ThrowsNothing();
+    }
+
+    /// <summary>Verifies that duplicate completion from a driver observable disposes the persist token only once.</summary>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task SetupDefaultSuspendResume_DriverDoubleCompletes_DisposesPersistTokenOnce()
+    {
+        var persistSubject = new Signal<IDisposable>();
+        using var host = new SuspensionHost
+        {
+            AppState = new DummyAppState(),
+            IsLaunchingNew = Signal.Silent<RxVoid>(),
+            IsResuming = Signal.Silent<RxVoid>(),
+            ShouldInvalidateState = Signal.Silent<RxVoid>(),
+            ShouldPersistState = persistSubject,
+        };
+
+        var driver = new TestSuspensionDriver { DoubleCompleteOnSave = true };
+        using var setup = host.SetupDefaultSuspendResume(driver);
+
+        var token = new CountingDisposable();
+        persistSubject.OnNext(token);
+
+        await Assert.That(token.DisposeCount).IsEqualTo(1);
+    }
+
+    /// <summary>Verifies that <see cref="UnsafeSuspensionHostExtensions.NonNullCastObservable{TResult}"/> forwards errors and completion.</summary>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task NonNullCastObservable_ForwardsErrorAndCompleted()
+    {
+        var errorSignal = new Signal<object?>();
+        Exception? observedError = null;
+        using (new UnsafeSuspensionHostExtensions.NonNullCastObservable<DummyAppState>(errorSignal).Subscribe(
+            static _ => { },
+            ex => observedError = ex))
+        {
+            errorSignal.OnError(new InvalidOperationException("boom"));
+        }
+
+        var completeSignal = new Signal<object?>();
+        var completed = false;
+        using (new UnsafeSuspensionHostExtensions.NonNullCastObservable<DummyAppState>(completeSignal).Subscribe(
+            static _ => { },
+            () => completed = true))
+        {
+            completeSignal.OnCompleted();
+        }
+
+        await Assert.That(observedError).IsTypeOf<InvalidOperationException>();
+        await Assert.That(completed).IsTrue();
+    }
+
+    /// <summary>A disposable that counts how many times <see cref="Dispose"/> is invoked.</summary>
+    private sealed class CountingDisposable : IDisposable
+    {
+        /// <summary>Gets the number of times <see cref="Dispose"/> has been called.</summary>
+        public int DisposeCount { get; private set; }
+
+        /// <inheritdoc/>
+        public void Dispose() => DisposeCount++;
+    }
+
     /// <summary>A dummy application state used for testing.</summary>
     [SuppressMessage(
         "Minor Code Smell",
@@ -479,9 +614,28 @@ public class SuspensionHostExtensionsTests
         Justification = "Empty type used as a test marker.")]
     private sealed class DummyAppState;
 
+    /// <summary>An observable that invokes <see cref="IObserver{T}.OnCompleted"/> twice to exercise idempotent cleanup.</summary>
+    private sealed class DoubleCompleteObservable : IObservable<RxVoid>
+    {
+        /// <inheritdoc/>
+        public IDisposable Subscribe(IObserver<RxVoid> observer)
+        {
+            observer.OnNext(RxVoid.Default);
+            observer.OnCompleted();
+            observer.OnCompleted();
+            return Scope.Empty;
+        }
+    }
+
     /// <summary>A test suspension driver that records calls and returns configurable results.</summary>
     private sealed class TestSuspensionDriver : ISuspensionDriverContract
     {
+        /// <summary>Gets or sets a value indicating whether SaveState emits OnCompleted twice.</summary>
+        public bool DoubleCompleteOnSave { get; set; }
+
+        /// <summary>Gets or sets a value indicating whether SaveState returns a failing observable.</summary>
+        public bool FailAsyncOnSave { get; set; }
+
         /// <summary>Gets the number of times InvalidateState was called.</summary>
         public int InvalidateStateCallCount { get; private set; }
 
@@ -499,6 +653,9 @@ public class SuspensionHostExtensionsTests
 
         /// <summary>Gets or sets the state to return from LoadState.</summary>
         public object? StateToLoad { get; set; }
+
+        /// <summary>Gets or sets a value indicating whether SaveState throws synchronously.</summary>
+        public bool ThrowSynchronouslyOnSave { get; set; }
 
         /// <inheritdoc/>
         public IObservable<RxVoid> InvalidateState()
@@ -553,11 +710,24 @@ public class SuspensionHostExtensionsTests
         /// <typeparam name="T">The state type.</typeparam>
         /// <param name="state">The state to save.</param>
         /// <returns>A completion signal.</returns>
+        /// <exception cref="InvalidOperationException">Thrown when <see cref="ThrowSynchronouslyOnSave"/> is set.</exception>
         private IObservable<RxVoid> SaveStateCore<T>(T state)
         {
             SaveStateCallCount++;
             LastSavedState = state;
-            return Signal.Emit(RxVoid.Default, Sequencer.Immediate);
+            if (ThrowSynchronouslyOnSave)
+            {
+                throw new InvalidOperationException("Failed to save state synchronously");
+            }
+
+            if (FailAsyncOnSave)
+            {
+                return Signal.Fail<RxVoid>(new InvalidOperationException("Failed to save state"), Sequencer.Immediate);
+            }
+
+            return DoubleCompleteOnSave
+                ? new DoubleCompleteObservable()
+                : Signal.Emit(RxVoid.Default, Sequencer.Immediate);
         }
     }
 }
