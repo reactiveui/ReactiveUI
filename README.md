@@ -262,7 +262,7 @@ Kent Boogart.
 [![JetBrains](https://raw.githubusercontent.com/reactiveui/website/main/docs/images/sponsors/jetbrains.svg)](https://www.jetbrains.com/)
 [![Claude by Anthropic](https://raw.githubusercontent.com/reactiveui/website/main/docs/images/sponsors/claude.svg)](https://claude.com/)
 [![OpenAI](https://raw.githubusercontent.com/reactiveui/website/main/docs/images/sponsors/openai.svg)](https://openai.com/codex/)
-[![Sponsored by Snyk](https://raw.githubusercontent.com/reactiveui/website/main/docs/images/sponsors/snyk.svg)](https://snyk.io/)
+[![Sponsored by Snyk](https://raw.githubusercontent.com/reactiveui/website/e37a112f97ea2e9ea54b21bb7ed9e56df034d618/docs/images/sponsors/snyk.svg)](https://snyk.io/)
 
 See [our sponsors](https://www.reactiveui.net/sponsors/) for more information.
 JetBrains, Claude, Anthropic, OpenAI and Codex names and logos are trademarks of their respective owners.
