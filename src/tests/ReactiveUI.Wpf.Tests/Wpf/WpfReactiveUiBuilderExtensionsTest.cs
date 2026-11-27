@@ -3,7 +3,10 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Runtime.CompilerServices;
 using System.Windows;
+using ReactiveUI.Primitives.Disposables;
+using ReactiveUI.Tests.Xaml.Utilities;
 using Splat;
 using Splat.Builder;
 using TUnit.Core.Executors;
@@ -15,6 +18,15 @@ namespace ReactiveUI.Tests.Wpf;
 [TestExecutor<DispatcherThreadExecutor>]
 public class WpfReactiveUiBuilderExtensionsTest
 {
+    /// <summary>The number of work items the deferred scheduler test schedules.</summary>
+    private const int ExpectedDeferredRuns = 2;
+
+    /// <summary>The longest wait for the deferred scheduler's work to run.</summary>
+    private static readonly TimeSpan DeferredWorkTimeout = TimeSpan.FromSeconds(10);
+
+    /// <summary>The wait between dispatcher pumps while the deferred scheduler's work runs.</summary>
+    private static readonly TimeSpan DeferredWorkPollInterval = TimeSpan.FromMilliseconds(10);
+
     /// <summary>Tests that WpfMainThreadScheduler is not null.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
@@ -151,6 +163,38 @@ public class WpfReactiveUiBuilderExtensionsTest
         }
     }
 
+    /// <summary>Tests that the deferred scheduler runs immediate and delayed work on the dispatcher it finds when first used.</summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task DeferredScheduler_RunsWorkOnTheDispatcherFoundWhenFirstUsed()
+    {
+        if (Application.Current is not null)
+        {
+            return;
+        }
+
+        var sequencer = DeferredWpfMainThreadSequencer.Instance;
+        var runs = new StrongBox<int>();
+        var before = TimeProvider.System.GetUtcNow();
+
+        _ = sequencer.Schedule(runs, static (_, box) => CountRun(box));
+        _ = sequencer.Schedule(runs, TimeSpan.Zero, static (_, box) => CountRun(box));
+
+        using var timeout = new CancellationTokenSource(DeferredWorkTimeout);
+        while (runs.Value < ExpectedDeferredRuns && !timeout.IsCancellationRequested)
+        {
+            DispatcherUtilities.DoEvents();
+            await Task.Delay(DeferredWorkPollInterval, CancellationToken.None);
+        }
+
+        using (Assert.Multiple())
+        {
+            await Assert.That(runs.Value).IsEqualTo(ExpectedDeferredRuns);
+            await Assert.That(sequencer.Now).IsGreaterThanOrEqualTo(before);
+            await Assert.That(sequencer.CheckAccess()).IsFalse();
+        }
+    }
+
     /// <summary>Tests that WithWpfConverters throws when builder is null.</summary>
     [Test]
     public void WithWpfConverters_ThrowsArgumentNullException_WhenBuilderIsNull() =>
@@ -232,5 +276,14 @@ public class WpfReactiveUiBuilderExtensionsTest
             await Assert.That(success).IsTrue();
             await Assert.That(result).IsEqualTo(Visibility.Visible);
         }
+    }
+
+    /// <summary>Counts one run of scheduled work.</summary>
+    /// <param name="runs">The run counter.</param>
+    /// <returns>A disposable with nothing to release.</returns>
+    private static EmptyDisposable CountRun(StrongBox<int> runs)
+    {
+        runs.Value++;
+        return EmptyDisposable.Instance;
     }
 }
