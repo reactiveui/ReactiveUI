@@ -3,7 +3,10 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Runtime.CompilerServices;
 using System.Windows;
+using ReactiveUI.Primitives.Disposables;
+using ReactiveUI.Tests.Xaml.Utilities;
 using Splat;
 using Splat.Builder;
 using TUnit.Core.Executors;
@@ -15,6 +18,22 @@ namespace ReactiveUI.Tests.Wpf;
 [TestExecutor<DispatcherThreadExecutor>]
 public class WpfReactiveUiBuilderExtensionsTest
 {
+    /// <summary>The number of work items the deferred scheduler test schedules.</summary>
+#if REACTIVE_SHIM
+    private const int ExpectedDeferredRuns = 3;
+#else
+    private const int ExpectedDeferredRuns = 2;
+#endif
+
+    /// <summary>The longest wait for the deferred scheduler's work to run.</summary>
+    private static readonly TimeSpan DeferredWorkTimeout = TimeSpan.FromSeconds(10);
+
+    /// <summary>The wait between dispatcher pumps while the deferred scheduler's work runs.</summary>
+    private static readonly TimeSpan DeferredWorkPollInterval = TimeSpan.FromMilliseconds(10);
+
+    /// <summary>The delay given to the deferred scheduler's delayed work.</summary>
+    private static readonly TimeSpan DeferredWorkDelay = TimeSpan.FromMilliseconds(1);
+
     /// <summary>Tests that WpfMainThreadScheduler is not null.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
@@ -91,7 +110,7 @@ public class WpfReactiveUiBuilderExtensionsTest
         }
     }
 
-    /// <summary>Tests that WithWpfScheduler registers the WPF dispatcher sequencer.</summary>
+    /// <summary>Tests that WithWpfScheduler registers the WPF dispatcher sequencer, or the deferred one before an application exists.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task WithWpfScheduler_RegistersDispatcherSequencer()
@@ -107,8 +126,95 @@ public class WpfReactiveUiBuilderExtensionsTest
             _ = builder.WithWpfScheduler();
 
             await Assert.That(builder.MainThreadScheduler).IsNotNull();
-            await Assert.That(builder.MainThreadScheduler!).IsTypeOf<DispatcherSequencer>();
+            if (Application.Current is null)
+            {
+                await Assert.That(builder.MainThreadScheduler!).IsSameReferenceAs(DeferredWpfMainThreadSequencer.Instance);
+            }
+            else
+            {
+                await Assert.That(builder.MainThreadScheduler!).IsTypeOf<DispatcherSequencer>();
+            }
         }
+    }
+
+    /// <summary>Tests that WithWpf can build on a thread without a dispatcher before an application exists, as a generic host does.</summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task WithWpf_BuildApp_WithoutDispatcherBeforeApplication_UsesDeferredScheduler()
+    {
+        if (Application.Current is not null)
+        {
+            return;
+        }
+
+        AppBuilder.ResetBuilderStateForTests();
+        var resolver = new ModernDependencyResolver();
+        resolver.InitializeSplat();
+
+        using (resolver.WithResolver())
+        {
+            var scheduler = await Task.Factory.StartNew(
+                static state =>
+                {
+                    var builder = ((ModernDependencyResolver)state!).CreateReactiveUIBuilder();
+                    _ = builder.WithWpf().BuildApp();
+                    return builder.MainThreadScheduler;
+                },
+                resolver,
+                CancellationToken.None,
+                TaskCreationOptions.LongRunning,
+                TaskScheduler.Default);
+
+            await Assert.That(scheduler).IsSameReferenceAs(DeferredWpfMainThreadSequencer.Instance);
+            await Assert.That(DeferredWpfMainThreadSequencer.Instance.CheckAccess()).IsFalse();
+        }
+    }
+
+    /// <summary>Tests that the deferred scheduler runs immediate and delayed work on the dispatcher it finds when first used.</summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task DeferredScheduler_RunsWorkOnTheDispatcherFoundWhenFirstUsed()
+    {
+        // Resolve this test thread's dispatcher rather than DispatcherSequencer.Main, which an Application created by
+        // another test would bind to a thread nobody pumps.
+        var sequencer = new DeferredWpfMainThreadSequencer(static () => DispatcherSequencer.Current);
+        var runs = new StrongBox<int>();
+        var before = TimeProvider.System.GetUtcNow();
+
+        _ = sequencer.Schedule(runs, static (_, box) => CountRun(box));
+
+        // A positive delay goes through the due-timestamp overload, which reads Timestamp.
+        _ = sequencer.Schedule(runs, DeferredWorkDelay, static (_, box) => CountRun(box));
+#if REACTIVE_SHIM
+        _ = sequencer.Schedule(runs, before, static (_, box) => CountRun(box));
+#endif
+
+        using var timeout = new CancellationTokenSource(DeferredWorkTimeout);
+        while (runs.Value < ExpectedDeferredRuns && !timeout.IsCancellationRequested)
+        {
+            DispatcherUtilities.DoEvents();
+            await Task.Delay(DeferredWorkPollInterval, CancellationToken.None);
+        }
+
+        using (Assert.Multiple())
+        {
+            await Assert.That(runs.Value).IsEqualTo(ExpectedDeferredRuns);
+            await Assert.That(sequencer.Now).IsGreaterThanOrEqualTo(before);
+        }
+    }
+
+    /// <summary>Tests that the deferred scheduler reports no access from a thread that is not the UI thread.</summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task DeferredScheduler_CheckAccess_IsFalseOffTheUiThread()
+    {
+        var hasAccess = await Task.Factory.StartNew(
+            static () => DeferredWpfMainThreadSequencer.Instance.CheckAccess(),
+            CancellationToken.None,
+            TaskCreationOptions.LongRunning,
+            TaskScheduler.Default);
+
+        await Assert.That(hasAccess).IsFalse();
     }
 
     /// <summary>Tests that WithWpfConverters throws when builder is null.</summary>
@@ -192,5 +298,14 @@ public class WpfReactiveUiBuilderExtensionsTest
             await Assert.That(success).IsTrue();
             await Assert.That(result).IsEqualTo(Visibility.Visible);
         }
+    }
+
+    /// <summary>Counts one run of scheduled work.</summary>
+    /// <param name="runs">The run counter.</param>
+    /// <returns>A disposable with nothing to release.</returns>
+    private static EmptyDisposable CountRun(StrongBox<int> runs)
+    {
+        runs.Value++;
+        return EmptyDisposable.Instance;
     }
 }
