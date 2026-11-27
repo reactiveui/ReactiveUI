@@ -31,6 +31,9 @@ public class WpfReactiveUiBuilderExtensionsTest
     /// <summary>The wait between dispatcher pumps while the deferred scheduler's work runs.</summary>
     private static readonly TimeSpan DeferredWorkPollInterval = TimeSpan.FromMilliseconds(10);
 
+    /// <summary>The delay given to the deferred scheduler's delayed work.</summary>
+    private static readonly TimeSpan DeferredWorkDelay = TimeSpan.FromMilliseconds(1);
+
     /// <summary>Tests that WpfMainThreadScheduler is not null.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
@@ -179,7 +182,9 @@ public class WpfReactiveUiBuilderExtensionsTest
         var before = TimeProvider.System.GetUtcNow();
 
         _ = sequencer.Schedule(runs, static (_, box) => CountRun(box));
-        _ = sequencer.Schedule(runs, TimeSpan.Zero, static (_, box) => CountRun(box));
+
+        // A positive delay goes through the due-timestamp overload, which reads Timestamp.
+        _ = sequencer.Schedule(runs, DeferredWorkDelay, static (_, box) => CountRun(box));
 #if REACTIVE_SHIM
         _ = sequencer.Schedule(runs, before, static (_, box) => CountRun(box));
 #endif
@@ -196,6 +201,20 @@ public class WpfReactiveUiBuilderExtensionsTest
             await Assert.That(runs.Value).IsEqualTo(ExpectedDeferredRuns);
             await Assert.That(sequencer.Now).IsGreaterThanOrEqualTo(before);
         }
+    }
+
+    /// <summary>Tests that the deferred scheduler reports no access from a thread that is not the UI thread.</summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task DeferredScheduler_CheckAccess_IsFalseOffTheUiThread()
+    {
+        var hasAccess = await Task.Factory.StartNew(
+            static () => DeferredWpfMainThreadSequencer.Instance.CheckAccess(),
+            CancellationToken.None,
+            TaskCreationOptions.LongRunning,
+            TaskScheduler.Default);
+
+        await Assert.That(hasAccess).IsFalse();
     }
 
     /// <summary>Tests that WithWpfConverters throws when builder is null.</summary>
