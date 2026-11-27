@@ -361,6 +361,55 @@ public class RoutedViewHostTest
         await Assert.That(host.Navigation.NavigationStack[0]).IsSameReferenceAs(root);
     }
 
+    /// <summary>NavigateAndReset leaves only the new page, so no back button leads to the old pages.</summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    [TestExecutor<MauiRoutedViewHostTestExecutor>]
+    public async Task NavigateAndReset_RemovesThePagesBeneathTheNewPage()
+    {
+        var host = new TestableRoutedViewHost();
+        var login = new TestRoutableViewModel();
+        var home = new TestRoutableViewModel();
+        _ = host.Router.Navigate.Execute(login).Subscribe(static _ => { });
+        await Task.Delay(SchedulerProcessingDelayMs);
+
+        _ = host.Router.NavigateAndReset.Execute(home).Subscribe(static _ => { });
+        await Task.Delay(SchedulerProcessingDelayMs);
+
+        var pages = host.Navigation.NavigationStack;
+        using (Assert.Multiple())
+        {
+            await Assert.That(pages.Count).IsEqualTo(1);
+            await Assert.That(((TestRoutableView)pages[0]).ViewModel).IsSameReferenceAs(home);
+        }
+    }
+
+    /// <summary>Syncing an empty page stack to a router stack of three builds the pages in router order.</summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    [TestExecutor<MauiRoutedViewHostTestExecutor>]
+    public async Task SyncNavigationStacks_EmptyPageStack_BuildsPagesInRouterOrder()
+    {
+        var host = new TestableRoutedViewHost();
+        var first = new TestRoutableViewModel();
+        var second = new TestRoutableViewModel();
+        var third = new TestRoutableViewModel();
+        host.Router.NavigationStack.Add(first);
+        host.Router.NavigationStack.Add(second);
+        host.Router.NavigationStack.Add(third);
+
+        await host.PublicSyncNavigationStacksAsync();
+
+        var pages = host.Navigation.NavigationStack;
+        using (Assert.Multiple())
+        {
+            await Assert.That(pages.Count).IsEqualTo(host.Router.NavigationStack.Count);
+            await Assert.That(((TestRoutableView)pages[0]).ViewModel).IsSameReferenceAs(first);
+            await Assert.That(((TestRoutableView)pages[1]).ViewModel).IsSameReferenceAs(second);
+            await Assert.That(((TestRoutableView)pages[2]).ViewModel).IsSameReferenceAs(third);
+        }
+    }
+
     /// <summary>The default host does not ask the service locator, so a page registered only there is not found.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
@@ -527,6 +576,11 @@ public class RoutedViewHostTest
         /// <summary>Exposes the protected InvalidateCurrentViewModel method.</summary>
         public void PublicInvalidateCurrentViewModel() =>
             InvalidateCurrentViewModel();
+
+        /// <summary>Exposes the protected SyncNavigationStacksAsync method.</summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        public Task PublicSyncNavigationStacksAsync() =>
+            SyncNavigationStacksAsync();
     }
 
     /// <summary>Test routable view model.</summary>

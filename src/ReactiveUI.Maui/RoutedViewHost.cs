@@ -43,9 +43,6 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
         typeof(RoutedViewHost),
         false);
 
-    /// <summary>The number of trailing navigation pages the stack reconciliation keeps in place before pruning the pages beneath them.</summary>
-    private const int TrailingPageCount = 2;
-
     /// <summary>The subscriptions created by this host.</summary>
     private readonly MultipleDisposable _subscriptions = [];
 
@@ -190,40 +187,52 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
 
     /// <summary>Syncs page's navigation stack with <see cref="Router"/> to affect <see cref="Router"/> manipulations like Add or Clear.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    /// <remarks>
+    /// The page stack ends up with one page per router view model, in the same order. Pages that already show the right
+    /// view model at the bottom of the stack are kept, so a reset such as <c>NavigateAndReset</c> removes the pages
+    /// beneath the new page instead of keeping the old root.
+    /// </remarks>
     protected async Task SyncNavigationStacksAsync()
     {
-        if (Navigation.NavigationStack.Count == Router.NavigationStack.Count
-            && !StacksAreDifferent())
+        var routerStack = Router.NavigationStack;
+
+        // An empty router stack is the middle of a reset: the next navigation brings the page to show.
+        if (routerStack.Count == 0 || !StacksAreDifferent())
         {
             return;
         }
 
-        if (Navigation.NavigationStack.Count > TrailingPageCount)
+        var pages = Navigation.NavigationStack;
+        var topViewModel = routerStack[^1];
+        Page topPage;
+        if (pages.Count > 0 && ShowsViewModel(pages[^1], topViewModel))
         {
-            for (var i = Navigation.NavigationStack.Count - TrailingPageCount; i >= 0; i--)
-            {
-                Navigation.RemovePage(Navigation.NavigationStack[i]);
-            }
-        }
-
-        Page? rootPage;
-        if (Navigation.NavigationStack.Count >= 1)
-        {
-            rootPage = Navigation.NavigationStack[0];
+            topPage = pages[^1];
         }
         else
         {
-            rootPage = PageForViewModel(Router.NavigationStack[0]);
-            await Navigation.PushAsync(rootPage, false);
+            topPage = PageForViewModel(topViewModel);
+            await Navigation.PushAsync(topPage, false);
+            pages = Navigation.NavigationStack;
         }
 
-        if (Router.NavigationStack.Count >= 1)
+        // Keep the pages below the top page that already match the start of the router stack.
+        var routerTopIndex = routerStack.Count - 1;
+        var pageTopIndex = pages.Count - 1;
+        var kept = 0;
+        while (kept < routerTopIndex && kept < pageTopIndex && ShowsViewModel(pages[kept], routerStack[kept]))
         {
-            for (var i = 0; i < Router.NavigationStack.Count - 1; i++)
-            {
-                var page = PageForViewModel(Router.NavigationStack[i]);
-                Navigation.InsertPageBefore(page, rootPage);
-            }
+            kept++;
+        }
+
+        for (var i = pageTopIndex - 1; i >= kept; i--)
+        {
+            Navigation.RemovePage(pages[i]);
+        }
+
+        for (var i = kept; i < routerTopIndex; i++)
+        {
+            Navigation.InsertPageBefore(PageForViewModel(routerStack[i]), topPage);
         }
     }
 
@@ -233,6 +242,14 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
     private static string NoViewMessage(IRoutableViewModel vm) =>
         $"Couldn't find a View for ViewModel '{vm.GetType().Name}'. The view locator checked the generated view lookup and its Map registrations; "
         + $"use RoutedViewHostUnsafe (from ReactiveUI.Maui.Unsafe) to also resolve an IViewFor<{vm.GetType().Name}> registered only with the service locator.";
+
+    /// <summary>Determines whether a page is the view for a view model.</summary>
+    /// <param name="page">The page to check.</param>
+    /// <param name="viewModel">The view model.</param>
+    /// <returns><see langword="true"/> if <paramref name="page"/> shows <paramref name="viewModel"/>; otherwise, <see langword="false"/>.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static bool ShowsViewModel(Page page, IRoutableViewModel viewModel) =>
+        page is IViewFor view && ReferenceEquals(view.ViewModel, viewModel);
 
     /// <summary>Performs the one-time initial navigation-stack sync, logging any failure instead of faulting an unobserved task.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
@@ -430,10 +447,7 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
 
         for (var i = 0; i < Router.NavigationStack.Count; i++)
         {
-            var vm = Router.NavigationStack[i];
-            var page = Navigation.NavigationStack[i];
-
-            if (page is not IViewFor view || !ReferenceEquals(view.ViewModel, vm))
+            if (!ShowsViewModel(Navigation.NavigationStack[i], Router.NavigationStack[i]))
             {
                 return true;
             }
