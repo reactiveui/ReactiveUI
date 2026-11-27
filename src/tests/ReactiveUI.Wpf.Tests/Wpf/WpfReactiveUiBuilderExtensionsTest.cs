@@ -91,7 +91,7 @@ public class WpfReactiveUiBuilderExtensionsTest
         }
     }
 
-    /// <summary>Tests that WithWpfScheduler registers the WPF dispatcher sequencer.</summary>
+    /// <summary>Tests that WithWpfScheduler registers the WPF dispatcher sequencer, or the deferred one before an application exists.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task WithWpfScheduler_RegistersDispatcherSequencer()
@@ -107,7 +107,47 @@ public class WpfReactiveUiBuilderExtensionsTest
             _ = builder.WithWpfScheduler();
 
             await Assert.That(builder.MainThreadScheduler).IsNotNull();
-            await Assert.That(builder.MainThreadScheduler!).IsTypeOf<DispatcherSequencer>();
+            if (Application.Current is null)
+            {
+                await Assert.That(builder.MainThreadScheduler!).IsSameReferenceAs(DeferredWpfMainThreadSequencer.Instance);
+            }
+            else
+            {
+                await Assert.That(builder.MainThreadScheduler!).IsTypeOf<DispatcherSequencer>();
+            }
+        }
+    }
+
+    /// <summary>Tests that WithWpf can build on a thread without a dispatcher before an application exists, as a generic host does.</summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task WithWpf_BuildApp_WithoutDispatcherBeforeApplication_UsesDeferredScheduler()
+    {
+        if (Application.Current is not null)
+        {
+            return;
+        }
+
+        AppBuilder.ResetBuilderStateForTests();
+        var resolver = new ModernDependencyResolver();
+        resolver.InitializeSplat();
+
+        using (resolver.WithResolver())
+        {
+            var scheduler = await Task.Factory.StartNew(
+                static state =>
+                {
+                    var builder = ((ModernDependencyResolver)state!).CreateReactiveUIBuilder();
+                    _ = builder.WithWpf().BuildApp();
+                    return builder.MainThreadScheduler;
+                },
+                resolver,
+                CancellationToken.None,
+                TaskCreationOptions.LongRunning,
+                TaskScheduler.Default);
+
+            await Assert.That(scheduler).IsSameReferenceAs(DeferredWpfMainThreadSequencer.Instance);
+            await Assert.That(DeferredWpfMainThreadSequencer.Instance.CheckAccess()).IsFalse();
         }
     }
 

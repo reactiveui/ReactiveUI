@@ -54,13 +54,18 @@ public static class WpfReactiveUIBuilderExtensions
                 .WithTaskPoolScheduler(TaskPoolSequencer.Default);
         }
 
-        /// <summary>Withes the WPF scheduler.</summary>
+        /// <summary>Sets the main thread scheduler to the WPF UI thread.</summary>
         /// <returns>The builder instance for chaining.</returns>
+        /// <remarks>
+        /// When no <see cref="System.Windows.Application"/> exists yet, for example when a generic host is built first,
+        /// the scheduler finds the UI thread when it is first used.
+        /// </remarks>
         public IReactiveUIBuilder WithWpfScheduler()
         {
             ArgumentExceptionHelper.ThrowIfNull(builder);
 
-            return builder.WithMainThreadScheduler(WpfMainThreadScheduler);
+            return builder.WithMainThreadScheduler(
+                System.Windows.Application.Current is null ? DeferredWpfMainThreadSequencer.Instance : WpfMainThreadScheduler);
         }
 
         /// <summary>Registers WPF-specific converters to the ConverterService.</summary>
