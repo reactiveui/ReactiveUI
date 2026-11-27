@@ -14,17 +14,19 @@ namespace ReactiveUI.Reactive.Builder;
 namespace ReactiveUI.Builder;
 #endif
 
-/// <summary>Schedules work on <see cref="DispatcherSequencer.Main"/>, looked up on every call.</summary>
+/// <summary>Schedules work on the WPF UI thread's sequencer, looked up on every call.</summary>
 /// <remarks>This lets ReactiveUI be configured before the WPF <see cref="Application"/> exists.</remarks>
 internal sealed class DeferredWpfMainThreadSequencer : ISequencer, IThreadAffineSequencer
 {
-    /// <summary>The shared instance.</summary>
-    internal static readonly DeferredWpfMainThreadSequencer Instance = new();
+    /// <summary>The shared instance, which schedules on <see cref="DispatcherSequencer.Main"/>.</summary>
+    internal static readonly DeferredWpfMainThreadSequencer Instance = new(static () => DispatcherSequencer.Main);
+
+    /// <summary>Looks up the sequencer that runs the work.</summary>
+    private readonly Func<ISequencer> _resolve;
 
     /// <summary>Initializes a new instance of the <see cref="DeferredWpfMainThreadSequencer"/> class.</summary>
-    private DeferredWpfMainThreadSequencer()
-    {
-    }
+    /// <param name="resolve">Looks up the sequencer that runs the work, each time work is scheduled.</param>
+    internal DeferredWpfMainThreadSequencer(Func<ISequencer> resolve) => _resolve = resolve;
 
     /// <inheritdoc/>
     public DateTimeOffset Now => TimeProvider.System.GetUtcNow();
@@ -42,24 +44,24 @@ internal sealed class DeferredWpfMainThreadSequencer : ISequencer, IThreadAffine
     /// <inheritdoc/>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public IDisposable Schedule<TState>(TState state, Func<IScheduler, TState, IDisposable> action) =>
-        DispatcherSequencer.Main.Schedule(state, action);
+        _resolve().Schedule(state, action);
 
     /// <inheritdoc/>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public IDisposable Schedule<TState>(TState state, TimeSpan dueTime, Func<IScheduler, TState, IDisposable> action) =>
-        DispatcherSequencer.Main.Schedule(state, dueTime, action);
+        _resolve().Schedule(state, dueTime, action);
 
     /// <inheritdoc/>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public IDisposable Schedule<TState>(TState state, DateTimeOffset dueTime, Func<IScheduler, TState, IDisposable> action) =>
-        DispatcherSequencer.Main.Schedule(state, dueTime, action);
+        _resolve().Schedule(state, dueTime, action);
 #else
     /// <inheritdoc/>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void Schedule(IWorkItem item) => DispatcherSequencer.Main.Schedule(item);
+    public void Schedule(IWorkItem item) => _resolve().Schedule(item);
 
     /// <inheritdoc/>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void Schedule(IWorkItem item, long dueTimestamp) => DispatcherSequencer.Main.Schedule(item, dueTimestamp);
+    public void Schedule(IWorkItem item, long dueTimestamp) => _resolve().Schedule(item, dueTimestamp);
 #endif
 }

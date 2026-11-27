@@ -19,7 +19,11 @@ namespace ReactiveUI.Tests.Wpf;
 public class WpfReactiveUiBuilderExtensionsTest
 {
     /// <summary>The number of work items the deferred scheduler test schedules.</summary>
+#if REACTIVE_SHIM
+    private const int ExpectedDeferredRuns = 3;
+#else
     private const int ExpectedDeferredRuns = 2;
+#endif
 
     /// <summary>The longest wait for the deferred scheduler's work to run.</summary>
     private static readonly TimeSpan DeferredWorkTimeout = TimeSpan.FromSeconds(10);
@@ -168,17 +172,17 @@ public class WpfReactiveUiBuilderExtensionsTest
     [Test]
     public async Task DeferredScheduler_RunsWorkOnTheDispatcherFoundWhenFirstUsed()
     {
-        if (Application.Current is not null)
-        {
-            return;
-        }
-
-        var sequencer = DeferredWpfMainThreadSequencer.Instance;
+        // Resolve this test thread's dispatcher rather than DispatcherSequencer.Main, which an Application created by
+        // another test would bind to a thread nobody pumps.
+        var sequencer = new DeferredWpfMainThreadSequencer(static () => DispatcherSequencer.Current);
         var runs = new StrongBox<int>();
         var before = TimeProvider.System.GetUtcNow();
 
         _ = sequencer.Schedule(runs, static (_, box) => CountRun(box));
         _ = sequencer.Schedule(runs, TimeSpan.Zero, static (_, box) => CountRun(box));
+#if REACTIVE_SHIM
+        _ = sequencer.Schedule(runs, before, static (_, box) => CountRun(box));
+#endif
 
         using var timeout = new CancellationTokenSource(DeferredWorkTimeout);
         while (runs.Value < ExpectedDeferredRuns && !timeout.IsCancellationRequested)
@@ -191,7 +195,6 @@ public class WpfReactiveUiBuilderExtensionsTest
         {
             await Assert.That(runs.Value).IsEqualTo(ExpectedDeferredRuns);
             await Assert.That(sequencer.Now).IsGreaterThanOrEqualTo(before);
-            await Assert.That(sequencer.CheckAccess()).IsFalse();
         }
     }
 
