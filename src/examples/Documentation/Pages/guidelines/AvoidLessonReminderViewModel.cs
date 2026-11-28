@@ -19,7 +19,7 @@ public sealed class AvoidLessonReminderViewModel : ReactiveObject, IDisposable
     /// <summary>Initializes a new instance of the <see cref="AvoidLessonReminderViewModel"/> class.</summary>
     /// <param name="timetable">The school's timetable, a dependency this view model does not own.</param>
     public AvoidLessonReminderViewModel(Timetable timetable) =>
-        _nextClass = timetable.WhenAny(x => x.NextClass, static change => change.Value)
+        _nextClass = timetable.WhenAny(static x => x.NextClass, static change => change.Value)
             .ToProperty(this, nameof(NextClass));
 
     /// <summary>Gets the next class on the timetable.</summary>

@@ -19,7 +19,7 @@ public static class CommandNamesExamples
     public static async Task PreferTheCommandSuffix()
     {
         Enrollment enrollment = new("Robotics Club") { IsEnabled = true };
-        IObservable<bool> canSave = enrollment.WhenAnyValue(x => x.IsEnabled);
+        IObservable<bool> canSave = enrollment.WhenAnyValue(static x => x.IsEnabled);
 
         using ReactiveCommand<RxVoid, RxVoid> saveCommand = ReactiveCommand.CreateFromTask(SaveImplAsync, canSave);
         using ReactiveCommand<string, RxVoid> searchCommand = ReactiveCommand.CreateFromTask<string, RxVoid>(SearchImplAsync);

@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics.CodeAnalysis;
 using ReactiveUI.Maui;
 using Splat;
 
@@ -15,6 +16,7 @@ namespace ReactiveUI.Documentation.PlatformMaui;
 public static class ServiceLocatorViewExamples
 {
     /// <summary>The default <see cref="ViewModelViewHost"/> throws for this view; <see cref="ViewModelViewHostUnsafe"/> finds it.</summary>
+    [RequiresDynamicCode("The service locator closes IViewFor<T> over the run-time view model type.")]
     public static void ViewModelViewHostUnsafeFindsTheView()
     {
         AppLocator.CurrentMutable.Register<IViewFor<ShoppingListViewModel>>(static () => new ShoppingListView());
@@ -40,6 +42,7 @@ public static class ServiceLocatorViewExamples
 
     /// <summary><see cref="RoutedViewHostUnsafe"/> pushes a page registered only with the service locator.</summary>
     /// <returns>A task that completes once the navigation has run.</returns>
+    [RequiresDynamicCode("The routed host closes IViewFor<T> over the run-time view model type.")]
     public static async Task RoutedViewHostUnsafePushesThePage()
     {
         RecipeBookScreen screen = new();

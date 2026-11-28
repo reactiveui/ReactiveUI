@@ -3,7 +3,7 @@
   <!-- This page is a real WinForms desktop app, not a console page: it overrides the two settings from
        Documentation/Directory.Build.props that do not fit a WinForms app. -->
   <PropertyGroup>
-    <TargetFramework>net10.0-windows10.0.19041.0</TargetFramework>
+    <TargetFrameworks>$(ReactiveUIWindowsTargets)</TargetFrameworks>
     <UseWindowsForms>true</UseWindowsForms>
     <!-- WinForms controls are not AOT-compatible, so the shared PublishAot=true does not apply here. -->
     <PublishAot>false</PublishAot>

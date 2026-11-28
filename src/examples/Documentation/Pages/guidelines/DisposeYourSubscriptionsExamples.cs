@@ -47,7 +47,7 @@ public static class DisposeYourSubscriptionsExamples
         List<int> grades = [];
 
         // No DisposeWith: student's own PropertyChanged event holds this subscription, and dies with student itself.
-        student.WhenAnyValue(x => x.Grade).Subscribe(grades.Add);
+        student.WhenAnyValue(static x => x.Grade).Subscribe(grades.Add);
 
         student.Grade = 88;
         student.Grade = 95;

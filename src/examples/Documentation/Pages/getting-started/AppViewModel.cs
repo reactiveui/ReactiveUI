@@ -38,7 +38,7 @@ public sealed class AppViewModel : ReactiveObject, IDisposable
         // Select turns each term into Signal.FromAsync, which runs the search and hands it a CancellationToken.
         // SwitchTo follows only the newest search, cancelling one still running when the user types again, and
         // WitnessOn moves delivery back to the main thread, since Calm runs on a background thread.
-        _searchResults = this.WhenAnyValue(x => x.SearchTerm)
+        _searchResults = this.WhenAnyValue(static x => x.SearchTerm)
             .Calm(throttle)
             .Select(static term => term.Trim())
             .Unique()
@@ -53,7 +53,7 @@ public sealed class AppViewModel : ReactiveObject, IDisposable
 
         // A helper property for a spinner or a results panel to show if results are available: the latest
         // SearchResults value is not empty.
-        _isAvailable = this.WhenAnyValue(x => x.SearchResults)
+        _isAvailable = this.WhenAnyValue(static x => x.SearchResults)
             .Select(static results => results.Count > 0)
             .ToProperty(this, nameof(IsAvailable));
     }

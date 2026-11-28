@@ -16,7 +16,7 @@ public sealed class PreferGradeAnnouncer : ReactiveObject, IActivatableViewModel
     /// <param name="student">The student to announce grades for.</param>
     public PreferGradeAnnouncer(Student student) =>
         this.WhenActivated(disposables =>
-            student.WhenAnyValue(x => x.Grade)
+            student.WhenAnyValue(static x => x.Grade)
                 .Subscribe(grade => Console.WriteLine($"Prefer: {student.Name}'s grade is now {grade}"))
                 .DisposeWith(disposables));
 

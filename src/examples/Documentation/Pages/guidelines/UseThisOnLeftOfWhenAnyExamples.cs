@@ -50,7 +50,7 @@ public static class UseThisOnLeftOfWhenAnyExamples
         List<string> announcements = [];
 
         MultipleDisposable disposables = [];
-        timetable.WhenAnyValue(x => x.NextClass)
+        timetable.WhenAnyValue(static x => x.NextClass)
             .Subscribe(announcements.Add)
             .DisposeWith(disposables);
 
