@@ -10,8 +10,12 @@ Every documentation project runs. Each example prints what it does, and the `// 
 prints, so you can compare the two:
 
 ```bash
-dotnet run --project src/examples/Documentation/Pages/commands
+dotnet run --project src/examples/Documentation/Pages/commands -f net11.0
 ```
+
+Select `-f net10.0` to run the same console examples on .NET 10. Platform projects use the corresponding Windows, Apple or Android target.
+
+To drive a Windows desktop example, run it from a terminal in the signed-in Windows desktop session. For example, `dotnet run --project src/examples/Documentation/Pages/platform-winui -c Release -f net11.0-windows10.0.19041.0 -- --smoke` opens the dashboard, exercises its view hosts and closes the window. WPF, WinForms and Blend/Drawing also accept `--smoke`.
 
 | Page | Shows |
 |------|-------|

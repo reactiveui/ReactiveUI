@@ -14,8 +14,8 @@ public static class UseDescriptiveVariablesWithWhenAnyExamples
         Student student = new("Ada", "Robotics Club");
         List<string> log = [];
         using IDisposable subscription = student.WhenAny(
-                x => x.Enrollment.IsEnabled,
-                x => x.Enrollment.IsLoading,
+                static x => x.Enrollment.IsEnabled,
+                static x => x.Enrollment.IsLoading,
                 static (isEnabled, isLoading) => isEnabled.Value && isLoading.Value)
             .Subscribe(canJoin => log.Add(canJoin ? "Can join now" : "Cannot join yet"));
 
@@ -33,8 +33,8 @@ public static class UseDescriptiveVariablesWithWhenAnyExamples
         Student student = new("Ada", "Robotics Club");
         List<string> log = [];
         using IDisposable subscription = student.WhenAny(
-                x => x.Enrollment.IsEnabled,
-                x => x.Enrollment.IsLoading,
+                static x => x.Enrollment.IsEnabled,
+                static x => x.Enrollment.IsLoading,
                 static (x, y) => x.Value && y.Value)
             .Subscribe(canJoin => log.Add(canJoin ? "Can join now" : "Cannot join yet"));
 

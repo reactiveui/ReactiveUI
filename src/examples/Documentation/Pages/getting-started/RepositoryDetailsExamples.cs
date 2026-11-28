@@ -32,9 +32,9 @@ public static class RepositoryDetailsExamples
         using RepositoryDetailsViewModel details = new(repository);
         RepositoryDetailsView view = new() { ViewModel = details };
 
-        using IReactiveBinding<RepositoryDetailsView, string> titleBinding = view.OneWayBind(details, x => x.FullName, v => v.TitleLabel.Text);
-        using IReactiveBinding<RepositoryDetailsView, string> descriptionBinding = view.OneWayBind(details, x => x.Description, v => v.DescriptionLabel.Text);
-        using IDisposable commandBinding = view.BindCommand(details, x => x.OpenPage, v => v.OpenButton);
+        using IReactiveBinding<RepositoryDetailsView, string> titleBinding = view.OneWayBind(details, static x => x.FullName, static v => v.TitleLabel.Text);
+        using IReactiveBinding<RepositoryDetailsView, string> descriptionBinding = view.OneWayBind(details, static x => x.Description, static v => v.DescriptionLabel.Text);
+        using IDisposable commandBinding = view.BindCommand(details, static x => x.OpenPage, static v => v.OpenButton);
 
         Console.WriteLine(view.TitleLabel.Text);
         view.OpenButton.PerformClick();

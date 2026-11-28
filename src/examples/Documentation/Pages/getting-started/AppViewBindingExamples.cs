@@ -21,11 +21,11 @@ public static class AppViewBindingExamples
         using AppViewModel viewModel = new(api, TimeSpan.FromMilliseconds(20));
         AppView view = new() { ViewModel = viewModel };
 
-        using IReactiveBinding<AppView, BindingChange> searchBinding = view.Bind(viewModel, x => x.SearchTerm, v => v.SearchBox.Text);
+        using IReactiveBinding<AppView, BindingChange> searchBinding = view.Bind(viewModel, static x => x.SearchTerm, static v => v.SearchBox.Text);
         using IReactiveBinding<AppView, IReadOnlyList<RepositoryDetailsViewModel>> resultsBinding =
-            view.OneWayBind(viewModel, x => x.SearchResults, v => v.ResultList.Items);
+            view.OneWayBind(viewModel, static x => x.SearchResults, static v => v.ResultList.Items);
         using IReactiveBinding<AppView, bool> availableBinding =
-            view.OneWayBind(viewModel, x => x.IsAvailable, v => v.AvailableLabel.IsVisible);
+            view.OneWayBind(viewModel, static x => x.IsAvailable, static v => v.AvailableLabel.IsVisible);
 
         view.SearchBox.Text = "akavache";
         Console.WriteLine(viewModel.SearchTerm);

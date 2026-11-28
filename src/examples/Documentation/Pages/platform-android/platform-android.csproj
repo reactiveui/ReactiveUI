@@ -1,16 +1,14 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <!-- Android is a real device target, not a console: it replaces most of what Documentation/Directory.Build.props
-       assumes about a page project (single TFM net10.0, OutputType Exe with a Program.cs Main, NativeAOT publish). -->
+  <!-- The Android app builds against the device SDK. -->
   <PropertyGroup>
-    <TargetFramework>net10.0-android36.0</TargetFramework>
+    <TargetFrameworks>$(ReactiveUIAndroidTargets)</TargetFrameworks>
     <SupportedOSPlatformVersion>35</SupportedOSPlatformVersion>
     <OutputType>Exe</OutputType>
     <ApplicationId>net.reactiveui.documentation.platformandroid</ApplicationId>
     <ApplicationVersion>1</ApplicationVersion>
     <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
-    <!-- .NET Android publishes with Mono AOT, not NativeAOT; the shared props enable NativeAOT for every other
-         page, which does not apply here. -->
+    <!-- The shared page props enable NativeAOT for console examples. -->
     <PublishAot>false</PublishAot>
     <!-- The repository's root Directory.Build.props turns this off for every android-targeted project because the
          library leaves ship no resources of their own. This example ships real layouts, so it needs the generated
@@ -23,7 +21,8 @@
          into a build error under this repository's TreatWarningsAsErrors. -->
     <PublishTrimmed>false</PublishTrimmed>
     <AndroidLinkMode>None</AndroidLinkMode>
-    <RunAOTCompilation>false</RunAOTCompilation>
+    <RunAOTCompilation Condition="$([MSBuild]::GetTargetFrameworkVersion('$(TargetFramework)')) == '10.0'">false</RunAOTCompilation>
+    <PublishReadyToRun Condition="$([MSBuild]::GetTargetFrameworkVersion('$(TargetFramework)')) == '11.0'">false</PublishReadyToRun>
     <EnableTrimAnalyzer>false</EnableTrimAnalyzer>
     <EnableAotAnalyzer>false</EnableAotAnalyzer>
     <EnableSingleFileAnalyzer>false</EnableSingleFileAnalyzer>

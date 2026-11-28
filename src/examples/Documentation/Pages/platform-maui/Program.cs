@@ -52,9 +52,11 @@ ViewModelViewHostExamples.ViewLocatorOverridesTheDefaultLocator();
 
 ViewModelViewHostExamples.GenericHostTypesTheViewModelProperty();
 
-ServiceLocatorViewExamples.ViewModelViewHostUnsafeFindsTheView();
-
-await ServiceLocatorViewExamples.RoutedViewHostUnsafePushesThePage();
+if (System.Runtime.CompilerServices.RuntimeFeature.IsDynamicCodeSupported)
+{
+    ServiceLocatorViewExamples.ViewModelViewHostUnsafeFindsTheView();
+    await ServiceLocatorViewExamples.RoutedViewHostUnsafePushesThePage();
+}
 
 ServiceLocatorViewExamples.MapFromServiceLocatorLetsTheDefaultHostFindTheView();
 

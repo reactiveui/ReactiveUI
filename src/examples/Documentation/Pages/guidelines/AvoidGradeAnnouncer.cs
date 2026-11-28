@@ -14,7 +14,7 @@ public sealed class AvoidGradeAnnouncer : IDisposable
     /// <summary>Initializes a new instance of the <see cref="AvoidGradeAnnouncer"/> class.</summary>
     /// <param name="student">The student to announce grades for.</param>
     public AvoidGradeAnnouncer(Student student) =>
-        student.WhenAnyValue(x => x.Grade).Subscribe(grade => Console.WriteLine($"Avoid: {student.Name}'s grade is now {grade}"));
+        student.WhenAnyValue(static x => x.Grade).Subscribe(grade => Console.WriteLine($"Avoid: {student.Name}'s grade is now {grade}"));
 
     /// <summary>Does nothing: the subscription above was never kept, so there is nothing left to dispose.</summary>
     public void Dispose()

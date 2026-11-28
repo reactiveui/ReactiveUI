@@ -17,7 +17,7 @@ public sealed class AvoidEnrollmentViewModel : ReactiveObject, IDisposable
 
     /// <summary>Initializes a new instance of the <see cref="AvoidEnrollmentViewModel"/> class.</summary>
     public AvoidEnrollmentViewModel() =>
-        _subscription = this.WhenAny(x => x.RosterFetched, x => x.RegistrarFree, static (fetched, free) => fetched.Value && free.Value)
+        _subscription = this.WhenAny(static x => x.RosterFetched, static x => x.RegistrarFree, static (fetched, free) => fetched.Value && free.Value)
             .Subscribe(canEnroll => CanEnroll = canEnroll);
 
     /// <summary>Gets or sets a value indicating whether the course roster has been fetched.</summary>

@@ -20,7 +20,7 @@ public sealed class PreferLessonReminderViewModel : ReactiveObject, IDisposable
     public PreferLessonReminderViewModel(Timetable timetable)
     {
         Timetable = timetable;
-        _nextClass = this.WhenAny(x => x.Timetable.NextClass, static change => change.Value)
+        _nextClass = this.WhenAny(static x => x.Timetable.NextClass, static change => change.Value)
             .ToProperty(this, nameof(NextClass));
     }
 
