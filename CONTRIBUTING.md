@@ -10,8 +10,8 @@ For contribution guidelines, coding standards, commit message conventions, and s
 
 ## Getting help
 
-- **Questions**: [StackOverflow (reactiveui tag)](https://stackoverflow.com/questions/tagged/reactiveui)
-- **Discussion**: [Slack](https://reactiveui.net/slack)
+- **Questions**: [GitHub Discussions](https://github.com/reactiveui/ReactiveUI/discussions)
+- **Chat**: [Slack](https://reactiveui.net/slack). Not every maintainer watches Slack, so ask questions in Discussions.
 - **Bugs and feature requests**: [GitHub Issues](https://github.com/reactiveui/ReactiveUI/issues/new/choose)
 
 ## Quick start
