@@ -1,22 +1,26 @@
-[![Build](https://github.com/reactiveui/ReactiveUI/actions/workflows/ci-build.yml/badge.svg)](https://github.com/reactiveui/ReactiveUI/actions/workflows/ci-build.yml)
-[![Code Coverage](https://codecov.io/gh/reactiveui/ReactiveUI/branch/main/graph/badge.svg)](https://codecov.io/gh/reactiveui/ReactiveUI)
-[![#yourfirstpr](https://img.shields.io/badge/first--timers--only-friendly-blue.svg)](https://reactiveui.net/contribute)
-[![](https://img.shields.io/badge/chat-slack-blue.svg)](https://reactiveui.net/slack)
+<div align="center">
 
-<br>
-<a href="https://github.com/reactiveui/reactiveui">
-  <img width="160" heigth="160" src="https://raw.githubusercontent.com/reactiveui/styleguide/master/logo/main.png">
-</a>
-<br>
+<a href="https://github.com/reactiveui/ReactiveUI"><img src="https://raw.githubusercontent.com/reactiveui/styleguide/master/logo/logo.svg" alt="ReactiveUI" width="128"></a>
 
-# What is ReactiveUI?
+# ReactiveUI
+
+[![Build](https://img.shields.io/github/actions/workflow/status/reactiveui/ReactiveUI/ci-build.yml?branch=main&label=build&logo=githubactions&logoColor=white)](https://github.com/reactiveui/ReactiveUI/actions/workflows/ci-build.yml)
+[![NuGet](https://img.shields.io/nuget/v/ReactiveUI?label=nuget&logo=nuget&logoColor=white&color=004880)](https://www.nuget.org/packages/ReactiveUI)
+[![Downloads](https://img.shields.io/nuget/dt/ReactiveUI?label=downloads&logo=nuget&logoColor=white&color=004880)](https://www.nuget.org/packages/ReactiveUI)
+[![Coverage](https://img.shields.io/codecov/c/github/reactiveui/ReactiveUI?label=coverage&logo=codecov&logoColor=white)](https://codecov.io/gh/reactiveui/ReactiveUI)
+[![License](https://img.shields.io/github/license/reactiveui/ReactiveUI?color=blue)](https://github.com/reactiveui/ReactiveUI/blob/main/LICENSE)
+[![Discussions](https://img.shields.io/badge/discussions-ask%20a%20question-8A2BE2?logo=github&logoColor=white)](https://github.com/reactiveui/ReactiveUI/discussions)
+
+</div>
+
+## What is ReactiveUI?
 
 [ReactiveUI](https://reactiveui.net/) is a composable, cross-platform model-view-viewmodel framework for all .NET
 platforms that is inspired by functional reactive programming, which is a paradigm that allows you
 to [abstract mutable state away from your user interfaces and express the idea around a feature in one readable place](https://www.youtube.com/watch?v=3HwEytvngXk)
 and improve the testability of your application.
 
-[🔨 Get Started](https://reactiveui.net/documentation/getting-started/) [🛍 Install Packages](https://reactiveui.net/documentation/getting-started/installation/) [🎞 Watch Videos](https://reactiveui.net/documentation/resources/videos) [🎓 View Samples](https://reactiveui.net/documentation/resources/samples/) [🎤 Discuss ReactiveUI](https://reactiveui.net/slack)
+[🔨 Get Started](https://reactiveui.net/documentation/getting-started/) [🛍 Install Packages](https://reactiveui.net/documentation/getting-started/installation/) [🎞 Watch Videos](https://reactiveui.net/documentation/resources/videos) [🎓 View Samples](https://reactiveui.net/documentation/resources/samples/) [🎤 Discuss ReactiveUI](https://github.com/reactiveui/ReactiveUI/discussions)
 
 ## Your first view model
 
@@ -268,15 +272,6 @@ See [our sponsors](https://www.reactiveui.net/sponsors/) for more information.
 JetBrains, Claude, Anthropic, OpenAI and Codex names and logos are trademarks of their respective owners.
 Snyk and the Snyk logo are trademarks of Snyk Ltd.
 
-## Sponsorship
-
-The core team members, ReactiveUI contributors and contributors in the ecosystem do this open-source work in their free
-time. If you use ReactiveUI, a serious task, and you'd like us to invest more time on it, please donate. This project
-increases your income/productivity too. It makes development and applications faster and it reduces the required
-bandwidth.
-
-[Become a sponsor](https://github.com/sponsors/reactivemarbles).
-
 ## Migration from Xamarin and .NET 8 MAUI
 
 ### Xamarin Users
@@ -322,27 +317,30 @@ This is how we use the donations:
 * Thank contributors if they invested a large amount of time in contributing
 * Support projects in the ecosystem
 
-## Support
-
-If you have a question, please see if any discussions in
-our [GitHub issues](https://github.com/reactiveui/ReactiveUI/issues)
-or [Stack Overflow](https://stackoverflow.com/questions/tagged/reactiveui) have already answered it.
-
-If you want to discuss something or just need help, here is our [Slack room](https://reactiveui.net/slack), where there
-are always individuals looking to help out!
-
-Please do not open GitHub issues for support requests.
-
 ## Contribute
 
-ReactiveUI is developed under an OSI-approved open source license, making it freely usable and distributable, even for
-commercial use.
+ReactiveUI is part of [ReactiveUI](https://github.com/reactiveui) and is released under the [MIT license](https://github.com/reactiveui/ReactiveUI/blob/main/LICENSE). We welcome contributions of every size, from bug reports and documentation to features and tests.
 
-If you want to submit pull requests please first open
-a [GitHub issue](https://github.com/reactiveui/ReactiveUI/issues/new/choose) to discuss. We are first time PR
-contributors friendly.
+- **Questions:** ask in [GitHub Discussions](https://github.com/reactiveui/ReactiveUI/discussions).
+- **Bugs and feature requests:** open a [GitHub issue](https://github.com/reactiveui/ReactiveUI/issues/new/choose).
+- **Larger changes:** open an issue or discussion first, so we can agree on the approach before you start.
+- **Contributor guide:** read [reactiveui.net/contribute](https://www.reactiveui.net/contribute/) for [building and testing](https://www.reactiveui.net/contribute/building-and-testing/) and [pull requests](https://www.reactiveui.net/contribute/pull-requests/).
 
-See [Contribution Guidelines](https://www.reactiveui.net/contribute/) for further information how to contribute changes.
+### Coding standards
+
+Every pull request must meet these standards. The build checks most of them.
+
+- Follow the [ReactiveUI C# style guide](https://www.reactiveui.net/contribute/software-style-guide/code-style/).
+- The repository's `.editorconfig` and the StyleSharp, PerformanceSharp and SecuritySharp analyzers run on every build. Fix each finding in the code. Do not suppress it or relax the `.editorconfig`.
+- Add tests for every bug fix and new feature.
+- Document public APIs with XML documentation comments.
+- Write commit messages in the [Conventional Commits](https://www.reactiveui.net/contribute/software-style-guide/commit-message-convention/) format.
+- Follow the [Code of Conduct](https://github.com/reactiveui/.github/blob/main/CODE_OF_CONDUCT.md).
+
+### Support the project
+
+- Sponsor the maintainers on GitHub Sponsors: [reactivemarbles](https://github.com/sponsors/reactivemarbles), [glennawatson](https://github.com/sponsors/glennawatson) and [chrispulman](https://github.com/sponsors/chrispulman).
+- Ask your employer to support open source, for example with the [balanced employee IP agreement](https://github.com/github/balanced-employee-ip-agreement).
 
 ## Core Team
 
